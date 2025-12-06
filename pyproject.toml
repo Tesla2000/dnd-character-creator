@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "DND_character_creator"
+name = "dnd_character_creator"
 version = "0.1.0"
 description = ""
 authors = ["Tesla2000 <fratajczak124@gmail.com>"]
@@ -18,6 +18,7 @@ more-itertools = "^10.5.0"
 pypdf2 = "^3.0.1"
 toml = "^0.10.2"
 pydantic-settings = "^2.12.0"
+frozendict = "^2.4.7"
 
 
 [tool.poetry.group.tests.dependencies]
@@ -26,6 +27,3 @@ pytest = "^9.0.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-dnd_character_creator = "dnd_character_creator:main"

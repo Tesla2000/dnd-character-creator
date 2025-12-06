@@ -1,0 +1,23 @@
+from __future__ import annotations
+
+from typing import Generator
+
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    BuildingBlock,
+)
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
+from dnd_character_creator.choices.background_creatrion.background import (
+    Background,
+)
+
+
+class BackgroundAssigner(BuildingBlock):
+    """Assigns a background to the character."""
+
+    background: Background
+
+    def get_change(
+        self, blueprint: Blueprint
+    ) -> Generator[Blueprint, Blueprint, None]:
+        """Yield the background difference."""
+        yield Blueprint(background=self.background)
