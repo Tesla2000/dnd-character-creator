@@ -1,32 +1,32 @@
 # flake8: noqa E501
 from __future__ import annotations
 
-from src.DND_character_creator.character_full import CharacterFull
-from src.DND_character_creator.character_wrapper import CharacterWrapper
-from src.DND_character_creator.choices.equipment_creation.armor import Armor
-from src.DND_character_creator.choices.equipment_creation.armor import (
+from DND_character_creator.character_full import CharacterFull
+from DND_character_creator.character_wrapper import CharacterWrapper
+from DND_character_creator.choices.equipment_creation.armor import Armor
+from DND_character_creator.choices.equipment_creation.armor import (
     ArmorCategory,
-)  # noqa: E501
-from src.DND_character_creator.choices.equipment_creation.weapons import (
+)
+from DND_character_creator.choices.equipment_creation.weapons import (
     DamageType,
-)  # noqa: E501
-from src.DND_character_creator.choices.equipment_creation.weapons import (
+)
+from DND_character_creator.choices.equipment_creation.weapons import (
     HitDieSize,
-)  # noqa: E501
-from src.DND_character_creator.choices.equipment_creation.weapons import Weapon
-from src.DND_character_creator.choices.equipment_creation.weapons import (
+)
+from DND_character_creator.choices.equipment_creation.weapons import Weapon
+from DND_character_creator.choices.equipment_creation.weapons import (
     WeaponName,
-)  # noqa: E501
-from src.DND_character_creator.choices.language import Language
-from src.DND_character_creator.choices.stats_creation.statistic import (
+)
+from DND_character_creator.choices.language import Language
+from DND_character_creator.choices.stats_creation.statistic import (
     Statistic,
 )
-from src.DND_character_creator.config import Config
-from src.DND_character_creator.config import create_config_with_args
-from src.DND_character_creator.config import parse_arguments
-from src.DND_character_creator.feats import Feat
-from src.DND_character_creator.pdf_creator.create_pdf import create_pdf
-from src.DND_character_creator.skill_proficiency import Skill
+from DND_character_creator.config import Config
+from DND_character_creator.config import create_config_with_args
+from DND_character_creator.config import parse_arguments
+from DND_character_creator.feats import Feat
+from DND_character_creator.pdf_creator.create_pdf import create_pdf
+from DND_character_creator.skill_proficiency import Skill
 
 
 def test():

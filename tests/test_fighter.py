@@ -1,24 +1,24 @@
 # flake8: noqa E501
 from __future__ import annotations
 
-from src.DND_character_creator.character_full import CharacterFull
-from src.DND_character_creator.character_wrapper import CharacterWrapper
-from src.DND_character_creator.choices.abilities.AbilityType import AbilityType
-from src.DND_character_creator.choices.battle_maneuvers.battle_maneuvers import (  # noqa: E501
+from DND_character_creator.character_full import CharacterFull
+from DND_character_creator.character_wrapper import CharacterWrapper
+from DND_character_creator.choices.abilities.AbilityType import AbilityType
+from DND_character_creator.choices.battle_maneuvers.battle_maneuvers import (
     BattleManeuver,
 )
-from src.DND_character_creator.choices.fighting_styles.fighting_styles import (
+from DND_character_creator.choices.fighting_styles.fighting_styles import (
     FightingStyle,
 )
-from src.DND_character_creator.choices.stats_creation.statistic import (
+from DND_character_creator.choices.stats_creation.statistic import (
     Statistic,
 )
-from src.DND_character_creator.config import Config
-from src.DND_character_creator.config import create_config_with_args
-from src.DND_character_creator.config import parse_arguments
-from src.DND_character_creator.feats import Feat
-from src.DND_character_creator.pdf_creator.create_pdf import create_pdf
-from src.DND_character_creator.wiki_scraper.AbilityTemplate import (
+from DND_character_creator.config import Config
+from DND_character_creator.config import create_config_with_args
+from DND_character_creator.config import parse_arguments
+from DND_character_creator.feats import Feat
+from DND_character_creator.pdf_creator.create_pdf import create_pdf
+from DND_character_creator.wiki_scraper.AbilityTemplate import (
     AbilityTemplate,
 )
 
