@@ -1,35 +1,13 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, StrEnum
 
 from dnd_character_creator.choices.stats_creation.statistic import (
     Statistic,
 )
 
-
-class SkillAndAny(str, Enum):
-    ACROBATICS = "Acrobatics"
-    ANIMAL_HANDLING = "Animal Handling"
-    ARCANA = "Arcana"
-    ATHLETICS = "Athletics"
-    DECEPTION = "Deception"
-    HISTORY = "History"
-    INSIGHT = "Insight"
-    INTIMIDATION = "Intimidation"
-    INVESTIGATION = "Investigation"
-    MEDICINE = "Medicine"
-    NATURE = "Nature"
-    PERCEPTION = "Perception"
-    PERFORMANCE = "Performance"
-    PERSUASION = "Persuasion"
-    RELIGION = "Religion"
-    SLEIGHT_OF_HAND = "Sleight of Hand"
-    STEALTH = "Stealth"
-    SURVIVAL = "Survival"
-    ANY_OF_YOUR_CHOICE = "Any one of your choice"
-
-
-class Skill(str, Enum):
+class Skill(StrEnum):
+    ANY_OF_YOUR_CHOICE = "Any of your choice"
     ACROBATICS = "Acrobatics"
     ANIMAL_HANDLING = "Animal Handling"
     ARCANA = "Arcana"

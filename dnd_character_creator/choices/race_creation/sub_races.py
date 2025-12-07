@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Type
 from typing import TYPE_CHECKING
 
-from dnd_character_creator.choices.race_creation.main_race import Race
+from dnd_character_creator.character.race.race import Race
 
 if TYPE_CHECKING:
     from dnd_character_creator.config import Config

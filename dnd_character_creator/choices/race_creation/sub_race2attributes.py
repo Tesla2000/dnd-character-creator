@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from dnd_character_creator.choices.race_creation.main_race import Race
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.config import Config
 from dnd_character_creator.wiki_scraper.MainRaceTemplate import (
     SubRaceTemplate,

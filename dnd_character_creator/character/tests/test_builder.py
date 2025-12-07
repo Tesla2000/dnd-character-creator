@@ -14,12 +14,11 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     SexAssigner,
 )
 from dnd_character_creator.character.builder import Builder
-from dnd_character_creator.character.character import Character
 from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
-from dnd_character_creator.choices.race_creation.main_race import Race
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.sex import Sex
 
 
@@ -91,11 +90,7 @@ class TestBuilder:
 
     def test_builder_add_method(self):
         """Test Builder.add() method."""
-        builder = Builder([])
-
-        builder.add(NameAssigner(name="Gandalf"))
-        builder.add(RaceAssigner(race=Race.HUMAN))
-        builder.add(LevelAssigner(level=20))
+        builder = Builder().add(NameAssigner(name="Gandalf")).add(RaceAssigner(race=Race.HUMAN)).add(LevelAssigner(level=20))
 
         # Should fail - missing required fields
         with pytest.raises(ValidationError):
@@ -267,13 +262,6 @@ class TestBuilder:
         assert blueprint.alignment == Alignment.LAWFUL_NEUTRAL
         assert blueprint.level == 8
 
-    def test_builder_empty_list_initialization(self):
-        """Test Builder with empty list vs None."""
-        builder1 = Builder([])
-        builder2 = Builder(None)
-
-        assert builder1._building_blocks == []
-        assert builder2._building_blocks == []
 
     def test_builder_internal_combined_block_usage(self):
         """Test that Builder internally uses CombinedBlock correctly."""

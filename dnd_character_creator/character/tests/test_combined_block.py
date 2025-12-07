@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from pydantic import ValidationError
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
@@ -13,11 +14,15 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RaceAssigner,
     SexAssigner,
 )
+from dnd_character_creator.character.blueprint.building_blocks.class_level_up.level_incrementer import \
+    LevelIncrementer
+from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
-from dnd_character_creator.choices.race_creation.main_race import Race
+from dnd_character_creator.choices.class_creation.character_class import Class
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.sex import Sex
 
 
@@ -220,6 +225,17 @@ class TestCombinedBlock:
 
         with pytest.raises(Exception):  # Pydantic raises ValidationError
             combined.blocks = (RaceAssigner(race=Race.ELF),)
+
+    def test_combine_block_correctness(self):
+        with pytest.raises(ValidationError):
+            Builder().add(
+                CombinedBlock(
+                    blocks=(
+                        LevelAssigner(level=1),
+                        LevelIncrementer(class_=Class.FIGHTER),
+                    )
+                )
+            ).build()
 
     def test_nested_combined_blocks(self):
         """Test combining CombinedBlocks."""

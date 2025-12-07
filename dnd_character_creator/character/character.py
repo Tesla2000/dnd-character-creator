@@ -8,8 +8,11 @@ from pydantic import AfterValidator, BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import PositiveInt
+from pydantic import NonNegativeInt
 
-from dnd_character_creator.character.spells import Spells
+from dnd_character_creator.character.stats import Stats
+from dnd_character_creator.choices.language import Language
+from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import (
     Background,
@@ -22,10 +25,16 @@ from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.invocations.eldritch_invocation import (
     WarlockPact,
 )
-from dnd_character_creator.choices.race_creation.main_race import Race
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.sex import Sex
-from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from dnd_character_creator.feats import Feat
+from dnd_character_creator.other_profficiencies import (
+    GamingSet,
+    MusicalInstrument,
+    ToolProficiency,
+)
+from dnd_character_creator.skill_proficiency import Skill
+from dnd_character_creator.character.spells.spells import Spells
 
 
 def _conv_to_frozendict(value: Any) -> Any:
@@ -43,9 +52,12 @@ class Character(BaseModel):
     age: PositiveInt
     classes: Annotated[Mapping[Class, PositiveInt], AfterValidator(_conv_to_frozendict)] = frozendict()
     race: Race
+    subrace: Subrace
     name: str
     background: Background
     alignment: Alignment
+    stats: Stats
+    health: PositiveInt
     height: PositiveInt
     weight: PositiveInt
     eye_color: str
@@ -56,6 +68,7 @@ class Character(BaseModel):
     ideals: str
     bonds: str
     weaknesses: str
+    dark_vision_range: NonNegativeInt
     base_description: Optional[str] = None
     feats: tuple[Feat, ...] = Field(
         description="Feats from a list fitting description of the character if"
@@ -63,7 +76,6 @@ class Character(BaseModel):
         "than ability score improvement",
         default=(),
     )
-    sub_race: Optional[str] = None
     sub_class: Optional[str] = None
     warlock_pact: Optional[WarlockPact] = None
     armor: Optional[ArmorName] = Field(
@@ -84,3 +96,7 @@ class Character(BaseModel):
         description="All alchemical supplies, medicines, potions etc.",
     )
     spells: Spells = Field(default_factory=Spells)
+    languages: set[Language] = Field(default_factory=set)
+    speed: PositiveInt
+    skill_proficiencies: set[Skill] = Field(default_factory=set, description="Skills the character is proficient in")
+    tool_proficiencies: set[ToolProficiency | GamingSet | MusicalInstrument] = Field(default_factory=set, description="Tool proficiencies")

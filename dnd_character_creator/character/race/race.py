@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, StrEnum
 
 
-class Race(str, Enum):
+class Race(StrEnum):
     HUMAN = "Human"
     ELF = "Elf"
     DWARF = "Dwarf"

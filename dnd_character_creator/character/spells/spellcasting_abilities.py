@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from frozendict import frozendict
+
 from dnd_character_creator.choices.class_creation.character_class import (
     Class,
 )
@@ -7,7 +9,7 @@ from dnd_character_creator.choices.stats_creation.statistic import (
     Statistic,
 )
 
-spellcasting_ability_map = {
+spellcasting_ability_map: frozendict[Class, Statistic] = frozendict({
     Class.BARD: Statistic.CHARISMA,
     Class.CLERIC: Statistic.WISDOM,
     Class.DRUID: Statistic.WISDOM,
@@ -19,4 +21,4 @@ spellcasting_ability_map = {
     Class.WARLOCK: Statistic.CHARISMA,
     Class.WIZARD: Statistic.INTELLIGENCE,
     Class.ARTIFICER: Statistic.INTELLIGENCE,
-}
+})

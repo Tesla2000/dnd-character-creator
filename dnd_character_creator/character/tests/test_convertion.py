@@ -7,7 +7,7 @@ from dnd_character_creator.character.character import Character
 from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import \
     Background
-from dnd_character_creator.choices.race_creation.main_race import Race
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.sex import Sex
 
 

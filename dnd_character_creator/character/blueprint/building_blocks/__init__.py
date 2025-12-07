@@ -25,9 +25,6 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
 from dnd_character_creator.character.blueprint.building_blocks.character_base_template import (
     CharacterBaseTemplate,
 )
-from dnd_character_creator.character.blueprint.building_blocks.class_assigner import (
-    ClassAssigner,
-)
 from dnd_character_creator.character.blueprint.building_blocks.equipment_adder import (
     EquipmentAdder,
 )
@@ -59,7 +56,6 @@ __all__ = [
     "BackgroundAssigner",
     "BuildingBlock",
     "CharacterBaseTemplate",
-    "ClassAssigner",
     "CombinedBlock",
     "EquipmentAdder",
     "FeatAdder",

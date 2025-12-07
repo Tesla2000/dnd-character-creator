@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Optional
 from typing import TYPE_CHECKING
 
@@ -9,12 +9,10 @@ from dnd_character_creator.choices.stats_creation.statistic import (
 )
 from dnd_character_creator.signed_int import SignedInt
 
-if TYPE_CHECKING:
-    from dnd_character_creator.character_wrapper import CharacterWrapper
 from dnd_character_creator.choices.equipment_creation.item import Item
 
 
-class HitDieSize(int, Enum):
+class HitDieSize(IntEnum):
     ONE = 1
     FOUR = 4
     SIX = 6

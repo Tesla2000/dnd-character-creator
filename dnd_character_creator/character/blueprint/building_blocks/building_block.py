@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Generator
+from typing import Generator, Annotated, Iterable
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, AfterValidator
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 
@@ -39,9 +39,11 @@ class CombinedBlock(BuildingBlock):
             gen = block.get_change(blueprint)
             try:
                 diff = next(gen)
-                current = yield diff
+                blueprint = yield diff
+                if not isinstance(blueprint, Blueprint):
+                    raise ValueError(f"{blueprint=} sent to {type(self).__name__} should be an instance of {Blueprint.__name__}")
                 while True:
-                    diff = gen.send(current)
-                    current = yield diff
+                    diff = gen.send(blueprint)
+                    blueprint = yield diff
             except StopIteration:
                 pass

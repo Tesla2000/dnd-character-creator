@@ -24,6 +24,11 @@ frozendict = "^2.4.7"
 [tool.poetry.group.tests.dependencies]
 pytest = "^9.0.1"
 
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

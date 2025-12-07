@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from langchain_openai import ChatOpenAI
 
-from dnd_character_creator.choices.race_creation.main_race import Race
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.wiki_scraper.AbilityTemplate import (
     AbilitiesTemplate,
 )

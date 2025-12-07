@@ -5,7 +5,7 @@ from frozendict import frozendict
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
-    ClassAssigner,
+    LevelUpClass,
     EquipmentAdder,
     FeatAdder,
     LevelAssigner,
@@ -298,7 +298,7 @@ class TestClassAssigner:
         """Test adding one level to a class."""
         blueprint = Blueprint(level=5)
 
-        adder = ClassAssigner(class_=Class.FIGHTER)
+        adder = LevelUpClass(class_=Class.FIGHTER)
         gen = adder.get_change(blueprint)
         diff = next(gen)
 
@@ -310,7 +310,7 @@ class TestClassAssigner:
         blueprint = Blueprint(level=10)
 
         # Add first level
-        adder1 = ClassAssigner(class_=Class.FIGHTER)
+        adder1 = LevelUpClass(class_=Class.FIGHTER)
         gen1 = adder1.get_change(blueprint)
         diff1 = next(gen1)
         blueprint = blueprint.model_copy(
@@ -318,7 +318,7 @@ class TestClassAssigner:
         )
 
         # Add second level
-        adder2 = ClassAssigner(class_=Class.FIGHTER)
+        adder2 = LevelUpClass(class_=Class.FIGHTER)
         gen2 = adder2.get_change(blueprint)
         diff2 = next(gen2)
         blueprint = blueprint.model_copy(
@@ -326,7 +326,7 @@ class TestClassAssigner:
         )
 
         # Add third level
-        adder3 = ClassAssigner(class_=Class.FIGHTER)
+        adder3 = LevelUpClass(class_=Class.FIGHTER)
         gen3 = adder3.get_change(blueprint)
         diff3 = next(gen3)
 
@@ -344,7 +344,7 @@ class TestClassAssigner:
 
         for class_, levels in classes_to_add:
             for _ in range(levels):
-                adder = ClassAssigner(class_=class_)
+                adder = LevelUpClass(class_=class_)
                 gen = adder.get_change(blueprint)
                 diff = next(gen)
                 blueprint = blueprint.model_copy(
@@ -362,7 +362,7 @@ class TestClassAssigner:
 
         # Add 5 levels successfully
         for _ in range(5):
-            adder = ClassAssigner(class_=Class.FIGHTER)
+            adder = LevelUpClass(class_=Class.FIGHTER)
             gen = adder.get_change(blueprint)
             diff = next(gen)
             blueprint = blueprint.model_copy(
@@ -370,7 +370,7 @@ class TestClassAssigner:
             )
 
         # Try to add 6th level (should fail)
-        adder = ClassAssigner(class_=Class.FIGHTER)
+        adder = LevelUpClass(class_=Class.FIGHTER)
         gen = adder.get_change(blueprint)
 
         with pytest.raises(ValueError, match="exceed character level"):
@@ -380,7 +380,7 @@ class TestClassAssigner:
         """Test that assigning class without level set raises error."""
         blueprint = Blueprint()  # No level set
 
-        adder = ClassAssigner(class_=Class.WIZARD)
+        adder = LevelUpClass(class_=Class.WIZARD)
         gen = adder.get_change(blueprint)
 
         with pytest.raises(ValueError, match="exceed character level"):
@@ -390,7 +390,7 @@ class TestClassAssigner:
         """Test that classes frozendict is immutable."""
         blueprint = Blueprint(level=5)
 
-        adder = ClassAssigner(class_=Class.PALADIN)
+        adder = LevelUpClass(class_=Class.PALADIN)
         gen = adder.get_change(blueprint)
         diff = next(gen)
 
@@ -415,7 +415,7 @@ class TestClassAssigner:
 
         for class_ in classes:
             for _ in range(4):  # 4 levels each = 20 total
-                adder = ClassAssigner(class_=class_)
+                adder = LevelUpClass(class_=class_)
                 gen = adder.get_change(blueprint)
                 diff = next(gen)
                 blueprint = blueprint.model_copy(
@@ -436,7 +436,7 @@ class TestAdderIntegration:
 
         # Add classes
         for _ in range(5):
-            adder = ClassAssigner(class_=Class.FIGHTER)
+            adder = LevelUpClass(class_=Class.FIGHTER)
             gen = adder.get_change(blueprint)
             diff = next(gen)
             blueprint = blueprint.model_copy(
@@ -493,7 +493,7 @@ class TestAdderIntegration:
         blueprint = Blueprint()
 
         # Try to add class before setting level
-        adder = ClassAssigner(class_=Class.WIZARD)
+        adder = LevelUpClass(class_=Class.WIZARD)
         gen = adder.get_change(blueprint)
 
         with pytest.raises(ValueError):
@@ -508,7 +508,7 @@ class TestAdderIntegration:
         )
 
         # Now class assignment should work
-        adder = ClassAssigner(class_=Class.WIZARD)
+        adder = LevelUpClass(class_=Class.WIZARD)
         gen = adder.get_change(blueprint)
         diff = next(gen)
 

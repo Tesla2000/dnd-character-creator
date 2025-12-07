@@ -28,7 +28,7 @@ def update_prototype(
         character_full.classes + " " + str(character_full.level),
     )
     prototype = prototype.replace("Adopted", character_full.background)
-    prototype = prototype.replace("Triton", character_full.sub_race)
+    prototype = prototype.replace("Triton", character_full.subrace)
     prototype = prototype.replace(
         "Neutral good", character_full.alignment.replace("_", " ").capitalize()
     )
@@ -543,14 +543,14 @@ def update_prototype(
     spells = (
         rf"\{spell_level}" + letter + "{" + spell + "}"
         for spell_level, level_spells in zip(
-            enum, character_full.spells_by_level
+            enum, character_full.get_spells_by_level()
         )
         for letter, spell in zip(string.ascii_uppercase, level_spells)
     )
     spells_prepared = (
         rf"\{spell_level}" + letter + "Prepared{False}"
         for spell_level, level_spells in zip(
-            enum, character_full.spells_by_level
+            enum, character_full.get_spells_by_level()
         )
         for letter, spell in zip(string.ascii_uppercase, level_spells)
     )

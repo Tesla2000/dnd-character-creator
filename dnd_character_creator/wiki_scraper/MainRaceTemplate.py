@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import BaseModel
 from pydantic import Field
 
@@ -9,20 +7,9 @@ from dnd_character_creator.choices.language import Language
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
+from dnd_character_creator.character.race.subrace_stats import RaceStatistics
 from dnd_character_creator.skill_proficiency import Skill
 
-
-class Statistics(BaseModel):
-    strength: int
-    dexterity: int
-    constitution: int
-    intelligence: int
-    wisdom: int
-    charisma: int
-    any_of_your_choice: int = Field(
-        description="Typically 'Ability Score Increase: n different ability "
-        "scores of your choice increase [...]'"
-    )
 
 
 class SubRaceTemplate(BaseModel):
@@ -47,7 +34,7 @@ class SubRaceTemplate(BaseModel):
     additional_feat: bool = Field(
         "Does sub-race get a feat 'Feat: You gain " "one Feat of your choice.'"
     )
-    statistics: Statistics = Field(
+    statistics: RaceStatistics = Field(
         description="Statistic given by the race and sub-race"
     )
     other_active_abilities: list[str] = Field(
@@ -55,15 +42,6 @@ class SubRaceTemplate(BaseModel):
         "words abilities that influence gameplay not boosts to "
         "statistics, alignment nor proficiencies."
     )
-
-    def __init__(self, /, **data: Any):
-        if "Any of your choice" in data.get("skills_to_choose_from", []):
-            data["skills_to_choose_from"] = list(
-                skill.value
-                for skill in Skill
-                if skill.value not in data.get("obligatory_skills", [])
-            )
-        super().__init__(**data)
 
 
 class MainRaceTemplate(BaseModel):
