@@ -36,4 +36,4 @@ class Builder:
 
     @staticmethod
     def _convert_to_character(blueprint: Blueprint) -> Character:
-        return Character.model_validate(dict(blueprint))
+        return Character.model_validate({field_name: field_value for field_name, field_value in iter(blueprint) if field_name in Character.model_fields})

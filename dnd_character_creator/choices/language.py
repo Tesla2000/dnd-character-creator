@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, StrEnum
 
 
-class Language(str, Enum):
+class Language(StrEnum):
     COMMON = "Common"
     DWARVISH = "Dwarvish"
     ELVISH = "Elvish"

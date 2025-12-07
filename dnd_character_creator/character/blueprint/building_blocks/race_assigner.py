@@ -8,7 +8,8 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.race.subrace_stats import SUBRACE_STATS
+from dnd_character_creator.character.race.subrace_stats.subrace_to_stats import \
+    SUBRACE_STATS
 from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.character.race.race import Race
 
@@ -21,7 +22,7 @@ class RaceAssigner(BuildingBlock):
 
     @model_validator(mode="after")
     def _check_subrace_correctness(self) -> Self:
-        # TODO: This will need to get more specific
+        # TODO: This will need to be implemented
         return self
 
     def get_change(

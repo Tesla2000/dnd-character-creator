@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, StrEnum
 
 
-class Feat(str, Enum):
+class Feat(StrEnum):
     ABERRANT_DRAGONMARK = "Aberrant Dragonmark"
     ACTOR = "Actor"
     ALERT = "Alert"
@@ -75,3 +75,4 @@ class Feat(str, Enum):
     WAR_CASTER = "War Caster"
     WEAPON_MASTER = "Weapon Master"
     ABILITY_SCORE_IMPROVEMENT = "Ability Score Improvement"
+    ANY_OF_YOUR_CHOICE = "Artisan tool of your choice"

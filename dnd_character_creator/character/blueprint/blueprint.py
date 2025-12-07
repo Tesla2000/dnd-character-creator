@@ -10,7 +10,15 @@ from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import Background
 from dnd_character_creator.character.race.race import Race
+from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex
+from dnd_character_creator.feats import Feat
+from dnd_character_creator.other_profficiencies import (
+    GamingSet,
+    MusicalInstrument,
+    ToolProficiency,
+)
+from dnd_character_creator.skill_proficiency import Skill
 
 
 class Blueprint(Character):
@@ -44,4 +52,23 @@ class Blueprint(Character):
     weaknesses: Optional[str] = None
     dark_vision_range: Optional[NonNegativeInt] = None
     speed: Optional[PositiveInt] = None
+    n_stat_choices: NonNegativeInt = 0
+    n_skill_choices: NonNegativeInt = 0
+    skills_to_choose_from: frozenset[Skill] = Field(
+        default_factory=frozenset,
+        description="Skills from which n_skill_choices can be chosen"
+    )
+    languages: tuple[Language, ...] = Field(default=())
+    skill_proficiencies: tuple[Skill, ...] = Field(
+        default=(), description="Skills the character is proficient in"
+    )
+    feats: tuple[Feat, ...] = Field(
+        description="Feats from a list fitting description of the character if"
+        " race is variant human at least one must be different "
+        "than ability score improvement",
+        default=(),
+    )
+    tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...] = Field(
+        default=(), description="Tool proficiencies"
+    )
 

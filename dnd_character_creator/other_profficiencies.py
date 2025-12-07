@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class ToolProficiency(str, Enum):
+class ToolProficiency(StrEnum):
     ALCHEMISTS_SUPPLIES = "Alchemist's supplies"
     BREWERS_SUPPLIES = "Brewer's supplies"
     CALLIGRAPHERS_SUPPLIES = "Calligrapher's supplies"
@@ -33,7 +33,7 @@ class ToolProficiency(str, Enum):
     ANY_OF_YOUR_CHOICE = "Artisan tool of your choice"
 
 
-class GamingSet(str, Enum):
+class GamingSet(StrEnum):
     DICE_SET = "Dice set"
     DRAGONCHESS_SET = "Dragonchess set"
     PLAYING_CARD_SET = "Playing card set"
@@ -41,7 +41,7 @@ class GamingSet(str, Enum):
     ANY_OF_YOUR_CHOICE = "Gaming set of your choice"
 
 
-class MusicalInstrument(str, Enum):
+class MusicalInstrument(StrEnum):
     BAGPIPES = "Bagpipes"
     DRUM = "Drum"
     DULCIMER = "Dulcimer"
@@ -55,7 +55,7 @@ class MusicalInstrument(str, Enum):
     ANY_OF_YOUR_CHOICE = "Musical instrument of your choice"
 
 
-class WeaponProficiency(str, Enum):
+class WeaponProficiency(StrEnum):
     SIMPLE_WEAPON = "Simple Weapon"
     MARTIAL_WEAPON = "Martial Weapon"
     CLUB = "Club"
@@ -98,7 +98,7 @@ class WeaponProficiency(str, Enum):
     ANY_OF_YOUR_CHOICE = "Any of your choice"
 
 
-class ArmorProficiency(str, Enum):
+class ArmorProficiency(StrEnum):
     LIGHT_ARMOR = "Light Armor"
     MEDIUM_ARMOR = "Medium Armor"
     HEAVY_ARMOR = "Heavy Armor"

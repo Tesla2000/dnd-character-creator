@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Any, Mapping
 
 from frozendict import frozendict
@@ -15,7 +15,7 @@ from dnd_character_creator.character.blueprint.building_blocks.character_base_te
 )
 
 
-class AIBuilderBase(BuildingBlock):
+class AIBuilderBase(BuildingBlock, ABC):
     """Base class for AI-powered character builders.
 
     Provides common functionality for AI building blocks that use LLM

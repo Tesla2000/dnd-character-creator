@@ -3,17 +3,26 @@ from __future__ import annotations
 from dnd_character_creator.character.blueprint.building_blocks.age_assigner import (
     AgeAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.ai_base_builder_assigner import (
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler import (
     AIBaseBuilderAssigner,
-)
-from dnd_character_creator.character.blueprint.building_blocks.ai_builder_base import (
     AIBuilderBase,
-)
-from dnd_character_creator.character.blueprint.building_blocks.ai_partial_builder_assigner import (
     AIPartialBuilderAssigner,
+    RandomInitialDataFiller,
 )
 from dnd_character_creator.character.blueprint.building_blocks.alignment_assigner import (
     AlignmentAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks.any_choice_resolver import (
+    AnyChoiceResolver,
+    RandomAnyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.skill_choice_resolver import (
+    SkillChoiceResolver,
+    RandomSkillChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resolver import (
+    StatChoiceResolver,
+    PriorityStatChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.background_assigner import (
     BackgroundAssigner,
@@ -53,6 +62,7 @@ __all__ = [
     "AIBuilderBase",
     "AIPartialBuilderAssigner",
     "AlignmentAssigner",
+    "AnyChoiceResolver",
     "BackgroundAssigner",
     "BuildingBlock",
     "CharacterBaseTemplate",
@@ -61,7 +71,13 @@ __all__ = [
     "FeatAdder",
     "LevelAssigner",
     "NameAssigner",
+    "PriorityStatChoiceResolver",
     "RaceAssigner",
+    "RandomAnyChoiceResolver",
+    "RandomInitialDataFiller",
+    "RandomSkillChoiceResolver",
     "SexAssigner",
+    "SkillChoiceResolver",
+    "StatChoiceResolver",
     "WeaponAdder",
 ]
