@@ -6,7 +6,7 @@ from typing import Optional
 from pydantic import ConfigDict
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.spell_assignment.base import (
+from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     SpellAssigner,
 )
 from dnd_character_creator.character.spells import Spell

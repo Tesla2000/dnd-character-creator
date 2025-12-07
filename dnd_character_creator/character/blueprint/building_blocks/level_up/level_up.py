@@ -5,11 +5,11 @@ from typing import Generator
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import \
     CombinedBlock
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.health_increase import \
+from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import \
     HealthIncrease
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.level_incrementer import \
+from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import \
     LevelIncrementer
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.spell_assignment import \
+from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import \
     SpellAssigner
 from dnd_character_creator.choices.class_creation.character_class import Class
 

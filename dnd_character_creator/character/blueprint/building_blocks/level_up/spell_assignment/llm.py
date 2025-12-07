@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 from pydantic import ConfigDict, create_model
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.spell_assignment.base import (
+from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     SpellAssigner,
 )
 from dnd_character_creator.character.spells import Spell

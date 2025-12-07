@@ -14,7 +14,7 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RaceAssigner,
     SexAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.level_incrementer import \
+from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import \
     LevelIncrementer
 from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.choices.alignment import Alignment

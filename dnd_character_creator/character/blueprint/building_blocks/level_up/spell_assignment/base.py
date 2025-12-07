@@ -233,7 +233,7 @@ class SpellAssigner(BuildingBlock, ABC):
 
             # Filter out already-known spells
             existing_spells = set(
-                chain.from_iterable(dict(blueprint.spells).values())
+                blueprint.spells.get_spell_level_by_index(spell_level)
             )
             available_filtered = [
                 s for s in available if s not in existing_spells

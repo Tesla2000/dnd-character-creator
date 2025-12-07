@@ -4,13 +4,15 @@ from pydantic import ValidationError
 from dnd_character_creator.character.blueprint.building_blocks import \
     LevelAssigner, RaceAssigner, RandomAnyChoiceResolver, \
     PriorityStatChoiceResolver, RandomSkillChoiceResolver
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.health_increase import \
+from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import \
     HealthIncreaseAverage
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.level_incrementer import \
+from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import \
     LevelIncrementer
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.level_up import \
+from dnd_character_creator.character.blueprint.building_blocks.level_up.level_up import \
     LevelUp
-from dnd_character_creator.character.blueprint.building_blocks.class_level_up.spell_assignment import \
+from dnd_character_creator.character.blueprint.building_blocks.level_up.level_up_multiple import \
+    LevelUpMultiple
+from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import \
     RandomSpellAssigner
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler import \
     RandomInitialDataFiller
@@ -35,8 +37,9 @@ class TestBuildWizard:
             Statistic.DEXTERITY,
             Statistic.STRENGTH,
         )
+        level = 16
         builder = Builder().add(
-            LevelAssigner(level=16)
+            LevelAssigner(level=level)
         ).add(
             StandardArray(
                 stats_priority=stats_priority
@@ -55,13 +58,13 @@ class TestBuildWizard:
         ).add(
             RandomInitialDataFiller(),
         ).add(
-            LevelUp(
+            LevelUpMultiple(blocks=tuple(LevelUp(
                 blocks=(
                     LevelIncrementer(class_=Class.WIZARD),
                     HealthIncreaseAverage(class_=Class.WIZARD),
                     RandomSpellAssigner(class_=Class.WIZARD),
                 ),
-            )
+            ) for _ in range(level)))
         )
         wizard = builder.build()
         assert isinstance(wizard, Character)
