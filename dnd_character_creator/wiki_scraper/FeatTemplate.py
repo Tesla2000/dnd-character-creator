@@ -4,9 +4,6 @@ from itertools import filterfalse
 from typing import Any
 from typing import Optional
 
-from pydantic import BaseModel
-from pydantic import Field
-
 from dnd_character_creator.choices.stats_creation.statistic import (
     StatisticAndAny,
 )
@@ -19,6 +16,8 @@ from dnd_character_creator.skill_proficiency import Skill
 from dnd_character_creator.wiki_scraper.AbilityTemplate import (
     AbilityTemplate,
 )
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class FeatTemplate(BaseModel):

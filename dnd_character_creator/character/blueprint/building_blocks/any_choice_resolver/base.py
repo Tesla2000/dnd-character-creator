@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Iterable
+from collections.abc import Iterable
 from typing import TypeVar
-
-from pydantic import ConfigDict
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
@@ -17,6 +15,7 @@ from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.skill_proficiency import Skill
+from pydantic import ConfigDict
 
 T = TypeVar("T")
 
@@ -71,7 +70,8 @@ class AnyChoiceResolver(BuildingBlock, ABC):
         return resolved
 
     def _resolve_tool_proficiencies(
-        self, tools: set[ToolProficiency | GamingSet | MusicalInstrument]
+        self,
+        tools: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> set[ToolProficiency | GamingSet | MusicalInstrument]:
         """Resolve ANY_OF_YOUR_CHOICE placeholders in tool proficiencies.
 

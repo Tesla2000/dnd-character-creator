@@ -4,12 +4,11 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
-from langchain_openai import ChatOpenAI
-
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.wiki_scraper.AbilityTemplate import (
     AbilitiesTemplate,
 )
+from langchain_openai import ChatOpenAI
 
 url = "https://dnd5e.wikidot.com/lineage:{}"
 

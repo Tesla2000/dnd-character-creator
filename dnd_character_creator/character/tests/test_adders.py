@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import pytest
-from frozendict import frozendict
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     EquipmentAdder,
@@ -20,6 +18,7 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.feats import Feat
+from frozendict import frozendict
 
 
 class TestFeatAdder:

@@ -4,11 +4,18 @@ repos:
     hooks:
       - id: black
         args: ["--preview", "--line-length", "79"]
-  - repo: https://github.com/asottile/reorder-python-imports
-    rev: v3.13.0
+  - repo: https://github.com/Tesla2000/temp-reorder-python-imports
+    rev: v0.0.1
     hooks:
       - id: reorder-python-imports
-        args: [--py37-plus, --add-import, 'from __future__ import annotations']
+        args: [
+          --py37-plus,
+          --py39-plus,
+          --retain-pre-import,
+          'True',
+          --application-directories,
+          "DND_character_creator",
+        ]
   - repo: https://github.com/PyCQA/autoflake
     rev: v2.3.1
     hooks:

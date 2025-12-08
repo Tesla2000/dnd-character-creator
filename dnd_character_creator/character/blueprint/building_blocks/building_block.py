@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Generator
-
-from pydantic import BaseModel
-from pydantic import ConfigDict
+from collections.abc import Generator
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
+from pydantic import BaseModel
+from pydantic import ConfigDict
 
 
 class BuildingBlock(BaseModel, ABC):

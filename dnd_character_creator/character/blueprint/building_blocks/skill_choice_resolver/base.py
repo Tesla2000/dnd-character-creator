@@ -3,13 +3,12 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
-from pydantic import ConfigDict
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
 from dnd_character_creator.skill_proficiency import Skill
+from pydantic import ConfigDict
 
 
 class SkillChoiceResolver(BuildingBlock, ABC):
@@ -26,17 +25,17 @@ class SkillChoiceResolver(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def _select_skills(
-        self, n: int, available_skills: frozenset[Skill]
-    ) -> frozenset[Skill]:
-        """Select n skills from available options.
+    def _select_skills(self, blueprint: Blueprint) -> frozenset[Skill]:
+        """Select skills from available options based on blueprint context.
 
         Args:
-            n: Number of skills to select.
-            available_skills: Set of skills to choose from.
+            blueprint: Current character blueprint containing:
+                - n_skill_choices: Number of skills to select
+                - skills_to_choose_from: Set of skills to choose from
+                - Other character context for informed selection
 
         Returns:
-            Frozenset of n selected skills.
+            Frozenset of selected skills.
         """
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
@@ -57,9 +56,7 @@ class SkillChoiceResolver(BuildingBlock, ABC):
             )
 
         # Select skills
-        selected_skills = self._select_skills(
-            blueprint.n_skill_choices, blueprint.skills_to_choose_from
-        )
+        selected_skills = self._select_skills(blueprint)
 
         # Add to existing skill proficiencies
         new_skill_proficiencies = blueprint.skill_proficiencies + tuple(

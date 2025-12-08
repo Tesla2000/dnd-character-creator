@@ -4,8 +4,6 @@ import string
 from itertools import filterfalse
 from operator import attrgetter
 
-from more_itertools import roundrobin
-
 from dnd_character_creator.character_full import CharacterFull
 from dnd_character_creator.character_wrapper import CharacterWrapper
 from dnd_character_creator.choices.stats_creation.statistic import (
@@ -14,6 +12,7 @@ from dnd_character_creator.choices.stats_creation.statistic import (
 from dnd_character_creator.feats import Feat
 from dnd_character_creator.LatexString import LatexString
 from dnd_character_creator.skill_proficiency import Skill
+from more_itertools import roundrobin
 
 
 def update_prototype(

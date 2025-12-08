@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel
-from pydantic import Field
-
 from dnd_character_creator.character.spells.spell_slots import Cantrip
 from dnd_character_creator.character.spells.spell_slots import EighthLevel
 from dnd_character_creator.character.spells.spell_slots import FifthLevel
@@ -16,6 +13,8 @@ from dnd_character_creator.character.spells.spell_slots import SeventhLevel
 from dnd_character_creator.character.spells.spell_slots import SixthLevel
 from dnd_character_creator.character.spells.spell_slots import Spell
 from dnd_character_creator.character.spells.spell_slots import ThirdLevel
+from pydantic import BaseModel
+from pydantic import Field
 
 _INDEX = "index"
 

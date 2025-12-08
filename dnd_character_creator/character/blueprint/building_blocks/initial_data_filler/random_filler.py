@@ -3,8 +3,6 @@ from __future__ import annotations
 import random
 from typing import Optional
 
-from pydantic import ConfigDict
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
     InitialDataFiller,
@@ -14,6 +12,7 @@ from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
 from dnd_character_creator.choices.sex import Sex
+from pydantic import ConfigDict
 
 
 class RandomInitialDataFiller(InitialDataFiller):

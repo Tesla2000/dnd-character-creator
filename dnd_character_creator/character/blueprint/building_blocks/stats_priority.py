@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from pydantic import AfterValidator
-
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
+from pydantic import AfterValidator
 
 _Stats = tuple[
     Statistic, Statistic, Statistic, Statistic, Statistic, Statistic

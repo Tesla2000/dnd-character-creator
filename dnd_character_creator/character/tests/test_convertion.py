@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.character.character import Character
@@ -12,6 +10,7 @@ from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
 from dnd_character_creator.choices.sex import Sex
+from pydantic import ValidationError
 
 
 class TestConvertion:

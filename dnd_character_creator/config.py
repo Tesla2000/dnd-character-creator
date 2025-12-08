@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from dnd_character_creator.character.race.race import Race
 from pydantic import Field
 from pydantic import PositiveInt
 from pydantic_settings import BaseSettings
@@ -17,7 +18,6 @@ from .choices.invocations.eldritch_invocation import WarlockPact
 from .choices.race_creation.sub_race_sources import DNDResource
 from .choices.sex import Sex
 from .choices.stats_creation.statistic import Statistic
-from dnd_character_creator.character.race.race import Race
 
 
 class ResourcePaths(BaseSettings):

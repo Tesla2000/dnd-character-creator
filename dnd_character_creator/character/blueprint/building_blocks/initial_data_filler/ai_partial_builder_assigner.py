@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from pydantic import Field
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
     InitialDataFiller,
 )
+from pydantic import Field
 
 
 class AIPartialBuilderAssigner(InitialDataFiller):

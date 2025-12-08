@@ -118,15 +118,15 @@ def n_fighting_styles(character_wrapper: "CharacterWrapper") -> int:
         and character_wrapper.character.level >= 2,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.ARTIFICER
-        and character_wrapper.character.sub_class == ArtificerSubclass.ARMORER
+        and character_wrapper.character.subclasses == ArtificerSubclass.ARMORER
         and character_wrapper.character.level >= 3,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.BARBARIAN
-        and character_wrapper.character.sub_class == BarbarianSubclass.BEAST
+        and character_wrapper.character.subclasses == BarbarianSubclass.BEAST
         and character_wrapper.character.level >= 3,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.WARLOCK
-        and character_wrapper.character.sub_class == WarlockSubclass.HEXBLADE
+        and character_wrapper.character.subclasses == WarlockSubclass.HEXBLADE
         and character_wrapper.character.level >= 3,
         lambda character_wrapper: Feat.FIGHTING_INITIATE
         in character_wrapper.feats,

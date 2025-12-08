@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 from typing import Optional
+from typing import Self
 from typing import Union
-
-from pydantic import Field
-from pydantic import NonNegativeInt
-from pydantic import PositiveInt
 
 from dnd_character_creator.character.character import Character
 from dnd_character_creator.character.race.race import Race
@@ -25,6 +22,10 @@ from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.skill_proficiency import Skill
+from pydantic import Field
+from pydantic import model_validator
+from pydantic import NonNegativeInt
+from pydantic import PositiveInt
 
 Equipment = Union[WeaponName, ArmorName, str]
 
@@ -81,3 +82,7 @@ class Blueprint(Character):
     ] = Field(default=(), description="Tool proficiencies")
     saving_throws: tuple[Statistic, ...] = ()
     equipment_choices: tuple[tuple[Equipment, ...], ...] = ()
+
+    @model_validator(mode="after")
+    def _validate_subclass(self) -> Self:
+        return self

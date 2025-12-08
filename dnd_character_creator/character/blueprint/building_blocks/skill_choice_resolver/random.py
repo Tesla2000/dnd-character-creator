@@ -3,12 +3,12 @@ from __future__ import annotations
 import random
 from typing import Optional
 
-from pydantic import ConfigDict
-
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.skill_choice_resolver.base import (
     SkillChoiceResolver,
 )
 from dnd_character_creator.skill_proficiency import Skill
+from pydantic import ConfigDict
 
 
 class RandomSkillChoiceResolver(SkillChoiceResolver):
@@ -27,20 +27,21 @@ class RandomSkillChoiceResolver(SkillChoiceResolver):
 
     seed: Optional[int] = None
 
-    def _select_skills(
-        self, n: int, available_skills: frozenset[Skill]
-    ) -> frozenset[Skill]:
-        """Randomly select n skills from available options.
+    def _select_skills(self, blueprint: Blueprint) -> frozenset[Skill]:
+        """Randomly select skills from available options.
 
         Args:
-            n: Number of skills to select.
-            available_skills: Set of skills to choose from.
+            blueprint: Current character blueprint.
 
         Returns:
-            Frozenset of n randomly selected skills.
+            Frozenset of randomly selected skills.
         """
         if self.seed is not None:
             random.seed(self.seed)
+
+        n = blueprint.n_skill_choices
+        available_skills = blueprint.skills_to_choose_from
+
         if Skill.ANY_OF_YOUR_CHOICE in available_skills:
             available_seq = tuple(
                 set(Skill).difference((Skill.ANY_OF_YOUR_CHOICE,))

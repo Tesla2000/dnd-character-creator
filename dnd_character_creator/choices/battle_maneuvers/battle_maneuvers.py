@@ -216,37 +216,37 @@ def get_n_maneuvers(character_wrapper: "CharacterWrapper") -> int:
     conditions = [
         lambda character_wrapper: character_wrapper.character.classes
         == Class.FIGHTER
-        and character_wrapper.character.sub_class
+        and character_wrapper.character.subclasses
         == FighterSubclass.BATTLE_MASTER
         and character_wrapper.character.level >= 3,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.FIGHTER
-        and character_wrapper.character.sub_class
+        and character_wrapper.character.subclasses
         == FighterSubclass.BATTLE_MASTER
         and character_wrapper.character.level >= 3,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.FIGHTER
-        and character_wrapper.character.sub_class
+        and character_wrapper.character.subclasses
         == FighterSubclass.BATTLE_MASTER
         and character_wrapper.character.level >= 3,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.FIGHTER
-        and character_wrapper.character.sub_class
+        and character_wrapper.character.subclasses
         == FighterSubclass.BATTLE_MASTER
         and character_wrapper.character.level >= 7,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.FIGHTER
-        and character_wrapper.character.sub_class
+        and character_wrapper.character.subclasses
         == FighterSubclass.BATTLE_MASTER
         and character_wrapper.character.level >= 10,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.FIGHTER
-        and character_wrapper.character.sub_class
+        and character_wrapper.character.subclasses
         == FighterSubclass.BATTLE_MASTER
         and character_wrapper.character.level >= 15,
         lambda character_wrapper: character_wrapper.character.classes
         == Class.FIGHTER
-        and character_wrapper.character.sub_class
+        and character_wrapper.character.subclasses
         == FighterSubclass.BATTLE_MASTER
         and character_wrapper.character.level >= 15,
         lambda character_wrapper: FightingStyle.SUPERIOR_TECHNIQUE

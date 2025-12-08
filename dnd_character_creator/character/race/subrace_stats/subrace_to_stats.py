@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from frozendict import frozendict
-
 from dnd_character_creator.character.race.subrace_stats.race_statistics import (
     RaceStatistics,
 )
@@ -11,6 +9,7 @@ from dnd_character_creator.character.race.subrace_stats.subrace_stats import (
 from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.skill_proficiency import Skill
+from frozendict import frozendict
 
 SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
     {

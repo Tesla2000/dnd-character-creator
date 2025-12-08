@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from pydantic import ConfigDict
-
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resolver.base import (
     StatChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.stats_priority import (
     StatsPriority,
 )
-from dnd_character_creator.character.stats import Stats
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
+from pydantic import ConfigDict
 
 
 class PriorityStatChoiceResolver(StatChoiceResolver):
@@ -39,6 +38,14 @@ class PriorityStatChoiceResolver(StatChoiceResolver):
     priority: StatsPriority
 
     def _select_stats_to_increase(
-        self, n: int, current_stats: Stats
+        self, blueprint: Blueprint
     ) -> dict[Statistic, int]:
-        return {self.priority[0]: n}
+        """Select stats to increase based on priority order.
+
+        Args:
+            blueprint: Current character blueprint.
+
+        Returns:
+            Dictionary mapping the highest priority stat to all increases.
+        """
+        return {self.priority[0]: blueprint.n_stat_choices}

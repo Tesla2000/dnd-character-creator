@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
-
 from dnd_character_creator.character.blueprint.building_blocks import (
     AgeAssigner,
 )
@@ -34,6 +32,7 @@ from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
 from dnd_character_creator.choices.sex import Sex
+from pydantic import ValidationError
 
 
 class TestBuilder:

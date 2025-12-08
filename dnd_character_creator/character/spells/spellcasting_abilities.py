@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from frozendict import frozendict
-
 from dnd_character_creator.choices.class_creation.character_class import (
     Class,
 )
 from dnd_character_creator.choices.stats_creation.statistic import (
     Statistic,
 )
+from frozendict import frozendict
 
 spellcasting_ability_map: frozendict[Class, Statistic] = frozendict(
     {

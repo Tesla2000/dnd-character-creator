@@ -4,10 +4,6 @@ import json
 from operator import attrgetter
 from typing import Type
 
-from langchain_openai import ChatOpenAI
-from pydantic import BaseModel
-from pydantic import create_model
-
 from dnd_character_creator.character_base import (
     get_base_character_template,
 )
@@ -18,6 +14,9 @@ from dnd_character_creator.config import Config
 from dnd_character_creator.config import create_config_with_args
 from dnd_character_creator.config import parse_arguments
 from dnd_character_creator.pdf_creator.create_pdf import create_pdf
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel
+from pydantic import create_model
 
 
 class Main:

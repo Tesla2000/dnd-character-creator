@@ -1,12 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import Mapping
 from typing import Any
-from typing import Mapping
-
-from frozendict import frozendict
-from langchain_openai import ChatOpenAI
-from pydantic import Field
 
 from dnd_character_creator.character.blueprint.building_blocks.character_base_template import (
     CharacterBaseTemplate,
@@ -14,6 +10,9 @@ from dnd_character_creator.character.blueprint.building_blocks.character_base_te
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
     InitialDataFiller,
 )
+from frozendict import frozendict
+from langchain_openai import ChatOpenAI
+from pydantic import Field
 
 
 class AIBuilderBase(InitialDataFiller, ABC):

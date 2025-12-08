@@ -4,8 +4,6 @@ from abc import ABC
 from abc import abstractmethod
 from typing import ClassVar
 
-from frozendict import frozendict
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
@@ -14,6 +12,7 @@ from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import HitDieSize
 from dnd_character_creator.feats import Feat
+from frozendict import frozendict
 
 
 class HealthIncrease(BuildingBlock, ABC):

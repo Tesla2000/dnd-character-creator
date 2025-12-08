@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     AgeAssigner,
@@ -39,6 +37,7 @@ from dnd_character_creator.choices.background_creatrion.background import (
 )
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.sex import Sex
+from pydantic import ValidationError
 
 
 class TestCombinedBlock:

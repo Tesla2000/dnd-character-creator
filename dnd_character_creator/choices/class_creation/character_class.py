@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
+from typing import Union
+
+from frozendict import frozendict
 
 
-class _Subclass(str, Enum):
-    def __str__(self):
-        return self.value
+class _Subclass(StrEnum):
+    pass
 
 
 class ArtificerSubclass(_Subclass):
@@ -181,18 +183,42 @@ class Class(_Subclass):
     ARTIFICER = "Artificer"
 
 
-subclasses = {
-    Class.ARTIFICER: ArtificerSubclass,
-    Class.BARD: BardSubclass,
-    Class.BARBARIAN: BarbarianSubclass,
-    Class.CLERIC: ClericSubclass,
-    Class.DRUID: DruidSubclass,
-    Class.FIGHTER: FighterSubclass,
-    Class.MONK: MonkSubclass,
-    Class.PALADIN: PaladinSubclass,
-    Class.RANGER: RangerSubclass,
-    Class.ROGUE: RogueSubclass,
-    Class.SORCERER: SorcererSubclass,
-    Class.WARLOCK: WarlockSubclass,
-    Class.WIZARD: WizardSubclass,
-}
+subclasses = frozendict(
+    {
+        Class.ARTIFICER: ArtificerSubclass,
+        Class.BARD: BardSubclass,
+        Class.BARBARIAN: BarbarianSubclass,
+        Class.CLERIC: ClericSubclass,
+        Class.DRUID: DruidSubclass,
+        Class.FIGHTER: FighterSubclass,
+        Class.MONK: MonkSubclass,
+        Class.PALADIN: PaladinSubclass,
+        Class.RANGER: RangerSubclass,
+        Class.ROGUE: RogueSubclass,
+        Class.SORCERER: SorcererSubclass,
+        Class.WARLOCK: WarlockSubclass,
+        Class.WIZARD: WizardSubclass,
+    }
+)
+AnySubclass = Union[
+    ArtificerSubclass,
+    BardSubclass,
+    BarbarianSubclass,
+    ClericSubclass,
+    DruidSubclass,
+    FighterSubclass,
+    MonkSubclass,
+    PaladinSubclass,
+    RangerSubclass,
+    RogueSubclass,
+    SorcererSubclass,
+    WarlockSubclass,
+    WizardSubclass,
+]
+
+# Subclass level requirements by class
+subclass_level = frozendict(
+    {class_: 2 if class_ in (Class.WIZARD,) else 3 for class_ in Class}
+)
+if not all(map(subclass_level.__contains__, Class)):
+    raise ValueError("Not all classes have assigned subclass levels")

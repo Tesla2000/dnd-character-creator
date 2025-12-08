@@ -4,11 +4,10 @@ import random
 from typing import Optional
 from typing import TypeVar
 
-from pydantic import ConfigDict
-
 from dnd_character_creator.character.blueprint.building_blocks.any_choice_resolver.base import (
     AnyChoiceResolver,
 )
+from pydantic import ConfigDict
 
 T = TypeVar("T")
 

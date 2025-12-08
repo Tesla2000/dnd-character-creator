@@ -4,8 +4,6 @@ from abc import ABC
 from abc import abstractmethod
 from typing import ClassVar
 
-from frozendict import frozendict
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     BuildingBlock,
@@ -28,6 +26,7 @@ from dnd_character_creator.character.spells.max_spell_levels import (
     MAX_SPELL_LEVELS,
 )
 from dnd_character_creator.choices.class_creation.character_class import Class
+from frozendict import frozendict
 
 
 class SpellAssigner(BuildingBlock, ABC):

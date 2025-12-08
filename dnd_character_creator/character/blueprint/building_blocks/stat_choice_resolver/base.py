@@ -3,14 +3,13 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
-from pydantic import ConfigDict
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
 from dnd_character_creator.character.stats import Stats
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
+from pydantic import ConfigDict
 
 
 class StatChoiceResolver(BuildingBlock, ABC):
@@ -27,16 +26,25 @@ class StatChoiceResolver(BuildingBlock, ABC):
 
     @abstractmethod
     def _select_stats_to_increase(
-        self, n: int, current_stats: Stats
+        self, blueprint: Blueprint
     ) -> dict[Statistic, int]:
-        pass
+        """Select which stats to increase based on blueprint context.
+
+        Args:
+            blueprint: Current character blueprint containing:
+                - n_stat_choices: Number of stat increases to apply
+                - stats: Current ability scores
+                - Other character context for informed selection
+
+        Returns:
+            Dictionary mapping statistics to increase amounts.
+        """
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply stat increases based on n_stat_choices."""
         if blueprint.n_stat_choices == 0:
             # No stat choices to resolve, yield empty
             return Blueprint()
-            return
 
         if not blueprint.stats:
             raise ValueError(
@@ -44,9 +52,7 @@ class StatChoiceResolver(BuildingBlock, ABC):
             )
 
         # Select which stats to increase
-        stat_increases = self._select_stats_to_increase(
-            blueprint.n_stat_choices, blueprint.stats
-        )
+        stat_increases = self._select_stats_to_increase(blueprint)
 
         # Apply increases to current stats
         new_stats = Stats(

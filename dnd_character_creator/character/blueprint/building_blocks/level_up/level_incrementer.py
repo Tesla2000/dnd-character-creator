@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from frozendict import frozendict
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     BuildingBlock,
@@ -9,8 +7,10 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
+from dnd_character_creator.feats import Feat
 from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
+from frozendict import frozendict
 
 
 class LevelIncrementer(BuildingBlock):
@@ -36,7 +36,19 @@ class LevelIncrementer(BuildingBlock):
 
         if total_class_levels == 1:
             return self._handle_first_class()
-        return Blueprint(classes=frozendict(existing_classes))
+        if self._is_ability_score_improvement(existing_classes[self.class_]):
+            return Blueprint(
+                classes=frozendict(existing_classes),
+                feats=blueprint.feats + (Feat.ANY_OF_YOUR_CHOICE,),
+            )
+        return Blueprint(
+            classes=frozendict(existing_classes),
+        )
+
+    def _is_ability_score_improvement(self, class_level: int) -> bool:
+        if self.class_ == Class.WIZARD:
+            return class_level in (4, 8, 12, 16, 19)
+        raise NotImplementedError()
 
     def _handle_first_class(self) -> Blueprint:
         if self.class_ == Class.WIZARD:
@@ -69,4 +81,4 @@ class LevelIncrementer(BuildingBlock):
                 ),
                 other_equipment=("spellbook",),
             )
-        raise NotImplementedError
+        raise NotImplementedError()

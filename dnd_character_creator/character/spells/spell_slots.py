@@ -4,11 +4,10 @@ from enum import auto
 from enum import StrEnum
 from typing import Type
 
-from frozendict import frozendict
-
 from dnd_character_creator.choices.class_creation.character_class import (
     Class,
 )
+from frozendict import frozendict
 
 
 class Spell(StrEnum):

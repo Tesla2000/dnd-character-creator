@@ -1,17 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Annotated
 from typing import Any
-from typing import Mapping
 from typing import Optional
-
-from frozendict import frozendict
-from pydantic import AfterValidator
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import Field
-from pydantic import NonNegativeInt
-from pydantic import PositiveInt
+from typing import Self
 
 from dnd_character_creator.character.magical_item.item import MagicalItem
 from dnd_character_creator.character.race.race import Race
@@ -23,7 +16,14 @@ from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
 from dnd_character_creator.choices.class_creation.character_class import (
-    Class,
+    AnySubclass,
+)
+from dnd_character_creator.choices.class_creation.character_class import Class
+from dnd_character_creator.choices.class_creation.character_class import (
+    subclass_level,
+)
+from dnd_character_creator.choices.class_creation.character_class import (
+    subclasses,
 )
 from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
@@ -40,6 +40,14 @@ from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
+from frozendict import frozendict
+from pydantic import AfterValidator
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import model_validator
+from pydantic import NonNegativeInt
+from pydantic import PositiveInt
 
 
 def _conv_to_frozendict(value: Any) -> Any:
@@ -164,7 +172,7 @@ class Character(BaseModel):
         "than ability score improvement",
         default=frozenset(),
     )
-    sub_class: Optional[str] = None
+    subclasses: tuple[AnySubclass, ...] = ()
     warlock_pact: Optional[WarlockPact] = None
     armors: tuple[ArmorName, ...] = Field(
         default=(),
@@ -219,3 +227,18 @@ class Character(BaseModel):
     )
     ac_bonus: NonNegativeInt = 0
     saving_throws: tuple[Statistic, ...]
+
+    @model_validator(mode="after")
+    def _validate_subclass(self) -> Self:
+        for class_, level in self.classes.items():
+            if level >= subclass_level[class_]:
+                subclasses_of_class = set(subclasses[class_]).intersection(
+                    self.subclasses
+                )
+                if not subclasses_of_class:
+                    raise ValueError(f"No subclasses of class {class_}")
+                if len(subclasses_of_class) > 1:
+                    raise ValueError(
+                        f"More than one subclass of {class_} {subclasses_of_class=}"
+                    )
+        return self

@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from dnd_character_creator.choices.abilities.AbilityType import AbilityType
 from pydantic import BaseModel
 from pydantic import Field
-
-from dnd_character_creator.choices.abilities.AbilityType import AbilityType
 
 
 class AbilityTemplate(BaseModel):

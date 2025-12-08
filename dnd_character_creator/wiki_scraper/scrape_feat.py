@@ -4,10 +4,9 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
-from langchain_openai import ChatOpenAI
-
 from dnd_character_creator.feats import Feat
 from dnd_character_creator.wiki_scraper.FeatTemplate import FeatTemplate
+from langchain_openai import ChatOpenAI
 
 url = "https://dnd5e.wikidot.com/feat:{}"
 

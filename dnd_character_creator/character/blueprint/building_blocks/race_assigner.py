@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Self
 
-from pydantic import model_validator
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
@@ -13,6 +11,7 @@ from dnd_character_creator.character.race.subrace_stats.subrace_to_stats import 
     SUBRACE_STATS,
 )
 from dnd_character_creator.character.race.subraces import Subrace
+from pydantic import model_validator
 
 
 class RaceAssigner(BuildingBlock):

@@ -3,14 +3,13 @@ from __future__ import annotations
 import random
 from typing import Optional
 
-from pydantic import ConfigDict
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     SpellAssigner,
 )
 from dnd_character_creator.character.spells import Spell
 from dnd_character_creator.choices.class_creation.character_class import Class
+from pydantic import ConfigDict
 
 
 class RandomSpellAssigner(SpellAssigner):
