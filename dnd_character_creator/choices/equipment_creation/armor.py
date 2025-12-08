@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, StrEnum
 
 from dnd_character_creator.choices.equipment_creation.item import Item
 
 
-class ArmorName(str, Enum):
+class ArmorName(StrEnum):
     CLOTHES = "Clothes"
     PADDED = "Padded"
     LEATHER = "Leather"

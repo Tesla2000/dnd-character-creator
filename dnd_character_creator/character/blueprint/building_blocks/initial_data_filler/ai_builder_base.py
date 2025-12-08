@@ -13,9 +13,11 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
 from dnd_character_creator.character.blueprint.building_blocks.character_base_template import (
     CharacterBaseTemplate,
 )
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import \
+    InitialDataFiller
 
 
-class AIBuilderBase(BuildingBlock, ABC):
+class AIBuilderBase(InitialDataFiller, ABC):
     """Base class for AI-powered character builders.
 
     Provides common functionality for AI building blocks that use LLM

@@ -9,12 +9,14 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import \
+    InitialDataFiller
 from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import Background
 from dnd_character_creator.choices.sex import Sex
 
 
-class RandomInitialDataFiller(BuildingBlock):
+class RandomInitialDataFiller(InitialDataFiller):
     """Fills missing required Character fields with random mock data.
 
     Only fills fields that are currently None. Does not overwrite existing values.

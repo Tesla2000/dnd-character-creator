@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, StrEnum
 from typing import Optional
 from typing import TYPE_CHECKING
 
@@ -21,13 +21,13 @@ class HitDieSize(IntEnum):
     TWELVE = 12
 
 
-class DamageType(str, Enum):
+class DamageType(StrEnum):
     BLUDGEONING = "bludgeoning"
     PIERCING = "piercing"
     SLASHING = "slashing"
 
 
-class WeaponName(str, Enum):
+class WeaponName(StrEnum):
     CLUB = "Club"
     DAGGER = "Dagger"
     GREATCLUB = "Greatclub"

@@ -3,6 +3,12 @@ import pytest
 from dnd_character_creator.character.blueprint.building_blocks import \
     LevelAssigner, RaceAssigner, RandomAnyChoiceResolver, \
     PriorityStatChoiceResolver, RandomSkillChoiceResolver
+from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import \
+    AllChoicesResolver
+from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser.random import \
+    RandomEquipmentChooser
+from dnd_character_creator.character.blueprint.building_blocks.initial_builder import \
+    InitialBuilder
 from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import \
     HealthIncreaseAverage
 from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import \
@@ -37,34 +43,44 @@ class TestBuildWizard:
             Statistic.STRENGTH,
         )
         level = 16
+        all_choices_resolver = AllChoicesResolver(
+            blocks=(
+                RandomAnyChoiceResolver(),
+                PriorityStatChoiceResolver(
+                    priority=stats_priority),
+                RandomSkillChoiceResolver(),
+                RandomInitialDataFiller(),
+                RandomEquipmentChooser(),
+            ),
+        )
+        level_up = LevelUp(
+            blocks=(
+                LevelIncrementer(class_=Class.WIZARD),
+                HealthIncreaseAverage(class_=Class.WIZARD),
+                RandomSpellAssigner(class_=Class.WIZARD),
+                all_choices_resolver,
+            ),
+        )
+
         builder = Builder().add(
-            LevelAssigner(level=level)
-        ).add(
-            StandardArray(
-                stats_priority=stats_priority
-            )
-        ).add(
-            RaceAssigner(
-                race=Race.HUMAN,
-                subrace=Subrace.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,
-            )
-        ).add(
-            RandomAnyChoiceResolver(),
-        ).add(
-            PriorityStatChoiceResolver(priority=stats_priority),
-        ).add(
-            RandomSkillChoiceResolver(),
-        ).add(
-            RandomInitialDataFiller(),
-        ).add(
-            LevelUpMultiple(blocks=tuple(LevelUp(
+            InitialBuilder(
                 blocks=(
-                    LevelIncrementer(class_=Class.WIZARD),
-                    HealthIncreaseAverage(class_=Class.WIZARD),
-                    RandomSpellAssigner(class_=Class.WIZARD),
-                ),
-            ) for _ in range(level)))
+                    LevelAssigner(level=level),
+                    StandardArray(
+                        stats_priority=stats_priority
+                    ),
+                    RaceAssigner(
+                        race=Race.HUMAN,
+                        subrace=Subrace.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,
+                    ),
+                    all_choices_resolver,
+                    level_up,
+                )
+            )
+        ).add(
+            LevelUpMultiple(blocks=tuple(level_up for _ in range(level - 1)))
         )
         wizard = builder.build()
         assert isinstance(wizard, Character)
-
+        assert wizard.weapons
+        assert wizard.other_equipment

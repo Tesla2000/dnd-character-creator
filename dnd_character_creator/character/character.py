@@ -29,6 +29,7 @@ from dnd_character_creator.choices.invocations.eldritch_invocation import (
 )
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex
+from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from dnd_character_creator.feats import Feat
 from dnd_character_creator.other_profficiencies import (
     ArmorProficiency,
@@ -121,8 +122,8 @@ class Character(BaseModel):
     )
     sub_class: Optional[str] = None
     warlock_pact: Optional[WarlockPact] = None
-    armor: Optional[ArmorName] = Field(
-        None,
+    armors: tuple[ArmorName, ...] = Field(
+        default=(),
         description="You would typically have clothes for spell casters. You "
         "have a total of 'amount_of_gold_for_equipment' to spend "
         "for both armor and weapons. Barbarians and Monks usually "
@@ -142,6 +143,7 @@ class Character(BaseModel):
     languages: frozenset[NotAnyLanguage] = frozenset()
     skill_proficiencies: frozenset[NotAnySkill] = Field(default=frozenset(), description="Skills the character is proficient in")
     tool_proficiencies: frozenset[NotAnyToolProficiency] = Field(default=frozenset(), description="Tool proficiencies")
+    weapon_proficiencies: frozenset[NotAnyWeaponProficiency] = Field(default=frozenset(), description="Weapon proficiencies")
     speed: PositiveInt
     magical_items: tuple[MagicalItem, ...] = ()
     saving_throw_bonuses: Stats = Field(default=Stats(
@@ -162,3 +164,4 @@ class Character(BaseModel):
         charisma=20,
     ), )
     ac_bonus: NonNegativeInt = 0
+    saving_throws: tuple[Statistic, ...]

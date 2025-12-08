@@ -4,7 +4,9 @@ from typing import Generator
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import \
-    CombinedBlock
+    CombinedBlock, AnyChoiceResolver
+from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import \
+    AllChoicesResolver
 from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import \
     HealthIncrease
 from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import \
@@ -29,7 +31,7 @@ class LevelUp(CombinedBlock):
         ... ])  # Character at level 10 with 2 Fighter / 1 Wizard (7 unused levels)
     """
 
-    blocks: tuple[LevelIncrementer, HealthIncrease, SpellAssigner]
+    blocks: tuple[LevelIncrementer, HealthIncrease, SpellAssigner, AllChoicesResolver]
 
     def _get_change(
         self, blueprint: Blueprint

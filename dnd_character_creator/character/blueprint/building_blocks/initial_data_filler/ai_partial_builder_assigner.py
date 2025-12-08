@@ -8,9 +8,11 @@ from pydantic import Field
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler import \
     AIBuilderBase
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import \
+    InitialDataFiller
 
 
-class AIPartialBuilderAssigner(AIBuilderBase):
+class AIPartialBuilderAssigner(InitialDataFiller):
     """Uses AI to fill only unset basic character parameters.
 
     This building block leverages LLM structured output to generate values
