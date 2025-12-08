@@ -25,9 +25,9 @@ class FeatAdder(BuildingBlock):
 
     feat: Feat
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Add the feat to the existing feat tuple.
 
         Args:
@@ -48,4 +48,4 @@ class FeatAdder(BuildingBlock):
             )
 
         new_feats = existing_feats + (self.feat,)
-        yield Blueprint(feats=new_feats)
+        return Blueprint(feats=new_feats)

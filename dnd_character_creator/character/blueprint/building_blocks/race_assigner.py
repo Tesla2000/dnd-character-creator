@@ -8,10 +8,10 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subrace_stats.subrace_to_stats import \
     SUBRACE_STATS
 from dnd_character_creator.character.race.subraces import Subrace
-from dnd_character_creator.character.race.race import Race
 
 
 class RaceAssigner(BuildingBlock):
@@ -25,13 +25,13 @@ class RaceAssigner(BuildingBlock):
         # TODO: This will need to be implemented
         return self
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Yield the race difference."""
         # TODO: add stat assigners for all classes and subclasses
-        subrace_stats = SUBRACE_STATS[self.subrace].apply(blueprint)
-        yield subrace_stats.model_copy(
+        subrace_stats = SUBRACE_STATS[self.subrace].add_to(blueprint)
+        return subrace_stats.model_copy(
             update=Blueprint(
                 race=self.race,
                 subrace=self.subrace,

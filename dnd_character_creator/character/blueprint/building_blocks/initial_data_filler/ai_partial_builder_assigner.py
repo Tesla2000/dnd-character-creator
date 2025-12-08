@@ -35,9 +35,9 @@ class AIPartialBuilderAssigner(AIBuilderBase):
         description="OpenAI model name to use for generation",
     )
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Generate only unset character parameters using AI.
 
         Args:
@@ -73,4 +73,4 @@ class AIPartialBuilderAssigner(AIBuilderBase):
         if "level" not in set_fields:
             updates["level"] = result.level
 
-        yield Blueprint(**updates)
+        return Blueprint(**updates)

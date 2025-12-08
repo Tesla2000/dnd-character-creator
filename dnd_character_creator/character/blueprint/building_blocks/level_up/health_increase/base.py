@@ -54,9 +54,9 @@ class HealthIncrease(BuildingBlock, ABC):
         """
         pass
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Calculate and apply health increase.
 
         Args:
@@ -93,4 +93,4 @@ class HealthIncrease(BuildingBlock, ABC):
         if blueprint.race == Race.DWARF:
             health_increase += 1
 
-        yield Blueprint(health=current_health + health_increase)
+        return Blueprint(health=current_health + health_increase)

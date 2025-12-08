@@ -24,9 +24,9 @@ class EquipmentAdder(BuildingBlock):
 
     item: str
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Add the item to the existing equipment tuple.
 
         Args:
@@ -37,4 +37,4 @@ class EquipmentAdder(BuildingBlock):
         """
         existing_equipment = blueprint.other_equipment
         new_equipment = existing_equipment + (self.item,)
-        yield Blueprint(other_equipment=new_equipment)
+        return Blueprint(other_equipment=new_equipment)

@@ -31,9 +31,9 @@ class LevelUp(CombinedBlock):
 
     blocks: tuple[LevelIncrementer, HealthIncrease, SpellAssigner]
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         if blueprint.race is None:
             raise ValueError("Race must be chosen before leveling up")
         return super().get_change(blueprint)

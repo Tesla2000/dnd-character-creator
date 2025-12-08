@@ -24,9 +24,9 @@ class WeaponAdder(BuildingBlock):
 
     weapon: WeaponName
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Add the weapon to the existing weapons tuple.
 
         Args:
@@ -37,4 +37,4 @@ class WeaponAdder(BuildingBlock):
         """
         existing_weapons = blueprint.weapons
         new_weapons = existing_weapons + (self.weapon,)
-        yield Blueprint(weapons=new_weapons)
+        return Blueprint(weapons=new_weapons)

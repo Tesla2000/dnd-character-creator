@@ -111,12 +111,12 @@ class AnyChoiceResolver(BuildingBlock, ABC):
                 resolved.add(tool)
         return resolved
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Replace ANY_OF_YOUR_CHOICE placeholders in blueprint with concrete choices."""
 
-        yield Blueprint(
+        return Blueprint(
             languages=self._resolve_set(
                 blueprint.languages, Language.ANY_OF_YOUR_CHOICE
             ),

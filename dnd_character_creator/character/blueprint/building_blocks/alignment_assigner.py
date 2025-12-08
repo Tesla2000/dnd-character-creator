@@ -14,8 +14,8 @@ class AlignmentAssigner(BuildingBlock):
 
     alignment: Alignment
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Yield the alignment difference."""
-        yield Blueprint(alignment=self.alignment)
+        return Blueprint(alignment=self.alignment)

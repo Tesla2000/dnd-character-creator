@@ -13,8 +13,8 @@ class NameAssigner(BuildingBlock):
 
     name: str
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Yield the name difference."""
-        yield Blueprint(name=self.name)
+        return Blueprint(name=self.name)

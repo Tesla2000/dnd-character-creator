@@ -14,8 +14,8 @@ class SexAssigner(BuildingBlock):
 
     sex: Sex
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Yield the sex difference."""
-        yield Blueprint(sex=self.sex)
+        return Blueprint(sex=self.sex)

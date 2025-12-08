@@ -40,14 +40,13 @@ class SkillChoiceResolver(BuildingBlock, ABC):
         """
         pass
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Apply skill choices based on n_skill_choices."""
         if blueprint.n_skill_choices == 0:
             # No skill choices to resolve, yield empty
-            yield Blueprint()
-            return
+            return Blueprint()
 
         if not blueprint.skills_to_choose_from:
             raise ValueError(
@@ -66,11 +65,9 @@ class SkillChoiceResolver(BuildingBlock, ABC):
         )
 
         # Add to existing skill proficiencies
-        new_skill_proficiencies = blueprint.skill_proficiencies.union(
-            selected_skills
-        )
+        new_skill_proficiencies = blueprint.skill_proficiencies + tuple(selected_skills)
 
-        yield Blueprint(
+        return Blueprint(
             skill_proficiencies=new_skill_proficiencies,
             n_skill_choices=0,
             skills_to_choose_from=frozenset(),

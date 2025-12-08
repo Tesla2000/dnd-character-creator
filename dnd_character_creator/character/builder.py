@@ -36,4 +36,6 @@ class Builder:
 
     @staticmethod
     def _convert_to_character(blueprint: Blueprint) -> Character:
+        if blueprint.n_stat_choices or blueprint.n_skill_choices or blueprint.skills_to_choose_from:
+            raise ValueError("Blueprint still has corresponding choices")
         return Character.model_validate({field_name: field_value for field_name, field_value in iter(blueprint) if field_name in Character.model_fields})

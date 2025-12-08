@@ -103,12 +103,12 @@ class RandomInitialDataFiller(BuildingBlock):
         "I have a secret that could ruin me if discovered.",
     )
 
-    def get_change(self, blueprint: Blueprint):
+    def _get_change(self, blueprint: Blueprint):
         """Fill missing required fields with random mock data."""
         if self.seed is not None:
             random.seed(self.seed)
 
-        yield Blueprint(
+        return Blueprint(
             sex=blueprint.sex or random.choice(list(Sex)),
             backstory=blueprint.backstory or random.choice(self._BACKSTORIES),
             age=blueprint.age or random.randint(18, 80),

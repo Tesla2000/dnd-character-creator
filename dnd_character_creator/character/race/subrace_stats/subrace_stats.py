@@ -45,7 +45,7 @@ class SubraceStats(BaseModel):
         "statistics, alignment nor proficiencies."
     )
 
-    def apply(self, blueprint: Blueprint) -> Blueprint:
+    def add_to(self, blueprint: Blueprint) -> Blueprint:
         """Apply subrace statistics to the blueprint.
 
         Updates blueprint with subrace-specific values including speed,

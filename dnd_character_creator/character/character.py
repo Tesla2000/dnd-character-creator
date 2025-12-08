@@ -10,6 +10,7 @@ from pydantic import Field
 from pydantic import NonNegativeInt
 from pydantic import PositiveInt
 
+from dnd_character_creator.character.magical_item.item import MagicalItem
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.character.spells.spells import Spells
@@ -86,7 +87,7 @@ NotAnyWeaponProficiency = Annotated[WeaponProficiency, AfterValidator(_weapon_pr
 NotAnyArmorProficiency = Annotated[ArmorProficiency, AfterValidator(_armor_proficiency_not_any)]
 
 class Character(BaseModel):
-    model_config = ConfigDict(frozen=True, extra="forbid")
+    model_config = ConfigDict(frozen=True)
 
     sex: Sex
     backstory: str
@@ -138,7 +139,26 @@ class Character(BaseModel):
         description="All alchemical supplies, medicines, potions etc.",
     )
     spells: Spells = Field(default_factory=Spells)
-    languages: frozenset[NotAnyLanguage] = Field(default=frozenset())
+    languages: frozenset[NotAnyLanguage] = frozenset()
     skill_proficiencies: frozenset[NotAnySkill] = Field(default=frozenset(), description="Skills the character is proficient in")
     tool_proficiencies: frozenset[NotAnyToolProficiency] = Field(default=frozenset(), description="Tool proficiencies")
     speed: PositiveInt
+    magical_items: tuple[MagicalItem, ...] = ()
+    saving_throw_bonuses: Stats = Field(default=Stats(
+        strength=0,
+        dexterity=0,
+        constitution=0,
+        intelligence=0,
+        wisdom=0,
+        charisma=0,
+    ),
+    )
+    stats_cup: Stats = Field(default=Stats(
+        strength=20,
+        dexterity=20,
+        constitution=20,
+        intelligence=20,
+        wisdom=20,
+        charisma=20,
+    ), )
+    ac_bonus: NonNegativeInt = 0

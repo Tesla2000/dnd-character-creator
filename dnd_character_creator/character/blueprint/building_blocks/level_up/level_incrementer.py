@@ -11,7 +11,7 @@ from dnd_character_creator.choices.class_creation.character_class import Class
 class LevelIncrementer(BuildingBlock):
     class_: Class
 
-    def get_change(self, blueprint: Blueprint) -> Generator[
+    def _get_change(self, blueprint: Blueprint) -> Generator[
         Blueprint, Blueprint, None]:
         existing_classes = dict(blueprint.classes)
 
@@ -30,4 +30,4 @@ class LevelIncrementer(BuildingBlock):
                 f"Set character level first with LevelAssigner."
             )
 
-        yield Blueprint(classes=frozendict(existing_classes))
+        return Blueprint(classes=frozendict(existing_classes))

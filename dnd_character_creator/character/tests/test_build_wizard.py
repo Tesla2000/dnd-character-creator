@@ -1,5 +1,4 @@
 import pytest
-from pydantic import ValidationError
 
 from dnd_character_creator.character.blueprint.building_blocks import \
     LevelAssigner, RaceAssigner, RandomAnyChoiceResolver, \

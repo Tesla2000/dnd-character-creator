@@ -32,9 +32,9 @@ class AIBaseBuilderAssigner(AIBuilderBase):
         description="OpenAI model name to use for generation",
     )
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Generate character parameters using AI and yield the difference.
 
         Args:
@@ -49,7 +49,7 @@ class AIBaseBuilderAssigner(AIBuilderBase):
         )
         result = self._generate_character_template(prompt)
 
-        yield Blueprint(
+        return Blueprint(
             name=result.name,
             sex=result.sex,
             age=result.age,

@@ -31,13 +31,13 @@ class StatChoiceResolver(BuildingBlock, ABC):
     ) -> dict[Statistic, int]:
         pass
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Apply stat increases based on n_stat_choices."""
         if blueprint.n_stat_choices == 0:
             # No stat choices to resolve, yield empty
-            yield Blueprint()
+            return Blueprint()
             return
 
         if not blueprint.stats:
@@ -62,4 +62,4 @@ class StatChoiceResolver(BuildingBlock, ABC):
             charisma=blueprint.stats.charisma + stat_increases.get(Statistic.CHARISMA, 0),
         )
 
-        yield Blueprint(stats=new_stats, n_stat_choices=0)
+        return Blueprint(stats=new_stats, n_stat_choices=0)

@@ -15,8 +15,8 @@ class LevelAssigner(BuildingBlock):
 
     level: int = Field(ge=1, le=20)
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Yield the level difference."""
-        yield Blueprint(level=self.level)
+        return Blueprint(level=self.level)

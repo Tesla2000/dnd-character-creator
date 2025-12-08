@@ -192,9 +192,9 @@ class SpellAssigner(BuildingBlock, ABC):
         """
         pass
 
-    def get_change(
+    def _get_change(
         self, blueprint: Blueprint
-    ) -> Generator[Blueprint, Blueprint, None]:
+    ) -> Blueprint:
         """Apply spell assignments to the blueprint.
 
         Args:
@@ -211,16 +211,14 @@ class SpellAssigner(BuildingBlock, ABC):
         # 1. Validate class is spellcaster
         if self.class_ not in spellcasting_ability_map:
             # Not a spellcasting class, yield empty and return
-            yield Blueprint()
-            return
+            return Blueprint()
 
         # 2. Determine spells to learn
         spells_to_learn = self._get_spells_to_learn(blueprint)
 
         if not spells_to_learn:
             # No spells to learn for this class for this level
-            yield Blueprint()
-            return
+            return Blueprint()
 
         # 3. Select spells for each level
         spells = blueprint.spells
@@ -252,5 +250,5 @@ class SpellAssigner(BuildingBlock, ABC):
             attr_name = self._spell_level_to_attr[spell_level]
             spells = spells.model_copy(update={attr_name: merged})
 
-        yield Blueprint(spells=spells)
+        return Blueprint(spells=spells)
 

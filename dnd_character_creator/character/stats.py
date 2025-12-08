@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Mapping, Self
 
 from pydantic import BaseModel, PositiveInt, ConfigDict
+from pydantic import NonNegativeInt
 
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 
@@ -17,12 +18,12 @@ class Stats(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    strength: PositiveInt
-    dexterity: PositiveInt
-    constitution: PositiveInt
-    intelligence: PositiveInt
-    wisdom: PositiveInt
-    charisma: PositiveInt
+    strength: NonNegativeInt
+    dexterity: NonNegativeInt
+    constitution: NonNegativeInt
+    intelligence: NonNegativeInt
+    wisdom: NonNegativeInt
+    charisma: NonNegativeInt
 
     @classmethod
     def from_mapping(cls, mapping: Mapping[Statistic, int]) -> Self:
@@ -34,3 +35,7 @@ class Stats(BaseModel):
             wisdom=mapping[Statistic.WISDOM],
             charisma=mapping[Statistic.CHARISMA],
         )
+
+    def get_stat(self, stat: Statistic) -> int:
+        """Get the value of a specific stat using the Statistic enum."""
+        return getattr(self, stat.value.lower())
