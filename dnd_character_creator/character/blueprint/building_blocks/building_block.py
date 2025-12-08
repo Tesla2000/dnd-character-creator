@@ -12,7 +12,6 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 class BuildingBlock(BaseModel, ABC):
     model_config = ConfigDict(frozen=True)
 
-    @abstractmethod
     def get_change(
         self, blueprint: Blueprint
     ) -> Generator[Blueprint, Blueprint, None]:
@@ -21,6 +20,18 @@ class BuildingBlock(BaseModel, ABC):
         Receives the current blueprint state from yield returns,
         allowing decisions based on current state.
         """
+        yield self._get_change(blueprint)
+
+    @abstractmethod
+    def _get_change(
+        self, blueprint: Blueprint
+    ) -> Blueprint:
+        """Returns Blueprint differences to apply.
+
+        Receives the current blueprint state from yield returns,
+        allowing decisions based on current state.
+        """
+
 
     def __add__(self, other: BuildingBlock) -> CombinedBlock:
         return CombinedBlock(blocks=(self, other))
@@ -47,3 +58,8 @@ class CombinedBlock(BuildingBlock):
                     blueprint = yield diff
             except StopIteration:
                 pass
+
+    def _get_change(
+        self, blueprint: Blueprint
+    ) -> Blueprint:
+        raise ValueError(f"{self._get_change.__name__} ")
