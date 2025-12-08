@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-from abc import abstractmethod, ABC
-from typing import Any, Mapping
+from abc import ABC
+from typing import Any
+from typing import Mapping
 
 from frozendict import frozendict
 from langchain_openai import ChatOpenAI
 from pydantic import Field
 
-from dnd_character_creator.character.blueprint.building_blocks.building_block import (
-    BuildingBlock,
-)
 from dnd_character_creator.character.blueprint.building_blocks.character_base_template import (
     CharacterBaseTemplate,
 )
-from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import \
-    InitialDataFiller
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
+    InitialDataFiller,
+)
 
 
 class AIBuilderBase(InitialDataFiller, ABC):
@@ -50,7 +49,7 @@ class AIBuilderBase(InitialDataFiller, ABC):
         return ChatOpenAI(
             model=self.model_name,
             temperature=self.temperature,
-            **self.ai_model_kwargs
+            **self.ai_model_kwargs,
         )
 
     def _generate_character_template(

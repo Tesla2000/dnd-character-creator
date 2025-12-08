@@ -42,7 +42,9 @@ class RandomSkillChoiceResolver(SkillChoiceResolver):
         if self.seed is not None:
             random.seed(self.seed)
         if Skill.ANY_OF_YOUR_CHOICE in available_skills:
-            available_seq = tuple(set(Skill).difference((Skill.ANY_OF_YOUR_CHOICE,)))
+            available_seq = tuple(
+                set(Skill).difference((Skill.ANY_OF_YOUR_CHOICE,))
+            )
         else:
             available_seq = tuple(available_skills)
         selected = random.sample(available_seq, n)

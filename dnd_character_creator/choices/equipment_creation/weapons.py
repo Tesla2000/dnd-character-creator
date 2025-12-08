@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-from enum import Enum, IntEnum, StrEnum
+from enum import IntEnum
+from enum import StrEnum
 from typing import Optional
-from typing import TYPE_CHECKING
-
-from dnd_character_creator.choices.stats_creation.statistic import (
-    Statistic,
-)
-from dnd_character_creator.signed_int import SignedInt
 
 from dnd_character_creator.choices.equipment_creation.item import Item
 
@@ -84,48 +79,48 @@ class Weapon(Item):
     is_two_handed: bool = False
     is_versatile: bool = False
 
-    def get_attack_bonus(
-        self, character_wrapper: "CharacterWrapper"
-    ) -> SignedInt:
-        proficient = character_wrapper.is_proficient_with(self)
-        return (
-            self._get_raw_bonus(character_wrapper)
-            + character_wrapper.proficiency_bonus * proficient
-        )
-
-    def get_damage_bonus(
-        self, character_wrapper: "CharacterWrapper"
-    ) -> SignedInt:
-        return self._get_raw_bonus(character_wrapper)
-
-    def get_damage_die(self, character_wrapper: "CharacterWrapper"):
-        return self.base_hit_die.value + 2 * (
-            self.is_versatile and not character_wrapper.character.uses_shield
-        )
-
-    def get_damage(self, character_wrapper: "CharacterWrapper") -> str:
-        if self.base_hit_die and self.damage_type:
-            return (
-                f"{1 + self.two_dies}d"
-                f"{self.get_damage_die(character_wrapper)}"
-                f"{self.get_damage_bonus(character_wrapper)} / "
-                f"{self.damage_type.value[:1]}"
-            )
-        return ""
-
-    def _get_raw_bonus(
-        self, character_wrapper: "CharacterWrapper"
-    ) -> SignedInt:
-        if self.is_finesse:
-            bonus = max(
-                character_wrapper.modifiers[Statistic.STRENGTH],
-                character_wrapper.modifiers[Statistic.DEXTERITY],
-            )
-        elif self.is_range:
-            bonus = character_wrapper.modifiers[Statistic.DEXTERITY]
-        else:
-            bonus = character_wrapper.modifiers[Statistic.STRENGTH]
-        return SignedInt(bonus)
+    # def get_attack_bonus(
+    #     self, character_wrapper: "CharacterWrapper"
+    # ) -> SignedInt:
+    #     proficient = character_wrapper.is_proficient_with(self)
+    #     return (
+    #         self._get_raw_bonus(character_wrapper)
+    #         + character_wrapper.proficiency_bonus * proficient
+    #     )
+    #
+    # def get_damage_bonus(
+    #     self, character_wrapper: "CharacterWrapper"
+    # ) -> SignedInt:
+    #     return self._get_raw_bonus(character_wrapper)
+    #
+    # def get_damage_die(self, character_wrapper: "CharacterWrapper"):
+    #     return self.base_hit_die.value + 2 * (
+    #         self.is_versatile and not character_wrapper.character.uses_shield
+    #     )
+    #
+    # def get_damage(self, character_wrapper: "CharacterWrapper") -> str:
+    #     if self.base_hit_die and self.damage_type:
+    #         return (
+    #             f"{1 + self.two_dies}d"
+    #             f"{self.get_damage_die(character_wrapper)}"
+    #             f"{self.get_damage_bonus(character_wrapper)} / "
+    #             f"{self.damage_type.value[:1]}"
+    #         )
+    #     return ""
+    #
+    # def _get_raw_bonus(
+    #     self, character_wrapper: "CharacterWrapper"
+    # ) -> SignedInt:
+    #     if self.is_finesse:
+    #         bonus = max(
+    #             character_wrapper.modifiers[Statistic.STRENGTH],
+    #             character_wrapper.modifiers[Statistic.DEXTERITY],
+    #         )
+    #     elif self.is_range:
+    #         bonus = character_wrapper.modifiers[Statistic.DEXTERITY]
+    #     else:
+    #         bonus = character_wrapper.modifiers[Statistic.STRENGTH]
+    #     return SignedInt(bonus)
 
 
 weapon_list = [

@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import Generator
-
 from pydantic import Field
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.ai_builder_base import \
-    AIBuilderBase
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.ai_builder_base import (
+    AIBuilderBase,
+)
 
 
 class AIBaseBuilderAssigner(AIBuilderBase):
@@ -32,9 +31,7 @@ class AIBaseBuilderAssigner(AIBuilderBase):
         description="OpenAI model name to use for generation",
     )
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Generate character parameters using AI and yield the difference.
 
         Args:

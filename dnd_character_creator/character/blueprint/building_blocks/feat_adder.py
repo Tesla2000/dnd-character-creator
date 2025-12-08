@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import Generator
-
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.feats import Feat
 
 
@@ -25,9 +23,7 @@ class FeatAdder(BuildingBlock):
 
     feat: Feat
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Add the feat to the existing feat tuple.
 
         Args:

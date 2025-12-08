@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from typing import Generator
+from abc import ABC
+from abc import abstractmethod
 
 from pydantic import ConfigDict
 
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.skill_proficiency import Skill
 
 
@@ -38,11 +38,8 @@ class SkillChoiceResolver(BuildingBlock, ABC):
         Returns:
             Frozenset of n selected skills.
         """
-        pass
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply skill choices based on n_skill_choices."""
         if blueprint.n_skill_choices == 0:
             # No skill choices to resolve, yield empty
@@ -65,7 +62,9 @@ class SkillChoiceResolver(BuildingBlock, ABC):
         )
 
         # Add to existing skill proficiencies
-        new_skill_proficiencies = blueprint.skill_proficiencies + tuple(selected_skills)
+        new_skill_proficiencies = blueprint.skill_proficiencies + tuple(
+            selected_skills
+        )
 
         return Blueprint(
             skill_proficiencies=new_skill_proficiencies,

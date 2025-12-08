@@ -3,13 +3,12 @@ from __future__ import annotations
 from pydantic import BaseModel
 from pydantic import Field
 
+from dnd_character_creator.character.race import RaceStatistics
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
-from dnd_character_creator.character.race import RaceStatistics
 from dnd_character_creator.skill_proficiency import Skill
-
 
 
 class SubRaceTemplate(BaseModel):

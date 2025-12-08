@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from typing import ClassVar, Generator
+from abc import ABC
+from abc import abstractmethod
+from typing import ClassVar
 
 from frozendict import frozendict
 
@@ -9,26 +10,23 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     BuildingBlock,
 )
-from dnd_character_creator.character.spells import (
-    Cantrip,
-    EighthLevel,
-    FifthLevel,
-    FirstLevel,
-    FourthLevel,
-    NinthLevel,
-    SecondLevel,
-    SeventhLevel,
-    SixthLevel,
-    Spell,
-    ThirdLevel,
-    filter_accessible,
-    spellcasting_ability_map,
-)
+from dnd_character_creator.character.spells import Cantrip
+from dnd_character_creator.character.spells import EighthLevel
+from dnd_character_creator.character.spells import FifthLevel
+from dnd_character_creator.character.spells import filter_accessible
+from dnd_character_creator.character.spells import FirstLevel
+from dnd_character_creator.character.spells import FourthLevel
+from dnd_character_creator.character.spells import NinthLevel
+from dnd_character_creator.character.spells import SecondLevel
+from dnd_character_creator.character.spells import SeventhLevel
+from dnd_character_creator.character.spells import SixthLevel
+from dnd_character_creator.character.spells import Spell
+from dnd_character_creator.character.spells import spellcasting_ability_map
+from dnd_character_creator.character.spells import ThirdLevel
+from dnd_character_creator.character.spells.max_spell_levels import CasterType
 from dnd_character_creator.character.spells.max_spell_levels import (
-    CasterType,
     MAX_SPELL_LEVELS,
 )
-from dnd_character_creator.character.spells.spells import Spells
 from dnd_character_creator.choices.class_creation.character_class import Class
 
 
@@ -190,11 +188,8 @@ class SpellAssigner(BuildingBlock, ABC):
         Returns:
             Tuple of selected spells.
         """
-        pass
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply spell assignments to the blueprint.
 
         Args:
@@ -206,7 +201,6 @@ class SpellAssigner(BuildingBlock, ABC):
         Raises:
             ValueError: If character doesn't have the specified class.
         """
-        from itertools import chain, filterfalse
 
         # 1. Validate class is spellcaster
         if self.class_ not in spellcasting_ability_map:
@@ -251,4 +245,3 @@ class SpellAssigner(BuildingBlock, ABC):
             spells = spells.model_copy(update={attr_name: merged})
 
         return Blueprint(spells=spells)
-

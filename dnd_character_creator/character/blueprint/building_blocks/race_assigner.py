@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from typing import Generator, Self
+from typing import Self
 
 from pydantic import model_validator
 
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.race.race import Race
-from dnd_character_creator.character.race.subrace_stats.subrace_to_stats import \
-    SUBRACE_STATS
+from dnd_character_creator.character.race.subrace_stats.subrace_to_stats import (
+    SUBRACE_STATS,
+)
 from dnd_character_creator.character.race.subraces import Subrace
 
 
@@ -25,9 +26,7 @@ class RaceAssigner(BuildingBlock):
         # TODO: This will need to be implemented
         return self
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the race difference."""
         # TODO: add stat assigners for all classes and subclasses
         subrace_stats = SUBRACE_STATS[self.subrace].add_to(blueprint)

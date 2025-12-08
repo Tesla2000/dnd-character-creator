@@ -375,28 +375,28 @@ invocations: list[EldritchInvocation] = [
 def n_eldrich_invocations(character_wrapper: "CharacterWrapper") -> int:
     conditions = [
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.level >= 2,
+        == Class.WARLOCK
+        and character_wrapper.character.level >= 2,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.level >= 2,
+        == Class.WARLOCK
+        and character_wrapper.character.level >= 2,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.level >= 5,
+        == Class.WARLOCK
+        and character_wrapper.character.level >= 5,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.level >= 7,
+        == Class.WARLOCK
+        and character_wrapper.character.level >= 7,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.level >= 9,
+        == Class.WARLOCK
+        and character_wrapper.character.level >= 9,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.level >= 12,
+        == Class.WARLOCK
+        and character_wrapper.character.level >= 12,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.level >= 15,
+        == Class.WARLOCK
+        and character_wrapper.character.level >= 15,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.level >= 18,
+        == Class.WARLOCK
+        and character_wrapper.character.level >= 18,
     ]
     return sum(condition(character_wrapper) for condition in conditions)

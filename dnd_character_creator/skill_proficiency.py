@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from enum import Enum, StrEnum
+from enum import StrEnum
 
 from dnd_character_creator.choices.stats_creation.statistic import (
     Statistic,
 )
+
 
 class Skill(StrEnum):
     ANY_OF_YOUR_CHOICE = "Any of your choice"

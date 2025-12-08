@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import Generator
-
 from pydantic import Field
 
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler import \
-    AIBuilderBase
-from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import \
-    InitialDataFiller
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
+    InitialDataFiller,
+)
 
 
 class AIPartialBuilderAssigner(InitialDataFiller):
@@ -37,9 +33,7 @@ class AIPartialBuilderAssigner(InitialDataFiller):
         description="OpenAI model name to use for generation",
     )
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Generate only unset character parameters using AI.
 
         Args:

@@ -1,21 +1,21 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from typing import Generator, TypeVar, Iterable
+from abc import ABC
+from abc import abstractmethod
+from typing import Iterable
+from typing import TypeVar
 
 from pydantic import ConfigDict
 
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.feats import Feat
-from dnd_character_creator.other_profficiencies import (
-    GamingSet,
-    MusicalInstrument,
-    ToolProficiency,
-)
+from dnd_character_creator.other_profficiencies import GamingSet
+from dnd_character_creator.other_profficiencies import MusicalInstrument
+from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.skill_proficiency import Skill
 
 T = TypeVar("T")
@@ -40,7 +40,6 @@ class AnyChoiceResolver(BuildingBlock, ABC):
         Returns:
             Selected item.
         """
-        pass
 
     def _resolve_set(self, items: Iterable[T], placeholder_value: T) -> set[T]:
         resolved = set()
@@ -53,12 +52,19 @@ class AnyChoiceResolver(BuildingBlock, ABC):
                 resolved.add(item)
         return resolved
 
-    def _resolve_set_feat(self, items: Iterable[T], placeholder_value: T) -> set[T]:
+    def _resolve_set_feat(
+        self, items: Iterable[T], placeholder_value: T
+    ) -> set[T]:
         resolved = set()
         for item in items:
             if item == placeholder_value:
                 enum_class = type(item)
-                available = [v for v in enum_class if v not in (placeholder_value, Feat.ABILITY_SCORE_IMPROVEMENT)]
+                available = [
+                    v
+                    for v in enum_class
+                    if v
+                    not in (placeholder_value, Feat.ABILITY_SCORE_IMPROVEMENT)
+                ]
                 resolved.add(self._select_from_available(available))
             else:
                 resolved.add(item)
@@ -111,9 +117,7 @@ class AnyChoiceResolver(BuildingBlock, ABC):
                 resolved.add(tool)
         return resolved
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Replace ANY_OF_YOUR_CHOICE placeholders in blueprint with concrete choices."""
 
         return Blueprint(

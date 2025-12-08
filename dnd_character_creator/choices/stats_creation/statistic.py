@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from enum import Enum, StrEnum, auto
+from enum import auto
+from enum import Enum
+from enum import StrEnum
 
 
 class Statistic(StrEnum):

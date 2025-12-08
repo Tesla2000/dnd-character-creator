@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import Optional
 
 from langchain_openai import ChatOpenAI
-from pydantic import ConfigDict, create_model
+from pydantic import ConfigDict
+from pydantic import create_model
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment.base import (

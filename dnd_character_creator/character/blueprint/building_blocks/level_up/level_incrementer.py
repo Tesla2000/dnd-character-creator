@@ -1,13 +1,13 @@
-from typing import Generator
+from __future__ import annotations
 
 from frozendict import frozendict
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks import \
-    BuildingBlock
+from dnd_character_creator.character.blueprint.building_blocks import (
+    BuildingBlock,
+)
 from dnd_character_creator.choices.class_creation.character_class import Class
-from dnd_character_creator.choices.equipment_creation.weapons import Weapon, \
-    WeaponName
+from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
@@ -70,4 +70,3 @@ class LevelIncrementer(BuildingBlock):
                 other_equipment=("spellbook",),
             )
         raise NotImplementedError
-

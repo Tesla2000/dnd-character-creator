@@ -5,14 +5,14 @@ from typing import Optional
 
 from pydantic import ConfigDict
 
-from dnd_character_creator.character.blueprint.building_blocks.building_block import (
-    BuildingBlock,
-)
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import \
-    InitialDataFiller
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
+    InitialDataFiller,
+)
 from dnd_character_creator.choices.alignment import Alignment
-from dnd_character_creator.choices.background_creatrion.background import Background
+from dnd_character_creator.choices.background_creatrion.background import (
+    Background,
+)
 from dnd_character_creator.choices.sex import Sex
 
 
@@ -43,21 +43,56 @@ class RandomInitialDataFiller(InitialDataFiller):
     )
 
     _NAMES: tuple[str, ...] = (
-        "Aldric", "Theron", "Lyra", "Kael", "Mira", "Torin", "Sera", "Dax",
-        "Nyx", "Finn", "Aria", "Rex", "Zara", "Vale", "Nova", "Cruz",
+        "Aldric",
+        "Theron",
+        "Lyra",
+        "Kael",
+        "Mira",
+        "Torin",
+        "Sera",
+        "Dax",
+        "Nyx",
+        "Finn",
+        "Aria",
+        "Rex",
+        "Zara",
+        "Vale",
+        "Nova",
+        "Cruz",
     )
 
     _EYE_COLORS: tuple[str, ...] = (
-        "blue", "brown", "green", "hazel", "amber", "gray", "violet", "black",
+        "blue",
+        "brown",
+        "green",
+        "hazel",
+        "amber",
+        "gray",
+        "violet",
+        "black",
     )
 
     _SKIN_COLORS: tuple[str, ...] = (
-        "pale", "fair", "olive", "tan", "bronze", "dark", "ebony", "copper",
+        "pale",
+        "fair",
+        "olive",
+        "tan",
+        "bronze",
+        "dark",
+        "ebony",
+        "copper",
     )
 
     _HAIRSTYLES: tuple[str, ...] = (
-        "short and messy", "long and flowing", "braided", "bald", "ponytail",
-        "wild curls", "straight and sleek", "spiky", "tied back",
+        "short and messy",
+        "long and flowing",
+        "braided",
+        "bald",
+        "ponytail",
+        "wild curls",
+        "straight and sleek",
+        "spiky",
+        "tied back",
     )
 
     _APPEARANCES: tuple[str, ...] = (
@@ -120,10 +155,13 @@ class RandomInitialDataFiller(InitialDataFiller):
             height=blueprint.height or random.randint(150, 210),
             weight=blueprint.weight or random.randint(50, 120),
             eye_color=blueprint.eye_color or random.choice(self._EYE_COLORS),
-            skin_color=blueprint.skin_color or random.choice(self._SKIN_COLORS),
+            skin_color=blueprint.skin_color
+            or random.choice(self._SKIN_COLORS),
             hairstyle=blueprint.hairstyle or random.choice(self._HAIRSTYLES),
-            appearance=blueprint.appearance or random.choice(self._APPEARANCES),
-            character_traits=blueprint.character_traits or random.choice(self._CHARACTER_TRAITS),
+            appearance=blueprint.appearance
+            or random.choice(self._APPEARANCES),
+            character_traits=blueprint.character_traits
+            or random.choice(self._CHARACTER_TRAITS),
             ideals=blueprint.ideals or random.choice(self._IDEALS),
             bonds=blueprint.bonds or random.choice(self._BONDS),
             weaknesses=blueprint.weaknesses or random.choice(self._WEAKNESSES),

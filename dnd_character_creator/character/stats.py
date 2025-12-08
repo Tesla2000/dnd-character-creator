@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from typing import Mapping, Self
+from typing import Mapping
+from typing import Self
 
-from pydantic import BaseModel, PositiveInt, ConfigDict
+from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import NonNegativeInt
 
 from dnd_character_creator.choices.stats_creation.statistic import Statistic

@@ -1,4 +1,7 @@
-from enum import StrEnum, auto
+from __future__ import annotations
+
+from enum import auto
+from enum import StrEnum
 
 
 class Level(StrEnum):

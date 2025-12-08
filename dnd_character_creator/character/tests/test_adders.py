@@ -5,10 +5,16 @@ from frozendict import frozendict
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
-    LevelUpClass,
     EquipmentAdder,
-    FeatAdder,
+)
+from dnd_character_creator.character.blueprint.building_blocks import FeatAdder
+from dnd_character_creator.character.blueprint.building_blocks import (
     LevelAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
+    LevelUpClass,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     WeaponAdder,
 )
 from dnd_character_creator.choices.class_creation.character_class import Class
@@ -338,8 +344,8 @@ class TestClassAssigner:
 
         classes_to_add = [
             (Class.FIGHTER, 5),  # 5 levels
-            (Class.WIZARD, 3),   # 3 levels
-            (Class.ROGUE, 2),    # 2 levels
+            (Class.WIZARD, 3),  # 3 levels
+            (Class.ROGUE, 2),  # 2 levels
         ]
 
         for class_, levels in classes_to_add:

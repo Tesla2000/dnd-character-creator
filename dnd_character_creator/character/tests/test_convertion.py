@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import pytest
 from pydantic import ValidationError
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.character.character import Character
-from dnd_character_creator.choices.alignment import Alignment
-from dnd_character_creator.choices.background_creatrion.background import \
-    Background
 from dnd_character_creator.character.race.race import Race
+from dnd_character_creator.choices.alignment import Alignment
+from dnd_character_creator.choices.background_creatrion.background import (
+    Background,
+)
 from dnd_character_creator.choices.sex import Sex
 
 
@@ -15,7 +18,7 @@ class TestConvertion:
     def test_invalid(self):
         with pytest.raises(ValidationError):
             Builder._convert_to_character(Blueprint())
-    
+
     def test_valid(self):
         blueprint = Blueprint(
             sex=Sex.MALE,

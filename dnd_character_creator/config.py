@@ -14,17 +14,21 @@ from .choices.class_creation.character_class import WizardSubclass
 from .choices.equipment_creation.armor import ArmorName
 from .choices.equipment_creation.weapons import WeaponName
 from .choices.invocations.eldritch_invocation import WarlockPact
-from dnd_character_creator.character.race.race import Race
 from .choices.race_creation.sub_race_sources import DNDResource
 from .choices.sex import Sex
 from .choices.stats_creation.statistic import Statistic
+from dnd_character_creator.character.race.race import Race
 
 
 class ResourcePaths(BaseSettings):
-    characters_output_dir: Path = Path("dnd_character_creator") / "characters_output"
+    characters_output_dir: Path = (
+        Path("dnd_character_creator") / "characters_output"
+    )
     pdf_creator: Path = Path("dnd_character_creator") / "pdf_creator"
     tex_prototype: Path = pdf_creator / "prototype.tex"
-    scraped_path: Path = Path("dnd_character_creator") / "wiki_scraper/scraped_data"
+    scraped_path: Path = (
+        Path("dnd_character_creator") / "wiki_scraper/scraped_data"
+    )
     main_class_root: Path = scraped_path / "main_class"
     background_root: Path = scraped_path / "background"
     sub_races_root: Path = scraped_path / "sub_races"
@@ -99,6 +103,6 @@ class Config(BaseSettings):
     #         ), "If sub-class is provided the class must be provided first"
     #     return self
 
+
 resource_paths = ResourcePaths()
 config = Config()
-

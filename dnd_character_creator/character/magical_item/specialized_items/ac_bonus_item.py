@@ -13,11 +13,12 @@ class ACBonusItem(MagicalItem):
 
     Examples: Bracers of Defense (+2 AC), Ring of Protection (+1 AC)
     """
+
     ac_bonus: int  # e.g., 1, 2, 3
 
     def assign_to(self, blueprint: Blueprint) -> Blueprint:
         """Add AC bonus to character."""
         return type(blueprint)(
             ac_bonus=blueprint.ac_bonus + self.ac_bonus,
-            magical_items=blueprint.magical_items + (self,)
+            magical_items=blueprint.magical_items + (self,),
         )

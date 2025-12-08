@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import Annotated, Mapping, Any
+from typing import Annotated
+from typing import Any
+from typing import Mapping
 from typing import Optional
 
 from frozendict import frozendict
-from pydantic import AfterValidator, BaseModel
+from pydantic import AfterValidator
+from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import NonNegativeInt
@@ -31,13 +34,11 @@ from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from dnd_character_creator.feats import Feat
-from dnd_character_creator.other_profficiencies import (
-    ArmorProficiency,
-    GamingSet,
-    MusicalInstrument,
-    ToolProficiency,
-    WeaponProficiency,
-)
+from dnd_character_creator.other_profficiencies import ArmorProficiency
+from dnd_character_creator.other_profficiencies import GamingSet
+from dnd_character_creator.other_profficiencies import MusicalInstrument
+from dnd_character_creator.other_profficiencies import ToolProficiency
+from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
 
 
@@ -46,46 +47,87 @@ def _conv_to_frozendict(value: Any) -> Any:
         return value
     return frozendict(value)
 
+
 def _language_not_any(language: Language) -> Language:
     if language == Language.ANY_OF_YOUR_CHOICE:
-        raise ValueError("Character language mustn't be any of your choice. Choose a languge")
+        raise ValueError(
+            "Character language mustn't be any of your choice. Choose a languge"
+        )
     return language
+
 
 def _skill_not_any(skill: Skill) -> Skill:
     if skill == Skill.ANY_OF_YOUR_CHOICE:
-        raise ValueError("Character skill mustn't be any of your choice. Choose a skill")
+        raise ValueError(
+            "Character skill mustn't be any of your choice. Choose a skill"
+        )
     return skill
+
 
 def _feat_not_any(feat: Feat) -> Feat:
     if feat == Feat.ANY_OF_YOUR_CHOICE:
-        raise ValueError("Character feat mustn't be any of your choice. Choose a feat")
+        raise ValueError(
+            "Character feat mustn't be any of your choice. Choose a feat"
+        )
     return feat
 
-def _tool_proficiency_not_any(tool: ToolProficiency | GamingSet | MusicalInstrument) -> ToolProficiency | GamingSet | MusicalInstrument:
-    if isinstance(tool, ToolProficiency) and tool == ToolProficiency.ANY_OF_YOUR_CHOICE:
-        raise ValueError("Character tool proficiency mustn't be any of your choice. Choose a tool")
+
+def _tool_proficiency_not_any(
+    tool: ToolProficiency | GamingSet | MusicalInstrument,
+) -> ToolProficiency | GamingSet | MusicalInstrument:
+    if (
+        isinstance(tool, ToolProficiency)
+        and tool == ToolProficiency.ANY_OF_YOUR_CHOICE
+    ):
+        raise ValueError(
+            "Character tool proficiency mustn't be any of your choice. Choose a tool"
+        )
     if isinstance(tool, GamingSet) and tool == GamingSet.ANY_OF_YOUR_CHOICE:
-        raise ValueError("Character gaming set mustn't be any of your choice. Choose a gaming set")
-    if isinstance(tool, MusicalInstrument) and tool == MusicalInstrument.ANY_OF_YOUR_CHOICE:
-        raise ValueError("Character musical instrument mustn't be any of your choice. Choose a musical instrument")
+        raise ValueError(
+            "Character gaming set mustn't be any of your choice. Choose a gaming set"
+        )
+    if (
+        isinstance(tool, MusicalInstrument)
+        and tool == MusicalInstrument.ANY_OF_YOUR_CHOICE
+    ):
+        raise ValueError(
+            "Character musical instrument mustn't be any of your choice. Choose a musical instrument"
+        )
     return tool
 
-def _weapon_proficiency_not_any(weapon: WeaponProficiency) -> WeaponProficiency:
+
+def _weapon_proficiency_not_any(
+    weapon: WeaponProficiency,
+) -> WeaponProficiency:
     if weapon == WeaponProficiency.ANY_OF_YOUR_CHOICE:
-        raise ValueError("Character weapon proficiency mustn't be any of your choice. Choose a weapon")
+        raise ValueError(
+            "Character weapon proficiency mustn't be any of your choice. Choose a weapon"
+        )
     return weapon
+
 
 def _armor_proficiency_not_any(armor: ArmorProficiency) -> ArmorProficiency:
     if armor == ArmorProficiency.ANY_OF_YOUR_CHOICE:
-        raise ValueError("Character armor proficiency mustn't be any of your choice. Choose an armor type")
+        raise ValueError(
+            "Character armor proficiency mustn't be any of your choice. Choose an armor type"
+        )
     return armor
+
 
 NotAnyLanguage = Annotated[Language, AfterValidator(_language_not_any)]
 NotAnySkill = Annotated[Skill, AfterValidator(_skill_not_any)]
 NotAnyFeat = Annotated[Feat, AfterValidator(_feat_not_any)]
-NotAnyToolProficiency = Annotated[ToolProficiency | GamingSet | MusicalInstrument, AfterValidator(_tool_proficiency_not_any)]
-NotAnyWeaponProficiency = Annotated[WeaponProficiency, AfterValidator(_weapon_proficiency_not_any)]
-NotAnyArmorProficiency = Annotated[ArmorProficiency, AfterValidator(_armor_proficiency_not_any)]
+NotAnyToolProficiency = Annotated[
+    ToolProficiency | GamingSet | MusicalInstrument,
+    AfterValidator(_tool_proficiency_not_any),
+]
+NotAnyWeaponProficiency = Annotated[
+    WeaponProficiency, AfterValidator(_weapon_proficiency_not_any)
+]
+NotAnyArmorProficiency = Annotated[
+    ArmorProficiency, AfterValidator(_armor_proficiency_not_any)
+]
+
 
 class Character(BaseModel):
     model_config = ConfigDict(frozen=True)
@@ -94,7 +136,9 @@ class Character(BaseModel):
     backstory: str
     level: int = Field(ge=1, le=20)
     age: PositiveInt
-    classes: Annotated[Mapping[Class, PositiveInt], AfterValidator(_conv_to_frozendict)] = frozendict()
+    classes: Annotated[
+        Mapping[Class, PositiveInt], AfterValidator(_conv_to_frozendict)
+    ] = frozendict()
     race: Race
     subrace: Subrace
     name: str
@@ -141,27 +185,37 @@ class Character(BaseModel):
     )
     spells: Spells = Field(default_factory=Spells)
     languages: frozenset[NotAnyLanguage] = frozenset()
-    skill_proficiencies: frozenset[NotAnySkill] = Field(default=frozenset(), description="Skills the character is proficient in")
-    tool_proficiencies: frozenset[NotAnyToolProficiency] = Field(default=frozenset(), description="Tool proficiencies")
-    weapon_proficiencies: frozenset[NotAnyWeaponProficiency] = Field(default=frozenset(), description="Weapon proficiencies")
+    skill_proficiencies: frozenset[NotAnySkill] = Field(
+        default=frozenset(),
+        description="Skills the character is proficient in",
+    )
+    tool_proficiencies: frozenset[NotAnyToolProficiency] = Field(
+        default=frozenset(), description="Tool proficiencies"
+    )
+    weapon_proficiencies: frozenset[NotAnyWeaponProficiency] = Field(
+        default=frozenset(), description="Weapon proficiencies"
+    )
     speed: PositiveInt
     magical_items: tuple[MagicalItem, ...] = ()
-    saving_throw_bonuses: Stats = Field(default=Stats(
-        strength=0,
-        dexterity=0,
-        constitution=0,
-        intelligence=0,
-        wisdom=0,
-        charisma=0,
-    ),
+    saving_throw_bonuses: Stats = Field(
+        default=Stats(
+            strength=0,
+            dexterity=0,
+            constitution=0,
+            intelligence=0,
+            wisdom=0,
+            charisma=0,
+        ),
     )
-    stats_cup: Stats = Field(default=Stats(
-        strength=20,
-        dexterity=20,
-        constitution=20,
-        intelligence=20,
-        wisdom=20,
-        charisma=20,
-    ), )
+    stats_cup: Stats = Field(
+        default=Stats(
+            strength=20,
+            dexterity=20,
+            constitution=20,
+            intelligence=20,
+            wisdom=20,
+            charisma=20,
+        ),
+    )
     ac_bonus: NonNegativeInt = 0
     saving_throws: tuple[Statistic, ...]

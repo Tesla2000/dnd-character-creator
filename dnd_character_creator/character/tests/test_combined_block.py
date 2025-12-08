@@ -6,23 +6,38 @@ from pydantic import ValidationError
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     AgeAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     AlignmentAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     BackgroundAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     LevelAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     NameAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     RaceAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     SexAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import \
-    LevelIncrementer
+from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import (
+    LevelIncrementer,
+)
 from dnd_character_creator.character.builder import Builder
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
 from dnd_character_creator.choices.class_creation.character_class import Class
-from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.sex import Sex
 
 

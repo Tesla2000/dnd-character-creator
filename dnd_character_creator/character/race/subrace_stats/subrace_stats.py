@@ -1,17 +1,20 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
-from pydantic import PositiveInt, NonNegativeInt
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import NonNegativeInt
+from pydantic import PositiveInt
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.race.subrace_stats.race_statistics import \
-    RaceStatistics
+from dnd_character_creator.character.race.subrace_stats.race_statistics import (
+    RaceStatistics,
+)
 from dnd_character_creator.character.stats import Stats
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.feats import Feat
-from dnd_character_creator.other_profficiencies import (GamingSet,
-                                                        ToolProficiency,
-                                                        MusicalInstrument)
+from dnd_character_creator.other_profficiencies import GamingSet
+from dnd_character_creator.other_profficiencies import MusicalInstrument
+from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.skill_proficiency import Skill
 
 
@@ -71,12 +74,13 @@ class SubraceStats(BaseModel):
                 blueprint.dark_vision_range or 0, self.dark_vision_range
             ),
             languages=blueprint.languages + self.languages,
-            skill_proficiencies=blueprint.skill_proficiencies + self.obligatory_skills,
-            tool_proficiencies=blueprint.tool_proficiencies+
-                self.tool_proficiencies
-            ,
+            skill_proficiencies=blueprint.skill_proficiencies
+            + self.obligatory_skills,
+            tool_proficiencies=blueprint.tool_proficiencies
+            + self.tool_proficiencies,
             stats=new_stats,
-            feats=blueprint.feats + self.additional_feat * (Feat.ANY_OF_YOUR_CHOICE,),
+            feats=blueprint.feats
+            + self.additional_feat * (Feat.ANY_OF_YOUR_CHOICE,),
             n_stat_choices=self.statistics.any_of_your_choice,
             n_skill_choices=self.n_skills,
             skills_to_choose_from=frozenset(self.skills_to_choose_from),

@@ -16,17 +16,18 @@ class StatSettingItem(MagicalItem):
     Examples: Amulet of Health (CON=19), Gauntlets of Ogre Power (STR=19),
               Belt of Giant Strength variants (STR=21/23/25/27/29)
     """
+
     stat: Statistic  # e.g., Statistic.STRENGTH, Statistic.CONSTITUTION
     stat_value: int  # e.g., 19, 21, 23, etc.
 
     def assign_to(self, blueprint: Blueprint) -> Blueprint:
         """Set the specified stat to the fixed value."""
-        stat_name = self.stat.value.lower()  # Convert Statistic.STRENGTH -> 'strength'
-        new_stats = Stats(**{
-            **blueprint.stats.model_dump(),
-            stat_name: self.stat_value
-        })
+        stat_name = (
+            self.stat.value.lower()
+        )  # Convert Statistic.STRENGTH -> 'strength'
+        new_stats = Stats(
+            **{**blueprint.stats.model_dump(), stat_name: self.stat_value}
+        )
         return type(blueprint)(
-            stats=new_stats,
-            magical_items=blueprint.magical_items + (self,)
+            stats=new_stats, magical_items=blueprint.magical_items + (self,)
         )

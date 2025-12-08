@@ -4,11 +4,11 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import PositiveInt
 
+from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
-from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.sex import Sex
 
 

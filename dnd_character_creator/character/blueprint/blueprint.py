@@ -1,29 +1,34 @@
 from __future__ import annotations
 
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
-from pydantic import Field, PositiveInt, NonNegativeInt
+from pydantic import Field
+from pydantic import NonNegativeInt
+from pydantic import PositiveInt
 
 from dnd_character_creator.character.character import Character
-from dnd_character_creator.character.stats import Stats
-from dnd_character_creator.character.race.subraces import Subrace
-from dnd_character_creator.choices.alignment import Alignment
-from dnd_character_creator.choices.background_creatrion.background import Background
 from dnd_character_creator.character.race.race import Race
+from dnd_character_creator.character.race.subraces import Subrace
+from dnd_character_creator.character.stats import Stats
+from dnd_character_creator.choices.alignment import Alignment
+from dnd_character_creator.choices.background_creatrion.background import (
+    Background,
+)
 from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from dnd_character_creator.feats import Feat
-from dnd_character_creator.other_profficiencies import (
-    GamingSet,
-    MusicalInstrument,
-    ToolProficiency,
-)
+from dnd_character_creator.other_profficiencies import GamingSet
+from dnd_character_creator.other_profficiencies import MusicalInstrument
+from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.skill_proficiency import Skill
 
 Equipment = Union[WeaponName, ArmorName, str]
+
+
 class Blueprint(Character):
     """Blueprint for building a Character with optional fields.
 
@@ -59,7 +64,7 @@ class Blueprint(Character):
     n_skill_choices: NonNegativeInt = 0
     skills_to_choose_from: frozenset[Skill] = Field(
         default_factory=frozenset,
-        description="Skills from which n_skill_choices can be chosen"
+        description="Skills from which n_skill_choices can be chosen",
     )
     languages: tuple[Language, ...] = Field(default=())
     skill_proficiencies: tuple[Skill, ...] = Field(
@@ -71,8 +76,8 @@ class Blueprint(Character):
         "than ability score improvement",
         default=(),
     )
-    tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...] = Field(
-        default=(), description="Tool proficiencies"
-    )
+    tool_proficiencies: tuple[
+        ToolProficiency | GamingSet | MusicalInstrument, ...
+    ] = Field(default=(), description="Tool proficiencies")
     saving_throws: tuple[Statistic, ...] = ()
     equipment_choices: tuple[tuple[Equipment, ...], ...] = ()

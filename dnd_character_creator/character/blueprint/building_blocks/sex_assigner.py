@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import Generator
-
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.choices.sex import Sex
 
 
@@ -14,8 +12,6 @@ class SexAssigner(BuildingBlock):
 
     sex: Sex
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the sex difference."""
         return Blueprint(sex=self.sex)

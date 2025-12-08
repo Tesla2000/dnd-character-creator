@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from typing import Generator
+from abc import ABC
+from abc import abstractmethod
 
 from pydantic import ConfigDict
 
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.stats import Stats
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 
@@ -31,9 +31,7 @@ class StatChoiceResolver(BuildingBlock, ABC):
     ) -> dict[Statistic, int]:
         pass
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply stat increases based on n_stat_choices."""
         if blueprint.n_stat_choices == 0:
             # No stat choices to resolve, yield empty
@@ -52,14 +50,18 @@ class StatChoiceResolver(BuildingBlock, ABC):
 
         # Apply increases to current stats
         new_stats = Stats(
-            strength=blueprint.stats.strength + stat_increases.get(Statistic.STRENGTH, 0),
-            dexterity=blueprint.stats.dexterity + stat_increases.get(Statistic.DEXTERITY, 0),
+            strength=blueprint.stats.strength
+            + stat_increases.get(Statistic.STRENGTH, 0),
+            dexterity=blueprint.stats.dexterity
+            + stat_increases.get(Statistic.DEXTERITY, 0),
             constitution=blueprint.stats.constitution
             + stat_increases.get(Statistic.CONSTITUTION, 0),
             intelligence=blueprint.stats.intelligence
             + stat_increases.get(Statistic.INTELLIGENCE, 0),
-            wisdom=blueprint.stats.wisdom + stat_increases.get(Statistic.WISDOM, 0),
-            charisma=blueprint.stats.charisma + stat_increases.get(Statistic.CHARISMA, 0),
+            wisdom=blueprint.stats.wisdom
+            + stat_increases.get(Statistic.WISDOM, 0),
+            charisma=blueprint.stats.charisma
+            + stat_increases.get(Statistic.CHARISMA, 0),
         )
 
         return Blueprint(stats=new_stats, n_stat_choices=0)

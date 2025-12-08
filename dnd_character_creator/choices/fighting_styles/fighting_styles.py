@@ -106,28 +106,28 @@ fighting_style2ability = {
 def n_fighting_styles(character_wrapper: "CharacterWrapper") -> int:
     conditions = [
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.FIGHTER,
+        == Class.FIGHTER,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.FIGHTER
-                                  and character_wrapper.character.level >= 10,
+        == Class.FIGHTER
+        and character_wrapper.character.level >= 10,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.RANGER
-                                  and character_wrapper.character.level >= 2,
+        == Class.RANGER
+        and character_wrapper.character.level >= 2,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.PALADIN
-                                  and character_wrapper.character.level >= 2,
+        == Class.PALADIN
+        and character_wrapper.character.level >= 2,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.ARTIFICER
-                                  and character_wrapper.character.sub_class == ArtificerSubclass.ARMORER
-                                  and character_wrapper.character.level >= 3,
+        == Class.ARTIFICER
+        and character_wrapper.character.sub_class == ArtificerSubclass.ARMORER
+        and character_wrapper.character.level >= 3,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.BARBARIAN
-                                  and character_wrapper.character.sub_class == BarbarianSubclass.BEAST
-                                  and character_wrapper.character.level >= 3,
+        == Class.BARBARIAN
+        and character_wrapper.character.sub_class == BarbarianSubclass.BEAST
+        and character_wrapper.character.level >= 3,
         lambda character_wrapper: character_wrapper.character.classes
-                                  == Class.WARLOCK
-                                  and character_wrapper.character.sub_class == WarlockSubclass.HEXBLADE
-                                  and character_wrapper.character.level >= 3,
+        == Class.WARLOCK
+        and character_wrapper.character.sub_class == WarlockSubclass.HEXBLADE
+        and character_wrapper.character.level >= 3,
         lambda character_wrapper: Feat.FIGHTING_INITIATE
         in character_wrapper.feats,
     ]

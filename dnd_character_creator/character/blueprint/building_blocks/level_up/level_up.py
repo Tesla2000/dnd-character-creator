@@ -1,19 +1,21 @@
 from __future__ import annotations
 
-from typing import Generator
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks import \
-    CombinedBlock, AnyChoiceResolver
-from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import \
-    AllChoicesResolver
-from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import \
-    HealthIncrease
-from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import \
-    LevelIncrementer
-from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import \
-    SpellAssigner
-from dnd_character_creator.choices.class_creation.character_class import Class
+from dnd_character_creator.character.blueprint.building_blocks import (
+    CombinedBlock,
+)
+from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
+    AllChoicesResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import (
+    HealthIncrease,
+)
+from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import (
+    LevelIncrementer,
+)
+from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
+    SpellAssigner,
+)
 
 
 class LevelUp(CombinedBlock):
@@ -31,11 +33,11 @@ class LevelUp(CombinedBlock):
         ... ])  # Character at level 10 with 2 Fighter / 1 Wizard (7 unused levels)
     """
 
-    blocks: tuple[LevelIncrementer, HealthIncrease, SpellAssigner, AllChoicesResolver]
+    blocks: tuple[
+        LevelIncrementer, HealthIncrease, SpellAssigner, AllChoicesResolver
+    ]
 
-    def _get_change(
-        self, blueprint: Blueprint
-    ) -> Blueprint:
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
         if blueprint.race is None:
             raise ValueError("Race must be chosen before leveling up")
         return super().get_change(blueprint)

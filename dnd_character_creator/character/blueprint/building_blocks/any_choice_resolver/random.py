@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import random
-from typing import Optional, TypeVar
+from typing import Optional
+from typing import TypeVar
 
 from pydantic import ConfigDict
 

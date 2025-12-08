@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import random
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser.base import \
-    EquipmentChooser
+from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser.base import (
+    EquipmentChooser,
+)
 from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 
@@ -22,5 +25,5 @@ class RandomEquipmentChooser(EquipmentChooser):
             equipment_choices=(),
             weapons=blueprint.weapons + tuple(weapons),
             armors=blueprint.armors + tuple(armors),
-            other_equipment=blueprint.other_equipment + tuple(others)
+            other_equipment=blueprint.other_equipment + tuple(others),
         )

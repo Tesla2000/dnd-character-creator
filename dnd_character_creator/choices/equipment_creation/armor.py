@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from enum import Enum, StrEnum
+from enum import Enum
+from enum import StrEnum
 
 from dnd_character_creator.choices.equipment_creation.item import Item
 
