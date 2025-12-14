@@ -16,7 +16,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
     AnySubclass,
 )
 from dnd_character_creator.choices.class_creation.character_class import (
-    subclasses,
+    SUBCLASSES,
 )
 from frozendict import frozendict
 from langchain_openai import ChatOpenAI
@@ -97,7 +97,7 @@ class AISubclassAssigner(SubclassAssigner):
         )
 
         # Get available subclasses
-        subclass_enum = subclasses[self.class_]
+        subclass_enum = SUBCLASSES[self.class_]
         available_subclasses = list(subclass_enum)
 
         # Add subclass options section
@@ -134,7 +134,7 @@ class AISubclassAssigner(SubclassAssigner):
         prompt = self._build_prompt(blueprint)
 
         # Create dynamic response model for this class's subclasses
-        subclass_enum = subclasses[self.class_]
+        subclass_enum = SUBCLASSES[self.class_]
         SubclassSelection = create_model(
             f"{self.class_.value}SubclassSelection",
             subclass=(subclass_enum, ...),

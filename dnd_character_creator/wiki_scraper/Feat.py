@@ -13,16 +13,16 @@ from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
-from dnd_character_creator.wiki_scraper.AbilityTemplate import (
-    AbilityTemplate,
+from dnd_character_creator.wiki_scraper.Ability import (
+    Ability,
 )
 from pydantic import BaseModel
 from pydantic import Field
 
 
-class FeatTemplate(BaseModel):
+class Feat(BaseModel):
     source: Optional[str]
-    ability: Optional[AbilityTemplate]
+    ability: Optional[Ability]
     skill_proficiency_gain: Optional[Skill]
     skill_expertise_gain: Optional[Skill] = Field(
         description="The same as double proficiency."

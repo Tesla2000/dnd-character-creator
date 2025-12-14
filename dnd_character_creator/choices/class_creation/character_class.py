@@ -183,7 +183,7 @@ class Class(_Subclass):
     ARTIFICER = "Artificer"
 
 
-subclasses = frozendict(
+SUBCLASSES: frozendict[Class, type[_Subclass]] = frozendict(
     {
         Class.ARTIFICER: ArtificerSubclass,
         Class.BARD: BardSubclass,

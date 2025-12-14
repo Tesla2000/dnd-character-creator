@@ -4,14 +4,14 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
-from dnd_character_creator.feats import Feat
-from dnd_character_creator.wiki_scraper.FeatTemplate import FeatTemplate
+from dnd_character_creator.feats import FeatName
+from dnd_character_creator.wiki_scraper.Feat import Feat
 from langchain_openai import ChatOpenAI
 
 url = "https://dnd5e.wikidot.com/feat:{}"
 
 
-def scraper_wiki_feats(feat: Feat, output_dir: Path, llm):
+def scraper_wiki_feats(feat: FeatName, output_dir: Path, llm):
     feat_path = output_dir.joinpath(f"{feat.value}.json")
     if feat_path.exists():
         return
@@ -30,8 +30,8 @@ def scraper_wiki_feats(feat: Feat, output_dir: Path, llm):
 
 
 if __name__ == "__main__":
-    llm = ChatOpenAI(model="gpt-4o-mini").with_structured_output(FeatTemplate)
-    for feat in Feat:
+    llm = ChatOpenAI(model="gpt-4o-mini").with_structured_output(Feat)
+    for feat in FeatName:
         scraper_wiki_feats(
             feat,
             Path("scraped_data/feats"),

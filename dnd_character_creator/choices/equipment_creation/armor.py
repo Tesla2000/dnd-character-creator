@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from enum import Enum
 from enum import StrEnum
 
 from dnd_character_creator.choices.equipment_creation.item import Item
+from frozendict import frozendict
 
 
 class ArmorName(StrEnum):
@@ -23,7 +23,7 @@ class ArmorName(StrEnum):
     PLATE = "Plate"
 
 
-class ArmorCategory(str, Enum):
+class ArmorCategory(StrEnum):
     NONE = "None"
     LIGHT = "Light"
     MEDIUM = "Medium"
@@ -37,104 +37,111 @@ class Armor(Item):
     base_ac: int
 
 
-armor_list = [
-    Armor(
-        name=ArmorName.CLOTHES,
-        category=ArmorCategory.NONE,
-        disadvantage_on_stealth=False,
-        base_ac=10,
-        cost=0,
-    ),
-    Armor(
-        name=ArmorName.PADDED,
-        category=ArmorCategory.LIGHT,
-        disadvantage_on_stealth=True,
-        base_ac=11,
-        cost=5,
-    ),
-    Armor(
-        name=ArmorName.LEATHER,
-        category=ArmorCategory.LIGHT,
-        disadvantage_on_stealth=False,
-        base_ac=11,
-        cost=10,
-    ),
-    Armor(
-        name=ArmorName.STUDDED_LEATHER,
-        category=ArmorCategory.LIGHT,
-        disadvantage_on_stealth=False,
-        base_ac=12,
-        cost=45,
-    ),
-    Armor(
-        name=ArmorName.HIDE,
-        category=ArmorCategory.MEDIUM,
-        disadvantage_on_stealth=False,
-        base_ac=12,
-        cost=10,
-    ),
-    Armor(
-        name=ArmorName.CHAIN_SHIRT,
-        category=ArmorCategory.MEDIUM,
-        disadvantage_on_stealth=False,
-        base_ac=13,
-        cost=50,
-    ),
-    Armor(
-        name=ArmorName.SCALE_MALE,
-        category=ArmorCategory.MEDIUM,
-        disadvantage_on_stealth=True,
-        base_ac=14,
-        cost=50,
-    ),
-    Armor(
-        name=ArmorName.SPIKED_ARMOR,
-        category=ArmorCategory.MEDIUM,
-        disadvantage_on_stealth=True,
-        base_ac=14,
-        cost=75,
-    ),
-    Armor(
-        name=ArmorName.BREASTPLATE,
-        category=ArmorCategory.MEDIUM,
-        disadvantage_on_stealth=False,
-        base_ac=14,
-        cost=400,
-    ),
-    Armor(
-        name=ArmorName.HALFPLATE,
-        category=ArmorCategory.MEDIUM,
-        disadvantage_on_stealth=True,
-        base_ac=15,
-        cost=750,
-    ),
-    Armor(
-        name=ArmorName.RING_MAIL,
-        category=ArmorCategory.HEAVY,
-        disadvantage_on_stealth=True,
-        base_ac=14,
-        cost=30,
-    ),
-    Armor(
-        name=ArmorName.CHAIN_MAIL,
-        category=ArmorCategory.HEAVY,
-        disadvantage_on_stealth=True,
-        base_ac=16,
-        cost=75,
-    ),
-    Armor(
-        name=ArmorName.SPLINT,
-        category=ArmorCategory.HEAVY,
-        disadvantage_on_stealth=True,
-        base_ac=17,
-        cost=200,
-    ),
-    Armor(
-        name=ArmorName.PLATE,
-        category=ArmorCategory.HEAVY,
-        disadvantage_on_stealth=True,
-        base_ac=18,
-        cost=1500,
-    ),
-    Item(name="shield", cost=10),
-]
+SHIELD = "Shield"
+
+ARMORS: frozendict[ArmorName, Armor] = frozendict(
+    {
+        a.name: a
+        for a in (
+            Armor(
+                name=ArmorName.CLOTHES,
+                category=ArmorCategory.NONE,
+                disadvantage_on_stealth=False,
+                base_ac=10,
+                cost=0,
+            ),
+            Armor(
+                name=ArmorName.PADDED,
+                category=ArmorCategory.LIGHT,
+                disadvantage_on_stealth=True,
+                base_ac=11,
+                cost=5,
+            ),
+            Armor(
+                name=ArmorName.LEATHER,
+                category=ArmorCategory.LIGHT,
+                disadvantage_on_stealth=False,
+                base_ac=11,
+                cost=10,
+            ),
+            Armor(
+                name=ArmorName.STUDDED_LEATHER,
+                category=ArmorCategory.LIGHT,
+                disadvantage_on_stealth=False,
+                base_ac=12,
+                cost=45,
+            ),
+            Armor(
+                name=ArmorName.HIDE,
+                category=ArmorCategory.MEDIUM,
+                disadvantage_on_stealth=False,
+                base_ac=12,
+                cost=10,
+            ),
+            Armor(
+                name=ArmorName.CHAIN_SHIRT,
+                category=ArmorCategory.MEDIUM,
+                disadvantage_on_stealth=False,
+                base_ac=13,
+                cost=50,
+            ),
+            Armor(
+                name=ArmorName.SCALE_MALE,
+                category=ArmorCategory.MEDIUM,
+                disadvantage_on_stealth=True,
+                base_ac=14,
+                cost=50,
+            ),
+            Armor(
+                name=ArmorName.SPIKED_ARMOR,
+                category=ArmorCategory.MEDIUM,
+                disadvantage_on_stealth=True,
+                base_ac=14,
+                cost=75,
+            ),
+            Armor(
+                name=ArmorName.BREASTPLATE,
+                category=ArmorCategory.MEDIUM,
+                disadvantage_on_stealth=False,
+                base_ac=14,
+                cost=400,
+            ),
+            Armor(
+                name=ArmorName.HALFPLATE,
+                category=ArmorCategory.MEDIUM,
+                disadvantage_on_stealth=True,
+                base_ac=15,
+                cost=750,
+            ),
+            Armor(
+                name=ArmorName.RING_MAIL,
+                category=ArmorCategory.HEAVY,
+                disadvantage_on_stealth=True,
+                base_ac=14,
+                cost=30,
+            ),
+            Armor(
+                name=ArmorName.CHAIN_MAIL,
+                category=ArmorCategory.HEAVY,
+                disadvantage_on_stealth=True,
+                base_ac=16,
+                cost=75,
+            ),
+            Armor(
+                name=ArmorName.SPLINT,
+                category=ArmorCategory.HEAVY,
+                disadvantage_on_stealth=True,
+                base_ac=17,
+                cost=200,
+            ),
+            Armor(
+                name=ArmorName.PLATE,
+                category=ArmorCategory.HEAVY,
+                disadvantage_on_stealth=True,
+                base_ac=18,
+                cost=1500,
+            ),
+            Item(name="shield", cost=10),
+        )
+    }
+)

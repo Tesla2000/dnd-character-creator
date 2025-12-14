@@ -13,7 +13,7 @@ from dnd_character_creator.character.blueprint.building_blocks.any_choice_resolv
     AnyChoiceResolver,
 )
 from dnd_character_creator.choices.language import Language
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
@@ -29,7 +29,7 @@ class AnyChoiceSelection(BaseModel):
 
     languages: set[Language] = Field(default_factory=set)
     skill_proficiencies: set[Skill] = Field(default_factory=set)
-    feats: set[Feat] = Field(default_factory=set)
+    feats: set[FeatName] = Field(default_factory=set)
     tool_proficiencies: set[
         ToolProficiency | GamingSet | MusicalInstrument
     ] = Field(default_factory=set)
@@ -136,18 +136,18 @@ class AIAnyChoiceResolver(AnyChoiceResolver):
             )
             has_placeholders = True
 
-        if Feat.ANY_OF_YOUR_CHOICE in blueprint.feats:
-            count = list(blueprint.feats).count(Feat.ANY_OF_YOUR_CHOICE)
+        if FeatName.ANY_OF_YOUR_CHOICE in blueprint.feats:
+            count = list(blueprint.feats).count(FeatName.ANY_OF_YOUR_CHOICE)
             instructions.append(
                 f"Feats: {count} ANY_OF_YOUR_CHOICE placeholder(s) to replace"
             )
             available_feats = [
                 f.value
-                for f in Feat
+                for f in FeatName
                 if f
                 not in (
-                    Feat.ANY_OF_YOUR_CHOICE,
-                    Feat.ABILITY_SCORE_IMPROVEMENT,
+                    FeatName.ANY_OF_YOUR_CHOICE,
+                    FeatName.ABILITY_SCORE_IMPROVEMENT,
                 )
             ]
             instructions.append(f"  Available: {', '.join(available_feats)}")
@@ -206,7 +206,7 @@ class AIAnyChoiceResolver(AnyChoiceResolver):
         has_skill_placeholder = (
             Skill.ANY_OF_YOUR_CHOICE in blueprint.skill_proficiencies
         )
-        has_feat_placeholder = Feat.ANY_OF_YOUR_CHOICE in blueprint.feats
+        has_feat_placeholder = FeatName.ANY_OF_YOUR_CHOICE in blueprint.feats
         has_tool_placeholder = any(
             (
                 isinstance(t, ToolProficiency)
@@ -270,13 +270,13 @@ class AIAnyChoiceResolver(AnyChoiceResolver):
 
         # Replace feat placeholders
         if has_feat_placeholder:
-            count = list(blueprint.feats).count(Feat.ANY_OF_YOUR_CHOICE)
+            count = list(blueprint.feats).count(FeatName.ANY_OF_YOUR_CHOICE)
             if len(selection.feats) != count:
                 raise ValueError(
                     f"AI returned {len(selection.feats)} feats "
                     f"but expected {count}"
                 )
-            new_feats.discard(Feat.ANY_OF_YOUR_CHOICE)
+            new_feats.discard(FeatName.ANY_OF_YOUR_CHOICE)
             new_feats.update(selection.feats)
 
         # Replace tool placeholders

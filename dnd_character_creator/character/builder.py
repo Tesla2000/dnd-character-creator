@@ -10,6 +10,9 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     CombinedBlock,
 )
 from dnd_character_creator.character.character import Character
+from dnd_character_creator.character.presentable_character import (
+    PresentableCharacter,
+)
 
 
 class Builder:
@@ -20,7 +23,7 @@ class Builder:
     def _init_character() -> Blueprint:
         return Blueprint()
 
-    def build(self) -> Character:
+    def build(self) -> PresentableCharacter:
         blueprint = self._init_character()
         diff_generator = CombinedBlock(
             blocks=tuple(self._building_blocks)
@@ -40,13 +43,13 @@ class Builder:
                 )  # Send blueprint back and get next diff
         except StopIteration:
             pass
-        return self._convert_to_character(blueprint)
+        return self._make_presentable(blueprint)
 
     def add(self, building_block: BuildingBlock) -> Self:
         return type(self)(self._building_blocks + (building_block,))
 
     @staticmethod
-    def _convert_to_character(blueprint: Blueprint) -> Character:
+    def _make_presentable(blueprint: Blueprint) -> PresentableCharacter:
         if (
             blueprint.n_stat_choices
             or blueprint.n_skill_choices
@@ -54,7 +57,7 @@ class Builder:
             or blueprint.equipment_choices
         ):
             raise ValueError("Blueprint still has corresponding choices")
-        return Character.model_validate(
+        return PresentableCharacter.model_validate(
             {
                 field_name: field_value
                 for field_name, field_value in iter(blueprint)

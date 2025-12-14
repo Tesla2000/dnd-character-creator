@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from dnd_character_creator.choices.class_creation.character_class import (
     Class,
 )
-from dnd_character_creator.wiki_scraper.AbilityTemplate import (
+from dnd_character_creator.wiki_scraper.Ability import (
     AbilitiesTemplate,
 )
 from langchain_openai import ChatOpenAI

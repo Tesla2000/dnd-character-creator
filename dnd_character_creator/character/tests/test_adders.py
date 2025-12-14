@@ -17,7 +17,7 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 )
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from frozendict import frozendict
 
 
@@ -26,20 +26,20 @@ class TestFeatAdder:
 
     def test_add_single_feat(self):
         """Test adding a single feat to empty feat list."""
-        adder = FeatAdder(feat=Feat.TOUGH)
+        adder = FeatAdder(feat=FeatName.TOUGH)
         blueprint = Blueprint()
 
         gen = adder.get_change(blueprint)
         diff = next(gen)
 
-        assert diff.feats == (Feat.TOUGH,)
+        assert diff.feats == (FeatName.TOUGH,)
 
     def test_add_multiple_feats(self):
         """Test adding multiple feats sequentially."""
         blueprint = Blueprint()
 
         # Add first feat
-        adder1 = FeatAdder(feat=Feat.TOUGH)
+        adder1 = FeatAdder(feat=FeatName.TOUGH)
         gen1 = adder1.get_change(blueprint)
         diff1 = next(gen1)
         blueprint = blueprint.model_copy(
@@ -47,7 +47,7 @@ class TestFeatAdder:
         )
 
         # Add second feat
-        adder2 = FeatAdder(feat=Feat.ALERT)
+        adder2 = FeatAdder(feat=FeatName.ALERT)
         gen2 = adder2.get_change(blueprint)
         diff2 = next(gen2)
         blueprint = blueprint.model_copy(
@@ -55,17 +55,17 @@ class TestFeatAdder:
         )
 
         # Add third feat
-        adder3 = FeatAdder(feat=Feat.LUCKY)
+        adder3 = FeatAdder(feat=FeatName.LUCKY)
         gen3 = adder3.get_change(blueprint)
         diff3 = next(gen3)
 
-        assert diff3.feats == (Feat.TOUGH, Feat.ALERT, Feat.LUCKY)
+        assert diff3.feats == (FeatName.TOUGH, FeatName.ALERT, FeatName.LUCKY)
 
     def test_add_duplicate_feat_raises_error(self):
         """Test that adding a duplicate feat raises ValueError."""
-        blueprint = Blueprint(feats=(Feat.TOUGH,))
+        blueprint = Blueprint(feats=(FeatName.TOUGH,))
 
-        adder = FeatAdder(feat=Feat.TOUGH)
+        adder = FeatAdder(feat=FeatName.TOUGH)
         gen = adder.get_change(blueprint)
 
         with pytest.raises(ValueError, match="already exists"):
@@ -75,7 +75,7 @@ class TestFeatAdder:
         """Test that feats tuple is immutable."""
         blueprint = Blueprint()
 
-        adder = FeatAdder(feat=Feat.ALERT)
+        adder = FeatAdder(feat=FeatName.ALERT)
         gen = adder.get_change(blueprint)
         diff = next(gen)
 
@@ -88,11 +88,11 @@ class TestFeatAdder:
     def test_add_all_common_feats(self):
         """Test adding multiple different feats."""
         feats_to_add = [
-            Feat.TOUGH,
-            Feat.ALERT,
-            Feat.LUCKY,
-            Feat.RESILIENT,
-            Feat.WAR_CASTER,
+            FeatName.TOUGH,
+            FeatName.ALERT,
+            FeatName.LUCKY,
+            FeatName.RESILIENT,
+            FeatName.WAR_CASTER,
         ]
 
         blueprint = Blueprint()
@@ -449,7 +449,7 @@ class TestAdderIntegration:
             )
 
         # Add feats
-        for feat in [Feat.TOUGH, Feat.ALERT, Feat.LUCKY]:
+        for feat in [FeatName.TOUGH, FeatName.ALERT, FeatName.LUCKY]:
             adder = FeatAdder(feat=feat)
             gen = adder.get_change(blueprint)
             diff = next(gen)
@@ -481,7 +481,11 @@ class TestAdderIntegration:
 
         # Verify all additions
         assert blueprint.classes[Class.FIGHTER] == 5
-        assert blueprint.feats == (Feat.TOUGH, Feat.ALERT, Feat.LUCKY)
+        assert blueprint.feats == (
+            FeatName.TOUGH,
+            FeatName.ALERT,
+            FeatName.LUCKY,
+        )
         assert blueprint.weapons == (
             WeaponName.LONGSWORD,
             WeaponName.SHORTBOW,

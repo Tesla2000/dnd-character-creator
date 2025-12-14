@@ -5,6 +5,7 @@ from enum import StrEnum
 from dnd_character_creator.choices.stats_creation.statistic import (
     Statistic,
 )
+from frozendict import frozendict
 
 
 class Skill(StrEnum):
@@ -29,23 +30,25 @@ class Skill(StrEnum):
     SURVIVAL = "Survival"
 
 
-skill2ability = {
-    Skill.ACROBATICS: Statistic.DEXTERITY,
-    Skill.ANIMAL_HANDLING: Statistic.WISDOM,
-    Skill.ARCANA: Statistic.INTELLIGENCE,
-    Skill.ATHLETICS: Statistic.STRENGTH,
-    Skill.DECEPTION: Statistic.CHARISMA,
-    Skill.HISTORY: Statistic.INTELLIGENCE,
-    Skill.INSIGHT: Statistic.WISDOM,
-    Skill.INTIMIDATION: Statistic.CHARISMA,
-    Skill.INVESTIGATION: Statistic.INTELLIGENCE,
-    Skill.MEDICINE: Statistic.WISDOM,
-    Skill.NATURE: Statistic.INTELLIGENCE,
-    Skill.PERCEPTION: Statistic.WISDOM,
-    Skill.PERFORMANCE: Statistic.CHARISMA,
-    Skill.PERSUASION: Statistic.CHARISMA,
-    Skill.RELIGION: Statistic.INTELLIGENCE,
-    Skill.SLEIGHT_OF_HAND: Statistic.DEXTERITY,
-    Skill.STEALTH: Statistic.DEXTERITY,
-    Skill.SURVIVAL: Statistic.WISDOM,
-}
+skill2ability: frozendict[Skill, Statistic] = frozendict(
+    {
+        Skill.ACROBATICS: Statistic.DEXTERITY,
+        Skill.ANIMAL_HANDLING: Statistic.WISDOM,
+        Skill.ARCANA: Statistic.INTELLIGENCE,
+        Skill.ATHLETICS: Statistic.STRENGTH,
+        Skill.DECEPTION: Statistic.CHARISMA,
+        Skill.HISTORY: Statistic.INTELLIGENCE,
+        Skill.INSIGHT: Statistic.WISDOM,
+        Skill.INTIMIDATION: Statistic.CHARISMA,
+        Skill.INVESTIGATION: Statistic.INTELLIGENCE,
+        Skill.MEDICINE: Statistic.WISDOM,
+        Skill.NATURE: Statistic.INTELLIGENCE,
+        Skill.PERCEPTION: Statistic.WISDOM,
+        Skill.PERFORMANCE: Statistic.CHARISMA,
+        Skill.PERSUASION: Statistic.CHARISMA,
+        Skill.RELIGION: Statistic.INTELLIGENCE,
+        Skill.SLEIGHT_OF_HAND: Statistic.DEXTERITY,
+        Skill.STEALTH: Statistic.DEXTERITY,
+        Skill.SURVIVAL: Statistic.WISDOM,
+    }
+)

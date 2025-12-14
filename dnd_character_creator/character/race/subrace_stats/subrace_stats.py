@@ -6,7 +6,7 @@ from dnd_character_creator.character.race.subrace_stats.race_statistics import (
 )
 from dnd_character_creator.character.stats import Stats
 from dnd_character_creator.choices.language import Language
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
@@ -79,8 +79,9 @@ class SubraceStats(BaseModel):
             + self.tool_proficiencies,
             stats=new_stats,
             feats=blueprint.feats
-            + self.additional_feat * (Feat.ANY_OF_YOUR_CHOICE,),
+            + self.additional_feat * (FeatName.ANY_OF_YOUR_CHOICE,),
             n_stat_choices=self.statistics.any_of_your_choice,
             n_skill_choices=self.n_skills,
             skills_to_choose_from=frozenset(self.skills_to_choose_from),
+            other_active_abilities=self.other_active_abilities,
         )

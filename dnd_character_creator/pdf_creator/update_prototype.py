@@ -9,7 +9,7 @@ from dnd_character_creator.character_wrapper import CharacterWrapper
 from dnd_character_creator.choices.stats_creation.statistic import (
     Statistic,
 )
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from dnd_character_creator.LatexString import LatexString
 from dnd_character_creator.skill_proficiency import Skill
 from more_itertools import roundrobin
@@ -433,7 +433,8 @@ def update_prototype(
         + r"\\".join(
             f"\n{feat.value} "
             for feat in filterfalse(
-                Feat.ABILITY_SCORE_IMPROVEMENT.__eq__, character_wrapper.feats
+                FeatName.ABILITY_SCORE_IMPROVEMENT.__eq__,
+                character_wrapper.feats,
             )
         ),
     )
@@ -516,7 +517,7 @@ def update_prototype(
         ),
     )
     prototype = prototype.replace(
-        "SpellSaveDC{13", "SpellSaveDC{" + str(character_wrapper.spellsave_dc)
+        "SpellSaveDC{13", "SpellSaveDC{" + str(character_wrapper.spell_save_dc)
     )
     prototype = prototype.replace(
         "SpellAttackBonus{+5",

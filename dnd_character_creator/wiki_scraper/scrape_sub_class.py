@@ -9,9 +9,9 @@ from dnd_character_creator.choices.class_creation.character_class import (
     Class,
 )
 from dnd_character_creator.choices.class_creation.character_class import (
-    subclasses,
+    SUBCLASSES,
 )
-from dnd_character_creator.wiki_scraper.AbilityTemplate import (
+from dnd_character_creator.wiki_scraper.Ability import (
     AbilitiesTemplate,
 )
 from langchain_openai import ChatOpenAI
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         AbilitiesTemplate
     )
     for main_class in Class:
-        for sub_class in subclasses[main_class]:
+        for sub_class in SUBCLASSES[main_class]:
             scraper_wiki_subclass_class(
                 main_class,
                 sub_class,

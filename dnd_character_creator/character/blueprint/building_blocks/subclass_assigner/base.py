@@ -17,7 +17,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
     subclass_level,
 )
 from dnd_character_creator.choices.class_creation.character_class import (
-    subclasses,
+    SUBCLASSES,
 )
 from pydantic import ConfigDict
 
@@ -80,7 +80,7 @@ class SubclassAssigner(BuildingBlock, ABC):
             )
 
         # Check if character already has a subclass for this class
-        subclass_enum = subclasses[self.class_]
+        subclass_enum = SUBCLASSES[self.class_]
         existing_subclass = None
         for existing in blueprint.subclasses:
             if isinstance(existing, subclass_enum):

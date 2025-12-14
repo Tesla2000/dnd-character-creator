@@ -15,7 +15,7 @@ from dnd_character_creator.character.spells.spell_slots import SixthLevel
 from dnd_character_creator.character.spells.spell_slots import Spell
 from dnd_character_creator.character.spells.spell_slots import ThirdLevel
 from dnd_character_creator.character.spells.spellcasting_abilities import (
-    spellcasting_ability_map,
+    SPELLCASTING_ABILITY_MAP,
 )
 
 __all__ = [
@@ -31,5 +31,5 @@ __all__ = [
     "Spell",
     "ThirdLevel",
     "filter_accessible",
-    "spellcasting_ability_map",
+    "SPELLCASTING_ABILITY_MAP",
 ]

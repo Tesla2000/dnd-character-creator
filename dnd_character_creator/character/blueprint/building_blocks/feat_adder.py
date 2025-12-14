@@ -4,7 +4,7 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 
 
 class FeatAdder(BuildingBlock):
@@ -15,13 +15,13 @@ class FeatAdder(BuildingBlock):
 
     Example:
         >>> builder = Builder([
-        ...     FeatAdder(feat=Feat.TOUGH),
-        ...     FeatAdder(feat=Feat.ALERT),
-        ...     FeatAdder(feat=Feat.LUCKY),
+        ...     FeatAdder(feat=FeatName.TOUGH),
+        ...     FeatAdder(feat=FeatName.ALERT),
+        ...     FeatAdder(feat=FeatName.LUCKY),
         ... ])  # Character will have all three feats
     """
 
-    feat: Feat
+    feat: FeatName
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Add the feat to the existing feat tuple.

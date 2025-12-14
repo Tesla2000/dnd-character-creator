@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import json
 from enum import StrEnum
 
+from dnd_character_creator.config import resource_paths
+from dnd_character_creator.wiki_scraper.Feat import Feat
 
-class Feat(StrEnum):
+
+class FeatName(StrEnum):
     ABERRANT_DRAGONMARK = "Aberrant Dragonmark"
     ACTOR = "Actor"
     ALERT = "Alert"
@@ -76,3 +80,13 @@ class Feat(StrEnum):
     WEAPON_MASTER = "Weapon Master"
     ABILITY_SCORE_IMPROVEMENT = "Ability Score Improvement"
     ANY_OF_YOUR_CHOICE = "Artisan tool of your choice"
+
+
+def feat_name_to_feat(feat: FeatName) -> Feat:
+    return Feat(
+        **json.loads(
+            resource_paths.feats_root.joinpath(
+                f"{feat.value}.json"
+            ).read_text()
+        )
+    )

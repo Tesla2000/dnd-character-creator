@@ -19,7 +19,7 @@ from dnd_character_creator.character.spells import SecondLevel
 from dnd_character_creator.character.spells import SeventhLevel
 from dnd_character_creator.character.spells import SixthLevel
 from dnd_character_creator.character.spells import Spell
-from dnd_character_creator.character.spells import spellcasting_ability_map
+from dnd_character_creator.character.spells import SPELLCASTING_ABILITY_MAP
 from dnd_character_creator.character.spells import ThirdLevel
 from dnd_character_creator.character.spells.max_spell_levels import CasterType
 from dnd_character_creator.character.spells.max_spell_levels import (
@@ -202,7 +202,7 @@ class SpellAssigner(BuildingBlock, ABC):
         """
 
         # 1. Validate class is spellcaster
-        if self.class_ not in spellcasting_ability_map:
+        if self.class_ not in SPELLCASTING_ABILITY_MAP:
             # Not a spellcasting class, yield empty and return
             return Blueprint()
 

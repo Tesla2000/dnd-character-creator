@@ -1,0 +1,482 @@
+from __future__ import annotations
+
+import json
+from collections import defaultdict
+from collections.abc import Mapping
+from itertools import filterfalse
+from typing import Annotated
+from typing import Any
+from typing import Optional
+from typing import Self
+
+from dnd_character_creator.character.character import Character
+from dnd_character_creator.character.race.race import Race
+from dnd_character_creator.character.spells import SPELLCASTING_ABILITY_MAP
+from dnd_character_creator.choices.abilities.ActionType import ActionType
+from dnd_character_creator.choices.class_creation.character_class import Class
+from dnd_character_creator.choices.class_creation.character_class import (
+    FighterSubclass,
+)
+from dnd_character_creator.choices.class_creation.character_class import (
+    RogueSubclass,
+)
+from dnd_character_creator.choices.class_creation.character_class import (
+    subclass_level,
+)
+from dnd_character_creator.choices.class_creation.character_class import (
+    SUBCLASSES,
+)
+from dnd_character_creator.choices.equipment_creation.armor import Armor
+from dnd_character_creator.choices.equipment_creation.armor import (
+    ArmorCategory,
+)
+from dnd_character_creator.choices.equipment_creation.armor import ArmorName
+from dnd_character_creator.choices.equipment_creation.armor import ARMORS
+from dnd_character_creator.choices.equipment_creation.armor import SHIELD
+from dnd_character_creator.choices.language import Language
+from dnd_character_creator.choices.stats_creation.statistic import Statistic
+from dnd_character_creator.config import resource_paths
+from dnd_character_creator.feats import feat_name_to_feat
+from dnd_character_creator.feats import FeatName
+from dnd_character_creator.other_profficiencies import ArmorProficiency
+from dnd_character_creator.other_profficiencies import GamingSet
+from dnd_character_creator.other_profficiencies import MusicalInstrument
+from dnd_character_creator.other_profficiencies import ToolProficiency
+from dnd_character_creator.other_profficiencies import WeaponProficiency
+from dnd_character_creator.skill_proficiency import Skill
+from dnd_character_creator.skill_proficiency import skill2ability
+from dnd_character_creator.wiki_scraper.Ability import Ability
+from frozendict import frozendict
+from pydantic import AfterValidator
+from pydantic import computed_field
+from pydantic import ConfigDict
+from pydantic import model_validator
+
+
+def _conv_to_frozendict(value: Any) -> Any:
+    if not isinstance(value, Mapping):
+        return value
+    return frozendict(value)
+
+
+def _language_not_any(language: Language) -> Language:
+    if language == Language.ANY_OF_YOUR_CHOICE:
+        raise ValueError(
+            "Character language mustn't be any of your choice. Choose a languge"
+        )
+    return language
+
+
+def _skill_not_any(skill: Skill) -> Skill:
+    if skill == Skill.ANY_OF_YOUR_CHOICE:
+        raise ValueError(
+            "Character skill mustn't be any of your choice. Choose a skill"
+        )
+    return skill
+
+
+def _feat_not_any(feat: FeatName) -> FeatName:
+    if feat == FeatName.ANY_OF_YOUR_CHOICE:
+        raise ValueError(
+            "Character feat mustn't be any of your choice. Choose a feat"
+        )
+    return feat
+
+
+def _tool_proficiency_not_any(
+    tool: ToolProficiency | GamingSet | MusicalInstrument,
+) -> ToolProficiency | GamingSet | MusicalInstrument:
+    if (
+        isinstance(tool, ToolProficiency)
+        and tool == ToolProficiency.ANY_OF_YOUR_CHOICE
+    ):
+        raise ValueError(
+            "Character tool proficiency mustn't be any of your choice. Choose a tool"
+        )
+    if isinstance(tool, GamingSet) and tool == GamingSet.ANY_OF_YOUR_CHOICE:
+        raise ValueError(
+            "Character gaming set mustn't be any of your choice. Choose a gaming set"
+        )
+    if (
+        isinstance(tool, MusicalInstrument)
+        and tool == MusicalInstrument.ANY_OF_YOUR_CHOICE
+    ):
+        raise ValueError(
+            "Character musical instrument mustn't be any of your choice. Choose a musical instrument"
+        )
+    return tool
+
+
+def _weapon_proficiency_not_any(
+    weapon: WeaponProficiency,
+) -> WeaponProficiency:
+    if weapon == WeaponProficiency.ANY_OF_YOUR_CHOICE:
+        raise ValueError(
+            "Character weapon proficiency mustn't be any of your choice. Choose a weapon"
+        )
+    return weapon
+
+
+def _armor_proficiency_not_any(armor: ArmorProficiency) -> ArmorProficiency:
+    if armor == ArmorProficiency.ANY_OF_YOUR_CHOICE:
+        raise ValueError(
+            "Character armor proficiency mustn't be any of your choice. Choose an armor type"
+        )
+    return armor
+
+
+NotAnyLanguage = Annotated[Language, AfterValidator(_language_not_any)]
+NotAnySkill = Annotated[Skill, AfterValidator(_skill_not_any)]
+NotAnyFeat = Annotated[FeatName, AfterValidator(_feat_not_any)]
+NotAnyToolProficiency = Annotated[
+    ToolProficiency | GamingSet | MusicalInstrument,
+    AfterValidator(_tool_proficiency_not_any),
+]
+NotAnyWeaponProficiency = Annotated[
+    WeaponProficiency, AfterValidator(_weapon_proficiency_not_any)
+]
+NotAnyArmorProficiency = Annotated[
+    ArmorProficiency, AfterValidator(_armor_proficiency_not_any)
+]
+
+
+class PresentableCharacter(Character):
+    model_config = ConfigDict(frozen=True)
+
+    @model_validator(mode="after")
+    def _validate_subclass(self) -> Self:
+        for class_, level in self.classes.items():
+            if level >= subclass_level[class_]:
+                subclasses_of_class = set(SUBCLASSES[class_]).intersection(
+                    self.subclasses
+                )
+                if not subclasses_of_class:
+                    raise ValueError(f"No subclasses of class {class_}")
+                if len(subclasses_of_class) > 1:
+                    raise ValueError(
+                        f"More than one subclass of {class_} {subclasses_of_class=}"
+                    )
+        return self
+
+    @computed_field
+    @property
+    def abilities(self) -> dict[Skill, int]:
+        return {
+            s: self._get_modifier(skill2ability[s])
+            + (s in self.skill_proficiencies) * self.proficiency_bonus
+            for s in Skill
+            if s != Skill.ANY_OF_YOUR_CHOICE
+        }
+
+    @computed_field
+    @property
+    def initiative(self) -> int:
+        return self._get_modifier(Statistic.DEXTERITY) + 5 * (
+            FeatName.ALERT in self.feats
+        )
+
+    @computed_field
+    @property
+    def passive_perception(self) -> int:
+        return self.abilities[Skill.PERCEPTION] + 10
+
+    @computed_field
+    @property
+    def proficiency_bonus(self) -> int:
+        return (self.level - 1) // 4 + 2
+
+    @computed_field
+    @property
+    def saving_throw_modifiers(self) -> dict[Statistic, int]:
+        return {
+            s: self._get_modifier(s)
+            + self.proficiency_bonus * (s in self.saving_throw_proficiencies)
+            for s in Statistic
+        }
+
+    @computed_field
+    @property
+    def ac(self) -> int:
+        return max(
+            map(
+                self._armor_ac,
+                map(ARMORS.__getitem__, self.armors + (ArmorName.CLOTHES,)),
+            )
+        )
+
+    def _armor_ac(self, armor: Armor) -> int:
+        modifier = self._get_modifier(Statistic.DEXTERITY)
+        if armor.category == ArmorCategory.HEAVY and (
+            ArmorProficiency.ALL_ARMOR in self.armor_proficiencies
+            or ArmorProficiency.HEAVY_ARMOR in self.armor_proficiencies
+        ):
+            bonus = 0
+        elif armor.category == ArmorCategory.MEDIUM and (
+            ArmorProficiency.ALL_ARMOR in self.armor_proficiencies
+            or ArmorProficiency.MEDIUM_ARMOR in self.armor_proficiencies
+        ):
+            bonus = min(2, modifier)
+        else:
+            bonus = modifier
+            if Class.MONK in self.classes:
+                bonus += self._get_modifier(Statistic.WISDOM)
+            elif Class.BARBARIAN in self.classes:
+                bonus += self._get_modifier(Statistic.CONSTITUTION)
+        no_abilities = armor.base_ac + bonus
+        if self.race == Race.LIZARDFOLK:
+            no_abilities = max(no_abilities, 13 + modifier)
+        return no_abilities + 2 * (
+            SHIELD in self.other_equipment
+            and ArmorProficiency.SHIELDS in self.armor_proficiencies
+        )
+
+    @computed_field
+    @property
+    def capacity(self) -> int:
+        return 15 * self.stats.get_stat(Statistic.STRENGTH)
+
+    @computed_field
+    @property
+    def spellcasting_ability(self) -> Optional[Statistic]:
+        spellcasting_classes = list(
+            filter(
+                lambda class_: class_ in SPELLCASTING_ABILITY_MAP
+                or (
+                    class_ is Class.FIGHTER
+                    and FighterSubclass.ELDRITCH_KNIGHT in self.subclasses
+                )
+                or (
+                    class_ is Class.ROGUE
+                    and RogueSubclass.ARCANE_TRICKSTER in self.subclasses
+                ),
+                self.classes,
+            )
+        )
+        if not spellcasting_classes:
+            return None
+        return SPELLCASTING_ABILITY_MAP.get(
+            max(spellcasting_classes, key=self.classes.__getitem__),
+            Statistic.INTELLIGENCE,
+        )
+
+    @computed_field
+    @property
+    def spell_save_dc(self) -> Optional[int]:
+        if self.spellcasting_ability is None:
+            return None
+        return (
+            8
+            + self.proficiency_bonus
+            + self._get_modifier(self.spellcasting_ability)
+        )
+
+    @computed_field
+    @property
+    def spell_attack_bonus(self) -> Optional[int]:
+        if self.spellcasting_ability is None:
+            return None
+        return self._get_spellcasting_modifier() + self.proficiency_bonus
+
+    # @computed_field
+    # @property
+    # def n_prepared_spells(self) -> NonNegativeInt:
+    #     if self.spellcasting_ability is None:
+    #         return 0
+    #     return bool(self.spells_by_level[1]) * (
+    #         self.level + max(0, self.spellcasting_modifier)
+    #     )
+
+    @computed_field
+    @property
+    def actions(self) -> dict[ActionType, list[Ability]]:
+        actions = defaultdict(list)
+        for feat in filterfalse(
+            FeatName.ABILITY_SCORE_IMPROVEMENT.__eq__, self.feats
+        ):
+            ability = feat_name_to_feat(feat).ability
+            if ability:
+                actions[ability.action_type].append(ability)
+        for ability_name in self.other_active_abilities:
+            ability_name = ability_name.split(":")[0]
+            ability = Ability(
+                **json.loads(
+                    resource_paths.race_abilities_root.joinpath(
+                        self.race.value
+                    )
+                    .joinpath(f"{ability_name}.json")
+                    .read_text()
+                )
+            )
+            actions[ability.action_type].append(ability)
+        for class_ in self.classes:
+            class_actions = defaultdict(list)
+            for (
+                main_class_ability_path
+            ) in resource_paths.main_class_abilities_root.joinpath(
+                class_
+            ).iterdir():
+                ability = Ability(
+                    **json.loads(main_class_ability_path.read_text())
+                )
+                class_actions[ability.action_type].append(ability)
+            for subclass_name in self.subclasses:
+                if subclass_name not in SUBCLASSES[class_]:
+                    continue
+                for sub_class_ability_path in (
+                    resource_paths.sub_class_abilities_root.joinpath(class_)
+                    .joinpath(subclass_name)
+                    .iterdir()
+                ):
+                    ability = Ability(
+                        **json.loads(sub_class_ability_path.read_text())
+                    )
+                    class_actions[ability.action_type].append(ability)
+            actions = {
+                action_type: list(
+                    a
+                    for a in actions
+                    if self._is_ability_accessible(a, self.classes[class_])
+                )
+                + class_actions[action_type]
+                for action_type, actions in actions.items()
+            }
+        return actions
+
+    def _get_spellcasting_modifier(self) -> int:
+        return self._get_modifier(self.spellcasting_ability)
+
+    def _get_modifier(self, statistic: Statistic) -> int:
+        return self.stats.get_stat(statistic) // 2 - 5
+
+    @staticmethod
+    def _is_ability_accessible(
+        ability: Ability,
+        class_level: int,
+    ) -> bool:
+        return (
+            ability
+            and ability.combat_related
+            and ability.required_level <= class_level
+        )
+
+
+# def _improve_from_ability_score(
+#     self, attributes_in_order: Sequence[Statistic]
+# ):
+#     def _add2next_odd() -> bool:
+#         for attribute in attributes_in_order[1:]:
+#             if self._attributes[attribute] % 2:
+#                 self._attributes[attribute] += 1
+#                 return True
+#
+#     attributes_in_order = self._reduce_attributes_in_order(
+#         attributes_in_order
+#     )
+#     if len(attributes_in_order) == 1:
+#         self._attributes[attributes_in_order[0]] = min(
+#             20, self._attributes[attributes_in_order[0]] + 2
+#         )
+#         return
+#     if (
+#         self._attributes[attributes_in_order[0]] % 2
+#         and self._attributes[attributes_in_order[0]] == 19
+#     ):
+#         self._attributes[attributes_in_order[0]] += 1
+#         if not _add2next_odd():
+#             self._attributes[attributes_in_order[1]] += 1
+#     elif self._attributes[attributes_in_order[0]] % 2:
+#         self._attributes[attributes_in_order[0]] += 1
+#         if not _add2next_odd():
+#             self._attributes[attributes_in_order[0]] += 1
+#     else:
+#         self._attributes[attributes_in_order[0]] += 2
+
+# @property
+# def attributes(self) -> dict[Statistic, int]:
+#     attributes_in_order = (
+#         self.first_most_important_stat,
+#         self.second_most_important_stat,
+#         self.third_most_important_stat,
+#         self.forth_most_important_stat,
+#         self.fifth_most_important_stat,
+#         self.sixth_most_important_stat,
+#     )
+#     if self._attributes:
+#         return self._attributes
+#     if (
+#         resource_paths.stats_creation_method
+#         == StatsCreationMethod.STANDARD_ARRAY
+#     ):
+#         for attribute, points in zip(
+#             attributes_in_order,
+#             (15, 14, 13, 12, 10, 8),
+#         ):
+#             self._attributes[attribute] = points
+#         assert (
+#             len(self._attributes) == 6
+#         ), "Some attribute value are duplicated. Ask author for help"
+#     race_attributes = self._race_stats.statistics.model_dump()
+#     for attribute_name in self._attributes:
+#         self._attributes[attribute_name] += race_attributes[attribute_name]
+#     if race_attributes["any_of_your_choice"] == 3:
+#         self._attributes[self.first_most_important_stat] += 2
+#         self._attributes[self.second_most_important_stat] += 1
+#     elif race_attributes["any_of_your_choice"]:
+#         order = iter(attributes_in_order)
+#         for stat in order:
+#             if stat in race_attributes:
+#                 continue
+#             if race_attributes["any_of_your_choice"] == 2:
+#                 self._attributes[stat] += 1
+#                 self._attributes[next(order)] += 1
+#             else:
+#                 self._attributes[stat] += 1
+#             break
+#     for feat in self.feats:
+#         if feat == Feat.ABILITY_SCORE_IMPROVEMENT:
+#             self._improve_from_ability_score(attributes_in_order)
+#         elif feat == Feat.RESILIENT:
+#             _ = self.saving_throw_proficiencies
+#             important_saves = (
+#                 Statistic.DEXTERITY,
+#                 Statistic.CONSTITUTION,
+#                 Statistic.WISDOM,
+#             )
+#             important_saves = tuple(
+#                 filterfalse(
+#                     self._saving_throws.__contains__, important_saves
+#                 )
+#             )
+#             attributes_in_order = tuple(
+#                 filter(
+#                     important_saves.__contains__,
+#                     self._reduce_attributes_in_order(attributes_in_order),
+#                 )
+#             )
+#             if attributes_in_order:
+#                 self._attributes[attributes_in_order[0]] += 1
+#                 self._saving_throws.append(attributes_in_order[0])
+#             else:
+#                 raise ValueError
+#         elif (
+#             self._feat2feat_template(feat).attribute_increase
+#             == StatisticAndAny.ANY_OF_YOUR_CHOICE
+#         ):
+#             attributes_in_order = self._reduce_attributes_in_order(
+#                 attributes_in_order
+#             )
+#             if attributes_in_order:
+#                 self._attributes[attributes_in_order[0]] += 1
+#             else:
+#                 raise ValueError
+#         elif self._feat2feat_template(feat).attribute_increase:
+#             self._attributes[
+#                 self._feat2feat_template(feat).attribute_increase
+#             ] = min(
+#                 20,
+#                 self._attributes[
+#                     self._feat2feat_template(feat).attribute_increase
+#                 ]
+#                 + 1,
+#             )
+#     return self._attributes

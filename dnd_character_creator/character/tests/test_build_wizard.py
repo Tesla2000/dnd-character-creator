@@ -177,4 +177,11 @@ class TestBuildWizard:
         assert wizard.weapons
         assert wizard.other_equipment
         assert wizard.magical_items
-        print(wizard.model_dump_json(indent=2, exclude_defaults=True))
+        for computed_field_name in wizard.model_computed_fields:
+            getattr(wizard, computed_field_name)
+        print(
+            wizard.model_dump_json(
+                indent=2,
+                exclude_defaults=True,
+            )
+        )

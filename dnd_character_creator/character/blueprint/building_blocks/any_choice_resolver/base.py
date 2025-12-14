@@ -10,7 +10,7 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.choices.language import Language
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
@@ -62,7 +62,10 @@ class AnyChoiceResolver(BuildingBlock, ABC):
                     v
                     for v in enum_class
                     if v
-                    not in (placeholder_value, Feat.ABILITY_SCORE_IMPROVEMENT)
+                    not in (
+                        placeholder_value,
+                        FeatName.ABILITY_SCORE_IMPROVEMENT,
+                    )
                 ]
                 resolved.add(self._select_from_available(available))
             else:
@@ -128,7 +131,7 @@ class AnyChoiceResolver(BuildingBlock, ABC):
                 blueprint.skill_proficiencies, Skill.ANY_OF_YOUR_CHOICE
             ),
             feats=self._resolve_set_feat(
-                blueprint.feats, Feat.ANY_OF_YOUR_CHOICE
+                blueprint.feats, FeatName.ANY_OF_YOUR_CHOICE
             ),
             tool_proficiencies=self._resolve_tool_proficiencies(
                 blueprint.tool_proficiencies

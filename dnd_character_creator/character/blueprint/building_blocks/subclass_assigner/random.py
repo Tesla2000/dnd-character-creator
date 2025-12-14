@@ -13,7 +13,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
     AnySubclass,
 )
 from dnd_character_creator.choices.class_creation.character_class import (
-    subclasses,
+    SUBCLASSES,
 )
 from pydantic import ConfigDict
 
@@ -51,7 +51,7 @@ class RandomSubclassAssigner(SubclassAssigner):
             random.seed(self.seed)
 
         # Get all available subclasses for this class
-        subclass_enum = subclasses[self.class_]
+        subclass_enum = SUBCLASSES[self.class_]
         available_subclasses = list(subclass_enum)
 
         # Randomly select one

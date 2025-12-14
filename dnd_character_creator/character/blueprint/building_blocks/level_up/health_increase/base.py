@@ -11,7 +11,7 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import HitDieSize
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from frozendict import frozendict
 
 
@@ -83,7 +83,7 @@ class HealthIncrease(BuildingBlock, ABC):
         health_increase = hit_die_value + constitution_modifier
 
         # Feat bonuses
-        if Feat.TOUGH in blueprint.feats:
+        if FeatName.TOUGH in blueprint.feats:
             health_increase += 2
 
         # Race bonuses

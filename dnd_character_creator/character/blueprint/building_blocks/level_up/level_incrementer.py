@@ -7,7 +7,7 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
 from frozendict import frozendict
@@ -39,7 +39,7 @@ class LevelIncrementer(BuildingBlock):
         if self._is_ability_score_improvement(existing_classes[self.class_]):
             return Blueprint(
                 classes=frozendict(existing_classes),
-                feats=blueprint.feats + (Feat.ANY_OF_YOUR_CHOICE,),
+                feats=blueprint.feats + (FeatName.ANY_OF_YOUR_CHOICE,),
             )
         return Blueprint(
             classes=frozendict(existing_classes),
@@ -80,5 +80,9 @@ class LevelIncrementer(BuildingBlock):
                     ("scholor's pack", "explarer's pack"),
                 ),
                 other_equipment=("spellbook",),
+                saving_throw_proficiencies=(
+                    Statistic.INTELLIGENCE,
+                    Statistic.WISDOM,
+                ),
             )
         raise NotImplementedError()

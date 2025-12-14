@@ -16,7 +16,7 @@ from pydantic import ValidationError
 class TestConvertion:
     def test_invalid(self):
         with pytest.raises(ValidationError):
-            Builder._convert_to_character(Blueprint())
+            Builder._make_presentable(Blueprint())
 
     def test_valid(self):
         blueprint = Blueprint(
@@ -39,4 +39,4 @@ class TestConvertion:
             bonds="Ain't much but an honest work",
             weaknesses="Ain't much but an honest work",
         )
-        assert isinstance(Builder._convert_to_character(blueprint), Character)
+        assert isinstance(Builder._make_presentable(blueprint), Character)

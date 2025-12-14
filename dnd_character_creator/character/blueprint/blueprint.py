@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Optional
-from typing import Self
 from typing import Union
 
 from dnd_character_creator.character.character import Character
@@ -17,13 +16,12 @@ from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.skill_proficiency import Skill
 from pydantic import Field
-from pydantic import model_validator
 from pydantic import NonNegativeInt
 from pydantic import PositiveInt
 
@@ -71,7 +69,7 @@ class Blueprint(Character):
     skill_proficiencies: tuple[Skill, ...] = Field(
         default=(), description="Skills the character is proficient in"
     )
-    feats: tuple[Feat, ...] = Field(
+    feats: tuple[FeatName, ...] = Field(
         description="Feats from a list fitting description of the character if"
         " race is variant human at least one must be different "
         "than ability score improvement",
@@ -80,9 +78,6 @@ class Blueprint(Character):
     tool_proficiencies: tuple[
         ToolProficiency | GamingSet | MusicalInstrument, ...
     ] = Field(default=(), description="Tool proficiencies")
-    saving_throws: tuple[Statistic, ...] = ()
+    saving_throw_proficiencies: tuple[Statistic, ...] = ()
     equipment_choices: tuple[tuple[Equipment, ...], ...] = ()
-
-    @model_validator(mode="after")
-    def _validate_subclass(self) -> Self:
-        return self
+    other_active_abilities: tuple[str, ...] = ()

@@ -4,7 +4,6 @@ from collections.abc import Mapping
 from typing import Annotated
 from typing import Any
 from typing import Optional
-from typing import Self
 
 from dnd_character_creator.character.magical_item.item import MagicalItem
 from dnd_character_creator.character.race.race import Race
@@ -19,21 +18,12 @@ from dnd_character_creator.choices.class_creation.character_class import (
     AnySubclass,
 )
 from dnd_character_creator.choices.class_creation.character_class import Class
-from dnd_character_creator.choices.class_creation.character_class import (
-    subclass_level,
-)
-from dnd_character_creator.choices.class_creation.character_class import (
-    subclasses,
-)
 from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
-from dnd_character_creator.choices.invocations.eldritch_invocation import (
-    WarlockPact,
-)
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
-from dnd_character_creator.feats import Feat
+from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import ArmorProficiency
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
@@ -45,7 +35,6 @@ from pydantic import AfterValidator
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
-from pydantic import model_validator
 from pydantic import NonNegativeInt
 from pydantic import PositiveInt
 
@@ -72,8 +61,8 @@ def _skill_not_any(skill: Skill) -> Skill:
     return skill
 
 
-def _feat_not_any(feat: Feat) -> Feat:
-    if feat == Feat.ANY_OF_YOUR_CHOICE:
+def _feat_not_any(feat: FeatName) -> FeatName:
+    if feat == FeatName.ANY_OF_YOUR_CHOICE:
         raise ValueError(
             "Character feat mustn't be any of your choice. Choose a feat"
         )
@@ -124,7 +113,7 @@ def _armor_proficiency_not_any(armor: ArmorProficiency) -> ArmorProficiency:
 
 NotAnyLanguage = Annotated[Language, AfterValidator(_language_not_any)]
 NotAnySkill = Annotated[Skill, AfterValidator(_skill_not_any)]
-NotAnyFeat = Annotated[Feat, AfterValidator(_feat_not_any)]
+NotAnyFeat = Annotated[FeatName, AfterValidator(_feat_not_any)]
 NotAnyToolProficiency = Annotated[
     ToolProficiency | GamingSet | MusicalInstrument,
     AfterValidator(_tool_proficiency_not_any),
@@ -173,7 +162,6 @@ class Character(BaseModel):
         default=frozenset(),
     )
     subclasses: tuple[AnySubclass, ...] = ()
-    warlock_pact: Optional[WarlockPact] = None
     armors: tuple[ArmorName, ...] = Field(
         default=(),
         description="You would typically have clothes for spell casters. You "
@@ -203,6 +191,9 @@ class Character(BaseModel):
     weapon_proficiencies: frozenset[NotAnyWeaponProficiency] = Field(
         default=frozenset(), description="Weapon proficiencies"
     )
+    armor_proficiencies: frozenset[NotAnyArmorProficiency] = Field(
+        default=frozenset(), description="Armor proficiencies"
+    )
     speed: PositiveInt
     magical_items: tuple[MagicalItem, ...] = ()
     saving_throw_bonuses: Stats = Field(
@@ -226,19 +217,5 @@ class Character(BaseModel):
         ),
     )
     ac_bonus: NonNegativeInt = 0
-    saving_throws: tuple[Statistic, ...]
-
-    @model_validator(mode="after")
-    def _validate_subclass(self) -> Self:
-        for class_, level in self.classes.items():
-            if level >= subclass_level[class_]:
-                subclasses_of_class = set(subclasses[class_]).intersection(
-                    self.subclasses
-                )
-                if not subclasses_of_class:
-                    raise ValueError(f"No subclasses of class {class_}")
-                if len(subclasses_of_class) > 1:
-                    raise ValueError(
-                        f"More than one subclass of {class_} {subclasses_of_class=}"
-                    )
-        return self
+    saving_throw_proficiencies: tuple[Statistic, ...]
+    other_active_abilities: tuple[str, ...]
