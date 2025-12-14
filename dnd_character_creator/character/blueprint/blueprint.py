@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional
+from typing import Self
 from typing import Union
 
 from dnd_character_creator.character.character import Character
@@ -46,7 +47,7 @@ class Blueprint(Character):
     background: Optional[Background] = None
     alignment: Optional[Alignment] = None
     stats: Optional[Stats] = None
-    health: Optional[PositiveInt] = None
+    health_base: Optional[PositiveInt] = None
     height: Optional[PositiveInt] = None
     weight: Optional[PositiveInt] = None
     eye_color: Optional[str] = None
@@ -81,3 +82,12 @@ class Blueprint(Character):
     saving_throw_proficiencies: tuple[Statistic, ...] = ()
     equipment_choices: tuple[tuple[Equipment, ...], ...] = ()
     other_active_abilities: tuple[str, ...] = ()
+
+    def add_diff(self, diff: Self) -> Self:
+        return self.model_copy(
+            update={
+                field_name: field_value
+                for field_name, field_value in diff
+                if field_name in diff.model_fields_set
+            }
+        )

@@ -20,13 +20,7 @@ class TestRandomMagicalItemChooser:
         diff_gen = chooser.get_change(blueprint)
         diff = next(diff_gen)
 
-        updated_blueprint = blueprint.model_copy(
-            update={
-                field_name: field_value
-                for field_name, field_value in diff
-                if field_name in diff.model_fields_set
-            }
-        )
+        updated_blueprint = blueprint.add_diff(diff)
 
         assert len(updated_blueprint.magical_items) == 1
         assert updated_blueprint.magical_items[0].level == Level.UNCOMMON
@@ -39,13 +33,7 @@ class TestRandomMagicalItemChooser:
         diff_gen = chooser.get_change(blueprint)
         diff = next(diff_gen)
 
-        updated_blueprint = blueprint.model_copy(
-            update={
-                field_name: field_value
-                for field_name, field_value in diff
-                if field_name in diff.model_fields_set
-            }
-        )
+        updated_blueprint = blueprint.add_diff(diff)
 
         assert len(updated_blueprint.magical_items) == 3
         assert all(
@@ -63,13 +51,7 @@ class TestRandomMagicalItemChooser:
         diff_gen = chooser.get_change(blueprint)
         diff = next(diff_gen)
 
-        updated_blueprint = blueprint.model_copy(
-            update={
-                field_name: field_value
-                for field_name, field_value in diff
-                if field_name in diff.model_fields_set
-            }
-        )
+        updated_blueprint = blueprint.add_diff(diff)
 
         assert len(updated_blueprint.magical_items) == 4
 
@@ -102,13 +84,7 @@ class TestRandomMagicalItemChooser:
         diff_gen = chooser.get_change(blueprint)
         diff = next(diff_gen)
 
-        updated_blueprint = blueprint.model_copy(
-            update={
-                field_name: field_value
-                for field_name, field_value in diff
-                if field_name in diff.model_fields_set
-            }
-        )
+        updated_blueprint = blueprint.add_diff(diff)
 
         assert len(updated_blueprint.magical_items) == 0
 
@@ -121,24 +97,11 @@ class TestRandomMagicalItemChooser:
         # First chooser
         diff_gen1 = chooser1.get_change(blueprint)
         diff1 = next(diff_gen1)
-        updated_blueprint1 = blueprint.model_copy(
-            update={
-                field_name: field_value
-                for field_name, field_value in diff1
-                if field_name in diff1.model_fields_set
-            }
-        )
-
+        updated_blueprint1 = blueprint.add_diff(diff1)
         # Second chooser
         diff_gen2 = chooser2.get_change(blueprint)
         diff2 = next(diff_gen2)
-        updated_blueprint2 = blueprint.model_copy(
-            update={
-                field_name: field_value
-                for field_name, field_value in diff2
-                if field_name in diff2.model_fields_set
-            }
-        )
+        updated_blueprint2 = blueprint.add_diff(diff2)
 
         # Should select same items in same order
         items1 = [item.name for item in updated_blueprint1.magical_items]
@@ -155,12 +118,6 @@ class TestRandomMagicalItemChooser:
         diff_gen = chooser.get_change(blueprint)
         diff = next(diff_gen)
 
-        updated_blueprint = blueprint.model_copy(
-            update={
-                field_name: field_value
-                for field_name, field_value in diff
-                if field_name in diff.model_fields_set
-            }
-        )
+        updated_blueprint = blueprint.add_diff(diff)
 
         assert len(updated_blueprint.magical_items) == 10

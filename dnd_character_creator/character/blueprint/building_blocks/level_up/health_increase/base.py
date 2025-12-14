@@ -8,10 +8,8 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import HitDieSize
-from dnd_character_creator.feats import FeatName
 from frozendict import frozendict
 
 
@@ -65,7 +63,7 @@ class HealthIncrease(BuildingBlock, ABC):
         Raises:
             ValueError: If stats are not configured.
         """
-        current_health = blueprint.health
+        current_health = blueprint.health_base
         hit_die = self._class2hit_die[self.class_]
 
         # First level always gets max hit die value
@@ -75,19 +73,4 @@ class HealthIncrease(BuildingBlock, ABC):
         else:
             hit_die_value = self._get_hit_die_value(hit_die)
 
-        if blueprint.stats is None:
-            raise ValueError("Character's constitution is not configured")
-
-        # Constitution modifier
-        constitution_modifier = blueprint.stats.constitution // 2 - 5
-        health_increase = hit_die_value + constitution_modifier
-
-        # Feat bonuses
-        if FeatName.TOUGH in blueprint.feats:
-            health_increase += 2
-
-        # Race bonuses
-        if blueprint.race == Race.DWARF:
-            health_increase += 1
-
-        return Blueprint(health=current_health + health_increase)
+        return Blueprint(health_base=current_health + hit_die_value)

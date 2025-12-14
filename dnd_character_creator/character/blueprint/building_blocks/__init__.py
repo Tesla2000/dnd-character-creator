@@ -33,6 +33,9 @@ from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resol
 from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver import (
     RandomFeatChoiceResolver,
 )
+from dnd_character_creator.character.blueprint.building_blocks.feature_assigner import (
+    FeatureAssigner,
+)
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler import (
     AIBaseBuilderAssigner,
 )
@@ -127,6 +130,7 @@ __all__ = [
     "EquipmentAdder",
     "FeatAdder",
     "FeatChoiceResolver",
+    "FeatureAssigner",
     "LanguageChoiceResolver",
     "LevelAssigner",
     "MagicalItemChooserBase",

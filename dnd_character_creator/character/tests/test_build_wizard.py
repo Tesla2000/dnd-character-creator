@@ -87,6 +87,7 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
 )
 from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.character.character import Character
+from dnd_character_creator.character.checkpoint import InMemoryIncrementStorage
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.choices.class_creation.character_class import Class
@@ -145,7 +146,7 @@ class TestBuildWizard:
         level_up = cls._create_level_up(all_choices_resolver)
 
         builder = (
-            Builder()
+            Builder(increment_storage=InMemoryIncrementStorage())
             .add(
                 InitialBuilder(
                     blocks=(
@@ -197,7 +198,7 @@ class TestBuildWizard:
                 ),
             ),
             RandomInitialDataFiller(),
-        )
+        ).character
 
         assert isinstance(wizard, Character)
         assert wizard.weapons
@@ -241,11 +242,11 @@ class TestBuildWizard:
             magical_item_chooser,
             all_choices_resolver,
             AIPartialBuilderAssigner(
-                description="Rządna władzy czarodziejka gotowa złamać wszelkie zasady by osiągnąć cel, preferuje manipulację i magię błyskawic",
+                # description="Rządna władzy czarodziejka gotowa złamać wszelkie zasady by osiągnąć cel, preferuje manipulację i magię błyskawic",
+                description="Gwałtowna jak burza magini o wielkiej sile rażenia, z precyzją pozbywa się swoich wrogów, używając błyskawic",
                 llm=llm,
-                # "2. Gwałtowna jak burza magini o wielkiej sile rażenia, z precyzją pozbywa się swoich wrogów, używając błyskawic"
             ),
-        )
+        ).character
 
         assert isinstance(wizard, Character)
         assert wizard.weapons

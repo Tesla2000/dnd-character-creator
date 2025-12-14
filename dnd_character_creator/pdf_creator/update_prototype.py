@@ -305,7 +305,7 @@ def update_prototype(
     )
 
     prototype = prototype.replace(
-        "MaxHitPoints{13", "MaxHitPoints{" + str(character_wrapper.health)
+        "MaxHitPoints{13", "MaxHitPoints{" + str(character_wrapper.health_base)
     )
     prototype = prototype.replace(
         "MaxHitDice{2d6",

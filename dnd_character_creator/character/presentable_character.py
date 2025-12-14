@@ -161,11 +161,6 @@ class PresentableCharacter(Character):
 
     @computed_field
     @property
-    def max_hp(self) -> int:
-        return self.health + (FeatName.TOUGH in self.feats) * 2 * self.level
-
-    @computed_field
-    @property
     def abilities(self) -> dict[Skill, int]:
         return {
             s: self._get_modifier(skill2ability[s])
@@ -348,6 +343,17 @@ class PresentableCharacter(Character):
                 for action_type, actions in actions.items()
             }
         return actions
+
+    @computed_field
+    @property
+    def health(self) -> int:
+        constitution_modifier = self._get_modifier(Statistic.CONSTITUTION)
+        health_increase_per_level = constitution_modifier
+        if FeatName.TOUGH in self.feats:
+            health_increase_per_level += 2
+        if self.race == Race.DWARF:
+            health_increase_per_level += 1
+        return self.health_base + self.level * health_increase_per_level
 
     def _get_spellcasting_modifier(self) -> int:
         return self._get_modifier(self.spellcasting_ability)

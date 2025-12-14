@@ -76,7 +76,4 @@ class RandomMagicalItemChooser(MagicalItemChooserBase):
                 selected = random.choices(available, k=count)
                 selected_items.extend(selected)
 
-        # Add selected items to blueprint
-        new_magical_items = blueprint.magical_items + tuple(selected_items)
-
-        return Blueprint(magical_items=new_magical_items)
+        return self._add_items(blueprint, tuple(selected_items))

@@ -178,5 +178,10 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
 
         # Add selected items to blueprint
         new_magical_items = blueprint.magical_items + tuple(selected_items)
-
-        return Blueprint(magical_items=new_magical_items)
+        for magical_item in new_magical_items:
+            blueprint = magical_item.assign_to(blueprint)
+        return blueprint.model_copy(
+            update=dict(
+                magical_items=blueprint.magical_items + new_magical_items
+            )
+        )

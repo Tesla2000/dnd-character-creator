@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from abc import ABC
 
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
+from dnd_character_creator.character.magical_item.item import MagicalItem
 from pydantic import ConfigDict
 
 
@@ -35,3 +37,13 @@ class MagicalItemChooserBase(BuildingBlock, ABC):
     n_artifact: int = 0
     n_unique: int = 0
     n_mistery: int = 0
+
+    @staticmethod
+    def _add_items(
+        blueprint: Blueprint, selected_items: tuple[MagicalItem, ...]
+    ) -> Blueprint:
+        new_magical_items = blueprint.magical_items + tuple(selected_items)
+        for magical_item in new_magical_items:
+            diff = magical_item.assign_to(blueprint)
+            blueprint = blueprint.add_diff(diff)
+        return blueprint

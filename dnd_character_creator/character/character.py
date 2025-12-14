@@ -142,7 +142,7 @@ class Character(BaseModel):
     background: Background
     alignment: Alignment
     stats: Stats
-    health: PositiveInt = Field(exclude=True)
+    health_base: PositiveInt = Field(exclude=True)
     height: PositiveInt
     weight: PositiveInt
     eye_color: str
