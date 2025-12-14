@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC
-from collections.abc import Mapping
-from typing import Any
 
 from dnd_character_creator.character.blueprint.building_blocks.character_base_template import (
     CharacterBaseTemplate,
@@ -10,7 +8,6 @@ from dnd_character_creator.character.blueprint.building_blocks.character_base_te
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
     InitialDataFiller,
 )
-from frozendict import frozendict
 from langchain_openai import ChatOpenAI
 from pydantic import Field
 
@@ -26,30 +23,7 @@ class AIBuilderBase(InitialDataFiller, ABC):
         description="Natural language description of the character to generate"
     )
 
-    model_name: str = Field(
-        description="OpenAI model name to use for generation",
-    )
-
-    temperature: float = Field(
-        default=0.7, description="Temperature for AI generation (0-2)"
-    )
-
-    ai_model_kwargs: Mapping[str, Any] = Field(
-        default_factory=frozendict,
-        description="Additional kwargs to pass to ChatOpenAI",
-    )
-
-    def _create_llm(self) -> ChatOpenAI:
-        """Create a ChatOpenAI instance with configured parameters.
-
-        Returns:
-            Configured ChatOpenAI instance.
-        """
-        return ChatOpenAI(
-            model=self.model_name,
-            temperature=self.temperature,
-            **self.ai_model_kwargs,
-        )
+    llm: ChatOpenAI
 
     def _generate_character_template(
         self, prompt: str
@@ -62,6 +36,5 @@ class AIBuilderBase(InitialDataFiller, ABC):
         Returns:
             CharacterBaseTemplate with AI-generated values.
         """
-        llm = self._create_llm()
-        template = llm.with_structured_output(CharacterBaseTemplate)
+        template = self.llm.with_structured_output(CharacterBaseTemplate)
         return template.invoke(prompt)

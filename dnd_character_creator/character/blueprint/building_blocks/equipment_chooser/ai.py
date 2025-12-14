@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import Any
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.blueprint_formatter import (
     BlueprintFormatter,
@@ -14,7 +11,6 @@ from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser
 )
 from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
-from frozendict import frozendict
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from pydantic import Field
@@ -37,43 +33,19 @@ class AIEquipmentChooser(EquipmentChooser):
     from available options.
 
     Example:
+        >>> from langchain_openai import ChatOpenAI
         >>> chooser = AIEquipmentChooser(
-        ...     model_name="gpt-4o-mini",
-        ...     temperature=0.3
+        ...     llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
         ... )
         >>> builder = Builder().add(chooser)
     """
 
-    model_name: str = Field(
-        description="OpenAI model name to use for equipment selection"
-    )
-
-    temperature: float = Field(
-        default=0.3,
-        description="Temperature for AI selection (lower = more deterministic)",
-    )
-
-    ai_model_kwargs: Mapping[str, Any] = Field(
-        default_factory=frozendict,
-        description="Additional kwargs to pass to ChatOpenAI",
-    )
+    llm: ChatOpenAI
 
     formatter: BlueprintFormatter = Field(
         default_factory=BlueprintFormatter,
         description="Blueprint formatter for creating AI prompts",
     )
-
-    def _create_llm(self) -> ChatOpenAI:
-        """Create a ChatOpenAI instance with configured parameters.
-
-        Returns:
-            Configured ChatOpenAI instance.
-        """
-        return ChatOpenAI(
-            model=self.model_name,
-            temperature=self.temperature,
-            **self.ai_model_kwargs,
-        )
 
     def _build_equipment_choices_section(self, blueprint: Blueprint) -> str:
         """Build the equipment choices section of the prompt.
@@ -167,8 +139,9 @@ class AIEquipmentChooser(EquipmentChooser):
 
         # Build prompt and get AI selection
         prompt = self._build_prompt(blueprint)
-        llm = self._create_llm()
-        structured_llm = llm.with_structured_output(EquipmentChoiceSelection)
+        structured_llm = self.llm.with_structured_output(
+            EquipmentChoiceSelection
+        )
         selection = structured_llm.invoke(prompt)
 
         # Validate selection

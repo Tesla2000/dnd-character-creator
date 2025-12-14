@@ -4,7 +4,6 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.ai_builder_base import (
     AIBuilderBase,
 )
-from pydantic import Field
 
 
 class AIBaseBuilderAssigner(AIBuilderBase):
@@ -16,19 +15,14 @@ class AIBaseBuilderAssigner(AIBuilderBase):
     of what's already set.
 
     Example:
+        >>> from langchain_openai import ChatOpenAI
         >>> assigner = AIBaseBuilderAssigner(
         ...     description="A wise elderly elven wizard who studies ancient magic",
-        ...     model_name="gpt-4o",
-        ...     temperature=0.7
+        ...     llm=ChatOpenAI(model="gpt-4o", temperature=0.7)
         ... )
         >>> builder = Builder([assigner])
         >>> character = builder.build()
     """
-
-    model_name: str = Field(
-        default="gpt-4o",
-        description="OpenAI model name to use for generation",
-    )
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Generate character parameters using AI and yield the difference.

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
-    InitialDataFiller,
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.ai_builder_base import (
+    AIBuilderBase,
 )
-from pydantic import Field
 
 
-class AIPartialBuilderAssigner(InitialDataFiller):
+class AIPartialBuilderAssigner(AIBuilderBase):
     """Uses AI to fill only unset basic character parameters.
 
     This building block leverages LLM structured output to generate values
@@ -20,17 +19,11 @@ class AIPartialBuilderAssigner(InitialDataFiller):
         ...     RaceAssigner(race=Race.ELF),  # Set race first
         ...     AIPartialBuilderAssigner(
         ...         description="A wise wizard",
-        ...         model_name="gpt-4o",
-        ...         temperature=0.7
+        ...         llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
         ...     ),  # AI fills other fields, respects race=ELF
         ... ])
         >>> character = builder.build()
     """
-
-    model_name: str = Field(
-        default="gpt-4o-mini",
-        description="OpenAI model name to use for generation",
-    )
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Generate only unset character parameters using AI.

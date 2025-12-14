@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import Any
-
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.blueprint_formatter import (
     BlueprintFormatter,
@@ -18,7 +15,6 @@ from dnd_character_creator.choices.class_creation.character_class import (
 from dnd_character_creator.choices.class_creation.character_class import (
     SUBCLASSES,
 )
-from frozendict import frozendict
 from langchain_openai import ChatOpenAI
 from pydantic import create_model
 from pydantic import Field
@@ -33,44 +29,20 @@ class AISubclassAssigner(SubclassAssigner):
 
     Example:
         >>> from dnd_character_creator.choices.class_creation.character_class import Class
+        >>> from langchain_openai import ChatOpenAI
         >>> assigner = AISubclassAssigner(
         ...     class_=Class.WIZARD,
-        ...     model_name="gpt-4o-mini",
-        ...     temperature=0.4
+        ...     llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.4)
         ... )
         >>> builder = Builder().add(assigner)
     """
 
-    model_name: str = Field(
-        description="OpenAI model name to use for subclass selection"
-    )
-
-    temperature: float = Field(
-        default=0.4,
-        description="Temperature for AI selection (lower = more deterministic)",
-    )
-
-    ai_model_kwargs: Mapping[str, Any] = Field(
-        default_factory=frozendict,
-        description="Additional kwargs to pass to ChatOpenAI",
-    )
+    llm: ChatOpenAI
 
     formatter: BlueprintFormatter = Field(
         default_factory=BlueprintFormatter,
         description="Blueprint formatter for creating AI prompts",
     )
-
-    def _create_llm(self) -> ChatOpenAI:
-        """Create a ChatOpenAI instance with configured parameters.
-
-        Returns:
-            Configured ChatOpenAI instance.
-        """
-        return ChatOpenAI(
-            model=self.model_name,
-            temperature=self.temperature,
-            **self.ai_model_kwargs,
-        )
 
     def _build_prompt(self, blueprint: Blueprint) -> str:
         """Build a prompt for AI subclass selection.
@@ -140,8 +112,7 @@ class AISubclassAssigner(SubclassAssigner):
             subclass=(subclass_enum, ...),
         )
 
-        llm = self._create_llm()
-        structured_llm = llm.with_structured_output(SubclassSelection)
+        structured_llm = self.llm.with_structured_output(SubclassSelection)
 
         try:
             result = structured_llm.invoke(prompt)

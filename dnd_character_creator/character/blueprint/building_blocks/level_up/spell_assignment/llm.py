@@ -20,9 +20,10 @@ class LLMSpellAssigner(SpellAssigner):
     using an LLM to make intelligent choices that fit the character concept.
 
     Example:
+        >>> from langchain_openai import ChatOpenAI
         >>> assigner = LLMSpellAssigner(
         ...     class_=Class.WIZARD,
-        ...     model_name="gpt-4o-mini",
+        ...     llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.7),
         ...     character_description="Fire-focused evocation specialist",
         ... )
     """
@@ -30,8 +31,7 @@ class LLMSpellAssigner(SpellAssigner):
     model_config = ConfigDict(frozen=True)
 
     class_: Class
-    model_name: str = "gpt-4o-mini"
-    temperature: float = 0.7
+    llm: ChatOpenAI
     character_description: Optional[str] = None
 
     def _select_spells(
@@ -89,8 +89,7 @@ Choose spells that tell a story about who this character is."""
         )
 
         # Get LLM selection
-        llm = ChatOpenAI(model=self.model_name, temperature=self.temperature)
-        structured = llm.with_structured_output(SpellSelection)
+        structured = self.llm.with_structured_output(SpellSelection)
 
         try:
             result = structured.invoke(context)

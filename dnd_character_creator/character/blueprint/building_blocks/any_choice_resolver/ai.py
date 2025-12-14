@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Any
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
@@ -18,7 +17,6 @@ from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.skill_proficiency import Skill
-from frozendict import frozendict
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from pydantic import Field
@@ -50,19 +48,7 @@ class AIAnyChoiceResolver(AnyChoiceResolver):
         >>> builder = Builder().add(resolver)
     """
 
-    model_name: str = Field(
-        description="OpenAI model name to use for choice resolution"
-    )
-
-    temperature: float = Field(
-        default=0.3,
-        description="Temperature for AI selection (lower = more deterministic)",
-    )
-
-    ai_model_kwargs: Mapping[str, Any] = Field(
-        default_factory=frozendict,
-        description="Additional kwargs to pass to ChatOpenAI",
-    )
+    llm: ChatOpenAI
 
     formatter: BlueprintFormatter = Field(
         default_factory=BlueprintFormatter,
@@ -73,18 +59,6 @@ class AIAnyChoiceResolver(AnyChoiceResolver):
         """Not used in AI implementation - overrides _get_change instead."""
         raise NotImplementedError(
             "AIAnyChoiceResolver overrides _get_change directly"
-        )
-
-    def _create_llm(self) -> ChatOpenAI:
-        """Create a ChatOpenAI instance with configured parameters.
-
-        Returns:
-            Configured ChatOpenAI instance.
-        """
-        return ChatOpenAI(
-            model=self.model_name,
-            temperature=self.temperature,
-            **self.ai_model_kwargs,
         )
 
     def _build_prompt(self, blueprint: Blueprint) -> str:
@@ -232,8 +206,7 @@ class AIAnyChoiceResolver(AnyChoiceResolver):
         # Build prompt and get AI selection
         prompt = self._build_prompt(blueprint)
 
-        llm = self._create_llm()
-        structured_llm = llm.with_structured_output(AnyChoiceSelection)
+        structured_llm = self.llm.with_structured_output(AnyChoiceSelection)
         selection = structured_llm.invoke(prompt)
 
         # Validate and apply selections

@@ -51,6 +51,7 @@ from pydantic import AfterValidator
 from pydantic import computed_field
 from pydantic import ConfigDict
 from pydantic import model_validator
+from pydantic import NonNegativeInt
 
 
 def _conv_to_frozendict(value: Any) -> Any:
@@ -277,14 +278,10 @@ class PresentableCharacter(Character):
             return None
         return self._get_spellcasting_modifier() + self.proficiency_bonus
 
-    # @computed_field
-    # @property
-    # def n_prepared_spells(self) -> NonNegativeInt:
-    #     if self.spellcasting_ability is None:
-    #         return 0
-    #     return bool(self.spells_by_level[1]) * (
-    #         self.level + max(0, self.spellcasting_modifier)
-    #     )
+    @computed_field
+    @property
+    def n_prepared_spells(self) -> NonNegativeInt:
+        return self.level + max(0, self._get_spellcasting_modifier())
 
     @computed_field
     @property
@@ -358,125 +355,3 @@ class PresentableCharacter(Character):
             and ability.combat_related
             and ability.required_level <= class_level
         )
-
-
-# def _improve_from_ability_score(
-#     self, attributes_in_order: Sequence[Statistic]
-# ):
-#     def _add2next_odd() -> bool:
-#         for attribute in attributes_in_order[1:]:
-#             if self._attributes[attribute] % 2:
-#                 self._attributes[attribute] += 1
-#                 return True
-#
-#     attributes_in_order = self._reduce_attributes_in_order(
-#         attributes_in_order
-#     )
-#     if len(attributes_in_order) == 1:
-#         self._attributes[attributes_in_order[0]] = min(
-#             20, self._attributes[attributes_in_order[0]] + 2
-#         )
-#         return
-#     if (
-#         self._attributes[attributes_in_order[0]] % 2
-#         and self._attributes[attributes_in_order[0]] == 19
-#     ):
-#         self._attributes[attributes_in_order[0]] += 1
-#         if not _add2next_odd():
-#             self._attributes[attributes_in_order[1]] += 1
-#     elif self._attributes[attributes_in_order[0]] % 2:
-#         self._attributes[attributes_in_order[0]] += 1
-#         if not _add2next_odd():
-#             self._attributes[attributes_in_order[0]] += 1
-#     else:
-#         self._attributes[attributes_in_order[0]] += 2
-
-# @property
-# def attributes(self) -> dict[Statistic, int]:
-#     attributes_in_order = (
-#         self.first_most_important_stat,
-#         self.second_most_important_stat,
-#         self.third_most_important_stat,
-#         self.forth_most_important_stat,
-#         self.fifth_most_important_stat,
-#         self.sixth_most_important_stat,
-#     )
-#     if self._attributes:
-#         return self._attributes
-#     if (
-#         resource_paths.stats_creation_method
-#         == StatsCreationMethod.STANDARD_ARRAY
-#     ):
-#         for attribute, points in zip(
-#             attributes_in_order,
-#             (15, 14, 13, 12, 10, 8),
-#         ):
-#             self._attributes[attribute] = points
-#         assert (
-#             len(self._attributes) == 6
-#         ), "Some attribute value are duplicated. Ask author for help"
-#     race_attributes = self._race_stats.statistics.model_dump()
-#     for attribute_name in self._attributes:
-#         self._attributes[attribute_name] += race_attributes[attribute_name]
-#     if race_attributes["any_of_your_choice"] == 3:
-#         self._attributes[self.first_most_important_stat] += 2
-#         self._attributes[self.second_most_important_stat] += 1
-#     elif race_attributes["any_of_your_choice"]:
-#         order = iter(attributes_in_order)
-#         for stat in order:
-#             if stat in race_attributes:
-#                 continue
-#             if race_attributes["any_of_your_choice"] == 2:
-#                 self._attributes[stat] += 1
-#                 self._attributes[next(order)] += 1
-#             else:
-#                 self._attributes[stat] += 1
-#             break
-#     for feat in self.feats:
-#         if feat == Feat.ABILITY_SCORE_IMPROVEMENT:
-#             self._improve_from_ability_score(attributes_in_order)
-#         elif feat == Feat.RESILIENT:
-#             _ = self.saving_throw_proficiencies
-#             important_saves = (
-#                 Statistic.DEXTERITY,
-#                 Statistic.CONSTITUTION,
-#                 Statistic.WISDOM,
-#             )
-#             important_saves = tuple(
-#                 filterfalse(
-#                     self._saving_throws.__contains__, important_saves
-#                 )
-#             )
-#             attributes_in_order = tuple(
-#                 filter(
-#                     important_saves.__contains__,
-#                     self._reduce_attributes_in_order(attributes_in_order),
-#                 )
-#             )
-#             if attributes_in_order:
-#                 self._attributes[attributes_in_order[0]] += 1
-#                 self._saving_throws.append(attributes_in_order[0])
-#             else:
-#                 raise ValueError
-#         elif (
-#             self._feat2feat_template(feat).attribute_increase
-#             == StatisticAndAny.ANY_OF_YOUR_CHOICE
-#         ):
-#             attributes_in_order = self._reduce_attributes_in_order(
-#                 attributes_in_order
-#             )
-#             if attributes_in_order:
-#                 self._attributes[attributes_in_order[0]] += 1
-#             else:
-#                 raise ValueError
-#         elif self._feat2feat_template(feat).attribute_increase:
-#             self._attributes[
-#                 self._feat2feat_template(feat).attribute_increase
-#             ] = min(
-#                 20,
-#                 self._attributes[
-#                     self._feat2feat_template(feat).attribute_increase
-#                 ]
-#                 + 1,
-#             )
-#     return self._attributes

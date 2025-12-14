@@ -61,10 +61,6 @@ class LevelIncrementer(BuildingBlock):
                     WeaponProficiency.QUARTERSTAFF,
                     WeaponProficiency.LIGHT_CROSSBOW,
                 ),
-                saving_throws=(
-                    Statistic.INTELLIGENCE,
-                    Statistic.WISDOM,
-                ),
                 n_skill_choices=2,
                 skills_to_choose_from=(
                     Skill.ARCANA,

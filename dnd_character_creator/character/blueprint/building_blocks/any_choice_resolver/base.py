@@ -52,21 +52,19 @@ class AnyChoiceResolver(BuildingBlock, ABC):
         return resolved
 
     def _resolve_set_feat(
-        self, items: Iterable[T], placeholder_value: T
+        self,
+        items: Iterable[T],
+        placeholder_value: T,
+        ability_score_improvement_allowed: bool,
     ) -> set[T]:
         resolved = set()
+        excluded_values = [placeholder_value]
+        if not ability_score_improvement_allowed:
+            excluded_values.append(FeatName.ABILITY_SCORE_IMPROVEMENT)
         for item in items:
             if item == placeholder_value:
                 enum_class = type(item)
-                available = [
-                    v
-                    for v in enum_class
-                    if v
-                    not in (
-                        placeholder_value,
-                        FeatName.ABILITY_SCORE_IMPROVEMENT,
-                    )
-                ]
+                available = [v for v in enum_class if v != placeholder_value]
                 resolved.add(self._select_from_available(available))
             else:
                 resolved.add(item)
@@ -122,7 +120,15 @@ class AnyChoiceResolver(BuildingBlock, ABC):
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Replace ANY_OF_YOUR_CHOICE placeholders in blueprint with concrete choices."""
-
+        feats = self._resolve_set_feat(
+            blueprint.feats,
+            FeatName.ANY_OF_YOUR_CHOICE,
+            sum(blueprint.classes.values()) != 1,
+        )
+        n_ability_score_improvements = sum(
+            map(FeatName.ABILITY_SCORE_IMPROVEMENT.__eq__, feats)
+        )
+        feats = tuple(filter(FeatName.ABILITY_SCORE_IMPROVEMENT.__eq__, feats))
         return Blueprint(
             languages=self._resolve_set(
                 blueprint.languages, Language.ANY_OF_YOUR_CHOICE
@@ -130,10 +136,9 @@ class AnyChoiceResolver(BuildingBlock, ABC):
             skill_proficiencies=self._resolve_set(
                 blueprint.skill_proficiencies, Skill.ANY_OF_YOUR_CHOICE
             ),
-            feats=self._resolve_set_feat(
-                blueprint.feats, FeatName.ANY_OF_YOUR_CHOICE
-            ),
+            feats=feats,
             tool_proficiencies=self._resolve_tool_proficiencies(
                 blueprint.tool_proficiencies
             ),
+            n_stat_choices=2 * n_ability_score_improvements,
         )
