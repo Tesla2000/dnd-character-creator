@@ -6,12 +6,6 @@ from dnd_character_creator.character.blueprint.building_blocks.age_assigner impo
 from dnd_character_creator.character.blueprint.building_blocks.alignment_assigner import (
     AlignmentAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.any_choice_resolver import (
-    AnyChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks.any_choice_resolver import (
-    RandomAnyChoiceResolver,
-)
 from dnd_character_creator.character.blueprint.building_blocks.background_assigner import (
     BackgroundAssigner,
 )
@@ -30,6 +24,15 @@ from dnd_character_creator.character.blueprint.building_blocks.equipment_adder i
 from dnd_character_creator.character.blueprint.building_blocks.feat_adder import (
     FeatAdder,
 )
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver import (
+    AIFeatChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver import (
+    FeatChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver import (
+    RandomFeatChoiceResolver,
+)
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler import (
     AIBaseBuilderAssigner,
 )
@@ -41,6 +44,15 @@ from dnd_character_creator.character.blueprint.building_blocks.initial_data_fill
 )
 from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler import (
     RandomInitialDataFiller,
+)
+from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver import (
+    AILanguageChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver import (
+    LanguageChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver import (
+    RandomLanguageChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_assigner import (
     LevelAssigner,
@@ -60,11 +72,29 @@ from dnd_character_creator.character.blueprint.building_blocks.skill_choice_reso
 from dnd_character_creator.character.blueprint.building_blocks.skill_choice_resolver import (
     SkillChoiceResolver,
 )
+from dnd_character_creator.character.blueprint.building_blocks.skill_proficiency_choice_resolver import (
+    AISkillProficiencyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.skill_proficiency_choice_resolver import (
+    RandomSkillProficiencyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.skill_proficiency_choice_resolver import (
+    SkillProficiencyChoiceResolver,
+)
 from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resolver import (
     PriorityStatChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resolver import (
     StatChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
+    AIToolProficiencyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
+    RandomToolProficiencyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
+    ToolProficiencyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.weapon_adder import (
     WeaponAdder,
@@ -74,24 +104,34 @@ __all__ = [
     "AgeAssigner",
     "AIBaseBuilderAssigner",
     "AIBuilderBase",
+    "AIFeatChoiceResolver",
+    "AILanguageChoiceResolver",
     "AIPartialBuilderAssigner",
+    "AISkillProficiencyChoiceResolver",
+    "AIToolProficiencyChoiceResolver",
     "AlignmentAssigner",
-    "AnyChoiceResolver",
     "BackgroundAssigner",
     "BuildingBlock",
     "CharacterBaseTemplate",
     "CombinedBlock",
     "EquipmentAdder",
     "FeatAdder",
+    "FeatChoiceResolver",
+    "LanguageChoiceResolver",
     "LevelAssigner",
     "NameAssigner",
     "PriorityStatChoiceResolver",
     "RaceAssigner",
-    "RandomAnyChoiceResolver",
+    "RandomFeatChoiceResolver",
     "RandomInitialDataFiller",
+    "RandomLanguageChoiceResolver",
     "RandomSkillChoiceResolver",
+    "RandomSkillProficiencyChoiceResolver",
+    "RandomToolProficiencyChoiceResolver",
     "SexAssigner",
     "SkillChoiceResolver",
+    "SkillProficiencyChoiceResolver",
     "StatChoiceResolver",
+    "ToolProficiencyChoiceResolver",
     "WeaponAdder",
 ]

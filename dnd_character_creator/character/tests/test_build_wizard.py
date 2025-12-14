@@ -13,16 +13,28 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RaceAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
-    RandomAnyChoiceResolver,
+    RandomFeatChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
+    RandomLanguageChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
     RandomSkillChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
+    RandomSkillProficiencyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
+    RandomToolProficiencyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
     AllChoicesResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser.random import (
     RandomEquipmentChooser,
+)
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.max_first import (
+    MaxFirstResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.initial_builder import (
     InitialBuilder,
@@ -70,15 +82,20 @@ class TestBuildWizard:
         stats_priority = (
             Statistic.INTELLIGENCE,
             Statistic.CONSTITUTION,
-            Statistic.CHARISMA,
             Statistic.WISDOM,
             Statistic.DEXTERITY,
+            Statistic.CHARISMA,
             Statistic.STRENGTH,
         )
         level = 16
         all_choices_resolver = AllChoicesResolver(
             blocks=(
-                RandomAnyChoiceResolver(),
+                RandomLanguageChoiceResolver(),
+                RandomSkillProficiencyChoiceResolver(),
+                MaxFirstResolver(
+                    priority=stats_priority, then=RandomFeatChoiceResolver()
+                ),
+                RandomToolProficiencyChoiceResolver(),
                 PriorityStatChoiceResolver(priority=stats_priority),
                 RandomSkillChoiceResolver(),
                 RandomInitialDataFiller(),
