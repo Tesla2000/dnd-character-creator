@@ -43,8 +43,46 @@ class CharacterBaseTemplate(BaseModel):
         description="Character's moral and ethical outlook. Should fit personality and backstory."
     )
 
-    level: int = Field(
-        ge=1,
-        le=20,
-        description="Character's experience level from 1 (novice) to 20 (legendary).",
+    backstory: str = Field(
+        description="Character's personal history, motivations, and life story before adventuring."
+    )
+
+    height: PositiveInt = Field(
+        description="Character's height in inches. Should be appropriate for their race and sex."
+    )
+
+    weight: PositiveInt = Field(
+        description="Character's weight in pounds. Should be appropriate for their race and sex."
+    )
+
+    eye_color: str = Field(
+        description="Color of character's eyes. Can be typical or exotic based on race."
+    )
+
+    skin_color: str = Field(
+        description="Character's skin tone or color. Should be appropriate for their race."
+    )
+
+    hairstyle: str = Field(
+        description="Description of character's hairstyle and hair color."
+    )
+
+    appearance: str = Field(
+        description="Overall physical description of the character, including distinctive features."
+    )
+
+    character_traits: str = Field(
+        description="Personality traits that define how the character behaves and interacts."
+    )
+
+    ideals: str = Field(
+        description="Core beliefs and principles that guide the character's actions."
+    )
+
+    bonds: str = Field(
+        description="Connections to people, places, or things that the character cares about."
+    )
+
+    weaknesses: str = Field(
+        description="Flaws or weaknesses in the character's personality or past."
     )

@@ -25,7 +25,7 @@ class StatChoiceResolver(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def _select_stats_to_increase(
+    def select_stats_to_increase(
         self, blueprint: Blueprint
     ) -> dict[Statistic, int]:
         """Select which stats to increase based on blueprint context.
@@ -52,7 +52,7 @@ class StatChoiceResolver(BuildingBlock, ABC):
             )
 
         # Select which stats to increase
-        stat_increases = self._select_stats_to_increase(blueprint)
+        stat_increases = self.select_stats_to_increase(blueprint)
 
         # Apply increases to current stats
         new_stats = Stats(

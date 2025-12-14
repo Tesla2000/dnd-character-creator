@@ -142,7 +142,7 @@ class Character(BaseModel):
     background: Background
     alignment: Alignment
     stats: Stats
-    health: PositiveInt
+    health: PositiveInt = Field(exclude=True)
     height: PositiveInt
     weight: PositiveInt
     eye_color: str
@@ -205,6 +205,7 @@ class Character(BaseModel):
             wisdom=0,
             charisma=0,
         ),
+        exclude=True,
     )
     stats_cup: Stats = Field(
         default=Stats(
@@ -215,7 +216,8 @@ class Character(BaseModel):
             wisdom=20,
             charisma=20,
         ),
+        exclude=True,
     )
-    ac_bonus: NonNegativeInt = 0
+    ac_bonus: NonNegativeInt = Field(0, exclude=True)
     saving_throw_proficiencies: tuple[Statistic, ...]
     other_active_abilities: tuple[str, ...]

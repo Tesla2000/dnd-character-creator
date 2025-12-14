@@ -31,4 +31,4 @@ jobs:
 
       - name: Run pytest
         run: |
-          timeout 7 poetry run pytest dnd_character_creator -m "not integration"
+          timeout 7 poetry run pytest dnd_character_creator -m "not integration and not requires_api_key"

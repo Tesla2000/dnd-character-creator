@@ -57,6 +57,15 @@ from dnd_character_creator.character.blueprint.building_blocks.language_choice_r
 from dnd_character_creator.character.blueprint.building_blocks.level_assigner import (
     LevelAssigner,
 )
+from dnd_character_creator.character.blueprint.building_blocks.magical_item_chooser import (
+    AIMagicalItemChooser,
+)
+from dnd_character_creator.character.blueprint.building_blocks.magical_item_chooser import (
+    MagicalItemChooserBase,
+)
+from dnd_character_creator.character.blueprint.building_blocks.magical_item_chooser import (
+    RandomMagicalItemChooser,
+)
 from dnd_character_creator.character.blueprint.building_blocks.name_assigner import (
     NameAssigner,
 )
@@ -106,6 +115,7 @@ __all__ = [
     "AIBuilderBase",
     "AIFeatChoiceResolver",
     "AILanguageChoiceResolver",
+    "AIMagicalItemChooser",
     "AIPartialBuilderAssigner",
     "AISkillProficiencyChoiceResolver",
     "AIToolProficiencyChoiceResolver",
@@ -119,12 +129,14 @@ __all__ = [
     "FeatChoiceResolver",
     "LanguageChoiceResolver",
     "LevelAssigner",
+    "MagicalItemChooserBase",
     "NameAssigner",
     "PriorityStatChoiceResolver",
     "RaceAssigner",
     "RandomFeatChoiceResolver",
     "RandomInitialDataFiller",
     "RandomLanguageChoiceResolver",
+    "RandomMagicalItemChooser",
     "RandomSkillChoiceResolver",
     "RandomSkillProficiencyChoiceResolver",
     "RandomToolProficiencyChoiceResolver",

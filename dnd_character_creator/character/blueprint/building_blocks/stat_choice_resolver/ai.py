@@ -82,7 +82,7 @@ class AIStatChoiceResolver(StatChoiceResolver):
 
         return character_description + "\n".join(instructions)
 
-    def _select_stats_to_increase(
+    def select_stats_to_increase(
         self, blueprint: Blueprint
     ) -> dict[Statistic, int]:
         """Use AI to select which stats to increase.

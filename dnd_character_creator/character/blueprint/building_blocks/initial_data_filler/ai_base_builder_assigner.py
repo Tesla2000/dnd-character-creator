@@ -10,9 +10,10 @@ class AIBaseBuilderAssigner(AIBuilderBase):
     """Uses AI to assign all basic character parameters based on a description.
 
     This building block leverages LLM structured output to generate coherent
-    character parameters (name, sex, age, race, background, alignment, level)
-    from a natural language description. Always generates all fields regardless
-    of what's already set.
+    character parameters (name, sex, age, race, background, alignment, level,
+    backstory, physical attributes, and personality traits) from a natural
+    language description. Always generates all fields regardless of what's
+    already set.
 
     Example:
         >>> from langchain_openai import ChatOpenAI
@@ -46,5 +47,15 @@ class AIBaseBuilderAssigner(AIBuilderBase):
             race=result.race,
             background=result.background,
             alignment=result.alignment,
-            level=result.level,
+            backstory=result.backstory,
+            height=result.height,
+            weight=result.weight,
+            eye_color=result.eye_color,
+            skin_color=result.skin_color,
+            hairstyle=result.hairstyle,
+            appearance=result.appearance,
+            character_traits=result.character_traits,
+            ideals=result.ideals,
+            bonds=result.bonds,
+            weaknesses=result.weaknesses,
         )

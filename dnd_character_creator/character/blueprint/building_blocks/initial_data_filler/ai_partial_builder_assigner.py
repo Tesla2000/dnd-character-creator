@@ -58,7 +58,27 @@ class AIPartialBuilderAssigner(AIBuilderBase):
             updates["background"] = result.background
         if "alignment" not in set_fields:
             updates["alignment"] = result.alignment
-        if "level" not in set_fields:
-            updates["level"] = result.level
+        if "backstory" not in set_fields:
+            updates["backstory"] = result.backstory
+        if "height" not in set_fields:
+            updates["height"] = result.height
+        if "weight" not in set_fields:
+            updates["weight"] = result.weight
+        if "eye_color" not in set_fields:
+            updates["eye_color"] = result.eye_color
+        if "skin_color" not in set_fields:
+            updates["skin_color"] = result.skin_color
+        if "hairstyle" not in set_fields:
+            updates["hairstyle"] = result.hairstyle
+        if "appearance" not in set_fields:
+            updates["appearance"] = result.appearance
+        if "character_traits" not in set_fields:
+            updates["character_traits"] = result.character_traits
+        if "ideals" not in set_fields:
+            updates["ideals"] = result.ideals
+        if "bonds" not in set_fields:
+            updates["bonds"] = result.bonds
+        if "weaknesses" not in set_fields:
+            updates["weaknesses"] = result.weaknesses
 
         return Blueprint(**updates)

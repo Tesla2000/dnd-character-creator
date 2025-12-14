@@ -4,8 +4,8 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
 )
-from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
-    AllChoicesResolver,
+from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
+    AllChoicesResolverBase,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import (
     HealthIncrease,
@@ -24,6 +24,10 @@ class LevelUp(CombinedBlock):
     Increments the level for the specified class by 1. Validates that total
     character level doesn't exceed the blueprint's level field.
 
+    Accepts any implementation of AllChoicesResolverBase, allowing
+    flexibility between sequential resolvers (AllChoicesResolver) and
+    holistic AI resolvers (AIAllChoicesResolver).
+
     Example:
         >>> builder = Builder([
         ...     LevelAssigner(level=10),
@@ -34,7 +38,10 @@ class LevelUp(CombinedBlock):
     """
 
     blocks: tuple[
-        LevelIncrementer, HealthIncrease, SpellAssigner, AllChoicesResolver
+        LevelIncrementer,
+        HealthIncrease,
+        SpellAssigner,
+        AllChoicesResolverBase,
     ]
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:

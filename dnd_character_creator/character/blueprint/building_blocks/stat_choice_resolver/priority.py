@@ -41,7 +41,7 @@ class PriorityStatChoiceResolver(StatChoiceResolver):
 
     priority: StatsPriority
 
-    def _select_stats_to_increase(
+    def select_stats_to_increase(
         self, blueprint: Blueprint
     ) -> dict[Statistic, int]:
         """Select stats to increase based on priority order.

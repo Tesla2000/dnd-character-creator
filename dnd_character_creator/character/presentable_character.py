@@ -161,6 +161,11 @@ class PresentableCharacter(Character):
 
     @computed_field
     @property
+    def max_hp(self) -> int:
+        return self.health + (FeatName.TOUGH in self.feats) * 2 * self.level
+
+    @computed_field
+    @property
     def abilities(self) -> dict[Skill, int]:
         return {
             s: self._get_modifier(skill2ability[s])
@@ -226,9 +231,14 @@ class PresentableCharacter(Character):
         no_abilities = armor.base_ac + bonus
         if self.race == Race.LIZARDFOLK:
             no_abilities = max(no_abilities, 13 + modifier)
-        return no_abilities + 2 * (
-            SHIELD in self.other_equipment
-            and ArmorProficiency.SHIELDS in self.armor_proficiencies
+        return (
+            no_abilities
+            + 2
+            * (
+                SHIELD in self.other_equipment
+                and ArmorProficiency.SHIELDS in self.armor_proficiencies
+            )
+            + self.ac_bonus
         )
 
     @computed_field

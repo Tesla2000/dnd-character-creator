@@ -209,8 +209,9 @@ class BlueprintFormatter(BaseModel):
     def _format_equipment(self, blueprint: Blueprint) -> list[str]:
         """Format equipment information."""
         lines = []
-        if blueprint.armor:
-            lines.append(self._item(f"Armor: {blueprint.armor.value}"))
+        if blueprint.armors:
+            armors_str = ", ".join(w.value for w in blueprint.armors)
+            lines.append(self._item(f"Armors: {armors_str}"))
         if blueprint.weapons:
             weapons_str = ", ".join(w.value for w in blueprint.weapons)
             lines.append(self._item(f"Weapons: {weapons_str}"))
