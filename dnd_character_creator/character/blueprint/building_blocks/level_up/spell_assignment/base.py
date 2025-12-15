@@ -145,11 +145,24 @@ class SpellAssigner(BuildingBlock, ABC):
         Returns:
             Dictionary mapping spell level to number of spells to learn.
         """
+        spell_increase = {}
+        n_cantrips_increase_levels = (4, 10)
         if self.class_ == Class.WIZARD:
-            # Wizard-specific spell learning rules
-            if self._is_first_level(blueprint):
+            if blueprint.classes[self.class_] == 1:
                 return {0: 3, 1: 6}
-            return {self._get_max_spell_level(blueprint): 2}
+            spell_increase[self._get_max_spell_level(blueprint)] = 2
+            spell_increase[0] = (
+                blueprint.classes[self.class_] in n_cantrips_increase_levels
+            )
+            return spell_increase
+        if self.class_ == Class.SORCERER:
+            if blueprint.classes[self.class_] == 1:
+                return {0: 4, 1: 2}
+            spell_increase[self._get_max_spell_level(blueprint)] = 1
+            spell_increase[0] = (
+                blueprint.classes[self.class_] in n_cantrips_increase_levels
+            )
+            return spell_increase
         raise NotImplementedError(
             "For non-wizards, no specific spell learning rules yet"
         )

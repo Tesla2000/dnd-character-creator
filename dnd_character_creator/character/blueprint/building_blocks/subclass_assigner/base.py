@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from typing import Any
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
@@ -20,6 +21,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
     SUBCLASSES,
 )
 from pydantic import ConfigDict
+from pydantic import model_validator
 
 
 class SubclassAssigner(BuildingBlock, ABC):
@@ -37,6 +39,24 @@ class SubclassAssigner(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     class_: Class
+    available_subclasses: tuple[AnySubclass, ...]
+
+    @model_validator(mode="before")
+    @classmethod
+    def _add_available_subclasses(cls, data: dict[str, Any]) -> dict[str, Any]:
+        class_ = Class(data.get("class_"))
+        subclass_enum = SUBCLASSES[class_]
+        available_subclasses = data.get(
+            "available_subclasses", tuple(subclass_enum)
+        )
+        if any(
+            subclass not in subclass_enum for subclass in available_subclasses
+        ):
+            raise ValueError(
+                f"Not all subclasses of {available_subclasses} are available to {class_}"
+            )
+        data["available_subclasses"] = available_subclasses
+        return data
 
     @abstractmethod
     def _select_subclass(self, blueprint: Blueprint) -> AnySubclass:

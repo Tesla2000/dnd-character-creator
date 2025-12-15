@@ -46,7 +46,7 @@ class LevelIncrementer(BuildingBlock):
         )
 
     def _is_ability_score_improvement(self, class_level: int) -> bool:
-        if self.class_ == Class.WIZARD:
+        if self.class_ in (Class.WIZARD, Class.SORCERER):
             return class_level in (4, 8, 12, 16, 19)
         raise NotImplementedError()
 

@@ -12,9 +12,6 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
 from dnd_character_creator.choices.class_creation.character_class import (
     AnySubclass,
 )
-from dnd_character_creator.choices.class_creation.character_class import (
-    SUBCLASSES,
-)
 from pydantic import ConfigDict
 
 
@@ -50,9 +47,5 @@ class RandomSubclassAssigner(SubclassAssigner):
         if self.seed is not None:
             random.seed(self.seed)
 
-        # Get all available subclasses for this class
-        subclass_enum = SUBCLASSES[self.class_]
-        available_subclasses = list(subclass_enum)
-
         # Randomly select one
-        return random.choice(available_subclasses)
+        return random.choice(self.available_subclasses)

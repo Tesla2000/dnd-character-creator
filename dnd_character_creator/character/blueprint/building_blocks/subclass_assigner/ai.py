@@ -68,17 +68,13 @@ class AISubclassAssigner(SubclassAssigner):
             blueprint, system_prompt=system_prompt
         )
 
-        # Get available subclasses
-        subclass_enum = SUBCLASSES[self.class_]
-        available_subclasses = list(subclass_enum)
-
         # Add subclass options section
         subclass_instructions = [
             f"\n## Available {self.class_.value} Subclasses",
             "Select ONE subclass from the following options:\n",
         ]
 
-        for subclass_option in available_subclasses:
+        for subclass_option in self.available_subclasses:
             subclass_instructions.append(f"  - {subclass_option.value}")
 
         subclass_instructions.append(
