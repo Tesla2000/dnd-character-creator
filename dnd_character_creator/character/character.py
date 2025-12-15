@@ -5,6 +5,7 @@ from typing import Annotated
 from typing import Any
 from typing import Optional
 
+from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.magical_item.item import MagicalItem
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
@@ -18,7 +19,6 @@ from dnd_character_creator.choices.class_creation.character_class import (
     AnySubclass,
 )
 from dnd_character_creator.choices.class_creation.character_class import Class
-from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex
@@ -219,5 +219,7 @@ class Character(BaseModel):
         exclude=True,
     )
     ac_bonus: NonNegativeInt = Field(0, exclude=True)
+    spell_save_dc_bonus: NonNegativeInt = Field(0, exclude=True)
+    spellcasting_ability_bonus: NonNegativeInt = Field(0, exclude=True)
     saving_throw_proficiencies: tuple[Statistic, ...]
     other_active_abilities: tuple[str, ...]

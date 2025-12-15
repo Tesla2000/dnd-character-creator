@@ -144,19 +144,13 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
 
         # Get AI selections
         structured_llm = self.llm.with_structured_output(MagicalItemSelection)
-        selection = structured_llm.invoke(prompt)
+        selection: MagicalItemSelection = structured_llm.invoke(prompt)
 
         # Map selected names to MagicalItem objects
         item_map = {item.name: item for item in MAGICAL_ITEMS}
-        selected_items = []
-
-        for item_name in selection.selected_items:
-            if item_name in item_map:
-                selected_items.append(item_map[item_name])
-            else:
-                # Handle case where AI returns item name not in database
-                # Could log warning or raise error - for now, skip
-                pass
+        selected_items = tuple(
+            map(item_map.__getitem__, selection.selected_items)
+        )
 
         # Verify counts match requested amounts
         total_requested = (
@@ -176,12 +170,4 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
                 f"{total_requested} were requested"
             )
 
-        # Add selected items to blueprint
-        new_magical_items = blueprint.magical_items + tuple(selected_items)
-        for magical_item in new_magical_items:
-            blueprint = magical_item.assign_to(blueprint)
-        return blueprint.model_copy(
-            update=dict(
-                magical_items=blueprint.magical_items + new_magical_items
-            )
-        )
+        return self._add_items(blueprint, selected_items)

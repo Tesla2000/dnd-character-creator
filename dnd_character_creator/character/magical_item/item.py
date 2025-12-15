@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import TypeVar
 
 from pydantic import BaseModel
 
@@ -8,6 +9,8 @@ if TYPE_CHECKING:
     from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.magical_item.level import Level
 from dnd_character_creator.character.magical_item.source import Source
+
+BlueprintType = TypeVar("BlueprintType", bound="Blueprint")
 
 
 class MagicalItem(BaseModel):
@@ -17,5 +20,5 @@ class MagicalItem(BaseModel):
     source: Source
     attuned: bool
 
-    def assign_to(self, blueprint: Blueprint) -> Blueprint:
+    def assign_to(self, blueprint: BlueprintType) -> BlueprintType:
         return type(blueprint)(magical_items=blueprint.magical_items + (self,))

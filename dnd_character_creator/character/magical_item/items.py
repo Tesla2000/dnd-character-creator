@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.magical_item.item import MagicalItem
 from dnd_character_creator.character.magical_item.level import Level
 from dnd_character_creator.character.magical_item.source import Source
@@ -20,6 +21,9 @@ from dnd_character_creator.character.magical_item.specialized_items import (
 )
 from dnd_character_creator.character.magical_item.specialized_items import (
     StatSettingItem,
+)
+from dnd_character_creator.character.magical_item.specialized_items.robe_of_archmagi import (
+    RobeOfTheArchmagi,
 )
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 
@@ -465,8 +469,8 @@ ring_of_spell_turning = MagicalItem(
     attuned=True,
 )
 
-robe_of_the_archmagi = MagicalItem(
-    name="Robe of the Archmagi",
+robe_of_the_archmagi = RobeOfTheArchmagi(
+    name=ArmorName.ROBE_OF_THE_ARCHMAGI,
     description="This elegant robe grants powerful benefits to spellcasters: If you aren't wearing armor, your base AC is 15 + your Dexterity modifier. You have advantage on saving throws against spells and magical effects. Your spell save DC and spell attack bonus each increase by 2. Requires attunement by a sorcerer, warlock, or wizard.",
     level=Level.LEGENDARY,
     source=Source.DMG,

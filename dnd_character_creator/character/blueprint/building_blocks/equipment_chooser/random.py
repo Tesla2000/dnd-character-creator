@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import random
 
+from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser.base import (
     EquipmentChooser,
 )
-from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 
 

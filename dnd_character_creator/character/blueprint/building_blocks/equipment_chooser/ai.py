@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.blueprint_formatter import (
     BlueprintFormatter,
@@ -9,7 +10,6 @@ from dnd_character_creator.character.blueprint.blueprint_formatter import (
 from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser.base import (
     EquipmentChooser,
 )
-from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel

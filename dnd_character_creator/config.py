@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.race.race import Race
 from pydantic import Field
 from pydantic import PositiveInt
@@ -12,7 +13,6 @@ from pydantic_settings import BaseSettings
 from .choices.alignment import Alignment
 from .choices.background_creatrion.background import Background
 from .choices.class_creation.character_class import WizardSubclass
-from .choices.equipment_creation.armor import ArmorName
 from .choices.equipment_creation.weapons import WeaponName
 from .choices.invocations.eldritch_invocation import WarlockPact
 from .choices.race_creation.sub_race_sources import DNDResource
@@ -82,26 +82,6 @@ class Config(BaseSettings):
     uses_shield: Optional[bool] = None
     weapons: Optional[list[WeaponName]] = None
     other_equipment: Optional[list[str]] = None
-
-    # @model_validator(mode="after")
-    # def _validate_subrace(self):
-    #     if self.sub_race:
-    #         assert (
-    #             self.main_race
-    #         ), "If sub-race is provided the race must be provided first"
-    #         assert self.sub_race in get_sub_races(self.main_race, self), (
-    #             f"Sub-race must be in sub-races "
-    #             f"{get_sub_races(self.main_race, self)}"
-    #         )
-    #     return self
-    #
-    # @model_validator(mode="after")
-    # def _validate_subclass(self):
-    #     if self.sub_class:
-    #         assert (
-    #             self.main_class
-    #         ), "If sub-class is provided the class must be provided first"
-    #     return self
 
 
 resource_paths = ResourcePaths()

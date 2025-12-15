@@ -4,6 +4,7 @@ from typing import Optional
 from typing import Self
 from typing import Union
 
+from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.character import Character
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
@@ -12,7 +13,6 @@ from dnd_character_creator.choices.alignment import Alignment
 from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
-from dnd_character_creator.choices.equipment_creation.armor import ArmorName
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex

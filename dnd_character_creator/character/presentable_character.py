@@ -9,6 +9,8 @@ from typing import Any
 from typing import Optional
 from typing import Self
 
+from dnd_character_creator.character.armor.armors import ARMORS
+from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.character import Character
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.spells import SPELLCASTING_ABILITY_MAP
@@ -26,13 +28,6 @@ from dnd_character_creator.choices.class_creation.character_class import (
 from dnd_character_creator.choices.class_creation.character_class import (
     SUBCLASSES,
 )
-from dnd_character_creator.choices.equipment_creation.armor import Armor
-from dnd_character_creator.choices.equipment_creation.armor import (
-    ArmorCategory,
-)
-from dnd_character_creator.choices.equipment_creation.armor import ArmorName
-from dnd_character_creator.choices.equipment_creation.armor import ARMORS
-from dnd_character_creator.choices.equipment_creation.armor import SHIELD
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from dnd_character_creator.config import resource_paths
@@ -198,40 +193,10 @@ class PresentableCharacter(Character):
     @computed_field
     @property
     def ac(self) -> int:
-        return max(
-            map(
-                self._armor_ac,
-                map(ARMORS.__getitem__, self.armors + (ArmorName.CLOTHES,)),
-            )
-        )
-
-    def _armor_ac(self, armor: Armor) -> int:
-        modifier = self._get_modifier(Statistic.DEXTERITY)
-        if armor.category == ArmorCategory.HEAVY and (
-            ArmorProficiency.ALL_ARMOR in self.armor_proficiencies
-            or ArmorProficiency.HEAVY_ARMOR in self.armor_proficiencies
-        ):
-            bonus = 0
-        elif armor.category == ArmorCategory.MEDIUM and (
-            ArmorProficiency.ALL_ARMOR in self.armor_proficiencies
-            or ArmorProficiency.MEDIUM_ARMOR in self.armor_proficiencies
-        ):
-            bonus = min(2, modifier)
-        else:
-            bonus = modifier
-            if Class.MONK in self.classes:
-                bonus += self._get_modifier(Statistic.WISDOM)
-            elif Class.BARBARIAN in self.classes:
-                bonus += self._get_modifier(Statistic.CONSTITUTION)
-        no_abilities = armor.base_ac + bonus
-        if self.race == Race.LIZARDFOLK:
-            no_abilities = max(no_abilities, 13 + modifier)
         return (
-            no_abilities
-            + 2
-            * (
-                SHIELD in self.other_equipment
-                and ArmorProficiency.SHIELDS in self.armor_proficiencies
+            max(
+                ARMORS[armor].calc_ac(self)
+                for armor in (self.armors + (ArmorName.CLOTHES,))
             )
             + self.ac_bonus
         )
@@ -274,6 +239,7 @@ class PresentableCharacter(Character):
             8
             + self.proficiency_bonus
             + self._get_modifier(self.spellcasting_ability)
+            + self.spell_save_dc_bonus
         )
 
     @computed_field
@@ -281,7 +247,11 @@ class PresentableCharacter(Character):
     def spell_attack_bonus(self) -> Optional[int]:
         if self.spellcasting_ability is None:
             return None
-        return self._get_spellcasting_modifier() + self.proficiency_bonus
+        return (
+            self._get_spellcasting_modifier()
+            + self.proficiency_bonus
+            + self.spellcasting_ability_bonus
+        )
 
     @computed_field
     @property
@@ -359,7 +329,7 @@ class PresentableCharacter(Character):
         return self._get_modifier(self.spellcasting_ability)
 
     def _get_modifier(self, statistic: Statistic) -> int:
-        return self.stats.get_stat(statistic) // 2 - 5
+        return self.stats.get_modifier(statistic)
 
     @staticmethod
     def _is_ability_accessible(

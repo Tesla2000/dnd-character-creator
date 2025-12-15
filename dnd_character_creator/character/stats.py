@@ -40,3 +40,6 @@ class Stats(BaseModel):
     def get_stat(self, stat: Statistic) -> int:
         """Get the value of a specific stat using the Statistic enum."""
         return getattr(self, stat.value.lower())
+
+    def get_modifier(self, stat: Statistic) -> int:
+        return getattr(self, stat.value.lower()) // 2 - 5

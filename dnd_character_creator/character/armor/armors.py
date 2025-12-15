@@ -1,43 +1,11 @@
-from __future__ import annotations
-
-from enum import StrEnum
-
-from dnd_character_creator.choices.equipment_creation.item import Item
+from dnd_character_creator.character.armor.armor import Armor
+from dnd_character_creator.character.armor.category import ArmorCategory
+from dnd_character_creator.character.armor.names import ArmorName
+from dnd_character_creator.character.magical_item.items import (
+    robe_of_the_archmagi,
+)
 from frozendict import frozendict
 
-
-class ArmorName(StrEnum):
-    CLOTHES = "Clothes"
-    PADDED = "Padded"
-    LEATHER = "Leather"
-    STUDDED_LEATHER = "Studded Leather"
-    HIDE = "Hide"
-    CHAIN_SHIRT = "Chain Shirt"
-    SCALE_MALE = "Scale Male"
-    SPIKED_ARMOR = "Spiked Armor"
-    BREASTPLATE = "Breastplate"
-    HALFPLATE = "Halfplate"
-    RING_MAIL = "Ring Mail"
-    CHAIN_MAIL = "Chain Mail"
-    SPLINT = "Splint"
-    PLATE = "Plate"
-
-
-class ArmorCategory(StrEnum):
-    NONE = "None"
-    LIGHT = "Light"
-    MEDIUM = "Medium"
-    HEAVY = "Heavy"
-
-
-class Armor(Item):
-    name: str
-    category: ArmorCategory
-    disadvantage_on_stealth: bool
-    base_ac: int
-
-
-SHIELD = "Shield"
 
 ARMORS: frozendict[ArmorName, Armor] = frozendict(
     {
@@ -141,7 +109,7 @@ ARMORS: frozendict[ArmorName, Armor] = frozendict(
                 base_ac=18,
                 cost=1500,
             ),
-            Item(name="shield", cost=10),
+            robe_of_the_archmagi,
         )
     }
 )
