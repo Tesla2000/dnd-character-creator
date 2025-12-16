@@ -1,0 +1,50 @@
+from __future__ import annotations
+
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
+from dnd_character_creator.character.blueprint.building_blocks import (
+    CombinedBlock,
+)
+from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
+    AllChoicesResolverBase,
+)
+from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import (
+    HealthIncrease,
+)
+from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import (
+    LevelIncrementer,
+)
+from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
+    SpellAssigner,
+)
+
+
+class LevelUp(CombinedBlock):
+    """Adds one level to a specific class.
+
+    Increments the level for the specified class by 1. Validates that total
+    character level doesn't exceed the blueprint's level field.
+
+    Accepts any implementation of AllChoicesResolverBase, allowing
+    flexibility between sequential resolvers (AllChoicesResolver) and
+    holistic AI resolvers (AIAllChoicesResolver).
+
+    Example:
+        >>> builder = Builder([
+        ...     LevelAssigner(level=10),
+        ...     LevelUp(class_=Class.FIGHTER),  # +1 level
+        ...     LevelUp(class_=Class.FIGHTER),  # +1 level
+        ...     LevelUp(class_=Class.WIZARD),   # +1 level
+        ... ])  # Character at level 10 with 2 Fighter / 1 Wizard (7 unused levels)
+    """
+
+    blocks: tuple[
+        LevelIncrementer,
+        HealthIncrease,
+        SpellAssigner,
+        AllChoicesResolverBase,
+    ]
+
+    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+        if blueprint.race is None:
+            raise ValueError("Race must be chosen before leveling up")
+        return super().get_change(blueprint)

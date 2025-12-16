@@ -1,0 +1,56 @@
+from __future__ import annotations
+
+from itertools import filterfalse
+from typing import Any
+from typing import Optional
+
+from dnd_character_creator.choices.stats_creation.statistic import (
+    StatisticAndAny,
+)
+from dnd_character_creator.other_profficiencies import ArmorProficiency
+from dnd_character_creator.other_profficiencies import GamingSet
+from dnd_character_creator.other_profficiencies import MusicalInstrument
+from dnd_character_creator.other_profficiencies import ToolProficiency
+from dnd_character_creator.other_profficiencies import WeaponProficiency
+from dnd_character_creator.skill_proficiency import Skill
+from dnd_character_creator.wiki_scraper.Ability import (
+    Ability,
+)
+from pydantic import BaseModel
+from pydantic import Field
+
+
+class Feat(BaseModel):
+    source: Optional[str]
+    ability: Optional[Ability]
+    skill_proficiency_gain: Optional[Skill]
+    skill_expertise_gain: Optional[Skill] = Field(
+        description="The same as double proficiency."
+    )
+    tool_proficiency_gain: Optional[ToolProficiency]
+    instrument_proficiency_gain: Optional[MusicalInstrument]
+    gaming_set_proficiency_gain: Optional[GamingSet]
+    weapon_proficiencies_gain: list[WeaponProficiency] = Field(
+        description="Must remain empty if nothing is provided."
+    )
+    armor_proficiencies_gain: list[ArmorProficiency] = Field(
+        description="Must remain empty if nothing is provided."
+    )
+    attribute_increase: Optional[StatisticAndAny]
+
+    def __init__(self, /, **data: Any):
+        data["weapon_proficiencies_gain"] = list(
+            filterfalse(
+                ArmorProficiency.__contains__, data["armor_proficiencies_gain"]
+            )
+        )
+        if (
+            data["skill_proficiency_gain"] not in Skill
+            and data["skill_proficiency_gain"] in ToolProficiency
+        ):
+            data["tool_proficiency_gain"] = data["skill_proficiency_gain"]
+            data["skill_proficiency_gain"] = None
+        try:
+            super().__init__(**data)
+        except Exception as e:
+            raise e

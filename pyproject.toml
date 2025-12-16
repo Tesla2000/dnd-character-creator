@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "DND_character_creator"
+name = "dnd_character_creator"
 version = "0.1.0"
 description = ""
 authors = ["Tesla2000 <fratajczak124@gmail.com>"]
@@ -11,17 +11,25 @@ pre-commit = "^3.7.1"
 dynamic-executor = "^1.2.6"
 python-dotenv = "^1.0.1"
 pydantic = "^2.8.2"
-langchain = "^0.2.14"
-langchain-openai = "^0.1.22"
 beautifulsoup4 = "^4.12.3"
 more-itertools = "^10.5.0"
 pypdf2 = "^3.0.1"
 toml = "^0.10.2"
+pydantic-settings = "^2.12.0"
+frozendict = "^2.4.7"
+langchain-openai = "^1.1.3"
+langchain = "^1.1.3"
 
+
+[tool.poetry.group.tests.dependencies]
+pytest = "^9.0.1"
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+    "requires_api_key: marks tests that require API keys (deselect with '-m \"not requires_api_key\"')",
+]
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-dnd_character_creator = "dnd_character_creator:main"

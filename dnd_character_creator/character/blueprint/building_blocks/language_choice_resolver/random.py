@@ -1,0 +1,45 @@
+from __future__ import annotations
+
+import random
+from typing import Optional
+
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
+from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver.base import (
+    LanguageChoiceResolver,
+)
+from dnd_character_creator.choices.language import Language
+from pydantic import ConfigDict
+
+
+class RandomLanguageChoiceResolver(LanguageChoiceResolver):
+    """Randomly selects languages for ANY_OF_YOUR_CHOICE placeholders.
+
+    Provides deterministic randomness when seed is set, useful for
+    reproducible character generation.
+
+    Example:
+        >>> resolver = RandomLanguageChoiceResolver(seed=42)
+        >>> # or
+        >>> resolver = RandomLanguageChoiceResolver()  # Truly random
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    seed: Optional[int] = None
+
+    def _select_from_available(
+        self, available: list[Language], _: Blueprint
+    ) -> Language:
+        """Randomly select a language from available options.
+
+        Args:
+            available: List of Language options to choose from.
+            blueprint: Current character blueprint (unused in random selection).
+
+        Returns:
+            Randomly selected Language.
+        """
+        if self.seed is not None:
+            random.seed(self.seed)
+
+        return random.choice(available)

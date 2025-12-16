@@ -1,0 +1,34 @@
+name: Run tests
+
+on:
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: false
+          virtualenvs-in-project: false
+          installer-parallel: true
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-cache --no-interaction
+
+      - name: Run pytest
+        run: |
+          timeout 7 poetry run pytest dnd_character_creator -m "not integration and not requires_api_key"
