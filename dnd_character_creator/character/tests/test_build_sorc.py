@@ -116,23 +116,21 @@ load_dotenv()
 
 
 @pytest.mark.integration
-class TestBuildMulticlass:
+class TestBuildSorcerer:
     # Common test configuration
     STATS_PRIORITY = (
-        Statistic.INTELLIGENCE,
+        Statistic.CHARISMA,
         Statistic.CONSTITUTION,
         Statistic.WISDOM,
         Statistic.DEXTERITY,
-        Statistic.CHARISMA,
+        Statistic.INTELLIGENCE,
         Statistic.STRENGTH,
     )
     LEVEL = 16
-    SORC_LEVEL = 6
     RACE = Race.HUMAN
     SUBRACE = Subrace.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK
-    WIZARD_CLASS = Class.WIZARD
-    SORC_CLASS = Class.SORCERER
-    sorc_subclasses = (
+    CLASS = Class.SORCERER
+    SUBCLASSES = (
         SorcererSubclass.DRACONIC_BLOODLINE,
         SorcererSubclass.STORM_SORCERY,
     )
@@ -152,13 +150,12 @@ class TestBuildMulticlass:
         )
 
     @classmethod
-    def _build_multiclass(
+    def _build_sorc(
         cls,
         magical_item_chooser,
         all_choices_resolver: AllChoicesResolverBase,
         initial_data_filler: InitialDataFiller,
-        wiz_subclass_assigner: SubclassAssigner,
-        sorc_subclass_assigner: SubclassAssigner,
+        subclass_assigner: SubclassAssigner,
         spell_assigner_creator: Callable[[Class], SpellAssigner],
     ):
         """Build a wizard character with the specified magical item chooser.
@@ -171,15 +168,10 @@ class TestBuildMulticlass:
         Returns:
             Built wizard character.
         """
-        level_up_wizard = cls._create_level_up(
+        level_up = cls._create_level_up(
             all_choices_resolver,
-            class_=Class.WIZARD,
-            spell_assigner=spell_assigner_creator(Class.WIZARD),
-        )
-        level_up_sorc = cls._create_level_up(
-            all_choices_resolver,
-            class_=Class.SORCERER,
-            spell_assigner=spell_assigner_creator(Class.SORCERER),
+            class_=cls.CLASS,
+            spell_assigner=spell_assigner_creator(cls.CLASS),
         )
 
         builder = (
@@ -194,32 +186,23 @@ class TestBuildMulticlass:
                             subrace=cls.SUBRACE,
                         ),
                         all_choices_resolver,
-                        level_up_wizard,
+                        level_up,
                     )
                 )
             )
             .add(initial_data_filler)
             .add(
                 LevelUpMultiple(
-                    blocks=tuple(
-                        level_up_wizard
-                        for _ in range(cls.LEVEL - cls.SORC_LEVEL - 1)
-                    )
+                    blocks=tuple(level_up for _ in range(cls.LEVEL - 1))
                 )
             )
-            .add(
-                LevelUpMultiple(
-                    blocks=tuple(level_up_sorc for _ in range(cls.SORC_LEVEL))
-                )
-            )
-            .add(wiz_subclass_assigner)
-            .add(sorc_subclass_assigner)
+            .add(subclass_assigner)
             .add(magical_item_chooser)
         )
         return builder.build()
 
-    def test_build_multiclass(self):
-        """Test wizard build with random magical item selection."""
+    def test_build_sorcerer(self):
+        """Test sorcerer build with random magical item selection."""
         magical_item_chooser = RandomMagicalItemChooser(
             n_uncommon=1,
             n_rare=2,
@@ -227,7 +210,7 @@ class TestBuildMulticlass:
             n_legendary=1,
             seed=42,
         )
-        wizard = self._build_multiclass(
+        sorcerer = self._build_sorc(
             magical_item_chooser,
             AllChoicesResolver(
                 blocks=(
@@ -244,31 +227,30 @@ class TestBuildMulticlass:
                 ),
             ),
             RandomInitialDataFiller(),
-            RandomSubclassAssigner(class_=self.WIZARD_CLASS),
             RandomSubclassAssigner(
-                class_=self.SORC_CLASS,
-                available_subclasses=self.sorc_subclasses,
+                class_=self.CLASS,
+                available_subclasses=self.SUBCLASSES,
             ),
             lambda class_: RandomSpellAssigner(class_=class_),
         ).character
 
-        assert isinstance(wizard, Character)
-        assert wizard.weapons
-        assert wizard.other_equipment
-        assert wizard.magical_items
+        assert isinstance(sorcerer, Character)
+        assert sorcerer.weapons
+        assert sorcerer.other_equipment
+        assert sorcerer.magical_items
         assert (
-            len(wizard.magical_items) == 5
+            len(sorcerer.magical_items) == 5
         )  # 1 uncommon + 2 rare + 1 very_rare + 1 legendary
         print(
-            wizard.model_dump_json(
+            sorcerer.model_dump_json(
                 indent=2,
                 exclude_defaults=True,
             )
         )
 
     @pytest.mark.requires_api_key
-    def test_build_multiclass_with_ai(self):
-        """Test wizard build with AI-powered choices (all choices including magical items)."""
+    def test_build_sorcerer_with_ai(self):
+        """Test sorcerer build with AI-powered choices (all choices including magical items)."""
         # Create LLM for AI-powered choices
         llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
         spells_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
@@ -291,9 +273,9 @@ class TestBuildMulticlass:
             n_very_rare=1,
             n_legendary=1,
         )
-        character_description = "Gwałtowna jak burza magini o wielkiej sile rażenia, z precyzją pozbywa się swoich wrogów, używając błyskawic"
-        # character_description = "Rządna władzy czarodziejka gotowa złamać wszelkie zasady by osiągnąć cel, preferuje manipulację i magię błyskawic"
-        wizard = self._build_multiclass(
+        # character_description = "Gwałtowna jak burza magini o wielkiej sile rażenia, z precyzją pozbywa się swoich wrogów, używając błyskawic"
+        character_description = "Rządna władzy czarodziejka gotowa złamać wszelkie zasady by osiągnąć cel, preferuje manipulację i magię błyskawic"
+        sorcerer = self._build_sorc(
             magical_item_chooser,
             all_choices_resolver,
             AIPartialBuilderAssigner(
@@ -301,12 +283,8 @@ class TestBuildMulticlass:
                 llm=llm,
             ),
             AISubclassAssigner(
-                class_=self.WIZARD_CLASS,
-                llm=llm,
-            ),
-            AISubclassAssigner(
-                class_=self.SORC_CLASS,
-                available_subclasses=self.sorc_subclasses,
+                class_=self.CLASS,
+                available_subclasses=self.SUBCLASSES,
                 llm=llm,
             ),
             lambda class_: LLMSpellAssigner(
@@ -316,12 +294,12 @@ class TestBuildMulticlass:
             ),
         ).character
 
-        assert isinstance(wizard, Character)
-        assert wizard.weapons
-        assert wizard.other_equipment
-        assert wizard.magical_items
+        assert isinstance(sorcerer, Character)
+        assert sorcerer.weapons
+        assert sorcerer.other_equipment
+        assert sorcerer.magical_items
         print(
-            wizard.model_dump_json(
+            sorcerer.model_dump_json(
                 indent=2,
                 exclude_defaults=True,
             )

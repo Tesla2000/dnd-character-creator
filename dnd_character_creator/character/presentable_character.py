@@ -280,17 +280,17 @@ class PresentableCharacter(Character):
                 )
             )
             actions[ability.action_type].append(ability)
-        for class_ in self.classes:
-            class_actions = defaultdict(list)
+        for class_, class_level in self.classes.items():
             for (
                 main_class_ability_path
             ) in resource_paths.main_class_abilities_root.joinpath(
                 class_
             ).iterdir():
-                ability = Ability(
-                    **json.loads(main_class_ability_path.read_text())
+                self._add_action(
+                    actions,
+                    json.loads(main_class_ability_path.read_text()),
+                    class_level,
                 )
-                class_actions[ability.action_type].append(ability)
             for subclass_name in self.subclasses:
                 if subclass_name not in SUBCLASSES[class_]:
                     continue
@@ -299,20 +299,23 @@ class PresentableCharacter(Character):
                     .joinpath(subclass_name)
                     .iterdir()
                 ):
-                    ability = Ability(
-                        **json.loads(sub_class_ability_path.read_text())
+                    self._add_action(
+                        actions,
+                        json.loads(sub_class_ability_path.read_text()),
+                        class_level,
                     )
-                    class_actions[ability.action_type].append(ability)
-            actions = {
-                action_type: list(
-                    a
-                    for a in actions
-                    if self._is_ability_accessible(a, self.classes[class_])
-                )
-                + class_actions[action_type]
-                for action_type, actions in actions.items()
-            }
         return actions
+
+    def _add_action(
+        self,
+        actions: dict[ActionType, list[Ability]],
+        data: dict[str, Any],
+        class_level: int,
+    ) -> None:
+        ability = Ability(**data)
+        if not self._is_ability_accessible(ability, class_level):
+            return
+        actions[ability.action_type].append(ability)
 
     @computed_field
     @property

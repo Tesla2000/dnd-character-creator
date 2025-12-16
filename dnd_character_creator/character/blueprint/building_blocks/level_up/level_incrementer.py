@@ -70,15 +70,48 @@ class LevelIncrementer(BuildingBlock):
                     Skill.MEDICINE,
                     Skill.RELIGION,
                 ),
+                saving_throw_proficiencies=(
+                    Statistic.INTELLIGENCE,
+                    Statistic.WISDOM,
+                ),
                 equipment_choices=(
                     (WeaponName.QUARTERSTAFF, WeaponName.DAGGER),
                     ("component pouch", "arcane focus"),
                     ("scholor's pack", "explarer's pack"),
                 ),
                 other_equipment=("spellbook",),
+            )
+        if self.class_ == Class.SORCERER:
+            return Blueprint(
+                classes=frozendict({self.class_: 1}),
+                weapon_proficiencies=(
+                    WeaponProficiency.DAGGER,
+                    WeaponProficiency.DART,
+                    WeaponProficiency.SLING,
+                    WeaponProficiency.QUARTERSTAFF,
+                    WeaponProficiency.LIGHT_CROSSBOW,
+                ),
+                n_skill_choices=2,
+                skills_to_choose_from=(
+                    Skill.ARCANA,
+                    Skill.DECEPTION,
+                    Skill.INSIGHT,
+                    Skill.INTIMIDATION,
+                    Skill.PERSUASION,
+                    Skill.RELIGION,
+                ),
                 saving_throw_proficiencies=(
-                    Statistic.INTELLIGENCE,
-                    Statistic.WISDOM,
+                    Statistic.CHARISMA,
+                    Statistic.CONSTITUTION,
+                ),
+                equipment_choices=(
+                    (WeaponName.CROSSBOW_LIGHT, WeaponName.DAGGER),
+                    ("component pouch", "arcane focus"),
+                    ("dungeoneer's pack", "explarer's pack"),
+                ),
+                other_equipment=(
+                    WeaponName.DAGGER,
+                    WeaponName.DAGGER,
                 ),
             )
         raise NotImplementedError()

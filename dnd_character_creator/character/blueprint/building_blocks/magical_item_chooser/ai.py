@@ -115,18 +115,19 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
 
         instructions.extend(
             [
-                "\n## Selection Guidelines\n",
-                "1. Select items that synergize with the character's class and abilities\n",
-                "2. Consider the character's stat priorities and weaknesses\n",
-                "3. Balance offensive, defensive, and utility items\n",
-                "4. Duplicates are allowed if strategically valuable\n",
-                "5. Choose items that enhance the character's role/concept\n",
-                "6. Return EXACTLY the item names as they appear in the available lists\n",
-                "7. Make sure to make most of this items. Headband of Intellect sounds good but not for a mage with intelligence higher than one provided by the artifact\n",
+                "\n## Selection Guidelines",
+                "1. Select items that synergize with the character's class and abilities",
+                "2. Consider the character's stat priorities and weaknesses",
+                "3. Balance offensive, defensive, and utility items",
+                "4. Duplicates are allowed if strategically valuable",
+                "5. Choose items that enhance the character's role/concept",
+                "6. Return EXACTLY the item names as they appear in the available lists",
+                "7. Make sure to make most of this items. Headband of Intellect sounds good but not for a mage with intelligence higher than one provided by the artifact",
+                "8. Make sure that thi number of items is correct",
             ]
         )
 
-        return character_description + "".join(instructions)
+        return character_description + "\n".join(instructions)
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         """Select magical items using AI in a single call.
@@ -137,11 +138,20 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
         Returns:
             Blueprint with magical items added.
         """
+        total_requested = (
+            self.n_common
+            + self.n_uncommon
+            + self.n_rare
+            + self.n_very_rare
+            + self.n_legendary
+            + self.n_artifact
+            + self.n_unique
+            + self.n_mistery
+        )
+        if not total_requested:
+            return Blueprint()
         # Build prompt
         prompt = self._build_prompt(blueprint)
-        if not prompt:
-            return Blueprint()  # No items to select
-
         # Get AI selections
         structured_llm = self.llm.with_structured_output(MagicalItemSelection)
         selection: MagicalItemSelection = structured_llm.invoke(prompt)
@@ -153,17 +163,6 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
         )
 
         # Verify counts match requested amounts
-        total_requested = (
-            self.n_common
-            + self.n_uncommon
-            + self.n_rare
-            + self.n_very_rare
-            + self.n_legendary
-            + self.n_artifact
-            + self.n_unique
-            + self.n_mistery
-        )
-
         if len(selected_items) != total_requested:
             raise ValueError(
                 f"AI selected {len(selected_items)} items but "
