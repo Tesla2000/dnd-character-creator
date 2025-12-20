@@ -11,7 +11,7 @@ This is a D&D 5e character creator that uses LLMs (via LangChain and OpenAI) to 
 ### Setup
 ```bash
 make setup  # Initialize project: install dependencies, git init, and pre-commit hooks
-poetry install  # Install dependencies only
+uv sync  # Install dependencies only
 ```
 
 ### Running
@@ -193,7 +193,7 @@ Key dependencies:
 - **pydantic & pydantic-settings**: Data validation and config management
 - **beautifulsoup4**: Web scraping D&D content
 - **pypdf2**: PDF manipulation
-- **poetry**: Dependency management
+- **uv**: Fast Python package installer and dependency manager
 - **pre-commit**: Code quality automation
 - **pytest**: Testing framework
 

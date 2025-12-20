@@ -18,17 +18,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: false
-          virtualenvs-in-project: false
-          installer-parallel: true
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
         run: |
-          poetry install --no-cache --no-interaction
+          uv sync --extra tests
 
       - name: Run pytest
         run: |
-          timeout 7 poetry run pytest dnd_character_creator -m "not integration and not requires_api_key"
+          timeout 7 uv run pytest dnd_character_creator -m "not integration and not requires_api_key"
