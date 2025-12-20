@@ -162,12 +162,10 @@ class Builder:
         increment = chain.get_increment(increment_index)
         if increment is None:
             raise IndexError(f"Increment index {increment_index} out of range")
-
         branched_builder = Builder(
             building_blocks=new_blocks,
             increment_storage=self._increment_storage,
         )
-
         result = branched_builder.build()
         return result.chain_id
 
