@@ -25,7 +25,7 @@ class AIPartialBuilderAssigner(AIBuilderBase):
         >>> character = builder.build()
     """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Generate only unset character parameters using AI.
 
         Args:

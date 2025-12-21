@@ -16,7 +16,7 @@ from frozendict import frozendict
 class LevelIncrementer(BuildingBlock):
     class_: Class
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         existing_classes = dict(blueprint.classes)
 
         # Add one level to the class

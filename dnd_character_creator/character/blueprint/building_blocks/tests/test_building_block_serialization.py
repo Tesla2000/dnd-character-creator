@@ -11,6 +11,9 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RaceAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
+    RandomMagicalItemChooser,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     SexAssigner,
 )
 from dnd_character_creator.character.race.race import Race
@@ -137,6 +140,16 @@ class TestBuildingBlockSerialization:
         assert deserialized.blocks[0] == block1
         assert deserialized.blocks[1] == block2
         assert deserialized == original
+
+    def test_grandchild_block(self):
+        """Test serialize-deserialize roundtrip for CombinedBlock."""
+        block = RandomMagicalItemChooser()
+        assert BuildingBlock not in type(block).__bases__ and isinstance(
+            block, BuildingBlock
+        )
+        serialized = block.model_dump()
+        deserialized = BuildingBlock.model_validate(serialized)
+        assert deserialized == block
 
     def test_roundtrip_incomplete_data(self):
         """Test serialize-deserialize roundtrip for CombinedBlock."""

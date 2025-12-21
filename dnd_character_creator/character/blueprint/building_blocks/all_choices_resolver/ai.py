@@ -285,7 +285,7 @@ class AIAllNonStatChoicesResolver(BuildingBlock):
 
         return character_description + "\n".join(instructions)
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Make all character choices using AI in a single call.
 
         Args:

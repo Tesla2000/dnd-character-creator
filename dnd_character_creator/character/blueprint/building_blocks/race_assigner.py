@@ -25,7 +25,7 @@ class RaceAssigner(BuildingBlock):
         # TODO: This will need to be implemented
         return self
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the race difference."""
         # TODO: add stat assigners for all classes and subclasses
         subrace_stats = SUBRACE_STATS[self.subrace].add_to(blueprint)

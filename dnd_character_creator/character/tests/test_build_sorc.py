@@ -101,7 +101,7 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
 )
 from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.character.character import Character
-from dnd_character_creator.character.checkpoint import InMemoryIncrementStorage
+from dnd_character_creator.character.checkpoint import MemoryStorage
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.choices.class_creation.character_class import Class
@@ -175,7 +175,7 @@ class TestBuildSorcerer:
         )
 
         builder = (
-            Builder(increment_storage=InMemoryIncrementStorage())
+            Builder(increment_storage=MemoryStorage())
             .add(
                 InitialBuilder(
                     blocks=(

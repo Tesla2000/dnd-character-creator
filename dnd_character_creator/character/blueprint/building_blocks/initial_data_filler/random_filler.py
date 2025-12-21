@@ -139,7 +139,7 @@ class RandomInitialDataFiller(InitialDataFiller):
         "I have a secret that could ruin me if discovered.",
     )
 
-    def _get_change(self, blueprint: Blueprint):
+    def get_change(self, blueprint: Blueprint):
         """Fill missing required fields with random mock data."""
         if self.seed is not None:
             random.seed(self.seed)

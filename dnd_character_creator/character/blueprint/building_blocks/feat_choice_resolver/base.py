@@ -40,7 +40,7 @@ class FeatChoiceResolver(BuildingBlock, ABC):
             Selected FeatName.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Replace FeatName.ANY_OF_YOUR_CHOICE placeholders.
 
         Args:

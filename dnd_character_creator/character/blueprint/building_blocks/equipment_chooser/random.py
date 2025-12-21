@@ -11,7 +11,7 @@ from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 
 
 class RandomEquipmentChooser(EquipmentChooser):
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         weapons, armors, others = [], [], []
         for options in blueprint.equipment_choices:
             choice = random.choice(options)

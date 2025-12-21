@@ -66,7 +66,7 @@ class ToolProficiencyChoiceResolver(BuildingBlock, ABC):
             Selected MusicalInstrument.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Replace tool proficiency ANY_OF_YOUR_CHOICE placeholders.
 
         Args:

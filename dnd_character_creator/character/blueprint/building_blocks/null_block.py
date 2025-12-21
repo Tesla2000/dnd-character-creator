@@ -5,5 +5,5 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 
 
 class NullBlock(BuildingBlock):
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         return Blueprint()

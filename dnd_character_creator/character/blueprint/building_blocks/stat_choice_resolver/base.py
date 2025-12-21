@@ -40,7 +40,7 @@ class StatChoiceResolver(BuildingBlock, ABC):
             Dictionary mapping statistics to increase amounts.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply stat increases based on n_stat_choices."""
         if blueprint.n_stat_choices == 0:
             # No stat choices to resolve, yield empty

@@ -3,8 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 from pathlib import Path
-from typing import Optional
-from uuid import uuid4
+from uuid import UUID
 
 from dnd_character_creator.character.checkpoint.increment_chain import (
     IncrementChain,
@@ -18,27 +17,21 @@ class IncrementStorage(ABC):
     """
 
     @abstractmethod
-    def save_chain(self, chain_id: str, chain: IncrementChain) -> None:
-        """Save an increment chain with the given ID.
-
-        Args:
-            chain_id: Unique identifier for the chain
-            chain: IncrementChain to save
-        """
-
-    @abstractmethod
-    def load_chain(self, chain_id: str) -> Optional[IncrementChain]:
+    def load_chain(self, chain_id: UUID) -> IncrementChain:
         """Load an increment chain by ID.
 
         Args:
             chain_id: Unique identifier for the chain
 
+        Raises:
+            ValueError: If not found
+
         Returns:
-            IncrementChain if found, None otherwise
+            IncrementChain
         """
 
     @abstractmethod
-    def delete_chain(self, chain_id: str) -> bool:
+    def delete_chain(self, chain_id: UUID) -> bool:
         """Delete an increment chain by ID.
 
         Args:
@@ -49,7 +42,7 @@ class IncrementStorage(ABC):
         """
 
     @abstractmethod
-    def list_chains(self) -> list[str]:
+    def list_chains(self) -> list[UUID]:
         """List all available increment chain IDs.
 
         Returns:
@@ -57,7 +50,7 @@ class IncrementStorage(ABC):
         """
 
     @abstractmethod
-    def chain_exists(self, chain_id: str) -> bool:
+    def chain_exists(self, chain_id: UUID) -> bool:
         """Check if an increment chain exists.
 
         Args:
@@ -67,14 +60,6 @@ class IncrementStorage(ABC):
             True if exists, False otherwise
         """
 
-    def generate_chain_id(self) -> str:
-        """Generate a unique chain ID.
-
-        Returns:
-            Unique string identifier
-        """
-        return str(uuid4())
-
 
 class FileIncrementStorage(IncrementStorage):
     """File-based increment storage implementation.
@@ -82,32 +67,34 @@ class FileIncrementStorage(IncrementStorage):
     Stores increment chains as JSON files in a specified directory.
     """
 
-    def __init__(self, base_path: str = ".build_increments"):
+    def __init__(self, base_path: Path = Path(".build_increments")):
         """Initialize file storage.
 
         Args:
             base_path: Base directory for storing increment files
         """
-        self._base_path = Path(base_path)
+        self._base_path = base_path
         self._base_path.mkdir(parents=True, exist_ok=True)
 
-    def _get_file_path(self, chain_id: str) -> Path:
+    def _get_file_path(self, chain_id: UUID) -> Path:
         """Get file path for a chain ID."""
         return self._base_path / f"{chain_id}.json"
 
-    def save_chain(self, chain_id: str, chain: IncrementChain) -> None:
+    def save_chain(self, chain_id: UUID, chain: IncrementChain) -> None:
         """Save an increment chain to a JSON file."""
         file_path = self._get_file_path(chain_id)
-        chain.save_to_json(str(file_path))
+        file_path.write_text(chain.model_dump_json())
 
-    def load_chain(self, chain_id: str) -> Optional[IncrementChain]:
+    def load_chain(self, chain_id: UUID) -> IncrementChain:
         """Load an increment chain from a JSON file."""
         file_path = self._get_file_path(chain_id)
         if not file_path.exists():
-            return None
-        return IncrementChain.load_from_json(str(file_path))
+            raise ValueError(
+                f"File path corresponding to {chain_id=} not found"
+            )
+        return IncrementChain.model_validate_json(file_path.read_bytes())
 
-    def delete_chain(self, chain_id: str) -> bool:
+    def delete_chain(self, chain_id: UUID) -> bool:
         """Delete an increment chain file."""
         file_path = self._get_file_path(chain_id)
         if file_path.exists():
@@ -115,41 +102,46 @@ class FileIncrementStorage(IncrementStorage):
             return True
         return False
 
-    def list_chains(self) -> list[str]:
+    def list_chains(self) -> list[UUID]:
         """List all increment chain IDs in the directory."""
-        return [p.stem for p in self._base_path.glob("*.json") if p.is_file()]
+        return [
+            UUID(p.stem) for p in self._base_path.glob("*.json") if p.is_file()
+        ]
 
-    def chain_exists(self, chain_id: str) -> bool:
+    def chain_exists(self, chain_id: UUID) -> bool:
         """Check if an increment chain file exists."""
         return self._get_file_path(chain_id).exists()
 
 
-class InMemoryIncrementStorage(IncrementStorage):
+class MemoryStorage(IncrementStorage):
     """In-memory increment storage for testing and temporary use."""
 
     def __init__(self):
         """Initialize in-memory storage."""
-        self._chains: dict[str, IncrementChain] = {}
+        self._chains: dict[UUID, IncrementChain] = {}
 
-    def save_chain(self, chain_id: str, chain: IncrementChain) -> None:
+    def save_chain(self, chain_id: UUID, chain: IncrementChain) -> None:
         """Save an increment chain to memory."""
         self._chains[chain_id] = chain
 
-    def load_chain(self, chain_id: str) -> Optional[IncrementChain]:
+    def load_chain(self, chain_id: UUID) -> IncrementChain:
         """Load an increment chain from memory."""
-        return self._chains.get(chain_id)
+        if chain_id not in self._chains:
+            chain_ids = tuple(self._chains)
+            raise ValueError(f"Chain id not in {chain_ids=}")
+        return self._chains[chain_id]
 
-    def delete_chain(self, chain_id: str) -> bool:
+    def delete_chain(self, chain_id: UUID) -> bool:
         """Delete an increment chain from memory."""
         if chain_id in self._chains:
             del self._chains[chain_id]
             return True
         return False
 
-    def list_chains(self) -> list[str]:
+    def list_chains(self) -> list[UUID]:
         """List all increment chain IDs in memory."""
         return list(self._chains.keys())
 
-    def chain_exists(self, chain_id: str) -> bool:
+    def chain_exists(self, chain_id: UUID) -> bool:
         """Check if an increment chain exists in memory."""
         return chain_id in self._chains

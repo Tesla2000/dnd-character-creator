@@ -38,7 +38,7 @@ class FeatureAssigner(BuildingBlock):
 
     feature: Feature
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply the feature to the blueprint.
 
         Delegates to the feature's assign_to method, which determines

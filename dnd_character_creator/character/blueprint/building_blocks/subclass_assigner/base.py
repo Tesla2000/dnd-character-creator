@@ -39,7 +39,7 @@ class SubclassAssigner(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     class_: Class
-    available_subclasses: tuple[AnySubclass, ...]
+    available_subclasses: tuple[AnySubclass, ...] = None
 
     @model_validator(mode="before")
     @classmethod
@@ -71,7 +71,7 @@ class SubclassAssigner(BuildingBlock, ABC):
             Selected subclass appropriate for the character's class.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Assign a subclass to the character.
 
         Args:

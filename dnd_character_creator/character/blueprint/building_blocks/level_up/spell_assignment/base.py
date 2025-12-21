@@ -147,6 +147,10 @@ class SpellAssigner(BuildingBlock, ABC):
         """
         spell_increase = {}
         n_cantrips_increase_levels = (4, 10)
+        if self.class_ not in blueprint.classes:
+            raise ValueError(
+                f"Character has no levels in {self.class_}. Level up {self.class_} before assigning spells for it."
+            )
         if self.class_ == Class.WIZARD:
             if blueprint.classes[self.class_] == 1:
                 return {0: 3, 1: 6}
@@ -201,7 +205,7 @@ class SpellAssigner(BuildingBlock, ABC):
             Tuple of selected spells.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply spell assignments to the blueprint.
 
         Args:

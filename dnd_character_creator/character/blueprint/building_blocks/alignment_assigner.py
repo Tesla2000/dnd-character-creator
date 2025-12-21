@@ -12,6 +12,6 @@ class AlignmentAssigner(BuildingBlock):
 
     alignment: Alignment
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the alignment difference."""
         return Blueprint(alignment=self.alignment)

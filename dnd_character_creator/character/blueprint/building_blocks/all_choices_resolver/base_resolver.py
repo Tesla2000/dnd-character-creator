@@ -2,14 +2,10 @@
 
 from __future__ import annotations
 
-from abc import ABC
-
-from dnd_character_creator.character.blueprint.building_blocks.building_block import (
-    BuildingBlock,
-)
+from pydantic import BaseModel
 
 
-class AllChoicesResolverBase(BuildingBlock, ABC):
+class AllChoicesResolverBase(BaseModel):
     """Abstract base class for resolvers that handle all character choices.
 
     Implementations must resolve:

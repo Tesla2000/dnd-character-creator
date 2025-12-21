@@ -22,7 +22,7 @@ class WeaponAdder(BuildingBlock):
 
     weapon: WeaponName
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Add the weapon to the existing weapons tuple.
 
         Args:

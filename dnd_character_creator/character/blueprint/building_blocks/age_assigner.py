@@ -12,6 +12,6 @@ class AgeAssigner(BuildingBlock):
 
     age: PositiveInt
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the age difference."""
         return Blueprint(age=self.age)

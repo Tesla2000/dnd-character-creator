@@ -113,7 +113,7 @@ class AIFeatChoiceResolver(FeatChoiceResolver):
 
         return character_description + "\n".join(instructions)
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Replace FeatName.ANY_OF_YOUR_CHOICE placeholders using AI.
 
         Args:
