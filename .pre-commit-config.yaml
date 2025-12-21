@@ -32,4 +32,4 @@ repos:
 #      - id: autodoc
 #        stages: [push]
 #        args: [--llm, gpt-4o-mini, --api_keys=OPENAI_API_KEY]
-default_stages: [commit]
+default_stages: [pre-commit]

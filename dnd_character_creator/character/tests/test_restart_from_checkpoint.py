@@ -1,3 +1,10 @@
+from unittest.mock import patch
+
+import pytest
+from dnd_character_creator.character.blueprint.blueprint import Blueprint
+from dnd_character_creator.character.blueprint.building_blocks import (
+    BuildingBlock,
+)
 from dnd_character_creator.character.blueprint.building_blocks import (
     LevelAssigner,
 )
@@ -24,6 +31,9 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
     RandomToolProficiencyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
+    SexAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
     AllChoicesResolver,
@@ -59,16 +69,26 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
     RandomSubclassAssigner,
 )
 from dnd_character_creator.character.builder import Builder
+from dnd_character_creator.character.checkpoint import IncrementChain
+from dnd_character_creator.character.checkpoint import IncrementStorage
 from dnd_character_creator.character.checkpoint import MemoryStorage
+from dnd_character_creator.character.presentable_character import (
+    PresentableCharacter,
+)
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.choices.class_creation.character_class import Class
+from dnd_character_creator.choices.sex import Sex
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 
 
 class TestRestartFromCheckpoint:
-    def test_restart_from_checkpoint(self):
-        increment_storage = MemoryStorage()
+    @pytest.fixture
+    def increment_storage(self) -> IncrementStorage:
+        return MemoryStorage()
+
+    @pytest.fixture
+    def builder(self, increment_storage):
         stats_priority = (
             Statistic.INTELLIGENCE,
             Statistic.CONSTITUTION,
@@ -78,7 +98,6 @@ class TestRestartFromCheckpoint:
             Statistic.STRENGTH,
         )
         class_ = Class.WIZARD
-        RandomSpellAssigner(class_=class_)
         all_choices_resolver = AllChoicesResolver(
             blocks=(
                 RandomLanguageChoiceResolver(),
@@ -102,13 +121,13 @@ class TestRestartFromCheckpoint:
                 all_choices_resolver,
             ),
         )
-        LEVEL = 16
+        level = 16
         builder = (
             Builder(increment_storage=increment_storage)
             .add(
                 InitialBuilder(
                     blocks=(
-                        LevelAssigner(level=LEVEL),
+                        LevelAssigner(level=level),
                         StandardArray(stats_priority=stats_priority),
                         RaceAssigner(
                             race=Race.HUMAN,
@@ -137,7 +156,7 @@ class TestRestartFromCheckpoint:
             .add(RandomInitialDataFiller())
             .add(
                 LevelUpMultiple(
-                    blocks=tuple(level_up for _ in range(LEVEL - 1))
+                    blocks=tuple(level_up for _ in range(level - 1))
                 )
             )
             .add(
@@ -146,4 +165,46 @@ class TestRestartFromCheckpoint:
                 )
             )
         )
-        builder.build()
+        return builder
+
+    def test_restart_from_checkpoint(self, builder, increment_storage):
+        result = builder.build()
+        increment_chain = increment_storage.load_chain(result.chain_id)
+        n_truncated_moves = 10
+        truncated_chain = increment_chain.truncate_to(
+            increment_chain.length() - n_truncated_moves
+        )
+        with patch.object(
+            IncrementChain,
+            IncrementChain.add_increment.__name__,
+            wraps=IncrementChain.add_increment,
+            autospec=True,
+        ) as mock_add_increment:
+            result = builder.build(truncated_chain)
+            assert isinstance(result.character, PresentableCharacter)
+            assert mock_add_increment.call_count == n_truncated_moves
+
+    def test_checkpoint_on_error(self, builder, increment_storage):
+        error_message = "Error message"
+
+        class ErrorBuildingBlock(BuildingBlock):
+
+            def get_change(self, blueprint: Blueprint) -> Blueprint:
+                raise ValueError(error_message)
+
+        invalid_builder = builder.add(ErrorBuildingBlock())
+        result = invalid_builder.build()
+        assert result.error.args[0] == error_message
+        increment_chain = increment_storage.load_chain(result.chain_id)
+        n_truncated_moves = 1
+        truncated_chain = increment_chain.truncate_to(increment_chain.length())
+        valid_builder = builder.add(SexAssigner(sex=Sex.MALE))
+        with patch.object(
+            IncrementChain,
+            IncrementChain.add_increment.__name__,
+            wraps=IncrementChain.add_increment,
+            autospec=True,
+        ) as mock_add_increment:
+            result = valid_builder.build(truncated_chain)
+            assert isinstance(result.character, PresentableCharacter)
+            assert mock_add_increment.call_count == n_truncated_moves

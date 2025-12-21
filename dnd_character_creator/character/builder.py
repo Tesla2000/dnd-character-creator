@@ -5,6 +5,7 @@ from itertools import islice
 from typing import NamedTuple
 from typing import Optional
 from typing import Self
+from typing import Union
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
@@ -25,15 +26,15 @@ from dnd_character_creator.character.presentable_character import (
 class BuildResult(NamedTuple):
     """Result of building a character with increment tracking."""
 
-    character: Optional[PresentableCharacter]
     chain_id: uuid.UUID
-    error: Optional[Exception]
+    character: Optional[PresentableCharacter] = None
+    error: Optional[Exception] = None
 
 
 class Builder:
     def __init__(
         self,
-        building_blocks: tuple[BuildingBlock, ...] = (),
+        building_blocks: tuple[Union[BuildingBlock, CombinedBlock], ...] = (),
         increment_storage: Optional[IncrementStorage] = None,
     ):
         self._building_blocks = building_blocks
@@ -59,26 +60,28 @@ class Builder:
                 None,
             )
         )
+        for diff in increment_chain:
+            blueprint = blueprint.add_diff(diff)
 
-        e = None
+        chain_id = uuid.uuid4()
         try:
             for block in flatten_blocks:
                 diff = block.get_change(blueprint)
                 blueprint = blueprint.add_diff(diff)
                 increment_chain = increment_chain.add_increment(diff)
         except Exception as e:
-            raise e
+            return BuildResult(
+                chain_id=chain_id,
+                error=e,
+            )
         finally:
-            chain_id = uuid.uuid4()
             self._increment_storage.save_chain(chain_id, increment_chain)
-
         return BuildResult(
             character=self._make_presentable(blueprint),
             chain_id=chain_id,
-            error=e,
         )
 
-    def add(self, building_block: BuildingBlock) -> Self:
+    def add(self, building_block: Union[BuildingBlock, CombinedBlock]) -> Self:
         return type(self)(
             self._building_blocks + (building_block,), self._increment_storage
         )

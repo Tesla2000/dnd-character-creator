@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from typing import Optional
+from typing import Self
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from pydantic import BaseModel
@@ -42,7 +43,7 @@ class IncrementChain(BaseModel):
             return self.increments[-1]
         return None
 
-    def add_increment(self, increment: Blueprint) -> IncrementChain:
+    def add_increment(self, increment: Blueprint) -> Self:
         """Add a new increment to the chain (returns new instance).
 
         Args:
@@ -53,7 +54,7 @@ class IncrementChain(BaseModel):
         """
         return IncrementChain(increments=self.increments + (increment,))
 
-    def truncate_to(self, index: int) -> IncrementChain:
+    def truncate_to(self, index: int) -> Self:
         """Create new chain containing only increments up to (and including) index.
 
         Args:
@@ -62,9 +63,9 @@ class IncrementChain(BaseModel):
         Returns:
             New IncrementChain with truncated history
         """
-        if index < 0 or index >= len(self.increments):
+        if index < 0 or index > len(self.increments):
             raise IndexError(f"Increment index {index} out of range")
-        return IncrementChain(increments=self.increments[: index + 1])
+        return IncrementChain(increments=self.increments[:index])
 
     def length(self) -> int:
         """Return number of increments in chain."""
