@@ -124,6 +124,13 @@ class CombinedBlock(BuildingBlock):
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         raise ValueError(f"{self._get_change.__name__} ")
 
+    def flatten(self) -> Generator[BuildingBlock, None, None]:
+        for block in self.blocks:
+            if not isinstance(block, CombinedBlock):
+                yield block
+            else:
+                yield from block.flatten()
+
     @classmethod
     def model_validate(
         cls,

@@ -39,7 +39,7 @@ class SubclassAssigner(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     class_: Class
-    available_subclasses: tuple[AnySubclass, ...]
+    available_subclasses: tuple[AnySubclass, ...] = None
 
     @model_validator(mode="before")
     @classmethod
