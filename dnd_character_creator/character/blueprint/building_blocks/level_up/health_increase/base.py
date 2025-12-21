@@ -51,7 +51,7 @@ class HealthIncrease(BuildingBlock, ABC):
             The hit die value to add to health.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Calculate and apply health increase.
 
         Args:

@@ -14,7 +14,7 @@ class StandardArray(StatsBuilder):
         tuple[int, int, int, int, int, int]
     ] = (15, 14, 13, 12, 10, 8)
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         return Blueprint(
             stats=Stats.from_mapping(
                 dict(zip(self.stats_priority, self._standard_array_descending))

@@ -129,7 +129,7 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
 
         return character_description + "\n".join(instructions)
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Select magical items using AI in a single call.
 
         Args:

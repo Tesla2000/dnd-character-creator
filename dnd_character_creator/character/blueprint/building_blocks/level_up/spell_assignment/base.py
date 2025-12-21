@@ -201,7 +201,7 @@ class SpellAssigner(BuildingBlock, ABC):
             Tuple of selected spells.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply spell assignments to the blueprint.
 
         Args:

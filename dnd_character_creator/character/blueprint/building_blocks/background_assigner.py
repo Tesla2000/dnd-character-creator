@@ -14,6 +14,6 @@ class BackgroundAssigner(BuildingBlock):
 
     background: Background
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the background difference."""
         return Blueprint(background=self.background)

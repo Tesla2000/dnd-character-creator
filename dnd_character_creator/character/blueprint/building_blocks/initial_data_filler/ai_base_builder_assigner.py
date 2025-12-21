@@ -25,7 +25,7 @@ class AIBaseBuilderAssigner(AIBuilderBase):
         >>> character = builder.build()
     """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Generate character parameters using AI and yield the difference.
 
         Args:

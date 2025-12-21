@@ -10,5 +10,5 @@ from dnd_character_creator.character.magical_item.item import MagicalItem
 class MagicalItemAssigner(BuildingBlock):
     magical_item: MagicalItem
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         return self.magical_item.assign_to(blueprint)

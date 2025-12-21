@@ -11,6 +11,6 @@ class NameAssigner(BuildingBlock):
 
     name: str
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the name difference."""
         return Blueprint(name=self.name)

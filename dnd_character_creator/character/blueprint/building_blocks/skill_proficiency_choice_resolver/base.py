@@ -37,7 +37,7 @@ class SkillProficiencyChoiceResolver(BuildingBlock, ABC):
             Selected Skill.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Replace Skill.ANY_OF_YOUR_CHOICE placeholders.
 
         Args:

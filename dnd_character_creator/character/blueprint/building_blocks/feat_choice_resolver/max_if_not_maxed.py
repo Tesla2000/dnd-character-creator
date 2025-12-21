@@ -25,7 +25,7 @@ class MaxIfNotMaxedResolver(FeatChoiceResolver):
             return FeatName.ABILITY_SCORE_IMPROVEMENT
         raise _AlreadyMaxed()
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Replace FeatName.ANY_OF_YOUR_CHOICE placeholders.
 
         Args:
@@ -36,6 +36,6 @@ class MaxIfNotMaxedResolver(FeatChoiceResolver):
             to n_stat_choices.
         """
         try:
-            return super()._get_change(blueprint)
+            return super().get_change(blueprint)
         except _AlreadyMaxed:
             return Blueprint()

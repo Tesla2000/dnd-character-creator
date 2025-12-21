@@ -32,7 +32,7 @@ class RandomMagicalItemChooser(MagicalItemChooserBase):
 
     seed: int | None = None
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Select magical items by rarity level using random selection.
 
         Args:

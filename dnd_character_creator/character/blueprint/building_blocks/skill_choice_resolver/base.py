@@ -38,7 +38,7 @@ class SkillChoiceResolver(BuildingBlock, ABC):
             Frozenset of selected skills.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply skill choices based on n_skill_choices."""
         if blueprint.n_skill_choices == 0:
             # No skill choices to resolve, yield empty

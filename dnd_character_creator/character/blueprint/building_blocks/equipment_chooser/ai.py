@@ -124,7 +124,7 @@ class AIEquipmentChooser(EquipmentChooser):
 
         return "\n".join(parts)
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Use AI to select equipment from available choices.
 
         Args:

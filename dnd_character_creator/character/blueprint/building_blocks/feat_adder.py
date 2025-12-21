@@ -23,7 +23,7 @@ class FeatAdder(BuildingBlock):
 
     feat: FeatName
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Add the feat to the existing feat tuple.
 
         Args:

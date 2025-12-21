@@ -34,7 +34,7 @@ class LanguageChoiceResolver(BuildingBlock, ABC):
             Selected Language.
         """
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Replace Language.ANY_OF_YOUR_CHOICE placeholders.
 
         Args:

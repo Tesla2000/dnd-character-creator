@@ -51,10 +51,6 @@ class IncrementChain(BaseModel):
         Returns:
             New IncrementChain with increment added
         """
-        expected_index = len(self.increments)
-        if increment.index != expected_index:
-            increment = increment.model_copy(update={"index": expected_index})
-
         return IncrementChain(increments=self.increments + (increment,))
 
     def truncate_to(self, index: int) -> IncrementChain:

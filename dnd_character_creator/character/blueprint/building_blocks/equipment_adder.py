@@ -22,7 +22,7 @@ class EquipmentAdder(BuildingBlock):
 
     item: str
 
-    def _get_change(self, blueprint: Blueprint) -> Blueprint:
+    def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Add the item to the existing equipment tuple.
 
         Args:

@@ -59,21 +59,15 @@ class Builder:
                 None,
             )
         )
-        diff_generator = CombinedBlock(blocks=flatten_blocks).get_change(
-            blueprint
-        )
 
         e = None
         try:
-            diff = next(diff_generator)
-            while True:
+            for block in flatten_blocks:
+                diff = block.get_change(blueprint)
                 blueprint = blueprint.add_diff(diff)
                 increment_chain = increment_chain.add_increment(diff)
-                diff = diff_generator.send(blueprint)
-        except StopIteration:
-            pass
-        except Exception as e:  # noqa: F841
-            pass
+        except Exception as e:
+            raise e
         finally:
             chain_id = uuid.uuid4()
             self._increment_storage.save_chain(chain_id, increment_chain)
