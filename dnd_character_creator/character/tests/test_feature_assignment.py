@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import pytest
+from dnd_character_creator.character.blueprint.blueprint import (
+    Blueprint,
+)
 from dnd_character_creator.character.blueprint.building_blocks import (
     FeatureAssigner,
 )
@@ -31,9 +34,6 @@ class TestFeatureAssignment:
     @pytest.fixture
     def base_blueprint(self):
         """Create a minimal blueprint for testing."""
-        from dnd_character_creator.character.blueprint.blueprint import (
-            Blueprint,
-        )
 
         return Blueprint(
             stats=Stats(
@@ -67,8 +67,7 @@ class TestFeatureAssignment:
 
     def _apply_building_block(self, block, blueprint):
         """Helper to apply a building block to a blueprint."""
-        gen = block.get_change(blueprint)
-        diff = next(gen)
+        diff = block.get_change(blueprint)
         return blueprint.add_diff(diff)
 
     def test_basic_feature_assignment(self, base_blueprint):

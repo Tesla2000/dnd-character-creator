@@ -18,16 +18,7 @@ from pydantic.config import ExtraValues
 BLOCK_TYPE_FIELD_NAME = "block_type"
 
 
-class BuildingBlock(BaseModel, ABC):
-    model_config = ConfigDict(frozen=True)
-
-    _type_registry: ClassVar[dict[str, type[BuildingBlock]]] = {}
-
-    def __init_subclass__(cls, **kwargs: Any) -> None:
-        """Register subclasses for polymorphic deserialization."""
-        super().__init_subclass__(**kwargs)
-        if ABC not in cls.__bases__:  # Only register concrete classes
-            BuildingBlock._type_registry[cls.__name__] = cls
+class SerializableBlock(BaseModel):
 
     @computed_field(alias=BLOCK_TYPE_FIELD_NAME)  # type: ignore[prop-decorator]
     @property
@@ -38,6 +29,68 @@ class BuildingBlock(BaseModel, ABC):
     @classmethod
     def get_block_type(cls) -> str:
         return cls.__name__
+
+
+class CombinedBlock(SerializableBlock):
+    """Combines multiple building blocks to apply sequentially."""
+
+    blocks: tuple[Union[SerializeAsAny[BuildingBlock], Self], ...]
+
+    def flatten(self) -> Generator[BuildingBlock, None, None]:
+        for block in self.blocks:
+            if not isinstance(block, CombinedBlock):
+                yield block
+            else:
+                yield from block.flatten()
+
+    @classmethod
+    def model_validate(
+        cls,
+        obj: Any,
+        *,
+        strict: bool | None = None,
+        extra: ExtraValues | None = None,
+        from_attributes: bool | None = None,
+        context: Any | None = None,
+        by_alias: bool | None = None,
+        by_name: bool | None = None,
+    ) -> Self:
+        if isinstance(obj, dict):
+            obj["blocks"] = list(
+                BuildingBlock.model_validate(
+                    elem,
+                    strict=strict,
+                    extra=extra,
+                    from_attributes=from_attributes,
+                    context=context,
+                    by_alias=by_alias,
+                    by_name=by_name,
+                )
+                for elem in obj["blocks"]
+            )
+        return super().model_validate(
+            obj,
+            strict=strict,
+            extra=extra,
+            from_attributes=from_attributes,
+            context=context,
+            by_alias=by_alias,
+            by_name=by_name,
+        )
+
+
+class BuildingBlock(SerializableBlock, ABC):
+    model_config = ConfigDict(frozen=True)
+
+    _type_registry: ClassVar[
+        dict[str, Union[type[BuildingBlock], type[CombinedBlock]]]
+    ] = {CombinedBlock.get_block_type(): CombinedBlock}
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        """Register subclasses for polymorphic deserialization."""
+        super().__init_subclass__(**kwargs)
+        if ABC not in cls.__bases__:
+            BuildingBlock._type_registry[cls.__name__] = cls
 
     @classmethod
     def model_validate(
@@ -86,51 +139,3 @@ class BuildingBlock(BaseModel, ABC):
 
     def __add__(self, other: BuildingBlock) -> CombinedBlock:
         return CombinedBlock(blocks=(self, other))
-
-
-class CombinedBlock(BaseModel):
-    """Combines multiple building blocks to apply sequentially."""
-
-    blocks: tuple[Union[SerializeAsAny[BuildingBlock], Self], ...]
-
-    def flatten(self) -> Generator[BuildingBlock, None, None]:
-        for block in self.blocks:
-            if not isinstance(block, CombinedBlock):
-                yield block
-            else:
-                yield from block.flatten()
-
-    @classmethod
-    def model_validate(
-        cls,
-        obj: Any,
-        *,
-        strict: bool | None = None,
-        extra: ExtraValues | None = None,
-        from_attributes: bool | None = None,
-        context: Any | None = None,
-        by_alias: bool | None = None,
-        by_name: bool | None = None,
-    ) -> Self:
-        if isinstance(obj, dict):
-            obj["blocks"] = list(
-                BuildingBlock.model_validate(
-                    elem,
-                    strict=strict,
-                    extra=extra,
-                    from_attributes=from_attributes,
-                    context=context,
-                    by_alias=by_alias,
-                    by_name=by_name,
-                )
-                for elem in obj["blocks"]
-            )
-        return super().model_validate(
-            obj,
-            strict=strict,
-            extra=extra,
-            from_attributes=from_attributes,
-            context=context,
-            by_alias=by_alias,
-            by_name=by_name,
-        )
