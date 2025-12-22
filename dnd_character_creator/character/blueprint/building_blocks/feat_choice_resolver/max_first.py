@@ -1,6 +1,14 @@
+from typing import Union
+
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
+    AIFeatChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     FeatChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
+    RandomFeatChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.stats_priority import (
     StatsPriority,
@@ -10,7 +18,7 @@ from dnd_character_creator.feats import FeatName
 
 class MaxFirstResolver(FeatChoiceResolver):
     priority: StatsPriority
-    then: FeatChoiceResolver
+    then: Union[RandomFeatChoiceResolver, AIFeatChoiceResolver]
 
     def _select_from_available(
         self, available: list[FeatName], blueprint: Blueprint

@@ -99,6 +99,11 @@ class TestBuildingBlockSerialization:
         assert serialized["blocks"][0]["block_type"] == "SexAssigner"
         assert serialized["blocks"][1]["block_type"] == "RaceAssigner"
 
+    def test_serialize_and_deserialize_base_block_json(self, building_blocks):
+        """Test serializing a CombinedBlock containing multiple blocks."""
+        serialized = building_blocks.model_dump(mode="json")
+        assert BuildingBlock.model_validate(serialized) == building_blocks
+
     def test_deserialize_combined_block(self):
         """Test deserializing a CombinedBlock."""
         data = {
@@ -188,8 +193,7 @@ class TestBuildingBlockSerialization:
         outer_combined = CombinedBlock(blocks=(inner_combined, block3))
 
         serialized = outer_combined.model_dump()
-        block_class = BuildingBlock._type_registry[serialized["block_type"]]
-        deserialized = block_class.model_validate(serialized)
+        deserialized = BuildingBlock.model_validate(serialized)
 
         assert isinstance(deserialized, CombinedBlock)
         assert len(deserialized.blocks) == 2

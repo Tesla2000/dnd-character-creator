@@ -69,6 +69,10 @@ class Builder:
                 diff = block.get_change(blueprint)
                 blueprint = blueprint.add_diff(diff)
                 increment_chain = increment_chain.add_increment(diff)
+            return BuildResult(
+                character=self._make_presentable(blueprint),
+                chain_id=chain_id,
+            )
         except Exception as e:
             return BuildResult(
                 chain_id=chain_id,
@@ -76,10 +80,6 @@ class Builder:
             )
         finally:
             self._increment_storage.save_chain(chain_id, increment_chain)
-        return BuildResult(
-            character=self._make_presentable(blueprint),
-            chain_id=chain_id,
-        )
 
     def add(self, building_block: Union[BuildingBlock, CombinedBlock]) -> Self:
         return type(self)(
