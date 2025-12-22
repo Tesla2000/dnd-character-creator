@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import logging
-import traceback
 import uuid
 from itertools import islice
 from typing import NamedTuple
@@ -23,8 +21,6 @@ from dnd_character_creator.character.checkpoint import MemoryStorage
 from dnd_character_creator.character.presentable_character import (
     PresentableCharacter,
 )
-
-logger = logging.getLogger(__name__)
 
 
 class BuildResult(NamedTuple):
@@ -78,7 +74,6 @@ class Builder:
                 chain_id=chain_id,
             )
         except Exception as e:
-            logger.error(traceback.format_exc())
             return BuildResult(
                 chain_id=chain_id,
                 error=e,

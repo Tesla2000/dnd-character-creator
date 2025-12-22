@@ -193,8 +193,7 @@ class TestBuildingBlockSerialization:
         outer_combined = CombinedBlock(blocks=(inner_combined, block3))
 
         serialized = outer_combined.model_dump()
-        block_class = BuildingBlock._type_registry[serialized["block_type"]]
-        deserialized = block_class.model_validate(serialized)
+        deserialized = BuildingBlock.model_validate(serialized)
 
         assert isinstance(deserialized, CombinedBlock)
         assert len(deserialized.blocks) == 2
