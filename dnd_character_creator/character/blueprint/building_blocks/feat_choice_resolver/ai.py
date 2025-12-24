@@ -9,7 +9,7 @@ from dnd_character_creator.character.blueprint.blueprint_formatter import (
 from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.base import (
     FeatChoiceResolver,
 )
-from dnd_character_creator.feats import FeatName
+from dnd_character_creator.character.feature.feats import FeatName
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from pydantic import Field

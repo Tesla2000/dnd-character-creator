@@ -5,10 +5,10 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 from dnd_character_creator.character.race.race import Race
-from dnd_character_creator.wiki_scraper.Ability import (
+from langchain_openai import ChatOpenAI
+from scripts.wiki_scraper.ability_template import (
     AbilitiesTemplate,
 )
-from langchain_openai import ChatOpenAI
 
 url = "https://dnd5e.wikidot.com/lineage:{}"
 
@@ -43,6 +43,6 @@ if __name__ == "__main__":
     for race in Race:
         scraper_wiki_race(
             race,
-            Path("scraped_data/abilities"),
+            Path("../../scraped_data/abilities"),
             llm=llm,
         )

@@ -4,7 +4,7 @@ import json
 
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.config import Config
-from dnd_character_creator.wiki_scraper.MainRaceTemplate import (
+from scripts.wiki_scraper.MainRaceTemplate import (
     SubRaceTemplate,
 )
 

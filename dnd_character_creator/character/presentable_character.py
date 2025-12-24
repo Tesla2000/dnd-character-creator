@@ -9,9 +9,12 @@ from typing import Any
 from typing import Optional
 from typing import Self
 
+from dnd_character_creator.character.ability import Ability
 from dnd_character_creator.character.armor.armors import ARMORS
 from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.character import Character
+from dnd_character_creator.character.feature.feats import feat_name_to_feat
+from dnd_character_creator.character.feature.feats import FeatName
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.spells import SPELLCASTING_ABILITY_MAP
 from dnd_character_creator.choices.abilities.ActionType import ActionType
@@ -31,8 +34,6 @@ from dnd_character_creator.choices.class_creation.character_class import (
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from dnd_character_creator.config import resource_paths
-from dnd_character_creator.feats import feat_name_to_feat
-from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import ArmorProficiency
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
@@ -40,7 +41,6 @@ from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
 from dnd_character_creator.skill_proficiency import skill2ability
-from dnd_character_creator.wiki_scraper.Ability import Ability
 from frozendict import frozendict
 from pydantic import AfterValidator
 from pydantic import computed_field

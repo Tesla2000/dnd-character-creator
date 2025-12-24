@@ -11,10 +11,10 @@ from dnd_character_creator.choices.class_creation.character_class import (
 from dnd_character_creator.choices.class_creation.character_class import (
     SUBCLASSES,
 )
-from dnd_character_creator.wiki_scraper.Ability import (
+from langchain_openai import ChatOpenAI
+from scripts.wiki_scraper.ability_template import (
     AbilitiesTemplate,
 )
-from langchain_openai import ChatOpenAI
 
 url = "https://dnd5e.wikidot.com/{}:{}"
 
@@ -73,6 +73,6 @@ if __name__ == "__main__":
             scraper_wiki_subclass_class(
                 main_class,
                 sub_class,
-                Path("scraped_data/sub_class_abilities"),
+                Path("../../scraped_data/sub_class_abilities"),
                 llm=llm,
             )

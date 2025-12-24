@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from dnd_character_creator.choices.abilities.ActionType import ActionType
-from dnd_character_creator.wiki_scraper.Ability import (
+from scripts.wiki_scraper.ability_template import (
     Ability,
 )
 
@@ -20,7 +20,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
 from dnd_character_creator.choices.fighting_styles.fighting_styles import (
     FightingStyle,
 )
-from dnd_character_creator.feats import FeatName
+from dnd_character_creator.character.feature.feats import FeatName
 
 
 class BattleManeuver(StrEnum):

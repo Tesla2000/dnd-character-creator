@@ -33,8 +33,8 @@ from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resol
 from dnd_character_creator.character.blueprint.building_blocks.null_block import (
     NullBlock,
 )
+from dnd_character_creator.character.feature.feats import FeatName
 from dnd_character_creator.choices.language import Language
-from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency

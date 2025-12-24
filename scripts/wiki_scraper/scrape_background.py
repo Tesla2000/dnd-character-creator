@@ -42,6 +42,6 @@ if __name__ == "__main__":
     for background in Background:
         scraper_wiki_background(
             background,
-            Path("scraped_data/background"),
+            Path("../../scraped_data/background"),
             llm=llm,
         )

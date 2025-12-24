@@ -7,10 +7,10 @@ import requests
 from bs4 import BeautifulSoup
 from bs4 import Tag
 from dnd_character_creator.choices.main_race import MainRace
-from dnd_character_creator.wiki_scraper.MainRaceTemplate import (
+from langchain_openai import ChatOpenAI
+from scripts.wiki_scraper.MainRaceTemplate import (
     MainRaceTemplate,
 )
-from langchain_openai import ChatOpenAI
 
 url = "https://dnd5e.wikidot.com/lineage:{}"
 
@@ -70,6 +70,6 @@ if __name__ == "__main__":
     for race in MainRace:
         scraper_wiki_race(
             race,
-            Path("scraped_data/sub_races"),
+            Path("../../scraped_data/sub_races"),
             llm=llm,
         )

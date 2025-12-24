@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from enum import StrEnum
 
+from dnd_character_creator.character.feature.feature import Feature
 from dnd_character_creator.config import resource_paths
-from dnd_character_creator.wiki_scraper.Feat import Feat
 
 
 class FeatName(StrEnum):
@@ -82,8 +82,8 @@ class FeatName(StrEnum):
     ANY_OF_YOUR_CHOICE = "Artisan tool of your choice"
 
 
-def feat_name_to_feat(feat: FeatName) -> Feat:
-    return Feat(
+def feat_name_to_feat(feat: FeatName) -> Feature:
+    return Feature(
         **json.loads(
             resource_paths.feats_root.joinpath(
                 f"{feat.value}.json"
