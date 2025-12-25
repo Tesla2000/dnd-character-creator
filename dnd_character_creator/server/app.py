@@ -1,6 +1,5 @@
 from typing import Any
 from typing import Optional
-from typing import TypedDict
 
 from dnd_character_creator.character.blueprint.building_blocks import (
     BuildingBlock,
@@ -18,6 +17,7 @@ from pydantic import BaseModel
 from pydantic import ValidationError
 from starlette.responses import RedirectResponse
 from starlette.responses import Response
+from typing_extensions import TypedDict
 
 
 class _CreateCharacterResponse(BaseModel):
