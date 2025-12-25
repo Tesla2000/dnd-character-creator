@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY dnd_character_creator ./dnd_character_creator
 
-CMD ["dnd_character_creator.server.app.handler"]
+CMD ["dnd_character_creator.server.handler.handler"]
