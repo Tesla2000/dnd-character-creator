@@ -33,7 +33,3 @@ class Ability(BaseModel):
         default=0,
         exclude=True,
     )
-
-
-class AbilitiesTemplate(BaseModel):
-    abilities: list[Ability]

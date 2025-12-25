@@ -7,7 +7,7 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.base import (
     FeatChoiceResolver,
 )
-from dnd_character_creator.feats import FeatName
+from dnd_character_creator.character.feature.feats import FeatName
 from pydantic import ConfigDict
 
 

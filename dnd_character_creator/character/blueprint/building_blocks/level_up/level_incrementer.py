@@ -4,10 +4,10 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     BuildingBlock,
 )
+from dnd_character_creator.character.feature.feats import FeatName
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
-from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
 from frozendict import frozendict

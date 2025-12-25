@@ -13,7 +13,7 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.character.blueprint.building_blocks.stats_priority import (
     StatsPriority,
 )
-from dnd_character_creator.feats import FeatName
+from dnd_character_creator.character.feature.feats import FeatName
 
 
 class MaxFirstResolver(FeatChoiceResolver):

@@ -26,9 +26,7 @@ class ResourcePaths(BaseSettings):
     )
     pdf_creator: Path = Path("dnd_character_creator") / "pdf_creator"
     tex_prototype: Path = pdf_creator / "prototype.tex"
-    scraped_path: Path = (
-        Path("dnd_character_creator") / "wiki_scraper/scraped_data"
-    )
+    scraped_path: Path = Path("scraped_data")
     main_class_root: Path = scraped_path / "main_class"
     background_root: Path = scraped_path / "background"
     sub_races_root: Path = scraped_path / "sub_races"

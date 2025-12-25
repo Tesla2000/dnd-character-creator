@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from dnd_character_creator.character.feature.feats import FeatName
 from dnd_character_creator.choices.language import Language
-from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency

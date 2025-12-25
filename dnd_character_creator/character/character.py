@@ -6,6 +6,7 @@ from typing import Any
 from typing import Optional
 
 from dnd_character_creator.character.armor.names import ArmorName
+from dnd_character_creator.character.feature.feats import FeatName
 from dnd_character_creator.character.magical_item.item import MagicalItem
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
@@ -23,7 +24,6 @@ from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.choices.sex import Sex
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
-from dnd_character_creator.feats import FeatName
 from dnd_character_creator.other_profficiencies import ArmorProficiency
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument

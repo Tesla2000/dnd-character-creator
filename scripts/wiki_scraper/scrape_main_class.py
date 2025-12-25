@@ -7,10 +7,10 @@ from bs4 import BeautifulSoup
 from dnd_character_creator.choices.class_creation.character_class import (
     Class,
 )
-from dnd_character_creator.wiki_scraper.MainClassTemplate import (
+from langchain_openai import ChatOpenAI
+from scripts.wiki_scraper.MainClassTemplate import (
     MainClassTemplate,
 )
-from langchain_openai import ChatOpenAI
 
 url = "https://dnd5e.wikidot.com/{}"
 
@@ -40,5 +40,5 @@ if __name__ == "__main__":
     )
     for main_class in Class:
         scraper_wiki_class(
-            main_class, Path("scraped_data/main_class"), llm=llm
+            main_class, Path("../../scraped_data/main_class"), llm=llm
         )

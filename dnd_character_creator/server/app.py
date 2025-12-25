@@ -72,6 +72,10 @@ def create_app(storage: IncrementStorage):
             error=str(result.error) if result.error else None,
         )
 
+    @app_.get("/health")
+    def health():
+        return {"status": "ok"}
+
     @app_.get("/")
     def redirect_doc():
         return RedirectResponse("/docs")

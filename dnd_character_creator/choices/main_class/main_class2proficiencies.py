@@ -6,7 +6,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
     Class,
 )
 from dnd_character_creator.config import Config
-from dnd_character_creator.wiki_scraper.MainClassTemplate import (
+from scripts.wiki_scraper.MainClassTemplate import (
     MainClassTemplate,
 )
 
