@@ -11,13 +11,16 @@ from dnd_character_creator.character.checkpoint import MemoryStorage
 from dnd_character_creator.character.presentable_character import (
     PresentableCharacter,
 )
+from dnd_character_creator.server.example_generators.example_building_blocks import (
+    example_building_blocks,
+)
 from fastapi import FastAPI
 from fastapi import HTTPException
 from pydantic import BaseModel
+from pydantic import Field
 from pydantic import ValidationError
 from starlette.responses import RedirectResponse
 from starlette.responses import Response
-from typing_extensions import TypedDict
 
 
 class _CreateCharacterResponse(BaseModel):
@@ -26,9 +29,13 @@ class _CreateCharacterResponse(BaseModel):
     error: Optional[str] = None
 
 
-class _CreateCharacterRequestSchema(TypedDict):
-    building_blocks: dict[str, Any]
-    increment_chain: dict[str, Any]
+class _CreateCharacterRequestSchema(BaseModel):
+    building_blocks: dict[str, Any] = Field(
+        examples=[
+            example_building_blocks().model_dump(),
+        ]
+    )
+    increment_chain: dict[str, Any] = Field(examples=[IncrementChain()])
 
 
 def create_app(storage: IncrementStorage):
@@ -45,13 +52,13 @@ def create_app(storage: IncrementStorage):
         errors = []
         try:
             building_blocks = BuildingBlock.model_validate(
-                request["building_blocks"]
+                request.building_blocks
             )
         except ValidationError as e:
             errors.append(e)
         try:
             increment_chain = IncrementChain.model_validate(
-                request["increment_chain"]
+                request.increment_chain
             )
         except ValidationError as e:
             errors.append(e)

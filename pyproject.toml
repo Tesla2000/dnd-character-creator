@@ -35,6 +35,9 @@ build-backend = "hatchling.build"
 linting = [
     "pre-commit>=4.5.1",
 ]
+local-deployment = [
+    "uvicorn>=0.40.0",
+]
 scraping = [
     "beautifulsoup4>=4.14.3",
 ]
