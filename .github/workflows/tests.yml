@@ -27,4 +27,4 @@ jobs:
 
       - name: Run pytest
         run: |
-          timeout 60 uv run pytest dnd_character_creator -m "not integration and not requires_api_key" -p tests.conftest
+          timeout 69 uv run pytest dnd_character_creator -m "not integration and not requires_api_key" -p tests.conftest -W error::UserWarning

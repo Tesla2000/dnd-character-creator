@@ -59,6 +59,6 @@ class Spells(BaseModel):
     ) -> tuple[Spell, ...]:
         return next(
             getattr(self, field_name)
-            for field_name, field_info in self.model_fields.items()
+            for field_name, field_info in type(self).model_fields.items()
             if field_info.json_schema_extra[_INDEX] == index
         )
