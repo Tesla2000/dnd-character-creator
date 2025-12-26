@@ -23,9 +23,6 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RandomSkillChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
-    RandomSkillProficiencyChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
     RandomToolProficiencyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
@@ -80,14 +77,13 @@ def example_building_blocks():
     all_choices_resolver = AllChoicesResolver(
         blocks=(
             RandomLanguageChoiceResolver(),
-            RandomSkillProficiencyChoiceResolver(),
+            RandomSkillChoiceResolver(),
             MaxFirstResolver(
                 priority=stats_priority,
                 then=RandomFeatChoiceResolver(),
             ),
             RandomToolProficiencyChoiceResolver(),
             PriorityStatChoiceResolver(priority=stats_priority),
-            RandomSkillChoiceResolver(),
             RandomEquipmentChooser(),
         ),
     )
@@ -114,7 +110,7 @@ def example_building_blocks():
                     AllChoicesResolver(
                         blocks=(
                             RandomLanguageChoiceResolver(),
-                            RandomSkillProficiencyChoiceResolver(),
+                            RandomSkillChoiceResolver(),
                             MaxFirstResolver(
                                 priority=stats_priority,
                                 then=RandomFeatChoiceResolver(),
@@ -123,7 +119,6 @@ def example_building_blocks():
                             PriorityStatChoiceResolver(
                                 priority=stats_priority
                             ),
-                            RandomSkillChoiceResolver(),
                             RandomEquipmentChooser(),
                         ),
                     ),

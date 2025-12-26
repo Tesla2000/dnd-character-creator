@@ -84,15 +84,6 @@ from dnd_character_creator.character.blueprint.building_blocks.skill_choice_reso
 from dnd_character_creator.character.blueprint.building_blocks.skill_choice_resolver import (
     SkillChoiceResolver,
 )
-from dnd_character_creator.character.blueprint.building_blocks.skill_proficiency_choice_resolver import (
-    AISkillProficiencyChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks.skill_proficiency_choice_resolver import (
-    RandomSkillProficiencyChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks.skill_proficiency_choice_resolver import (
-    SkillProficiencyChoiceResolver,
-)
 from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resolver import (
     PriorityStatChoiceResolver,
 )
@@ -120,7 +111,6 @@ __all__ = [
     "AILanguageChoiceResolver",
     "AIMagicalItemChooser",
     "AIPartialBuilderAssigner",
-    "AISkillProficiencyChoiceResolver",
     "AIToolProficiencyChoiceResolver",
     "AlignmentAssigner",
     "BackgroundAssigner",
@@ -142,11 +132,9 @@ __all__ = [
     "RandomLanguageChoiceResolver",
     "RandomMagicalItemChooser",
     "RandomSkillChoiceResolver",
-    "RandomSkillProficiencyChoiceResolver",
     "RandomToolProficiencyChoiceResolver",
     "SexAssigner",
     "SkillChoiceResolver",
-    "SkillProficiencyChoiceResolver",
     "StatChoiceResolver",
     "ToolProficiencyChoiceResolver",
     "WeaponAdder",

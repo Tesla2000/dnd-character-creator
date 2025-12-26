@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from dnd_character_creator.character.blueprint.building_blocks import (
+    SkillChoiceResolver,
+)
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
     AllChoicesResolverBase,
 )
@@ -15,12 +18,6 @@ from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resol
 from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver.base import (
     LanguageChoiceResolver,
 )
-from dnd_character_creator.character.blueprint.building_blocks.skill_choice_resolver.base import (
-    SkillChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks.skill_proficiency_choice_resolver.base import (
-    SkillProficiencyChoiceResolver,
-)
 from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resolver.base import (
     StatChoiceResolver,
 )
@@ -32,10 +29,9 @@ from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_
 class AllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
     blocks: tuple[
         LanguageChoiceResolver,
-        SkillProficiencyChoiceResolver,
+        SkillChoiceResolver,
         FeatChoiceResolver,
         ToolProficiencyChoiceResolver,
         StatChoiceResolver,
-        SkillChoiceResolver,
         EquipmentChooser,
     ]

@@ -70,8 +70,7 @@ class RandomMagicalItemChooser(MagicalItemChooserBase):
                     )
 
                 # Randomly select items (allows duplicates)
-                if self.seed is not None:
-                    random.seed(self.seed)
+                random.seed(self.seed)
 
                 selected = random.choices(available, k=count)
                 selected_items.extend(selected)

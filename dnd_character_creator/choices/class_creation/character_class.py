@@ -167,7 +167,7 @@ class WizardSubclass(_Subclass):
     WAR_MAGIC = "School of War Magic"
 
 
-class Class(_Subclass):
+class Class(StrEnum):
     BARBARIAN = "Barbarian"
     BARD = "Bard"
     CLERIC = "Cleric"

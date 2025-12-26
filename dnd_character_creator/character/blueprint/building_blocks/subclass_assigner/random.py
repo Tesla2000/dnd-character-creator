@@ -44,8 +44,7 @@ class RandomSubclassAssigner(SubclassAssigner):
         Returns:
             Randomly selected subclass.
         """
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         # Randomly select one
         return random.choice(self.available_subclasses)

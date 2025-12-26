@@ -39,7 +39,6 @@ class RandomLanguageChoiceResolver(LanguageChoiceResolver):
         Returns:
             Randomly selected Language.
         """
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         return random.choice(available)

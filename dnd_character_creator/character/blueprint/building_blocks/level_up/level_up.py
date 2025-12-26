@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import NamedTuple
+
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
@@ -16,6 +18,13 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.level_in
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     SpellAssigner,
 )
+
+
+class LevelUpBlocks(NamedTuple):
+    level_increment: LevelIncrementer
+    health_increase: HealthIncrease
+    spell_assigner: SpellAssigner
+    all_choice_resolver: AllChoicesResolverBase
 
 
 class LevelUp(CombinedBlock):
@@ -37,12 +46,7 @@ class LevelUp(CombinedBlock):
         ... ])  # Character at level 10 with 2 Fighter / 1 Wizard (7 unused levels)
     """
 
-    blocks: tuple[
-        LevelIncrementer,
-        HealthIncrease,
-        SpellAssigner,
-        AllChoicesResolverBase,
-    ]
+    blocks: LevelUpBlocks
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         if blueprint.race is None:

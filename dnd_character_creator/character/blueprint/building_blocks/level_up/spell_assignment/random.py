@@ -49,8 +49,7 @@ class RandomSpellAssigner(SpellAssigner):
             Tuple of randomly selected spells.
         """
         # Set random seed if provided (for reproducibility)
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         # Random selection - take min of count and available
         n = min(count, len(available_spells))
