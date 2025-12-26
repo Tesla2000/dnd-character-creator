@@ -258,6 +258,6 @@ class SpellAssigner(BuildingBlock, ABC):
             # Merge with existing
             merged = existing_spells.union(selected)
             attr_name = self._spell_level_to_attr[spell_level]
-            spells = spells.model_copy(update={attr_name: merged})
+            spells = spells.model_copy(update={attr_name: tuple(merged)})
 
         return Blueprint(spells=spells)
