@@ -24,6 +24,10 @@ from pydantic import ConfigDict
 from pydantic import model_validator
 
 
+class CanNotAssign(ValueError):
+    pass
+
+
 class SubclassAssigner(BuildingBlock, ABC):
     """Abstract base class for assigning subclasses to characters.
 
@@ -81,11 +85,11 @@ class SubclassAssigner(BuildingBlock, ABC):
             Blueprint with subclass added.
 
         Raises:
-            ValueError: If class is not in character's classes or level is too low.
+            CanNotAssign: If class is not in character's classes or level is too low.
         """
         # Validate class exists in character
         if self.class_ not in blueprint.classes:
-            raise ValueError(
+            raise CanNotAssign(
                 f"Cannot assign {self.class_.value} subclass: "
                 f"character does not have {self.class_.value} class"
             )
@@ -93,7 +97,7 @@ class SubclassAssigner(BuildingBlock, ABC):
         # Check if character level is high enough for subclass
         required_level = subclass_level[self.class_]
         if blueprint.classes[self.class_] < required_level:
-            raise ValueError(
+            raise CanNotAssign(
                 f"Cannot assign {self.class_.value} subclass: "
                 f"character level {blueprint.classes[self.class_]} "
                 f"is below required level {required_level}"
@@ -117,7 +121,7 @@ class SubclassAssigner(BuildingBlock, ABC):
         # Validate selected subclass matches class
         if not isinstance(selected_subclass, subclass_enum):
             raise ValueError(
-                f"Selected subclass {selected_subclass.value} "
+                f"Selected subclass {selected_subclass} "
                 f"is not valid for {self.class_.value}"
             )
 

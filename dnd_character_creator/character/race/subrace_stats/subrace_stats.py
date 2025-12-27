@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Self
+
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.feature.feats import FeatName
 from dnd_character_creator.character.race.subrace_stats.race_statistics import (
@@ -13,6 +15,7 @@ from dnd_character_creator.other_profficiencies import ToolProficiency
 from dnd_character_creator.skill_proficiency import Skill
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import model_validator
 from pydantic import NonNegativeInt
 from pydantic import PositiveInt
 
@@ -46,6 +49,20 @@ class SubraceStats(BaseModel):
         "words abilities that influence gameplay not boosts to "
         "statistics, alignment nor proficiencies."
     )
+
+    @model_validator(mode="after")
+    def _le_skills_to_choose_than_choices(self) -> Self:
+        if self.n_skills > len(self.skills_to_choose_from):
+            raise ValueError("More skill choices that skills to choose from")
+        return self
+
+    @model_validator(mode="after")
+    def _no_choices_when_no_skills_to_choose_from(self) -> Self:
+        if not self.n_skills and self.skills_to_choose_from:
+            raise ValueError(
+                "Skills to choose from present but no skill choices available"
+            )
+        return self
 
     def add_to(self, blueprint: Blueprint) -> Blueprint:
         """Apply subrace statistics to the blueprint.

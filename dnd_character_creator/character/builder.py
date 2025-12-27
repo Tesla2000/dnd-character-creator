@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import logging
+import traceback
 import uuid
 from itertools import islice
+from logging import Logger
 from typing import NamedTuple
 from typing import Optional
 from typing import Self
@@ -31,12 +34,17 @@ class BuildResult(NamedTuple):
     error: Optional[Exception] = None
 
 
+_logger = logging.getLogger(__name__)
+
+
 class Builder:
     def __init__(
         self,
         building_blocks: tuple[Union[BuildingBlock, CombinedBlock], ...] = (),
         increment_storage: Optional[IncrementStorage] = None,
+        logger: Logger = _logger,
     ):
+        self._logger = logger
         self._building_blocks = building_blocks
         self._increment_storage = increment_storage or MemoryStorage()
 
@@ -74,6 +82,7 @@ class Builder:
                 chain_id=chain_id,
             )
         except Exception as e:
+            self._logger.error(traceback.format_exc())
             return BuildResult(
                 chain_id=chain_id,
                 error=e,

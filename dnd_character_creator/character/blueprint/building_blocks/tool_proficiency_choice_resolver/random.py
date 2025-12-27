@@ -41,8 +41,7 @@ class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
         Returns:
             Randomly selected ToolProficiency.
         """
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         return random.choice(available)
 
@@ -58,8 +57,7 @@ class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
         Returns:
             Randomly selected GamingSet.
         """
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         return random.choice(available)
 
@@ -75,7 +73,6 @@ class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
         Returns:
             Randomly selected MusicalInstrument.
         """
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         return random.choice(available)

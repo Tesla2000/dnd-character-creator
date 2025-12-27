@@ -6,6 +6,7 @@ from typing import Union
 
 from dnd_character_creator.character.armor.names import ArmorName
 from dnd_character_creator.character.character import Character
+from dnd_character_creator.character.character import ClassLevel
 from dnd_character_creator.character.feature.feats import FeatName
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
@@ -39,15 +40,13 @@ class Blueprint(Character):
     # Override required fields to be optional
     sex: Optional[Sex] = None
     backstory: Optional[str] = None
-    level: Optional[int] = Field(None, ge=1, le=20)
+    level: Optional[ClassLevel] = None
     age: Optional[PositiveInt] = None
     race: Optional[Race] = None
     subrace: Optional[Subrace] = None
     name: Optional[str] = None
     background: Optional[Background] = None
     alignment: Optional[Alignment] = None
-    stats: Optional[Stats] = None
-    health_base: Optional[PositiveInt] = None
     height: Optional[PositiveInt] = None
     weight: Optional[PositiveInt] = None
     eye_color: Optional[str] = None
@@ -58,6 +57,9 @@ class Blueprint(Character):
     ideals: Optional[str] = None
     bonds: Optional[str] = None
     weaknesses: Optional[str] = None
+
+    stats: Optional[Stats] = None
+    health_base: Optional[PositiveInt] = None
     dark_vision_range: Optional[NonNegativeInt] = None
     speed: Optional[PositiveInt] = None
     n_stat_choices: NonNegativeInt = 0

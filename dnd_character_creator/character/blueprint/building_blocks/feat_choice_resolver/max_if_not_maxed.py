@@ -1,5 +1,5 @@
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks import (
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.base import (
     FeatChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.stats_priority import (

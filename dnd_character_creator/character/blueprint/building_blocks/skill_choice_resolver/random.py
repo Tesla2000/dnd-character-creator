@@ -36,8 +36,7 @@ class RandomSkillChoiceResolver(SkillChoiceResolver):
         Returns:
             Frozenset of randomly selected skills.
         """
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         n = blueprint.n_skill_choices
         available_skills = blueprint.skills_to_choose_from

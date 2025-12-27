@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import pytest
 from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
 )
@@ -13,22 +12,11 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     SexAssigner,
 )
 from dnd_character_creator.character.checkpoint import IncrementChain
-from dnd_character_creator.character.checkpoint import MemoryStorage
 from dnd_character_creator.choices.sex import Sex
-from dnd_character_creator.server.app import create_app
-from fastapi.testclient import TestClient
+from dnd_character_creator.server.tests.test_client import TestClient
 
 
-class TestCreateCharacter:
-    @pytest.fixture
-    def storage(self):
-        return MemoryStorage()
-
-    @pytest.fixture
-    def client(self, storage):
-        app = create_app(storage)
-        return TestClient(app)
-
+class TestCreateCharacter(TestClient):
     def test_root_redirects_to_docs(self, client):
         """Test that root path redirects to API documentation."""
         response = client.get("/", follow_redirects=False)

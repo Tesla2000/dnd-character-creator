@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 
-from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import (
+from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase.base import (
     HealthIncrease,
 )
 from dnd_character_creator.choices.equipment_creation.weapons import HitDieSize

@@ -7,21 +7,28 @@ from typing import Any
 from typing import Callable
 from typing import Literal
 from typing import Self
+from typing import TYPE_CHECKING
 from typing import Union
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from pydantic import BaseModel
 from pydantic import computed_field
 from pydantic import ConfigDict
-from pydantic.config import ExtraValues
+from pydantic import InstanceOf
 from pydantic.main import IncEx
 
-_BLOCK_TYPE_FIELD_NAME = "block_type"
+if TYPE_CHECKING:
+    from dnd_character_creator.character.blueprint.building_blocks import (
+        AnyBuildingBlock,
+    )
+
+BLOCK_TYPE_FIELD_NAME = "block_type"
 
 
-class _SerializableBlock(BaseModel):
+class SerializableBlock(BaseModel):
+    model_config = ConfigDict(frozen=True)
 
-    @computed_field(alias=_BLOCK_TYPE_FIELD_NAME)  # type: ignore[prop-decorator]
+    @computed_field(alias=BLOCK_TYPE_FIELD_NAME)
     @property
     def block_type(self) -> str:
         """Return the class name as the block type for polymorphic serialization."""
@@ -30,15 +37,6 @@ class _SerializableBlock(BaseModel):
     @classmethod
     def get_block_type(cls) -> str:
         return cls.__name__
-
-    def __init_subclass__(cls, **kwargs: Any) -> None:
-        """Register subclasses for polymorphic deserialization."""
-        super().__init_subclass__(**kwargs)
-        if (
-            ABC not in cls.__bases__
-            and _SerializableBlock not in cls.__bases__
-        ):
-            _TYPE_REGISTRY[cls.__name__] = cls
 
     def model_dump(
         self,
@@ -109,12 +107,14 @@ class _SerializableBlock(BaseModel):
         )
 
 
-class CombinedBlock(_SerializableBlock):
+class CombinedBlock(SerializableBlock):
     """Combines multiple building blocks to apply sequentially."""
 
-    blocks: tuple[Union[BuildingBlock, Self], ...]
+    blocks: tuple[
+        Union["AnyBuildingBlock", Self, InstanceOf[BuildingBlock]], ...
+    ]
 
-    def add(self, other: Union[BuildingBlock, Self]) -> Self:
+    def __add__(self, other: Any) -> Self:
         allowed_types = (BuildingBlock, CombinedBlock)
         if not isinstance(other, allowed_types):
             raise ValueError(
@@ -126,9 +126,6 @@ class CombinedBlock(_SerializableBlock):
             return type(self)(blocks=self.blocks + (other,))
         raise ValueError("What?")
 
-    def __add__(self, other) -> Self:
-        return self.add(other)
-
     def flatten(self) -> Generator[BuildingBlock, None, None]:
         for block in self.blocks:
             if not isinstance(block, CombinedBlock):
@@ -136,80 +133,8 @@ class CombinedBlock(_SerializableBlock):
             else:
                 yield from block.flatten()
 
-    @classmethod
-    def model_validate(
-        cls,
-        obj: Any,
-        *,
-        strict: bool | None = None,
-        extra: ExtraValues | None = None,
-        from_attributes: bool | None = None,
-        context: Any | None = None,
-        by_alias: bool | None = None,
-        by_name: bool | None = None,
-    ) -> Self:
-        if isinstance(obj, dict):
-            obj["blocks"] = list(
-                BuildingBlock.model_validate(
-                    elem,
-                    strict=strict,
-                    extra=extra,
-                    from_attributes=from_attributes,
-                    context=context,
-                    by_alias=by_alias,
-                    by_name=by_name,
-                )
-                for elem in obj["blocks"]
-            )
-        return super().model_validate(
-            obj,
-            strict=strict,
-            extra=extra,
-            from_attributes=from_attributes,
-            context=context,
-            by_alias=by_alias,
-            by_name=by_name,
-        )
 
-
-class BuildingBlock(_SerializableBlock, ABC):
-    model_config = ConfigDict(frozen=True)
-
-    @classmethod
-    def model_validate(
-        cls,
-        obj: Any,
-        *,
-        strict: bool | None = None,
-        extra: ExtraValues | None = None,
-        from_attributes: bool | None = None,
-        context: Any | None = None,
-        by_alias: bool | None = None,
-        by_name: bool | None = None,
-    ) -> Self:
-        try:
-            return super().model_validate(
-                obj,
-                strict=strict,
-                extra=extra,
-                from_attributes=from_attributes,
-                context=context,
-                by_alias=by_alias,
-                by_name=by_name,
-            )
-        except TypeError as e:
-            if not isinstance(obj, dict) or _BLOCK_TYPE_FIELD_NAME not in obj:
-                raise e
-            return _TYPE_REGISTRY[obj[_BLOCK_TYPE_FIELD_NAME]].model_validate(
-                obj,
-                strict=strict,
-                extra=extra,
-                from_attributes=from_attributes,
-                context=context,
-                by_alias=by_alias,
-                by_name=by_name,
-            )
-
+class BuildingBlock(SerializableBlock, ABC):
     @abstractmethod
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Returns Blueprint differences to apply.
@@ -220,8 +145,3 @@ class BuildingBlock(_SerializableBlock, ABC):
 
     def __add__(self, other: BuildingBlock) -> CombinedBlock:
         return CombinedBlock(blocks=(self, other))
-
-
-_TYPE_REGISTRY: dict[str, type[_SerializableBlock]] = {
-    CombinedBlock.get_block_type(): CombinedBlock
-}

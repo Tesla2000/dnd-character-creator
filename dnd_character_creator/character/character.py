@@ -125,13 +125,15 @@ NotAnyArmorProficiency = Annotated[
     ArmorProficiency, AfterValidator(_armor_proficiency_not_any)
 ]
 
+ClassLevel = Annotated[int, Field(ge=1, le=20)]
+
 
 class Character(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     sex: Sex
     backstory: str
-    level: int = Field(ge=1, le=20)
+    level: ClassLevel
     age: PositiveInt
     classes: Annotated[
         Mapping[Class, PositiveInt], AfterValidator(_conv_to_frozendict)

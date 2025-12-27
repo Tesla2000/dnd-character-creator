@@ -39,7 +39,6 @@ class RandomFeatChoiceResolver(FeatChoiceResolver):
         Returns:
             Randomly selected FeatName.
         """
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         return random.choice(available)

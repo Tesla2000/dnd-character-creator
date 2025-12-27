@@ -16,10 +16,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.AARAKOCRA_AARAKOCRA_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -43,7 +46,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.AASIMAR_FALLEN_AASIMAR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.CELESTIAL],
+            languages=(
+                Language.COMMON,
+                Language.CELESTIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.DECEPTION, Skill.RELIGION],
             n_skills=2,
@@ -67,7 +73,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.AASIMAR_PROTECTOR_AASIMAR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.CELESTIAL],
+            languages=(
+                Language.COMMON,
+                Language.CELESTIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.MEDICINE, Skill.PERSUASION],
             n_skills=2,
@@ -91,7 +100,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.AASIMAR_SCOURGE_AASIMAR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.CELESTIAL],
+            languages=(
+                Language.COMMON,
+                Language.CELESTIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.INTIMIDATION, Skill.SURVIVAL],
             n_skills=2,
@@ -115,10 +127,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.AASIMAR_FALLEN_AASIMAR_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.CELESTIAL],
+            languages=(
+                Language.COMMON,
+                Language.CELESTIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -137,10 +152,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.AASIMAR_PROTECTOR_AASIMAR_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.CELESTIAL],
+            languages=(
+                Language.COMMON,
+                Language.CELESTIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -159,10 +177,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.AASIMAR_SCOURGE_AASIMAR_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.CELESTIAL],
+            languages=(
+                Language.COMMON,
+                Language.CELESTIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -181,10 +202,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.BUGBEAR_BUGBEAR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.STEALTH],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -207,10 +231,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.BUGBEAR_BUGBEAR_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.STEALTH],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -232,7 +259,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.CENTAUR_GRUUL_CENTAUR_GUILDMASTERSGUIDETORAVNICA: SubraceStats(
             speed=40,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.SYLVAN],
+            languages=(
+                Language.COMMON,
+                Language.SYLVAN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -263,7 +293,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.CENTAUR_SELESNYA_CENTAUR_GUILDMASTERSGUIDETORAVNICA: SubraceStats(
             speed=40,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.SYLVAN],
+            languages=(
+                Language.COMMON,
+                Language.SYLVAN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -294,7 +327,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.CENTAUR_CENTAURS_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=40,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -324,7 +360,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.CENTAUR_LAGONNA_MYTHICODYSSEYSOFTHEROS: SubraceStats(
             speed=40,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.SYLVAN],
+            languages=(
+                Language.COMMON,
+                Language.SYLVAN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ANIMAL_HANDLING, Skill.SURVIVAL],
             n_skills=2,
@@ -349,7 +388,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.CENTAUR_PHERES_MYTHICODYSSEYSOFTHEROS: SubraceStats(
             speed=40,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.SYLVAN],
+            languages=(
+                Language.COMMON,
+                Language.SYLVAN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ANIMAL_HANDLING, Skill.SURVIVAL],
             n_skills=2,
@@ -374,11 +416,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.CHANGELING_CHANGELING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[
+            languages=(
                 Language.COMMON,
                 Language.ANY_OF_YOUR_CHOICE,
                 Language.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.DECEPTION,
@@ -403,7 +445,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.CHANGELING_CHANGELING_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.DECEPTION,
@@ -429,14 +474,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.CHANGELING_CHANGELING_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[
+            languages=(
                 Language.COMMON,
                 Language.ANY_OF_YOUR_CHOICE,
                 Language.ANY_OF_YOUR_CHOICE,
-            ],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.DECEPTION, Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=0,
+            ),
+            obligatory_skills=(Skill.DECEPTION,),
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
+            n_skills=1,
             tool_proficiencies=(),  # TODO: Parse ['Any of your choice']
             additional_feat=False,
             statistics=RaceStatistics(
@@ -457,7 +502,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_DRACONBLOOD_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.DRACONIC],
+            languages=(
+                Language.COMMON,
+                Language.DRACONIC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.PERSUASION, Skill.INTIMIDATION],
             n_skills=2,
@@ -480,7 +528,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_RAVENITE_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.DRACONIC],
+            languages=(
+                Language.COMMON,
+                Language.DRACONIC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ATHLETICS, Skill.INTIMIDATION],
             n_skills=2,
@@ -503,10 +554,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_CHROMATIC_FIZBANSTREASURYOFDRAGONS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=2,
+            skills_to_choose_from=[],
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -528,10 +582,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_GEM_FIZBANSTREASURYOFDRAGONS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=2,
+            skills_to_choose_from=[],
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -554,10 +611,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_METALLIC_FIZBANSTREASURYOFDRAGONS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=2,
+            skills_to_choose_from=[],
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -579,10 +639,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_DRAGONBORN_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.DRACONIC],
+            languages=(
+                Language.COMMON,
+                Language.DRACONIC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -603,10 +666,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_CHROMATIC_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=2,
+            skills_to_choose_from=(),
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -628,10 +694,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_GEM_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=2,
+            skills_to_choose_from=(),
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -654,10 +723,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DRAGONBORN_METALLIC_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=2,
+            skills_to_choose_from=(),
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -679,7 +751,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DWARF_HILL_DWARF_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.DWARVISH],
+            languages=(
+                Language.COMMON,
+                Language.DWARVISH,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -701,7 +776,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.DWARF_MOUNTAIN_DWARF_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.DWARVISH],
+            languages=(
+                Language.COMMON,
+                Language.DWARVISH,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -723,9 +801,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_MARK_OF_SHADOW_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVISH],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.STEALTH, Skill.PERFORMANCE],
+            languages=(
+                Language.COMMON,
+                Language.ELVISH,
+            ),
+            obligatory_skills=(Skill.STEALTH, Skill.PERFORMANCE),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -747,9 +828,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_PALLID_ELF_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVISH],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.INSIGHT, Skill.INVESTIGATION],
+            languages=(
+                Language.COMMON,
+                Language.ELVISH,
+            ),
+            obligatory_skills=(Skill.INSIGHT, Skill.INVESTIGATION),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -770,9 +854,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_BISHTAHAR_ELF_PLANESHIFTKALADESH: SubraceStats(
             speed=35,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVISH],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.NATURE, Skill.SURVIVAL],
+            languages=(
+                Language.COMMON,
+                Language.ELVISH,
+            ),
+            obligatory_skills=(Skill.NATURE, Skill.SURVIVAL),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -794,9 +881,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_TIRAHAR_ELF_PLANESHIFTKALADESH: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVISH],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANIMAL_HANDLING, Skill.STEALTH],
+            languages=(
+                Language.COMMON,
+                Language.ELVISH,
+            ),
+            obligatory_skills=(Skill.ANIMAL_HANDLING, Skill.STEALTH),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -816,9 +906,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_VAHADAR_ELF_PLANESHIFTKALADESH: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVISH],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.ARCANA, Skill.HISTORY],
+            languages=(
+                Language.COMMON,
+                Language.ELVISH,
+            ),
+            obligatory_skills=(Skill.ARCANA, Skill.HISTORY),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -839,13 +932,16 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_JURAGA_PLANESHIFTZENDIKAR: SubraceStats(
             speed=35,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVEN],
+            languages=(
+                Language.COMMON,
+                Language.ELVEN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANY_OF_YOUR_CHOICE,
                 Skill.ANY_OF_YOUR_CHOICE,
             ],
-            n_skills=0,
+            n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -866,13 +962,16 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_MUL_DAYA_PLANESHIFTZENDIKAR: SubraceStats(
             speed=30,
             dark_vision_range=120,
-            languages=[Language.COMMON, Language.ELVEN],
+            languages=(
+                Language.COMMON,
+                Language.ELVEN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANY_OF_YOUR_CHOICE,
                 Skill.ANY_OF_YOUR_CHOICE,
             ],
-            n_skills=0,
+            n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -894,13 +993,16 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_TAJURU_PLANESHIFTZENDIKAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVEN],
+            languages=(
+                Language.COMMON,
+                Language.ELVEN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANY_OF_YOUR_CHOICE,
                 Skill.ANY_OF_YOUR_CHOICE,
             ],
-            n_skills=0,
+            n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -917,9 +1019,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_DARK_ELF_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=120,
-            languages=[Language.COMMON, Language.ELVEN],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.STEALTH],
+            languages=(
+                Language.COMMON,
+                Language.ELVEN,
+            ),
+            obligatory_skills=(Skill.STEALTH,),
+            skills_to_choose_from=[],
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -942,9 +1047,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_HIGH_ELF_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVEN],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.ARCANA],
+            languages=(
+                Language.COMMON,
+                Language.ELVEN,
+            ),
+            obligatory_skills=(Skill.ARCANA,),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -962,9 +1070,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_WOOD_ELF_PLAYERSHANDBOOK: SubraceStats(
             speed=35,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ELVEN],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERCEPTION],
+            languages=(
+                Language.COMMON,
+                Language.ELVEN,
+            ),
+            obligatory_skills=(Skill.PERCEPTION,),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -986,9 +1097,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ELF_ASTRAL_ELF_SPELLJAMMERADVENTURESINSPACE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERCEPTION],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
+            obligatory_skills=(Skill.PERCEPTION,),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1013,10 +1127,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.FIRBOLG_FIRBOLG_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=2,
+            skills_to_choose_from=(),
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1038,7 +1155,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.FIRBOLG_FIRBOLG_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ELVISH, Language.GIANT],
+            languages=(
+                Language.COMMON,
+                Language.ELVISH,
+                Language.GIANT,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -1067,10 +1188,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GENASI_AIR_AIR_GENASI_ELEMENTALEVILPLAYERSCOMPANION: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.PRIMORDIAL],
+            languages=(
+                Language.COMMON,
+                Language.PRIMORDIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1090,10 +1214,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GENASI_AIR_AIR_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=35,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1116,10 +1243,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GENASI_EARTH_EARTH_GENASI_ELEMENTALEVILPLAYERSCOMPANION: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.PRIMORDIAL],
+            languages=(
+                Language.COMMON,
+                Language.PRIMORDIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1139,10 +1269,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GENASI_EARTH_EARTH_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1162,10 +1295,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GENASI_FIRE_FIRE_GENASI_ELEMENTALEVILPLAYERSCOMPANION: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.PRIMORDIAL],
+            languages=(
+                Language.COMMON,
+                Language.PRIMORDIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1185,10 +1321,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GENASI_FIRE_FIRE_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1208,10 +1347,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GENASI_WATER_WATER_GENASI_ELEMENTALEVILPLAYERSCOMPANION: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.PRIMORDIAL],
+            languages=(
+                Language.COMMON,
+                Language.PRIMORDIAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1232,10 +1374,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GENASI_WATER_WATER_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=2,
+            skills_to_choose_from=(),
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1256,9 +1401,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GNOME_MARK_OF_SCRIBING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=25,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.GNOMISH],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.ARCANA, Skill.HISTORY],
+            languages=(
+                Language.COMMON,
+                Language.GNOMISH,
+            ),
+            obligatory_skills=(Skill.ARCANA, Skill.HISTORY),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),  # TODO: Parse ["Calligrapher's supplies"]
             additional_feat=False,
@@ -1280,10 +1428,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GNOME_FOREST_GNOME_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GNOMISH],
+            languages=(
+                Language.COMMON,
+                Language.GNOMISH,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1303,7 +1454,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GNOME_ROCK_GNOME_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GNOMISH],
+            languages=(
+                Language.COMMON,
+                Language.GNOMISH,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -1326,10 +1480,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GOBLIN_DANKWOOD_GOBLIN_ADVENTURESWITHMUKDANKWOOD: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1349,7 +1506,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GOBLIN_GOBLIN_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ACROBATICS, Skill.STEALTH],
             n_skills=2,
@@ -1376,10 +1536,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GOBLIN_GOBLIN_PLANESHIFTIXALAN: SubraceStats(
             speed=25,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1396,10 +1559,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GOBLIN_GOBLIN_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1416,10 +1582,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GOLIATH_GOLIATH_ELEMENTALEVILPLAYERSGUIDE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.GIANT],
+            languages=(
+                Language.COMMON,
+                Language.GIANT,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ATHLETICS],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1441,10 +1610,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GOLIATH_GOLIATH_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ATHLETICS],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1465,10 +1637,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.GRUNG_GRUNG_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
             dark_vision_range=0,
-            languages=[Language.GRUNG],
+            languages=(Language.GRUNG,),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.PERCEPTION],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1491,11 +1663,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALF_ELF_AQUATIC_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[
+            languages=(
                 Language.COMMON,
                 Language.ELVEN,
                 Language.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -1517,11 +1689,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALF_ELF_DARK_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[
+            languages=(
                 Language.COMMON,
                 Language.ELVEN,
                 Language.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -1543,11 +1715,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALF_ELF_HIGH_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[
+            languages=(
                 Language.COMMON,
                 Language.ELVEN,
                 Language.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -1569,11 +1741,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALF_ELF_WOOD_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=35,
             dark_vision_range=60,
-            languages=[
+            languages=(
                 Language.COMMON,
                 Language.ELVEN,
                 Language.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -1596,7 +1768,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALF_ORC_MARK_OF_FINDING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.PERCEPTION, Skill.SURVIVAL],
             n_skills=2,
@@ -1620,10 +1795,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALF_ORC_HALF_ORC_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ORC],
+            languages=(
+                Language.COMMON,
+                Language.ORC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.INTIMIDATION],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1644,10 +1822,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALFLING_MARK_OF_HEALING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=25,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.HALFLING],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.MEDICINE, Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=0,
+            languages=(
+                Language.COMMON,
+                Language.HALFLING,
+            ),
+            obligatory_skills=(Skill.MEDICINE,),
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1668,10 +1849,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALFLING_MARK_OF_HOSPITALITY_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=25,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.HALFLING],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERSUASION, Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=0,
+            languages=(
+                Language.COMMON,
+                Language.HALFLING,
+            ),
+            obligatory_skills=(Skill.PERSUASION,),
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1692,9 +1876,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALFLING_LOTUSDEN_HALFLING_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=25,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.HALFLING],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.NATURE, Skill.SURVIVAL],
+            languages=(
+                Language.COMMON,
+                Language.HALFLING,
+            ),
+            obligatory_skills=(Skill.NATURE, Skill.SURVIVAL),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1715,7 +1902,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALFLING_LIGHTFOOT_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.HALFLING],
+            languages=(
+                Language.COMMON,
+                Language.HALFLING,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -1737,7 +1927,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALFLING_STOUT_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.HALFLING],
+            languages=(
+                Language.COMMON,
+                Language.HALFLING,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -1759,9 +1952,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HALFLING_GHOSTWISE_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=25,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.HALFLING],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.STEALTH],
+            languages=(
+                Language.COMMON,
+                Language.HALFLING,
+            ),
+            obligatory_skills=(Skill.STEALTH,),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1781,7 +1977,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HOBGOBLIN_HOBGOBLIN_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ATHLETICS,
@@ -1809,7 +2008,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HOBGOBLIN_HOBGOBLIN_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ATHLETICS, Skill.INTIMIDATION],
             n_skills=2,
@@ -1832,10 +2034,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HOBGOBLIN_HOBGOBLIN_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1852,9 +2057,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_MARK_OF_FINDING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.GOBLIN],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERCEPTION, Skill.SURVIVAL],
+            languages=(
+                Language.COMMON,
+                Language.GOBLIN,
+            ),
+            obligatory_skills=(Skill.PERCEPTION, Skill.SURVIVAL),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1877,9 +2085,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_MARK_OF_HANDLING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANIMAL_HANDLING, Skill.NATURE],
+            languages=(Language.COMMON,),
+            obligatory_skills=(Skill.ANIMAL_HANDLING, Skill.NATURE),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1902,10 +2110,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_MARK_OF_MAKING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.ARCANA, Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=0,
+            languages=(Language.COMMON,),
+            obligatory_skills=(Skill.ARCANA,),
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1927,10 +2135,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_MARK_OF_PASSAGE_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.ACROBATICS, Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=0,
+            languages=(Language.COMMON,),
+            obligatory_skills=(Skill.ACROBATICS,),
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -1952,9 +2160,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_MARK_OF_SENTINEL_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.INSIGHT, Skill.PERCEPTION],
+            languages=(Language.COMMON,),
+            obligatory_skills=(Skill.INSIGHT, Skill.PERCEPTION),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1977,9 +2185,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_KELDON_PLANESHIFTDOMINARIA: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.ATHLETICS],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
+            obligatory_skills=(Skill.ATHLETICS,),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2000,7 +2211,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_GAVONY_PLANESHIFTINNISTRAD: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -2022,9 +2236,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_KESSIG_PLANESHIFTINNISTRAD: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.SURVIVAL],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
+            obligatory_skills=(Skill.SURVIVAL,),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2048,7 +2265,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_NEPHALIA_PLANESHIFTINNISTRAD: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
             n_skills=0,
@@ -2071,9 +2291,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_STENSIA_PLANESHIFTINNISTRAD: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.INTIMIDATION],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
+            obligatory_skills=(Skill.INTIMIDATION,),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2095,7 +2318,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
             n_skills=1,
@@ -2115,7 +2341,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
             n_skills=1,
@@ -2135,7 +2364,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.KENKU_KENKU_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANY_OF_YOUR_CHOICE,
@@ -2159,10 +2391,72 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 "Mimicry",
             ],
         ),
+        Subrace.KALASHTAR_KALASHTAR_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
+            speed=30,
+            dark_vision_range=0,
+            languages=(
+                Language.COMMON,
+                Language.QUORI,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
+            obligatory_skills=(),
+            skills_to_choose_from=(),
+            n_skills=0,
+            tool_proficiencies=(),
+            additional_feat=False,
+            statistics=RaceStatistics(
+                strength=0,
+                dexterity=0,
+                constitution=0,
+                intelligence=0,
+                wisdom=2,
+                charisma=1,
+                any_of_your_choice=0,
+            ),
+            other_active_abilities=[
+                "Dual Mind: You have advantage on all Wisdom saving throws.",
+                "Mental Discipline: You have resistance to psychic damage.",
+                "Mind Link: You can speak telepathically to any creature you can see within 10 feet x your level; you can grant it telepathy with you for 1 hour.",
+                "Severed from Dreams: You are immune to magical effects that require you to dream.",
+            ],
+        ),
+        Subrace.KALASHTAR_KALASHTAR_UNEARTHEDARCANA: SubraceStats(
+            speed=30,
+            dark_vision_range=0,
+            languages=(
+                Language.COMMON,
+                Language.QUORI,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
+            obligatory_skills=(),
+            skills_to_choose_from=(),
+            n_skills=0,
+            tool_proficiencies=(),
+            additional_feat=False,
+            statistics=RaceStatistics(
+                strength=0,
+                dexterity=0,
+                constitution=0,
+                intelligence=0,
+                wisdom=1,
+                charisma=1,
+                any_of_your_choice=1,
+            ),
+            other_active_abilities=[
+                "Dual Mind: When you make a Wisdom saving throw, you can use your reaction to gain advantage.",
+                "Mental Discipline: You have resistance to psychic damage.",
+                "Mind Link: You can speak telepathically to any creature you can see within 60 feet; as a bonus action you can grant it telepathy with you until the start of your next turn.",
+                "Psychic Glamour: Choose Insight, Intimidation, Performance, or Persuasion; you have advantage on checks with that skill.",
+                "Severed from Dreams: You are immune to magical effects that require you to dream.",
+            ],
+        ),
         Subrace.KOBOLD_KOBOLD_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ARCANA,
@@ -2188,10 +2482,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.KOBOLD_KOBOLD_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.DRACONIC],
+            languages=(
+                Language.COMMON,
+                Language.DRACONIC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.STEALTH],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2208,10 +2505,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.KOBOLD_KOBOLD_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.DRACONIC],
+            languages=(
+                Language.COMMON,
+                Language.DRACONIC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2232,7 +2532,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.LEONIN_LEONIN_LEONINFEATURES: SubraceStats(
             speed=35,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.LEONIN],
+            languages=(
+                Language.COMMON,
+                Language.LEONIN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ATHLETICS,
@@ -2261,7 +2564,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.LIZARDFOLK_LIZARDFOLK_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -2293,7 +2599,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.LIZARDFOLK_LIZARDFOLK_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.DRACONIC],
+            languages=(
+                Language.COMMON,
+                Language.DRACONIC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -2326,10 +2635,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.MINOTAUR_MINOTAUR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2351,7 +2663,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ORC_ORC_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ORC],
+            languages=(
+                Language.COMMON,
+                Language.ORC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -2383,7 +2698,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ORC_ORC_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ORC],
+            languages=(
+                Language.COMMON,
+                Language.ORC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -2415,10 +2733,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ORC_ORC_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2440,10 +2761,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ORC_ORC_PLANESHIFTIXALAN: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ORC],
+            languages=(
+                Language.COMMON,
+                Language.ORC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.INTIMIDATION],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2464,7 +2788,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.ORC_ORC_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ORC],
+            languages=(
+                Language.COMMON,
+                Language.ORC,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -2492,12 +2819,74 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 "Powerful Build",
             ],
         ),
+        Subrace.YUAN_TI_PUREBLOOD_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
+            speed=30,
+            dark_vision_range=60,
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
+            obligatory_skills=(),
+            skills_to_choose_from=(),
+            n_skills=0,
+            tool_proficiencies=(),
+            additional_feat=False,
+            statistics=RaceStatistics(
+                strength=0,
+                dexterity=0,
+                constitution=0,
+                intelligence=0,
+                wisdom=0,
+                charisma=0,
+                any_of_your_choice=3,
+            ),
+            other_active_abilities=[
+                "Creature Type: Humanoid",
+                "Size: Medium or Small (choose when you select this race).",
+                "Darkvision: You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+                "Magic Resistance: You have advantage on saving throws against spells.",
+                "Poison Resilience: You have advantage on saving throws to avoid or end the poisoned condition, and you have resistance to poison damage.",
+                "Serpentine Spellcasting: You know the Poison Spray cantrip. You can cast Animal Friendship at will, but you can target only snakes. Starting at 3rd level, you can cast Suggestion with this trait once per long rest, and you can also cast it using spell slots of 2nd level or higher. Choose Intelligence, Wisdom, or Charisma as your spellcasting ability for these spells.",
+            ],
+        ),
+        Subrace.YUAN_TI_PUREBLOOD_VOLOSGUIDETOMONSTERS: SubraceStats(
+            speed=30,
+            dark_vision_range=60,
+            languages=(
+                Language.COMMON,
+                Language.ABYSSAL,
+                Language.DRACONIC,
+            ),
+            obligatory_skills=(),
+            skills_to_choose_from=(),
+            n_skills=0,
+            tool_proficiencies=(),
+            additional_feat=False,
+            statistics=RaceStatistics(
+                strength=0,
+                dexterity=0,
+                constitution=0,
+                intelligence=1,
+                wisdom=0,
+                charisma=2,
+                any_of_your_choice=0,
+            ),
+            other_active_abilities=[
+                "Darkvision: You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+                "Innate Spellcasting: You know the Poison Spray cantrip. You can cast Animal Friendship at will, but you can target only snakes. Starting at 3rd level, you can cast Suggestion with this trait once per long rest. Charisma is your spellcasting ability for these spells.",
+                "Magic Resistance: You have advantage on saving throws against spells and other magical effects.",
+                "Poison Immunity: You are immune to poison damage and the poisoned condition.",
+            ],
+        ),
         Subrace.SATYR_SATYR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=35,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
-            obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERFORMANCE, Skill.PERSUASION],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
+            obligatory_skills=(Skill.PERFORMANCE, Skill.PERSUASION),
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),  # TODO: Parse ['Any of your choice']
             additional_feat=False,
@@ -2521,7 +2910,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SATYR_SATYR_MYTHICODYSSEYSOFTHEROS: SubraceStats(
             speed=35,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.SYLVAN],
+            languages=(
+                Language.COMMON,
+                Language.SYLVAN,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.PERFORMANCE, Skill.PERSUASION],
             n_skills=2,
@@ -2547,10 +2939,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_BEASTHIDE_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON],
+            languages=(Language.COMMON,),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ATHLETICS],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2569,10 +2961,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_LONGTOOTH_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON],
+            languages=(Language.COMMON,),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.INTIMIDATION],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2591,10 +2983,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_SWIFTSTRIDE_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON],
+            languages=(Language.COMMON,),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ACROBATICS],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2613,10 +3005,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_WILDHUNT_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON],
+            languages=(Language.COMMON,),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.SURVIVAL],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2635,10 +3027,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_BEASTHIDE_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.SURVIVAL],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2657,10 +3052,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_LONGTOOTH_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ATHLETICS],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2679,10 +3077,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_SWIFTSTRIDE_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ACROBATICS],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2701,10 +3102,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_WILDHUNT_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.INSIGHT],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2723,10 +3127,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_CLIFFWALK_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2745,10 +3152,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.SHIFTER_RAZORCLAW_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -2767,7 +3177,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TABAXI_TABAXI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.PERCEPTION, Skill.STEALTH],
             n_skills=2,
@@ -2792,7 +3205,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TABAXI_TABAXI_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.PERCEPTION, Skill.STEALTH],
             n_skills=2,
@@ -2816,7 +3232,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_BAALZEBUL_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ARCANA, Skill.DECEPTION],
             n_skills=2,
@@ -2838,7 +3257,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_DISPATER_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.INVESTIGATION, Skill.STEALTH],
             n_skills=2,
@@ -2860,7 +3282,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_FIERNA_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.PERSUASION, Skill.INSIGHT],
             n_skills=2,
@@ -2882,7 +3307,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_GLASYA_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.SLEIGHT_OF_HAND, Skill.DECEPTION],
             n_skills=2,
@@ -2904,7 +3332,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_LEVISTUS_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.SURVIVAL, Skill.INTIMIDATION],
             n_skills=2,
@@ -2926,7 +3357,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_MAMMON_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.INSIGHT, Skill.PERSUASION],
             n_skills=2,
@@ -2948,7 +3382,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_MEPHISTOPHELES_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ARCANA, Skill.HISTORY],
             n_skills=2,
@@ -2970,7 +3407,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_ZARIEL_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ATHLETICS, Skill.INTIMIDATION],
             n_skills=2,
@@ -2992,10 +3432,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_BLOODLINE_OF_ASMODEUS_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -3014,7 +3457,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_DEVILS_TONGUE_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.DECEPTION, Skill.PERSUASION],
             n_skills=2,
@@ -3038,7 +3484,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_FERAL_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.DECEPTION, Skill.STEALTH],
             n_skills=2,
@@ -3058,7 +3507,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_HELLFIRE_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ARCANA, Skill.INTIMIDATION],
             n_skills=2,
@@ -3078,7 +3530,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_WINGED_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.INFERNAL],
+            languages=(
+                Language.COMMON,
+                Language.INFERNAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ACROBATICS, Skill.ATHLETICS],
             n_skills=2,
@@ -3100,10 +3555,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TIEFLING_ABYSSAL_TIEFLING_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=60,
-            languages=[Language.COMMON, Language.ABYSSAL],
+            languages=(
+                Language.COMMON,
+                Language.ABYSSAL,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -3123,7 +3581,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.TORTLE_TORTLE_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[
                 Skill.ANIMAL_HANDLING,
@@ -3156,14 +3617,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.VERDAN_VERDAN_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[
+            languages=(
                 Language.COMMON,
                 Language.GOBLIN,
                 Language.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.PERSUASION],
-            n_skills=2,
+            n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -3184,10 +3645,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.WARFORGED_WARFORGED_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON, Language.ANY_OF_YOUR_CHOICE],
+            languages=(
+                Language.COMMON,
+                Language.ANY_OF_YOUR_CHOICE,
+            ),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=0,
+            n_skills=1,
             tool_proficiencies=(),  # TODO: Parse ['Any of your choice']
             additional_feat=False,
             statistics=RaceStatistics(
@@ -3209,10 +3673,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.WARFORGED_ENVOY_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON],
+            languages=(Language.COMMON,),
             obligatory_skills=(),
             skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
-            n_skills=0,
+            n_skills=1,
             tool_proficiencies=(),  # TODO: Parse ['Any of your choice']
             additional_feat=False,
             statistics=RaceStatistics(
@@ -3232,10 +3696,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.WARFORGED_JUGGERNAUT_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON],
+            languages=(Language.COMMON,),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -3255,10 +3719,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
         Subrace.WARFORGED_SKIRMISHER_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=0,
-            languages=[Language.COMMON],
+            languages=(Language.COMMON,),
             obligatory_skills=(),
             skills_to_choose_from=(),
-            n_skills=2,
+            n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
             statistics=RaceStatistics(
@@ -3280,4 +3744,4 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
 
 
 if not all(map(SUBRACE_STATS.__contains__, Subrace)):
-    raise ValueError("Not all subraces are defined in ")
+    raise ValueError(f"Not all subraces are defined in {SUBRACE_STATS}")

@@ -31,9 +31,6 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RandomSkillChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
-    RandomSkillProficiencyChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
     RandomToolProficiencyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
@@ -84,10 +81,10 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_as
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     RandomSpellAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
+from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     SpellAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standar_array import (
+from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
@@ -96,7 +93,7 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
     RandomSubclassAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
+from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.base import (
     SubclassAssigner,
 )
 from dnd_character_creator.character.builder import Builder
@@ -232,14 +229,13 @@ class TestBuildMulticlass:
             AllChoicesResolver(
                 blocks=(
                     RandomLanguageChoiceResolver(),
-                    RandomSkillProficiencyChoiceResolver(),
+                    RandomSkillChoiceResolver(),
                     MaxFirstResolver(
                         priority=self.STATS_PRIORITY,
                         then=RandomFeatChoiceResolver(),
                     ),
                     RandomToolProficiencyChoiceResolver(),
                     PriorityStatChoiceResolver(priority=self.STATS_PRIORITY),
-                    RandomSkillChoiceResolver(),
                     RandomEquipmentChooser(),
                 ),
             ),

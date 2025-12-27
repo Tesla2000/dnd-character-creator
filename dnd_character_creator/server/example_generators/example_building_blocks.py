@@ -23,9 +23,6 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RandomSkillChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
-    RandomSkillProficiencyChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
     RandomToolProficiencyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
@@ -55,7 +52,7 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.level_up
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     RandomSpellAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standar_array import (
+from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
@@ -80,14 +77,13 @@ def example_building_blocks():
     all_choices_resolver = AllChoicesResolver(
         blocks=(
             RandomLanguageChoiceResolver(),
-            RandomSkillProficiencyChoiceResolver(),
+            RandomSkillChoiceResolver(),
             MaxFirstResolver(
                 priority=stats_priority,
                 then=RandomFeatChoiceResolver(),
             ),
             RandomToolProficiencyChoiceResolver(),
             PriorityStatChoiceResolver(priority=stats_priority),
-            RandomSkillChoiceResolver(),
             RandomEquipmentChooser(),
         ),
     )
@@ -114,7 +110,7 @@ def example_building_blocks():
                     AllChoicesResolver(
                         blocks=(
                             RandomLanguageChoiceResolver(),
-                            RandomSkillProficiencyChoiceResolver(),
+                            RandomSkillChoiceResolver(),
                             MaxFirstResolver(
                                 priority=stats_priority,
                                 then=RandomFeatChoiceResolver(),
@@ -123,15 +119,13 @@ def example_building_blocks():
                             PriorityStatChoiceResolver(
                                 priority=stats_priority
                             ),
-                            RandomSkillChoiceResolver(),
                             RandomEquipmentChooser(),
                         ),
                     ),
-                    level_up,
                 )
             ),
             RandomInitialDataFiller(),
-            LevelUpMultiple(blocks=tuple(level_up for _ in range(level - 1))),
+            LevelUpMultiple(blocks=tuple(level_up for _ in range(level))),
             RandomSubclassAssigner(
                 class_=class_,
             ),

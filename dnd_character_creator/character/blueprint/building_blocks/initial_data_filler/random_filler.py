@@ -141,16 +141,16 @@ class RandomInitialDataFiller(InitialDataFiller):
 
     def get_change(self, blueprint: Blueprint):
         """Fill missing required fields with random mock data."""
-        if self.seed is not None:
-            random.seed(self.seed)
+        random.seed(self.seed)
 
         return Blueprint(
-            sex=blueprint.sex or random.choice(list(Sex)),
+            sex=blueprint.sex or random.choice(tuple(Sex)),
             backstory=blueprint.backstory or random.choice(self._BACKSTORIES),
             age=blueprint.age or random.randint(18, 80),
             name=blueprint.name or random.choice(self._NAMES),
-            background=blueprint.background or random.choice(list(Background)),
-            alignment=blueprint.alignment or random.choice(list(Alignment)),
+            background=blueprint.background
+            or random.choice(tuple(Background)),
+            alignment=blueprint.alignment or random.choice(tuple(Alignment)),
             height=blueprint.height or random.randint(150, 210),
             weight=blueprint.weight or random.randint(50, 120),
             eye_color=blueprint.eye_color or random.choice(self._EYE_COLORS),

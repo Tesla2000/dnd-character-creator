@@ -7,22 +7,37 @@ Provides two implementations:
 
 from __future__ import annotations
 
+from typing import Annotated
+from typing import Union
+
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.ai import (
     AIAllChoicesResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base import (
     AllChoicesResolver,
 )
-from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
-    AllChoicesResolverBase,
-)
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.choice_package import (
     ChoicePackage,
 )
+from dnd_character_creator.character.blueprint.building_blocks.get_discriminator import (
+    get_discriminator,
+)
+from pydantic import Tag
+
+AnyChoiceResolver = Annotated[
+    Union[
+        Annotated[
+            AllChoicesResolver, Tag(AllChoicesResolver.get_block_type())
+        ],
+        Annotated[
+            AIAllChoicesResolver, Tag(AIAllChoicesResolver.get_block_type())
+        ],
+    ],
+    get_discriminator(),
+]
 
 __all__ = [
     "AllChoicesResolver",
     "AIAllChoicesResolver",
-    "AllChoicesResolverBase",
     "ChoicePackage",
 ]
