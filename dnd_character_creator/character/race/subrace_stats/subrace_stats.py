@@ -51,9 +51,17 @@ class SubraceStats(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _more_skills_to_choose_than_choices(self) -> Self:
+    def _le_skills_to_choose_than_choices(self) -> Self:
         if self.n_skills > len(self.skills_to_choose_from):
             raise ValueError("More skill choices that skills to choose from")
+        return self
+
+    @model_validator(mode="after")
+    def _no_choices_when_no_skills_to_choose_from(self) -> Self:
+        if not self.n_skills and self.skills_to_choose_from:
+            raise ValueError(
+                "Skills to choose from present but no skill choices available"
+            )
         return self
 
     def add_to(self, blueprint: Blueprint) -> Blueprint:

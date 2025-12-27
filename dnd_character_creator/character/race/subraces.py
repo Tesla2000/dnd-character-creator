@@ -199,6 +199,10 @@ class Subrace(StrEnum):
     KENKU_KENKU_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE = (
         "Kenku (MordenkainenPresentsMonstersoftheMultiverse)"
     )
+    KALASHTAR_KALASHTAR_EBERRONRISINGFROMTHELASTWAR = (
+        "Kalashtar (EberronRisingfromtheLastWar)"
+    )
+    KALASHTAR_KALASHTAR_UNEARTHEDARCANA = "Kalashtar (UnearthedArcana)"
     KOBOLD_KOBOLD_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE = (
         "Kobold (MordenkainenPresentsMonstersoftheMultiverse)"
     )
@@ -221,6 +225,12 @@ class Subrace(StrEnum):
     )
     ORC_ORC_PLANESHIFTIXALAN = "Orc (PlaneShiftIxalan)"
     ORC_ORC_VOLOSGUIDETOMONSTERS = "Orc (VolosGuidetoMonsters)"
+    YUAN_TI_PUREBLOOD_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE = (
+        "Yuan-ti (MordenkainenPresentsMonstersoftheMultiverse)"
+    )
+    YUAN_TI_PUREBLOOD_VOLOSGUIDETOMONSTERS = (
+        "Yuan-ti Pureblood (VolosGuidetoMonsters)"
+    )
     SATYR_SATYR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE = (
         "Satyr (MordenkainenPresentsMonstersoftheMultiverse)"
     )
@@ -509,5 +519,16 @@ RACE_TO_SUBRACES: frozendict[Race, tuple[Subrace, ...]] = frozendict(
         Race.LEONIN: (Subrace.LEONIN_LEONIN_LEONINFEATURES,),
         Race.VERDAN: (Subrace.VERDAN_VERDAN_PLAYERSHANDBOOK,),
         Race.GRUNG: (Subrace.GRUNG_GRUNG_PLAYERSHANDBOOK,),
+        Race.KALASHTAR: (
+            Subrace.KALASHTAR_KALASHTAR_EBERRONRISINGFROMTHELASTWAR,
+            Subrace.KALASHTAR_KALASHTAR_UNEARTHEDARCANA,
+        ),
+        Race.YUAN_TI_PUREBLOOD: (
+            Subrace.YUAN_TI_PUREBLOOD_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE,
+            Subrace.YUAN_TI_PUREBLOOD_VOLOSGUIDETOMONSTERS,
+        ),
     }
 )
+
+if not all(map(RACE_TO_SUBRACES.__contains__, Race)):
+    raise ValueError("Not all races have defined subclasses")

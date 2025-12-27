@@ -31,9 +31,6 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RandomSkillChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
-    RandomSkillProficiencyChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
     RandomToolProficiencyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
@@ -215,14 +212,13 @@ class TestBuildSorcerer:
             AllChoicesResolver(
                 blocks=(
                     RandomLanguageChoiceResolver(),
-                    RandomSkillProficiencyChoiceResolver(),
+                    RandomSkillChoiceResolver(),
                     MaxFirstResolver(
                         priority=self.STATS_PRIORITY,
                         then=RandomFeatChoiceResolver(),
                     ),
                     RandomToolProficiencyChoiceResolver(),
                     PriorityStatChoiceResolver(priority=self.STATS_PRIORITY),
-                    RandomSkillChoiceResolver(),
                     RandomEquipmentChooser(),
                 ),
             ),

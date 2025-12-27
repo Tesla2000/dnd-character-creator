@@ -122,11 +122,10 @@ def example_building_blocks():
                             RandomEquipmentChooser(),
                         ),
                     ),
-                    level_up,
                 )
             ),
             RandomInitialDataFiller(),
-            LevelUpMultiple(blocks=tuple(level_up for _ in range(level - 1))),
+            LevelUpMultiple(blocks=tuple(level_up for _ in range(level))),
             RandomSubclassAssigner(
                 class_=class_,
             ),

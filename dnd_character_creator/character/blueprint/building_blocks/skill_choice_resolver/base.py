@@ -40,8 +40,12 @@ class SkillChoiceResolver(BuildingBlock, ABC):
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply skill choices based on n_skill_choices."""
+        if not blueprint.n_skill_choices and blueprint.skills_to_choose_from:
+            raise ValueError(
+                "Skills to choose from present but no skill choices available"
+            )
+
         if blueprint.n_skill_choices == 0:
-            # No skill choices to resolve, yield empty
             return Blueprint()
 
         if not blueprint.skills_to_choose_from:
@@ -49,7 +53,10 @@ class SkillChoiceResolver(BuildingBlock, ABC):
                 "skills_to_choose_from must not be empty when n_skill_choices > 0"
             )
 
-        if blueprint.n_skill_choices > len(blueprint.skills_to_choose_from):
+        if (
+            blueprint.n_skill_choices > len(blueprint.skills_to_choose_from)
+            and Skill.ANY_OF_YOUR_CHOICE not in blueprint.skills_to_choose_from
+        ):
             raise ValueError(
                 f"Cannot choose {blueprint.n_skill_choices} skills from "
                 f"{len(blueprint.skills_to_choose_from)} available skills"

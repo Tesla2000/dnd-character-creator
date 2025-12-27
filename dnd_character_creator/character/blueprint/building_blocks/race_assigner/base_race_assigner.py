@@ -36,6 +36,8 @@ class BaseRaceAssigner(BuildingBlock, ABC):
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the race difference."""
+        if blueprint.race is not None:
+            raise ValueError(f"{blueprint=} already has a race assigned")
         # TODO: add stat assigners for all classes and subclasses
         race_and_subrace = self._get_race_and_subrace()
         subrace_stats = SUBRACE_STATS[race_and_subrace.subrace].add_to(
