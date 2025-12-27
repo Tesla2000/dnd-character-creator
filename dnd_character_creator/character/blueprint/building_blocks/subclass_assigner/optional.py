@@ -1,5 +1,8 @@
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
+    AnySubclassAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
     SubclassAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.base import (
@@ -11,7 +14,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
 
 
 class OptionalAssigner(SubclassAssigner):
-    assigner: SubclassAssigner
+    assigner: AnySubclassAssigner
 
     def _select_subclass(self, blueprint: Blueprint) -> AnySubclass:
         return self.assigner._select_subclass(blueprint)

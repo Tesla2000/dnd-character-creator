@@ -12,12 +12,6 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
-    FeatChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
-    LanguageChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
     LevelAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
@@ -38,26 +32,20 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.character.blueprint.building_blocks import (
     RandomToolProficiencyChoiceResolver,
 )
-from dnd_character_creator.character.blueprint.building_blocks import (
-    SkillChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
-    StatChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
-    ToolProficiencyChoiceResolver,
-)
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
     AllChoicesResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
-    AllChoicesResolverBase,
+    AnyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser import (
-    EquipmentChooser,
+    AnyEquipmentChooser,
 )
 from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser import (
     RandomEquipmentChooser,
+)
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver import (
+    AnyFeatChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.max_first import (
     MaxFirstResolver,
@@ -68,11 +56,14 @@ from dnd_character_creator.character.blueprint.building_blocks.initial_builder i
 from dnd_character_creator.character.blueprint.building_blocks.initial_builder import (
     InitialBuilderBlocks,
 )
-from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler.base_filler import (
-    InitialDataFiller,
+from dnd_character_creator.character.blueprint.building_blocks.initial_data_filler import (
+    AnyInitialDataFiller,
+)
+from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver import (
+    AnyLanguageChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncrease,
+    AnyHealthIncrease,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import (
     HealthIncreaseAverage,
@@ -87,13 +78,13 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.level_up
     LevelUpBlocks,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
-    RandomSpellAssigner,
+    AnySpellAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
-    SpellAssigner,
+    RandomSpellAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.race_assigner import (
-    BaseRaceAssigner,
+    AnyRaceAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.race_assigner import (
     RandomRaceAssigner,
@@ -101,23 +92,32 @@ from dnd_character_creator.character.blueprint.building_blocks.race_assigner imp
 from dnd_character_creator.character.blueprint.building_blocks.simplified_builders.class_to_stats_priority import (
     CLASS_TO_STATS_PRIORITY,
 )
-from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standar_array import (
-    StandardArray,
+from dnd_character_creator.character.blueprint.building_blocks.skill_choice_resolver import (
+    AnySkillChoiceResolver,
 )
-from dnd_character_creator.character.blueprint.building_blocks.stats_builder.stats_builder import (
-    StatsBuilder,
+from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resolver import (
+    AnyStatChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.stats_builder import (
+    AnyStatsBuilder,
+)
+from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standard_array import (
+    StandardArray,
 )
 from dnd_character_creator.character.blueprint.building_blocks.stats_priority import (
     StatsPriority,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
-    RandomSubclassAssigner,
+    AnySubclassAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
-    SubclassAssigner,
+    RandomSubclassAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.optional import (
     OptionalAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
+    AnyToolProficiencyChoiceResolver,
 )
 from dnd_character_creator.character.character import ClassLevel
 from dnd_character_creator.choices.class_creation.character_class import Class
@@ -159,30 +159,30 @@ class SimplifiedBlocks(CombinedBlock):
             validated_data["classes"].main_class
         ]
     )
-    language_choice_resolver: LanguageChoiceResolver = Field(
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
         default_factory=RandomLanguageChoiceResolver
     )
-    skill_choice_resolver: SkillChoiceResolver = Field(
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
         default_factory=RandomSkillChoiceResolver
     )
-    feat_choice_resolver: FeatChoiceResolver = Field(
+    feat_choice_resolver: AnyFeatChoiceResolver = Field(
         default_factory=lambda validated_data: MaxFirstResolver(
             priority=validated_data["stats_priority"],
             then=RandomFeatChoiceResolver(),
         )
     )
-    tool_proficiencies_resolver: ToolProficiencyChoiceResolver = Field(
+    tool_proficiencies_resolver: AnyToolProficiencyChoiceResolver = Field(
         default_factory=RandomToolProficiencyChoiceResolver
     )
-    stat_choice_resolver: StatChoiceResolver = Field(
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
         default_factory=lambda validated_data: PriorityStatChoiceResolver(
             priority=validated_data["stats_priority"]
         )
     )
-    equipment_chooser: EquipmentChooser = Field(
+    equipment_chooser: AnyEquipmentChooser = Field(
         default_factory=RandomEquipmentChooser
     )
-    all_choices_resolver: AllChoicesResolverBase = Field(
+    all_choices_resolver: AnyChoiceResolver = Field(
         default_factory=lambda validated_data: AllChoicesResolver(
             blocks=(
                 validated_data["language_choice_resolver"],
@@ -225,7 +225,7 @@ class SimplifiedBlocks(CombinedBlock):
             return self
         raise ValueError(f"{increment_classes=} don't match {class_levels=}")
 
-    health_increases: tuple[HealthIncrease, ...] = Field(
+    health_increases: tuple[AnyHealthIncrease, ...] = Field(
         default_factory=lambda validated_data: tuple(
             chain.from_iterable(
                 (
@@ -256,7 +256,7 @@ class SimplifiedBlocks(CombinedBlock):
             return self
         raise ValueError(f"{increases_classes=} don't match {class_levels=}")
 
-    spell_assigners: tuple[SpellAssigner, ...] = Field(
+    spell_assigners: tuple[AnySpellAssigner, ...] = Field(
         default_factory=lambda validated_data: tuple(
             chain.from_iterable(
                 (
@@ -326,12 +326,12 @@ class SimplifiedBlocks(CombinedBlock):
             raise ValueError("\n".join(invalid_level_ups))
         return self
 
-    stats_builder: StatsBuilder = Field(
+    stats_builder: AnyStatsBuilder = Field(
         default_factory=lambda validated_data: StandardArray(
             stats_priority=validated_data["stats_priority"]
         )
     )
-    race_assigner: BaseRaceAssigner = Field(default_factory=RandomRaceAssigner)
+    race_assigner: AnyRaceAssigner = Field(default_factory=RandomRaceAssigner)
     initial_builder: InitialBuilder = Field(
         default_factory=lambda validated_data: InitialBuilder(
             blocks=InitialBuilderBlocks(
@@ -344,10 +344,10 @@ class SimplifiedBlocks(CombinedBlock):
             )
         )
     )
-    initial_data_filler: InitialDataFiller = Field(
+    initial_data_filler: AnyInitialDataFiller = Field(
         default_factory=RandomInitialDataFiller
     )
-    subclass_assigners: tuple[SubclassAssigner, ...] = Field(
+    subclass_assigners: tuple[AnySubclassAssigner, ...] = Field(
         default_factory=lambda validated_data: tuple(
             OptionalAssigner(
                 class_=class_, assigner=RandomSubclassAssigner(class_=class_)

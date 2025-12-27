@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import pytest
 from dnd_character_creator.character.blueprint.building_blocks import (
+    AnyBuildingBlock,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     BuildingBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
@@ -19,6 +22,7 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
 from dnd_character_creator.choices.sex import Sex
+from pydantic import TypeAdapter
 from pydantic import ValidationError
 
 
@@ -36,7 +40,7 @@ class TestBuildingBlockSerialization:
     def test_deserialize_simple_block(self):
         """Test deserializing a simple building block using model_validate."""
         data = {"block_type": "SexAssigner", "sex": Sex.MALE}
-        block = BuildingBlock.model_validate(data)
+        block = TypeAdapter(AnyBuildingBlock).validate_python(data)
 
         assert isinstance(block, SexAssigner)
         assert block.sex == Sex.MALE
@@ -47,7 +51,9 @@ class TestBuildingBlockSerialization:
         original = SexAssigner(sex=Sex.FEMALE)
         serialized = original.model_dump()
 
-        deserialized = BuildingBlock.model_validate(serialized)
+        deserialized = TypeAdapter(AnyBuildingBlock).validate_python(
+            serialized
+        )
 
         assert isinstance(deserialized, SexAssigner)
         assert deserialized.sex == original.sex
@@ -76,7 +82,9 @@ class TestBuildingBlockSerialization:
         )
         serialized = original.model_dump()
 
-        deserialized = BuildingBlock.model_validate(serialized)
+        deserialized = TypeAdapter(AnyBuildingBlock).validate_python(
+            serialized
+        )
 
         assert isinstance(deserialized, RaceAssigner)
         assert deserialized.race == original.race
@@ -102,7 +110,10 @@ class TestBuildingBlockSerialization:
     def test_serialize_and_deserialize_base_block_json(self, building_blocks):
         """Test serializing a CombinedBlock containing multiple blocks."""
         serialized = building_blocks.model_dump(mode="json")
-        assert BuildingBlock.model_validate(serialized) == building_blocks
+        assert (
+            TypeAdapter(AnyBuildingBlock).validate_python(serialized)
+            == building_blocks
+        )
 
     def test_deserialize_combined_block(self):
         """Test deserializing a CombinedBlock."""
@@ -118,7 +129,7 @@ class TestBuildingBlockSerialization:
             ],
         }
 
-        block = BuildingBlock.model_validate(data)
+        block = TypeAdapter(AnyBuildingBlock).validate_python(data)
 
         assert isinstance(block, CombinedBlock)
         assert len(block.blocks) == 2
@@ -138,7 +149,9 @@ class TestBuildingBlockSerialization:
 
         serialized = original.model_dump()
 
-        deserialized = BuildingBlock.model_validate(serialized)
+        deserialized = TypeAdapter(AnyBuildingBlock).validate_python(
+            serialized
+        )
 
         assert isinstance(deserialized, CombinedBlock)
         assert len(deserialized.blocks) == 2
@@ -153,7 +166,9 @@ class TestBuildingBlockSerialization:
             block, BuildingBlock
         )
         serialized = block.model_dump()
-        deserialized = BuildingBlock.model_validate(serialized)
+        deserialized = TypeAdapter(AnyBuildingBlock).validate_python(
+            serialized
+        )
         assert deserialized == block
 
     def test_roundtrip_incomplete_data(self):
@@ -168,7 +183,7 @@ class TestBuildingBlockSerialization:
         serialized = original.model_dump()
         serialized["blocks"][0].pop("sex")
         with pytest.raises(ValidationError):
-            BuildingBlock.model_validate(serialized)
+            TypeAdapter(AnyBuildingBlock).validate_python(serialized)
 
     def test_block_type_auto_set(self):
         """Test that block_type is automatically set on creation."""
@@ -193,7 +208,9 @@ class TestBuildingBlockSerialization:
         outer_combined = CombinedBlock(blocks=(inner_combined, block3))
 
         serialized = outer_combined.model_dump()
-        deserialized = BuildingBlock.model_validate(serialized)
+        deserialized = TypeAdapter(AnyBuildingBlock).validate_python(
+            serialized
+        )
 
         assert isinstance(deserialized, CombinedBlock)
         assert len(deserialized.blocks) == 2

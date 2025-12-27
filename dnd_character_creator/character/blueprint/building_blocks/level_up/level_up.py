@@ -6,25 +6,25 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
 )
-from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
-    AllChoicesResolverBase,
+from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
+    AnyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncrease,
+    AnyHealthIncrease,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_up.level_incrementer import (
     LevelIncrementer,
 )
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
-    SpellAssigner,
+    AnySpellAssigner,
 )
 
 
 class LevelUpBlocks(NamedTuple):
     level_increment: LevelIncrementer
-    health_increase: HealthIncrease
-    spell_assigner: SpellAssigner
-    all_choice_resolver: AllChoicesResolverBase
+    health_increase: AnyHealthIncrease
+    spell_assigner: AnySpellAssigner
+    all_choice_resolver: AnyChoiceResolver
 
 
 class LevelUp(CombinedBlock):

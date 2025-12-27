@@ -1,17 +1,35 @@
 from __future__ import annotations
 
+from typing import Annotated
+from typing import Union
+
+from dnd_character_creator.character.blueprint.building_blocks.get_discriminator import (
+    get_discriminator,
+)
 from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver.ai import (
     AILanguageChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver.base import (
-    LanguageChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.language_choice_resolver.random import (
     RandomLanguageChoiceResolver,
 )
+from pydantic import Tag
+
+AnyLanguageChoiceResolver = Annotated[
+    Union[
+        Annotated[
+            RandomLanguageChoiceResolver,
+            Tag(RandomLanguageChoiceResolver.get_block_type()),
+        ],
+        Annotated[
+            AILanguageChoiceResolver,
+            Tag(AILanguageChoiceResolver.get_block_type()),
+        ],
+    ],
+    get_discriminator(),
+]
 
 __all__ = [
-    "LanguageChoiceResolver",
     "RandomLanguageChoiceResolver",
     "AILanguageChoiceResolver",
+    "AnyLanguageChoiceResolver",
 ]

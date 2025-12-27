@@ -52,7 +52,7 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.level_up
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     RandomSpellAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standar_array import (
+from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (

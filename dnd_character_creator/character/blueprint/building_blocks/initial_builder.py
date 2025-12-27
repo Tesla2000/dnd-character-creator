@@ -8,22 +8,22 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.character.blueprint.building_blocks import (
     LevelAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
-    AllChoicesResolverBase,
+from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
+    AnyChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.race_assigner import (
-    BaseRaceAssigner,
+    AnyRaceAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.stats_builder.stats_builder import (
-    StatsBuilder,
+from dnd_character_creator.character.blueprint.building_blocks.stats_builder import (
+    AnyStatsBuilder,
 )
 
 
 class InitialBuilderBlocks(NamedTuple):
     level_assigner: LevelAssigner
-    stats_builder: StatsBuilder
-    race_assigner: BaseRaceAssigner
-    all_choices_resolver: AllChoicesResolverBase
+    stats_builder: AnyStatsBuilder
+    race_assigner: AnyRaceAssigner
+    all_choices_resolver: AnyChoiceResolver
 
 
 class InitialBuilder(CombinedBlock):

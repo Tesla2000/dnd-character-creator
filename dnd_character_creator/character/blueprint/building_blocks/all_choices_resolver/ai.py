@@ -15,9 +15,6 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
 )
-from dnd_character_creator.character.blueprint.building_blocks import (
-    StatChoiceResolver,
-)
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
     AllChoicesResolverBase,
 )
@@ -25,13 +22,16 @@ from dnd_character_creator.character.blueprint.building_blocks.all_choices_resol
     ChoicePackage,
 )
 from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser import (
-    EquipmentChooser,
+    AnyEquipmentChooser,
 )
 from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.max_if_not_maxed import (
     MaxIfNotMaxedResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.null_block import (
     NullBlock,
+)
+from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resolver import (
+    AnyStatChoiceResolver,
 )
 from dnd_character_creator.character.feature.feats import FeatName
 from dnd_character_creator.choices.language import Language
@@ -70,8 +70,8 @@ class AIAllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
     """
 
     blocks: tuple[
-        StatChoiceResolver,
-        EquipmentChooser,
+        AnyStatChoiceResolver,
+        AnyEquipmentChooser,
         Union[NullBlock, MaxIfNotMaxedResolver],
         AIAllNonStatChoicesResolver,
     ]

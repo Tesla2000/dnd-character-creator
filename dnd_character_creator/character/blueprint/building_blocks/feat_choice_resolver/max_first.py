@@ -1,13 +1,13 @@
 from typing import Union
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
-from dnd_character_creator.character.blueprint.building_blocks import (
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.ai import (
     AIFeatChoiceResolver,
 )
-from dnd_character_creator.character.blueprint.building_blocks import (
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.base import (
     FeatChoiceResolver,
 )
-from dnd_character_creator.character.blueprint.building_blocks import (
+from dnd_character_creator.character.blueprint.building_blocks.feat_choice_resolver.random import (
     RandomFeatChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks.stats_priority import (

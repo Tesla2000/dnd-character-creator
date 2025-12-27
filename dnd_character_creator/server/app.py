@@ -2,7 +2,7 @@ from typing import Any
 from typing import Optional
 
 from dnd_character_creator.character.blueprint.building_blocks import (
-    BuildingBlock,
+    AnyBuildingBlock,
 )
 from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.character.checkpoint import IncrementChain
@@ -18,6 +18,7 @@ from fastapi import FastAPI
 from fastapi import HTTPException
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import TypeAdapter
 from pydantic import ValidationError
 from starlette.responses import RedirectResponse
 from starlette.responses import Response
@@ -38,6 +39,9 @@ class _CreateCharacterRequestSchema(BaseModel):
     increment_chain: dict[str, Any] = Field(examples=[IncrementChain()])
 
 
+_building_block_creator = TypeAdapter(AnyBuildingBlock)
+
+
 def create_app(storage: IncrementStorage):
     app_ = FastAPI()
 
@@ -51,7 +55,7 @@ def create_app(storage: IncrementStorage):
     ) -> _CreateCharacterResponse:
         errors = []
         try:
-            building_blocks = BuildingBlock.model_validate(
+            building_blocks = _building_block_creator.validate_python(
                 request.building_blocks
             )
         except ValidationError as e:

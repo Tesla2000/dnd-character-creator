@@ -8,18 +8,36 @@ Provides implementations for selecting magical items:
 
 from __future__ import annotations
 
+from typing import Annotated
+from typing import Union
+
+from dnd_character_creator.character.blueprint.building_blocks.get_discriminator import (
+    get_discriminator,
+)
 from dnd_character_creator.character.blueprint.building_blocks.magical_item_chooser.ai import (
     AIMagicalItemChooser,
-)
-from dnd_character_creator.character.blueprint.building_blocks.magical_item_chooser.base_chooser import (
-    MagicalItemChooserBase,
 )
 from dnd_character_creator.character.blueprint.building_blocks.magical_item_chooser.random import (
     RandomMagicalItemChooser,
 )
+from pydantic import Tag
+
+AnyMagicalItemChooser = Annotated[
+    Union[
+        Annotated[
+            RandomMagicalItemChooser,
+            Tag(RandomMagicalItemChooser.get_block_type()),
+        ],
+        Annotated[
+            AIMagicalItemChooser,
+            Tag(AIMagicalItemChooser.get_block_type()),
+        ],
+    ],
+    get_discriminator(),
+]
 
 __all__ = [
     "RandomMagicalItemChooser",
     "AIMagicalItemChooser",
-    "MagicalItemChooserBase",
+    "AnyMagicalItemChooser",
 ]
