@@ -145,7 +145,7 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
     RandomSubclassAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.optional import (
-    OptionalAssigner,
+    OptionalSubclassAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
     AIToolProficiencyChoiceResolver,
@@ -201,7 +201,7 @@ __all__ = [
     "MaxIfNotMaxedResolver",
     "NameAssigner",
     "InitialBuilder",
-    "OptionalAssigner",
+    "OptionalSubclassAssigner",
     "PriorityStatChoiceResolver",
     "RaceAssigner",
     "RandomEquipmentChooser",

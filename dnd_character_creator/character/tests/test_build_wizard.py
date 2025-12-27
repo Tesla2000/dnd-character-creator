@@ -81,7 +81,7 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_as
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     RandomSpellAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
+from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     SpellAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.stats_builder.standard_array import (
@@ -93,7 +93,7 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
     RandomSubclassAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner import (
+from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.base import (
     SubclassAssigner,
 )
 from dnd_character_creator.character.builder import Builder

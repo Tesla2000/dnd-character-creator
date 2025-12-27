@@ -15,6 +15,9 @@ from dnd_character_creator.character.blueprint.building_blocks.get_discriminator
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.ai import (
     AISubclassAssigner,
 )
+from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.optional import (
+    OptionalSubclassAssigner,
+)
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.random import (
     RandomSubclassAssigner,
 )
@@ -27,6 +30,10 @@ AnySubclassAssigner = Annotated[
             Tag(RandomSubclassAssigner.get_block_type()),
         ],
         Annotated[
+            OptionalSubclassAssigner,
+            Tag(OptionalSubclassAssigner.get_block_type()),
+        ],
+        Annotated[
             AISubclassAssigner, Tag(AISubclassAssigner.get_block_type())
         ],
     ],
@@ -35,6 +42,6 @@ AnySubclassAssigner = Annotated[
 
 __all__ = [
     "AISubclassAssigner",
+    "OptionalSubclassAssigner",
     "RandomSubclassAssigner",
-    "AnySubclassAssigner",
 ]

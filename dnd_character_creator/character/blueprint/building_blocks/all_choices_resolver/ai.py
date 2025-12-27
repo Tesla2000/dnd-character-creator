@@ -9,17 +9,17 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.blueprint_formatter import (
     BlueprintFormatter,
 )
-from dnd_character_creator.character.blueprint.building_blocks import (
-    BuildingBlock,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
-    CombinedBlock,
-)
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
     AllChoicesResolverBase,
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver.choice_package import (
     ChoicePackage,
+)
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    BuildingBlock,
+)
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    CombinedBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser import (
     AnyEquipmentChooser,

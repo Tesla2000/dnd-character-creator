@@ -3,10 +3,10 @@ from unittest.mock import patch
 import pytest
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks import (
-    BuildingBlock,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
     SexAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    BuildingBlock,
 )
 from dnd_character_creator.character.checkpoint import IncrementChain
 from dnd_character_creator.character.checkpoint import IncrementStorage

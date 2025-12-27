@@ -8,13 +8,13 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.level_in
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     RandomSpellAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.simplified_builders.class_to_stats_priority import (
+from dnd_character_creator.character.blueprint.simplified_blocks.class_to_stats_priority import (
     CLASS_TO_STATS_PRIORITY,
 )
-from dnd_character_creator.character.blueprint.building_blocks.simplified_builders.simplified_blocks import (
+from dnd_character_creator.character.blueprint.simplified_blocks.simplified_blocks import (
     Classes,
 )
-from dnd_character_creator.character.blueprint.building_blocks.simplified_builders.simplified_blocks import (
+from dnd_character_creator.character.blueprint.simplified_blocks.simplified_blocks import (
     SimplifiedBlocks,
 )
 from dnd_character_creator.character.builder import Builder

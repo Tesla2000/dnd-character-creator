@@ -1,7 +1,7 @@
 import random
 from typing import Optional
 
-from dnd_character_creator.character.blueprint.building_blocks.race_assigner import (
+from dnd_character_creator.character.blueprint.building_blocks.race_assigner.base_race_assigner import (
     BaseRaceAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.race_assigner.base_race_assigner import (

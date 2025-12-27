@@ -3,13 +3,9 @@ from collections.abc import Mapping
 from itertools import chain
 from typing import Any
 from typing import Self
-from typing import Union
 
 from dnd_character_creator.character.blueprint.building_blocks import (
-    BuildingBlock,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
-    CombinedBlock,
+    AnyBuildingBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
     LevelAssigner,
@@ -37,6 +33,9 @@ from dnd_character_creator.character.blueprint.building_blocks.all_choices_resol
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
     AnyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    CombinedBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks.equipment_chooser import (
     AnyEquipmentChooser,
@@ -89,9 +88,6 @@ from dnd_character_creator.character.blueprint.building_blocks.race_assigner imp
 from dnd_character_creator.character.blueprint.building_blocks.race_assigner import (
     RandomRaceAssigner,
 )
-from dnd_character_creator.character.blueprint.building_blocks.simplified_builders.class_to_stats_priority import (
-    CLASS_TO_STATS_PRIORITY,
-)
 from dnd_character_creator.character.blueprint.building_blocks.skill_choice_resolver import (
     AnySkillChoiceResolver,
 )
@@ -114,10 +110,13 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
     RandomSubclassAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner.optional import (
-    OptionalAssigner,
+    OptionalSubclassAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
     AnyToolProficiencyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.simplified_blocks.class_to_stats_priority import (
+    CLASS_TO_STATS_PRIORITY,
 )
 from dnd_character_creator.character.character import ClassLevel
 from dnd_character_creator.choices.class_creation.character_class import Class
@@ -349,14 +348,14 @@ class SimplifiedBlocks(CombinedBlock):
     )
     subclass_assigners: tuple[AnySubclassAssigner, ...] = Field(
         default_factory=lambda validated_data: tuple(
-            OptionalAssigner(
+            OptionalSubclassAssigner(
                 class_=class_, assigner=RandomSubclassAssigner(class_=class_)
             )
             for class_ in validated_data["classes"].class_levels
         )
     )
 
-    blocks: tuple[Union[BuildingBlock, CombinedBlock], ...] = ()
+    blocks: tuple[AnyBuildingBlock, ...] = ()
 
     @model_validator(mode="wrap")
     @classmethod

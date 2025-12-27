@@ -4,6 +4,15 @@ from typing import Optional
 from dnd_character_creator.character.blueprint.building_blocks import (
     AnyBuildingBlock,
 )
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    BLOCK_TYPE_FIELD_NAME,
+)
+from dnd_character_creator.character.blueprint.simplified_blocks.simplified_blocks import (
+    Classes,
+)
+from dnd_character_creator.character.blueprint.simplified_blocks.simplified_blocks import (
+    SimplifiedBlocks,
+)
 from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.character.checkpoint import IncrementChain
 from dnd_character_creator.character.checkpoint import IncrementStorage
@@ -11,6 +20,7 @@ from dnd_character_creator.character.checkpoint import MemoryStorage
 from dnd_character_creator.character.presentable_character import (
     PresentableCharacter,
 )
+from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.server.example_generators.example_building_blocks import (
     example_building_blocks,
 )
@@ -33,6 +43,9 @@ class _CreateCharacterResponse(BaseModel):
 class _CreateCharacterRequestSchema(BaseModel):
     building_blocks: dict[str, Any] = Field(
         examples=[
+            SimplifiedBlocks(
+                classes=Classes(class_levels={Class.WIZARD: 1})
+            ).model_dump(exclude={"blocks"}),
             example_building_blocks().model_dump(),
         ]
     )
@@ -55,9 +68,17 @@ def create_app(storage: IncrementStorage):
     ) -> _CreateCharacterResponse:
         errors = []
         try:
-            building_blocks = _building_block_creator.validate_python(
-                request.building_blocks
-            )
+            if (
+                request.building_blocks.get(BLOCK_TYPE_FIELD_NAME)
+                == SimplifiedBlocks.get_block_type()
+            ):
+                building_blocks = SimplifiedBlocks.model_validate(
+                    request.building_blocks
+                )
+            else:
+                building_blocks = _building_block_creator.validate_python(
+                    request.building_blocks
+                )
         except ValidationError as e:
             errors.append(e)
         try:

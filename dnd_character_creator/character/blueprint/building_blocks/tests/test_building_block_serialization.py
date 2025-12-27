@@ -5,9 +5,6 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     AnyBuildingBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
-    BuildingBlock,
-)
-from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
@@ -18,6 +15,9 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
     SexAssigner,
+)
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    BuildingBlock,
 )
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import Subrace
