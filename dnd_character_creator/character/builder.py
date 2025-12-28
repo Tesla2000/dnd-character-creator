@@ -63,7 +63,7 @@ class Builder:
         blueprint = self._init_character()
         flatten_blocks = tuple(
             islice(
-                CombinedBlock(blocks=self._building_blocks).flatten(),
+                CombinedBlock(input_blocks=self._building_blocks).flatten(),
                 increment_chain.length(),
                 None,
             )

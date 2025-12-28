@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+import pytest
 from dnd_character_creator.character.blueprint.building_blocks import (
     CombinedBlock,
 )
@@ -13,6 +14,7 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 )
 from dnd_character_creator.character.checkpoint import IncrementChain
 from dnd_character_creator.choices.sex import Sex
+from dnd_character_creator.server.app import EXAMPLES
 from dnd_character_creator.server.tests.test_client import TestClient
 
 
@@ -58,7 +60,7 @@ class TestCreateCharacter(TestClient):
         first_chain = first_data["increment_chain"]
 
         additional_blocks = CombinedBlock(
-            blocks=(
+            input_blocks=(
                 SexAssigner(
                     sex=Sex.MALE,
                 ),
@@ -105,7 +107,7 @@ class TestCreateCharacter(TestClient):
         response = client.post(
             "/create_character",
             json={
-                "building_blocks": CombinedBlock(blocks=()).model_dump(
+                "building_blocks": CombinedBlock(input_blocks=()).model_dump(
                     mode="json"
                 ),
                 "increment_chain": IncrementChain().model_dump(mode="json"),
@@ -135,7 +137,7 @@ class TestCreateCharacter(TestClient):
         """Test creating multiple characters."""
         for i in range(3):
             building_blocks = CombinedBlock(
-                blocks=(
+                input_blocks=(
                     SexAssigner(sex=Sex.MALE if i % 2 == 0 else Sex.FEMALE),
                     LevelAssigner(level=i + 1),
                 )
@@ -159,7 +161,7 @@ class TestCreateCharacter(TestClient):
     def test_response_model_structure(self, client):
         """Test that response follows expected model structure."""
         building_blocks = CombinedBlock(
-            blocks=(
+            input_blocks=(
                 SexAssigner(sex=Sex.MALE),
                 LevelAssigner(level=1),
             )
@@ -177,5 +179,23 @@ class TestCreateCharacter(TestClient):
         assert "character" in data
         assert "increment_chain" in data
         assert "error" in data
+        assert isinstance(data["increment_chain"], dict)
+        assert "increments" in data["increment_chain"]
+
+    @pytest.mark.parametrize("example", EXAMPLES)
+    def test_create_character_examples(self, example, client):
+        response = client.post(
+            "/create_character",
+            json={
+                "building_blocks": example,
+                "increment_chain": IncrementChain().model_dump(mode="json"),
+            },
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "character" in data
+        assert "increment_chain" in data
+        assert "error" in data
+        assert data["error"] is None
         assert isinstance(data["increment_chain"], dict)
         assert "increments" in data["increment_chain"]

@@ -18,6 +18,7 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.level_in
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     AnySpellAssigner,
 )
+from pydantic import Field
 
 
 class LevelUpBlocks(NamedTuple):
@@ -46,7 +47,7 @@ class LevelUp(CombinedBlock):
         ... ])  # Character at level 10 with 2 Fighter / 1 Wizard (7 unused levels)
     """
 
-    blocks: LevelUpBlocks
+    input_blocks: LevelUpBlocks = Field(alias="blocks")
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         if blueprint.race is None:

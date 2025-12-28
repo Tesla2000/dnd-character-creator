@@ -24,14 +24,15 @@ from dnd_character_creator.character.blueprint.building_blocks.stat_choice_resol
 from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
     AnyToolProficiencyChoiceResolver,
 )
+from pydantic import Field
 
 
 class AllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
-    blocks: tuple[
+    input_blocks: tuple[
         AnyLanguageChoiceResolver,
         AnySkillChoiceResolver,
         AnyFeatChoiceResolver,
         AnyToolProficiencyChoiceResolver,
         AnyStatChoiceResolver,
         AnyEquipmentChooser,
-    ]
+    ] = Field(alias="blocks")

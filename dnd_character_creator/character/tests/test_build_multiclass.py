@@ -140,7 +140,7 @@ class TestBuildMulticlass:
     ):
         """Create standard level up block for wizard tests."""
         return LevelUp(
-            blocks=(
+            input_blocks=(
                 LevelIncrementer(class_=class_),
                 HealthIncreaseAverage(class_=class_),
                 spell_assigner,
@@ -183,7 +183,7 @@ class TestBuildMulticlass:
             Builder(increment_storage=MemoryStorage())
             .add(
                 InitialBuilder(
-                    blocks=(
+                    input_blocks=(
                         LevelAssigner(level=cls.LEVEL),
                         StandardArray(stats_priority=cls.STATS_PRIORITY),
                         RaceAssigner(
@@ -198,7 +198,7 @@ class TestBuildMulticlass:
             .add(initial_data_filler)
             .add(
                 LevelUpMultiple(
-                    blocks=tuple(
+                    input_blocks=tuple(
                         level_up_wizard
                         for _ in range(cls.LEVEL - cls.SORC_LEVEL - 1)
                     )
@@ -206,7 +206,9 @@ class TestBuildMulticlass:
             )
             .add(
                 LevelUpMultiple(
-                    blocks=tuple(level_up_sorc for _ in range(cls.SORC_LEVEL))
+                    input_blocks=tuple(
+                        level_up_sorc for _ in range(cls.SORC_LEVEL)
+                    )
                 )
             )
             .add(wiz_subclass_assigner)
@@ -227,7 +229,7 @@ class TestBuildMulticlass:
         wizard = self._build_multiclass(
             magical_item_chooser,
             AllChoicesResolver(
-                blocks=(
+                input_blocks=(
                     RandomLanguageChoiceResolver(),
                     RandomSkillChoiceResolver(),
                     MaxFirstResolver(
@@ -271,7 +273,7 @@ class TestBuildMulticlass:
 
         # Use AI for ALL choices (languages, skills, feats, stats, magical items)
         all_choices_resolver = AIAllChoicesResolver(
-            blocks=(
+            input_blocks=(
                 PriorityStatChoiceResolver(priority=self.STATS_PRIORITY),
                 RandomEquipmentChooser(),
                 MaxIfNotMaxedResolver(priority=self.STATS_PRIORITY),

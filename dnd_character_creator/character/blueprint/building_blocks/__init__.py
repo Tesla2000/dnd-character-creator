@@ -19,6 +19,9 @@ from dnd_character_creator.character.blueprint.building_blocks.background_assign
     BackgroundAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    Blocks,
+)
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     CombinedBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
@@ -219,4 +222,5 @@ __all__ = [
     "StandardArray",
     "WeaponAdder",
     "AnyBuildingBlock",
+    "Blocks",
 ]
