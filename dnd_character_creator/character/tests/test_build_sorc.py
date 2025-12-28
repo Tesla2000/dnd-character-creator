@@ -138,7 +138,7 @@ class TestBuildSorcerer:
     ):
         """Create standard level up block for wizard tests."""
         return LevelUp(
-            blocks=(
+            input_blocks=(
                 LevelIncrementer(class_=class_),
                 HealthIncreaseAverage(class_=class_),
                 spell_assigner,
@@ -175,7 +175,7 @@ class TestBuildSorcerer:
             Builder(increment_storage=MemoryStorage())
             .add(
                 InitialBuilder(
-                    blocks=(
+                    input_blocks=(
                         LevelAssigner(level=cls.LEVEL),
                         StandardArray(stats_priority=cls.STATS_PRIORITY),
                         RaceAssigner(
@@ -190,7 +190,7 @@ class TestBuildSorcerer:
             .add(initial_data_filler)
             .add(
                 LevelUpMultiple(
-                    blocks=tuple(level_up for _ in range(cls.LEVEL - 1))
+                    input_blocks=tuple(level_up for _ in range(cls.LEVEL - 1))
                 )
             )
             .add(subclass_assigner)
@@ -210,7 +210,7 @@ class TestBuildSorcerer:
         sorcerer = self._build_sorc(
             magical_item_chooser,
             AllChoicesResolver(
-                blocks=(
+                input_blocks=(
                     RandomLanguageChoiceResolver(),
                     RandomSkillChoiceResolver(),
                     MaxFirstResolver(
@@ -253,7 +253,7 @@ class TestBuildSorcerer:
 
         # Use AI for ALL choices (languages, skills, feats, stats, magical items)
         all_choices_resolver = AIAllChoicesResolver(
-            blocks=(
+            input_blocks=(
                 PriorityStatChoiceResolver(priority=self.STATS_PRIORITY),
                 RandomEquipmentChooser(),
                 MaxIfNotMaxedResolver(priority=self.STATS_PRIORITY),

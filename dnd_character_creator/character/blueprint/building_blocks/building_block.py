@@ -7,20 +7,15 @@ from typing import Any
 from typing import Callable
 from typing import Literal
 from typing import Self
-from typing import TYPE_CHECKING
 from typing import Union
 
 from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from pydantic import BaseModel
 from pydantic import computed_field
 from pydantic import ConfigDict
+from pydantic import Field
 from pydantic import InstanceOf
 from pydantic.main import IncEx
-
-if TYPE_CHECKING:
-    from dnd_character_creator.character.blueprint.building_blocks import (
-        AnyBuildingBlock,
-    )
 
 BLOCK_TYPE_FIELD_NAME = "block_type"
 
@@ -107,33 +102,6 @@ class SerializableBlock(BaseModel):
         )
 
 
-class CombinedBlock(SerializableBlock):
-    """Combines multiple building blocks to apply sequentially."""
-
-    blocks: tuple[
-        Union["AnyBuildingBlock", Self, InstanceOf[BuildingBlock]], ...
-    ]
-
-    def __add__(self, other: Any) -> Self:
-        allowed_types = (BuildingBlock, CombinedBlock)
-        if not isinstance(other, allowed_types):
-            raise ValueError(
-                f"Only instances of {allowed_types} allowed for {type(self).__name__} addition"
-            )
-        if isinstance(other, CombinedBlock):
-            return type(self)(blocks=self.blocks + other.blocks)
-        if isinstance(other, BuildingBlock):
-            return type(self)(blocks=self.blocks + (other,))
-        raise ValueError("What?")
-
-    def flatten(self) -> Generator[BuildingBlock, None, None]:
-        for block in self.blocks:
-            if not isinstance(block, CombinedBlock):
-                yield block
-            else:
-                yield from block.flatten()
-
-
 class BuildingBlock(SerializableBlock, ABC):
     @abstractmethod
     def get_change(self, blueprint: Blueprint) -> Blueprint:
@@ -144,4 +112,41 @@ class BuildingBlock(SerializableBlock, ABC):
         """
 
     def __add__(self, other: BuildingBlock) -> CombinedBlock:
-        return CombinedBlock(blocks=(self, other))
+        return CombinedBlock(input_blocks=(self, other))
+
+
+Blocks = tuple[
+    Union["AnyBuildingBlock", Self, InstanceOf[BuildingBlock]],  # noqa: F821
+    ...,
+]
+
+
+class CombinedBlock(SerializableBlock):
+    """Combines multiple building blocks to apply sequentially."""
+
+    model_config = ConfigDict(validate_by_alias=True, validate_by_name=True)
+    input_blocks: Blocks = Field(validation_alias="blocks", exclude=True)
+
+    @computed_field(alias="blocks")
+    @property
+    def blocks(self) -> Blocks:
+        return self.input_blocks
+
+    def __add__(self, other: Any) -> Self:
+        allowed_types = (BuildingBlock, CombinedBlock)
+        if not isinstance(other, allowed_types):
+            raise ValueError(
+                f"Only instances of {allowed_types} allowed for {type(self).__name__} addition"
+            )
+        if isinstance(other, CombinedBlock):
+            return type(self)(input_blocks=self.blocks + other.blocks)
+        if isinstance(other, BuildingBlock):
+            return type(self)(input_blocks=self.blocks + (other,))
+        raise ValueError("What?")
+
+    def flatten(self) -> Generator[BuildingBlock, None, None]:
+        for block in self.blocks:
+            if not isinstance(block, CombinedBlock):
+                yield block
+            else:
+                yield from block.flatten()

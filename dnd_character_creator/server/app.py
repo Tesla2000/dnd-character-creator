@@ -40,18 +40,19 @@ class _CreateCharacterResponse(BaseModel):
     error: Optional[str] = None
 
 
+EXAMPLES = (
+    SimplifiedBlocks(
+        classes=Classes(class_levels={Class.WIZARD: 1})
+    ).model_dump(include={"classes", BLOCK_TYPE_FIELD_NAME}, mode="json"),
+    SimplifiedBlocks(
+        classes=Classes(class_levels={Class.WIZARD: 1})
+    ).model_dump(exclude={"blocks"}, mode="json"),
+    example_building_blocks().model_dump(mode="json"),
+)
+
+
 class _CreateCharacterRequestSchema(BaseModel):
-    building_blocks: dict[str, Any] = Field(
-        examples=[
-            SimplifiedBlocks(
-                classes=Classes(class_levels={Class.WIZARD: 1})
-            ).model_dump(exclude={"blocks"}),
-            SimplifiedBlocks(
-                classes=Classes(class_levels={Class.WIZARD: 1})
-            ).model_dump(include={"classes"}),
-            example_building_blocks().model_dump(),
-        ]
-    )
+    building_blocks: dict[str, Any] = Field(examples=list(EXAMPLES))
     increment_chain: dict[str, Any] = Field(examples=[IncrementChain()])
 
 

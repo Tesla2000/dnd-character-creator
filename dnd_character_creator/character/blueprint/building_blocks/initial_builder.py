@@ -17,6 +17,7 @@ from dnd_character_creator.character.blueprint.building_blocks.race_assigner imp
 from dnd_character_creator.character.blueprint.building_blocks.stats_builder import (
     AnyStatsBuilder,
 )
+from pydantic import Field
 
 
 class InitialBuilderBlocks(NamedTuple):
@@ -27,4 +28,4 @@ class InitialBuilderBlocks(NamedTuple):
 
 
 class InitialBuilder(CombinedBlock):
-    blocks: InitialBuilderBlocks
+    input_blocks: InitialBuilderBlocks = Field(alias="blocks")

@@ -1,12 +1,8 @@
 from collections import Counter
 from collections.abc import Mapping
 from itertools import chain
-from typing import Any
 from typing import Self
 
-from dnd_character_creator.character.blueprint.building_blocks import (
-    AnyBuildingBlock,
-)
 from dnd_character_creator.character.blueprint.building_blocks import (
     LevelAssigner,
 )
@@ -36,6 +32,9 @@ from dnd_character_creator.character.blueprint.building_blocks.all_choices_resol
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
     AnyChoiceResolver,
+)
+from dnd_character_creator.character.blueprint.building_blocks.building_block import (
+    Blocks,
 )
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     CombinedBlock,
@@ -127,11 +126,10 @@ from dnd_character_creator.character.blueprint.simplified_blocks.class_to_stats_
 from dnd_character_creator.character.character import ClassLevel
 from dnd_character_creator.choices.class_creation.character_class import Class
 from pydantic import BaseModel
+from pydantic import computed_field
 from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import model_validator
-from pydantic import ModelWrapValidatorHandler
-from pydantic._internal._model_construction import ModelMetaclass
 
 
 class Classes(BaseModel):
@@ -158,18 +156,11 @@ class Classes(BaseModel):
         return sum(self.class_levels.values())
 
 
-class FieldToNameMeta(ModelMetaclass):
-    def __getattr__(self, item):
-        if item in self.model_fields:
-            return item
-        return super().__getattr__(item)
-
-
-class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
+class SimplifiedBlocks(CombinedBlock):
     classes: Classes
     stats_priority: StatsPriority = Field(
         default_factory=lambda validated_data: CLASS_TO_STATS_PRIORITY[
-            validated_data[SimplifiedBlocks.classes].main_class
+            validated_data["classes"].main_class
         ]
     )
     language_choice_resolver: AnyLanguageChoiceResolver = Field(
@@ -180,7 +171,7 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
     )
     feat_choice_resolver: AnyFeatChoiceResolver = Field(
         default_factory=lambda validated_data: MaxFirstResolver(
-            priority=validated_data[SimplifiedBlocks.stats_priority],
+            priority=validated_data["stats_priority"],
             then=RandomFeatChoiceResolver(),
         )
     )
@@ -189,7 +180,7 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
     )
     stat_choice_resolver: AnyStatChoiceResolver = Field(
         default_factory=lambda validated_data: PriorityStatChoiceResolver(
-            priority=validated_data[SimplifiedBlocks.stats_priority]
+            priority=validated_data["stats_priority"]
         )
     )
     equipment_chooser: AnyEquipmentChooser = Field(
@@ -197,13 +188,13 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
     )
     all_choices_resolver: AnyChoiceResolver = Field(
         default_factory=lambda validated_data: AllChoicesResolver(
-            blocks=(
-                validated_data[SimplifiedBlocks.language_choice_resolver],
-                validated_data[SimplifiedBlocks.skill_choice_resolver],
-                validated_data[SimplifiedBlocks.feat_choice_resolver],
-                validated_data[SimplifiedBlocks.tool_proficiencies_resolver],
-                validated_data[SimplifiedBlocks.stat_choice_resolver],
-                validated_data[SimplifiedBlocks.equipment_chooser],
+            input_blocks=(
+                validated_data["language_choice_resolver"],
+                validated_data["skill_choice_resolver"],
+                validated_data["feat_choice_resolver"],
+                validated_data["tool_proficiencies_resolver"],
+                validated_data["stat_choice_resolver"],
+                validated_data["equipment_chooser"],
             ),
         )
     )
@@ -213,7 +204,7 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
                 (
                     level * (LevelIncrementer(class_=class_),)
                     for class_, level in validated_data[
-                        SimplifiedBlocks.classes
+                        "classes"
                     ].class_levels.items()
                 )
             )
@@ -244,7 +235,7 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
                 (
                     level * (HealthIncreaseAverage(class_=class_),)
                     for class_, level in validated_data[
-                        SimplifiedBlocks.classes
+                        "classes"
                     ].class_levels.items()
                 )
             )
@@ -275,7 +266,7 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
                 (
                     level * (RandomSpellAssigner(class_=class_),)
                     for class_, level in validated_data[
-                        SimplifiedBlocks.classes
+                        "classes"
                     ].class_levels.items()
                 )
             )
@@ -305,20 +296,17 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
     level_ups: tuple[LevelUp, ...] = Field(
         default_factory=lambda validated_data: tuple(
             LevelUp(
-                blocks=LevelUpBlocks(
+                input_blocks=LevelUpBlocks(
                     level_increment=level,
                     health_increase=health,
                     spell_assigner=spell,
-                    all_choice_resolver=validated_data[
-                        SimplifiedBlocks.all_choices_resolver
-                    ],
+                    all_choice_resolver=validated_data["all_choices_resolver"],
                 ),
             )
             for level, health, spell in zip(
-                validated_data[SimplifiedBlocks.level_incrementers],
-                validated_data[SimplifiedBlocks.health_increases],
-                validated_data[SimplifiedBlocks.spell_assigners],
-                strict=True,
+                validated_data["level_incrementers"],
+                validated_data["health_increases"],
+                validated_data["spell_assigners"],
             )
         )
     )
@@ -343,23 +331,19 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
 
     stats_builder: AnyStatsBuilder = Field(
         default_factory=lambda validated_data: StandardArray(
-            stats_priority=validated_data[SimplifiedBlocks.stats_priority]
+            stats_priority=validated_data["stats_priority"]
         )
     )
     race_assigner: AnyRaceAssigner = Field(default_factory=RandomRaceAssigner)
     initial_builder: InitialBuilder = Field(
         default_factory=lambda validated_data: InitialBuilder(
-            blocks=InitialBuilderBlocks(
+            input_blocks=InitialBuilderBlocks(
                 level_assigner=LevelAssigner(
-                    level=validated_data[
-                        SimplifiedBlocks.classes
-                    ].get_total_level()
+                    level=validated_data["classes"].get_total_level()
                 ),
-                stats_builder=validated_data[SimplifiedBlocks.stats_builder],
-                race_assigner=validated_data[SimplifiedBlocks.race_assigner],
-                all_choices_resolver=validated_data[
-                    SimplifiedBlocks.all_choices_resolver
-                ],
+                stats_builder=validated_data["stats_builder"],
+                race_assigner=validated_data["race_assigner"],
+                all_choices_resolver=validated_data["all_choices_resolver"],
             )
         )
     )
@@ -371,32 +355,26 @@ class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
             OptionalSubclassAssigner(
                 class_=class_, assigner=RandomSubclassAssigner(class_=class_)
             )
-            for class_ in validated_data[SimplifiedBlocks.classes].class_levels
+            for class_ in validated_data["classes"].class_levels
         )
     )
     magical_items_assigner: AnyMagicalItemChooser = Field(
         default_factory=RandomMagicalItemChooser
     )
+    input_blocks: Blocks = Field((), init=False, exclude=True)
+    overwritten_blocks: Blocks = Field(
+        default_factory=lambda validated_data: (
+            validated_data["initial_builder"],
+            validated_data["initial_data_filler"],
+            CombinedBlock(input_blocks=validated_data["level_ups"]),
+            CombinedBlock(input_blocks=validated_data["subclass_assigners"]),
+            validated_data["magical_items_assigner"],
+        ),
+        validation_alias="blocks",
+        exclude=True,
+    )
 
-    blocks: tuple[AnyBuildingBlock, ...] = ()
-
-    @model_validator(mode="wrap")
-    @classmethod
-    def _create_blocks(
-        cls, data: Any, handler: ModelWrapValidatorHandler[Self]
-    ) -> Self:
-        self: Self = handler(data)
-        if self.blocks or not isinstance(data, dict):
-            return self
-        return handler(
-            {
-                **data,
-                SimplifiedBlocks.blocks: (
-                    self.initial_builder,
-                    self.initial_data_filler,
-                    CombinedBlock(blocks=self.level_ups),
-                    CombinedBlock(blocks=self.subclass_assigners),
-                    self.magical_items_assigner,
-                ),
-            }
-        )
+    @computed_field(alias="blocks")
+    @property
+    def blocks(self) -> Blocks:
+        return self.overwritten_blocks

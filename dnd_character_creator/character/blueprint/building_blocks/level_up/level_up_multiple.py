@@ -6,7 +6,8 @@ from dnd_character_creator.character.blueprint.building_blocks import (
 from dnd_character_creator.character.blueprint.building_blocks.level_up.level_up import (
     LevelUp,
 )
+from pydantic import Field
 
 
 class LevelUpMultiple(CombinedBlock):
-    blocks: tuple[LevelUp, ...]
+    input_blocks: tuple[LevelUp, ...] = Field(alias="blocks")
