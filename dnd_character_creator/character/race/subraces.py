@@ -150,7 +150,7 @@ class Subrace(StrEnum):
         "Wood Elf Heritage (PlayersHandbook)"
     )
     HALF_ORC_MARK_OF_FINDING_EBERRONRISINGFROMTHELASTWAR = (
-        "Mark of Finding (EberronRisingfromtheLastWar)"
+        "Half orc Mark of Finding (EberronRisingfromtheLastWar)"
     )
     HALF_ORC_HALF_ORC_PLAYERSHANDBOOK = "Half-Orc (PlayersHandbook)"
     HALFLING_MARK_OF_HEALING_EBERRONRISINGFROMTHELASTWAR = (

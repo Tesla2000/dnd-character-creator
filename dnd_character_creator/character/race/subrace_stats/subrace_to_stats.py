@@ -34,14 +34,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Ability Score Increase: increase one score by 2 and increase a different score by 1, or increase three different scores by 1",
-                "Creature Type: Humanoid",
-                "Size: Medium",
-                "Flight: flying speed equal to walking speed, can't wear medium or heavy armor",
-                "Talons: unarmed strikes deal 1d6 + Strength modifier slashing damage",
-                "Wind Caller: cast Gust of Wind without material components, once per long rest",
-            ],
+            other_active_abilities=(
+                "Ability Score Increase",
+                "Creature Type",
+                "Size",
+                "Flight",
+                "Talons",
+                "Wind Caller",
+            ),
         ),
         Subrace.AASIMAR_FALLEN_AASIMAR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -51,7 +51,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.CELESTIAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.DECEPTION, Skill.RELIGION],
+            skills_to_choose_from=(Skill.DECEPTION, Skill.RELIGION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -64,11 +64,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Healing Hands",
                 "Light Bearer",
-                "Celestial Revelation: Necrotic Shroud",
-            ],
+                "Celestial Revelation - Necrotic Shroud",
+            ),
         ),
         Subrace.AASIMAR_PROTECTOR_AASIMAR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -78,7 +78,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.CELESTIAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.MEDICINE, Skill.PERSUASION],
+            skills_to_choose_from=(Skill.MEDICINE, Skill.PERSUASION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -91,11 +91,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Healing Hands",
                 "Light Bearer",
-                "Celestial Revelation: Radiant Soul",
-            ],
+                "Celestial Revelation - Radiant Soul",
+            ),
         ),
         Subrace.AASIMAR_SCOURGE_AASIMAR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -105,7 +105,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.CELESTIAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.INTIMIDATION, Skill.SURVIVAL],
+            skills_to_choose_from=(Skill.INTIMIDATION, Skill.SURVIVAL),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -118,11 +118,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Healing Hands",
                 "Light Bearer",
-                "Celestial Revelation: Radiant Consumption",
-            ],
+                "Celestial Revelation - Radiant Consumption",
+            ),
         ),
         Subrace.AASIMAR_FALLEN_AASIMAR_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -145,9 +145,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Necrotic Shroud: Starting at 3rd level, you can use your action to unleash the divine energy within yourself, causing your eyes to turn into pools of darkness and two skeletal, ghostly, flightless wings to sprout from your back. The instant you transform, other creatures within 10 feet of you that can see you must each succeed on a Charisma saving throw (DC 8 + your proficiency bonus + your Charisma modifier) or become frightened of you until the end of your next turn. Your transformation lasts for 1 minute or until you end it as a bonus action. During it, once on each of your turns, you can deal extra necrotic damage to one target when you deal damage to it with an attack or a spell. The extra necrotic damage equals your level. Once you use this trait, you can't use it again until you finish a long rest."
-            ],
+            other_active_abilities=("Necrotic Shroud",),
         ),
         Subrace.AASIMAR_PROTECTOR_AASIMAR_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -170,9 +168,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Radiant Soul: Starting at 3rd level, you can use your action to unleash the divine energy within yourself, causing your eyes to glimmer and two luminous, incorporeal wings to sprout from your back. Your transformation lasts for 1 minute or until you end it as a bonus action. During it, you have a flying speed of 30 feet, and once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra radiant damage equals your level. Once you use this trait, you can't use it again until you finish a long rest."
-            ],
+            other_active_abilities=("Radiant Soul",),
         ),
         Subrace.AASIMAR_SCOURGE_AASIMAR_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -195,9 +191,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Radiant Consumption: Starting at 3rd level, you can use your action to unleash the divine energy within yourself, causing a searing light to radiate from you, pour out of your eyes and mouth, and threaten to char you. Your transformation lasts for 1 minute or until you end it as a bonus action. During it, you shed bright light in a 10-foot radius and dim light for an additional 10 feet, and at the end of each of your turns, you and each creature within 10 feet of you take radiant damage equal to half your level (rounded up). In addition, once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra radiant damage equals your level. Once you use this trait, you can't use it again until you finish a long rest."
-            ],
+            other_active_abilities=("Radiant Consumption",),
         ),
         Subrace.BUGBEAR_BUGBEAR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -207,7 +201,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.STEALTH],
+            skills_to_choose_from=(Skill.STEALTH,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -220,13 +214,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
-                "Fey Ancestry: You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
-                "Long-Limbed: When you make a melee attack on your turn, your reach for it is 5 feet greater than normal.",
-                "Powerful Build: You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
-                "Sneaky: You are proficient in the Stealth skill. In addition, without squeezing, you can move through and stop in a space large enough for a Small creature.",
-                "Surprise Attack: If you hit a creature with an attack roll, the creature takes an extra 2d6 damage if it hasn’t taken a turn yet in the current combat.",
-            ],
+            other_active_abilities=(
+                "Fey Ancestry",
+                "Long-Limbed",
+                "Powerful Build",
+                "Sneaky",
+                "Surprise Attack",
+            ),
         ),
         Subrace.BUGBEAR_BUGBEAR_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -236,7 +230,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.GOBLIN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.STEALTH],
+            skills_to_choose_from=(Skill.STEALTH,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -249,12 +243,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Long-Limbed",
                 "Powerful Build",
                 "Sneaky",
                 "Surprise Attack",
-            ],
+            ),
         ),
         Subrace.CENTAUR_GRUUL_CENTAUR_GUILDMASTERSGUIDETORAVNICA: SubraceStats(
             speed=40,
@@ -264,12 +258,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.SYLVAN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.MEDICINE,
                 Skill.NATURE,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -282,13 +276,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Charge",
                 "Hooves",
                 "Equine Build",
                 "Survivor",
-                "Fey",
-            ],
+            ),
         ),
         Subrace.CENTAUR_SELESNYA_CENTAUR_GUILDMASTERSGUIDETORAVNICA: SubraceStats(
             speed=40,
@@ -298,12 +291,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.SYLVAN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.MEDICINE,
                 Skill.NATURE,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -316,13 +309,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Charge",
                 "Hooves",
                 "Equine Build",
                 "Survivor",
-                "Fey",
-            ],
+            ),
         ),
         Subrace.CENTAUR_CENTAURS_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=40,
@@ -332,12 +324,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.MEDICINE,
                 Skill.NATURE,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -350,12 +342,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Charge",
                 "Equine Build",
                 "Hooves",
                 "Natural Affinity",
-            ],
+            ),
         ),
         Subrace.CENTAUR_LAGONNA_MYTHICODYSSEYSOFTHEROS: SubraceStats(
             speed=40,
@@ -365,7 +357,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.SYLVAN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANIMAL_HANDLING, Skill.SURVIVAL],
+            skills_to_choose_from=(Skill.ANIMAL_HANDLING, Skill.SURVIVAL),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -378,12 +370,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Charge",
                 "Hooves",
                 "Equine Build",
                 "Survivor",
-            ],
+            ),
         ),
         Subrace.CENTAUR_PHERES_MYTHICODYSSEYSOFTHEROS: SubraceStats(
             speed=40,
@@ -393,7 +385,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.SYLVAN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANIMAL_HANDLING, Skill.SURVIVAL],
+            skills_to_choose_from=(Skill.ANIMAL_HANDLING, Skill.SURVIVAL),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -406,12 +398,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Charge",
                 "Hooves",
                 "Equine Build",
                 "Survivor",
-            ],
+            ),
         ),
         Subrace.CHANGELING_CHANGELING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -422,12 +414,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.DECEPTION,
                 Skill.INSIGHT,
                 Skill.INTIMIDATION,
                 Skill.PERSUASION,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -440,7 +432,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=["Shapechanger", "Changeling Instincts"],
+            other_active_abilities=("Shapechanger", "Changeling Instincts"),
         ),
         Subrace.CHANGELING_CHANGELING_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -450,13 +442,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.DECEPTION,
                 Skill.INSIGHT,
                 Skill.INTIMIDATION,
                 Skill.PERFORMANCE,
                 Skill.PERSUASION,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -469,7 +461,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=["Shapechanger", "Changeling Instincts"],
+            other_active_abilities=("Shapechanger", "Changeling Instincts"),
         ),
         Subrace.CHANGELING_CHANGELING_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -493,11 +485,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Change Appearance",
                 "Unsettling Visage",
                 "Divergent Persona",
-            ],
+            ),
         ),
         Subrace.DRAGONBORN_DRACONBLOOD_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=30,
@@ -507,7 +499,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.DRACONIC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERSUASION, Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.PERSUASION, Skill.INTIMIDATION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -520,10 +512,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Darkvision: You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
-                "Forceful Presence: When you make an Intimidation or Persuasion check, you can do so with advantage once per long rest.",
-            ],
+            other_active_abilities=("Forceful Presence",),
         ),
         Subrace.DRAGONBORN_RAVENITE_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=30,
@@ -533,7 +522,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.DRACONIC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ATHLETICS, Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.ATHLETICS, Skill.INTIMIDATION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -546,10 +535,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Darkvision: You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
-                "Vengeful Assault: When you take damage from a creature in range of a weapon you are wielding, you can use your reaction to make an attack against that creature. You can do this once per short or long rest.",
-            ],
+            other_active_abilities=("Vengeful Assault",),
         ),
         Subrace.DRAGONBORN_CHROMATIC_FIZBANSTREASURYOFDRAGONS: SubraceStats(
             speed=30,
@@ -559,7 +545,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[],
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -572,12 +558,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Chromatic Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Chromatic Warding",
-            ],
+            ),
         ),
         Subrace.DRAGONBORN_GEM_FIZBANSTREASURYOFDRAGONS: SubraceStats(
             speed=30,
@@ -587,7 +573,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[],
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -600,13 +586,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Gem Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Psionic Mind",
                 "Gem Flight",
-            ],
+            ),
         ),
         Subrace.DRAGONBORN_METALLIC_FIZBANSTREASURYOFDRAGONS: SubraceStats(
             speed=30,
@@ -616,7 +602,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[],
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -629,12 +615,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Metallic Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Metallic Breath Weapon",
-            ],
+            ),
         ),
         Subrace.DRAGONBORN_DRAGONBORN_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -657,11 +643,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Draconic Ancestry",
                 "Breath Weapon",
                 "Damage Resistance",
-            ],
+            ),
         ),
         Subrace.DRAGONBORN_CHROMATIC_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -684,12 +670,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Chromatic Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Chromatic Warding",
-            ],
+            ),
         ),
         Subrace.DRAGONBORN_GEM_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -712,13 +698,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Gem Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Psionic Mind",
                 "Gem Flight",
-            ],
+            ),
         ),
         Subrace.DRAGONBORN_METALLIC_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -741,12 +727,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Metallic Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Metallic Breath Weapon",
-            ],
+            ),
         ),
         Subrace.DWARF_HILL_DWARF_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
@@ -769,9 +755,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Dwarven Toughness: Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
-            ],
+            other_active_abilities=("Dwarven Toughness",),
         ),
         Subrace.DWARF_MOUNTAIN_DWARF_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
@@ -794,9 +778,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Dwarven Armor Training: You have proficiency with light and medium armor."
-            ],
+            other_active_abilities=("Dwarven Armor Training",),
         ),
         Subrace.ELF_MARK_OF_SHADOW_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -819,11 +801,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Cunning Intuition: Whenever you roll a Dexterity (Stealth) check or a Charisma (Performance) check, roll a d4 and add the number rolled to the total ability check.",
-                "Shape Shadows: You know the Minor Illusion cantrip. Starting at 3rd level, you can also cast the Invisibility spell with this trait. Once you cast either spell with this trait, you can't cast that spell again until you finish a long rest. Charisma is your Spellcasting Ability for these spells.",
-                "Spells of the Mark: If you have the Spellcasting or Pact Magic class features, the spells on the Mark of Shadow Spells table are added to the spell list of your spellcasting class.",
-            ],
+            other_active_abilities=(
+                "Cunning Intuition",
+                "Shape Shadows",
+                "Spells of the Mark",
+            ),
         ),
         Subrace.ELF_PALLID_ELF_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=30,
@@ -846,10 +828,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Incisive Sense: Advantage on Investigation and Insight checks",
-                "Blessing of the Moonweaver: Know the Light cantrip, cast Sleep and Invisibility spells without material components.",
-            ],
+            other_active_abilities=(
+                "Incisive Sense",
+                "Blessing of the Moonweaver",
+            ),
         ),
         Subrace.ELF_BISHTAHAR_ELF_PLANESHIFTKALADESH: SubraceStats(
             speed=35,
@@ -872,11 +854,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Elf Weapon Training: You have proficiency with the longsword, shortsword, shortbow, and longbow.",
-                "Fleet of Foot: Your base walking speed increases to 35 feet.",
-                "Mask of the Wild: You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena.",
-            ],
+            other_active_abilities=(
+                "Elf Weapon Training",
+                "Fleet of Foot",
+                "Mask of the Wild",
+            ),
         ),
         Subrace.ELF_TIRAHAR_ELF_PLANESHIFTKALADESH: SubraceStats(
             speed=30,
@@ -899,9 +881,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Elf Weapon Training: You have proficiency with the longsword, shortsword, shortbow, and longbow."
-            ],
+            other_active_abilities=("Elf Weapon Training",),
         ),
         Subrace.ELF_VAHADAR_ELF_PLANESHIFTKALADESH: SubraceStats(
             speed=30,
@@ -924,10 +904,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Elf Weapon Training: You have proficiency with the longsword, shortsword, shortbow, and longbow.",
-                "Cantrip: You know one cantrip of your choice from the Druid spell list. Wisdom is your spellcasting ability for it.",
-            ],
+            other_active_abilities=(
+                "Elf Weapon Training",
+                "Cantrip",
+            ),
         ),
         Subrace.ELF_JURAGA_PLANESHIFTZENDIKAR: SubraceStats(
             speed=35,
@@ -937,10 +917,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ELVEN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANY_OF_YOUR_CHOICE,
                 Skill.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -953,11 +933,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Elf Weapon Training",
                 "Fleet of Foot",
                 "Mask of the Wild",
-            ],
+            ),
         ),
         Subrace.ELF_MUL_DAYA_PLANESHIFTZENDIKAR: SubraceStats(
             speed=30,
@@ -967,10 +947,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ELVEN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANY_OF_YOUR_CHOICE,
                 Skill.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -983,12 +963,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Superior Darkvision",
                 "Sunlight Sensitivity",
                 "Mul Daya Magic",
                 "Elf Weapon Training",
-            ],
+            ),
         ),
         Subrace.ELF_TAJURU_PLANESHIFTZENDIKAR: SubraceStats(
             speed=30,
@@ -998,10 +978,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ELVEN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANY_OF_YOUR_CHOICE,
                 Skill.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1014,7 +994,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Skill Versatility"],
+            other_active_abilities=("Skill Versatility",),
         ),
         Subrace.ELF_DARK_ELF_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -1024,7 +1004,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ELVEN,
             ),
             obligatory_skills=(Skill.STEALTH,),
-            skills_to_choose_from=[],
+            skills_to_choose_from=(),
             n_skills=0,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1037,12 +1017,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Superior Darkvision",
                 "Sunlight Sensitivity",
                 "Drow Magic",
                 "Drow Weapon Training",
-            ],
+            ),
         ),
         Subrace.ELF_HIGH_ELF_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -1065,7 +1045,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Cantrip", "Elf Weapon Training"],
+            other_active_abilities=("Cantrip", "Elf Weapon Training"),
         ),
         Subrace.ELF_WOOD_ELF_PLAYERSHANDBOOK: SubraceStats(
             speed=35,
@@ -1088,11 +1068,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Elf Weapon Training",
                 "Fleet of Foot",
                 "Mask of the Wild",
-            ],
+            ),
         ),
         Subrace.ELF_ASTRAL_ELF_SPELLJAMMERADVENTURESINSPACE: SubraceStats(
             speed=30,
@@ -1115,14 +1095,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
-                "Astral Fire: You know one of the following cantrips of your choice: Dancing Lights, Light, or Sacred Flame. Intelligence, Wisdom, or Charisma is your spellcasting ability for it (choose when you select this race).",
-                "Darkvision: You can see dim light within 60 feet of yourself as if it were bright light, and in darkness as if it were dim light. You discern colors in darkness only as shades of gray.",
-                "Fey Ancestry: You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
-                "Keen Senses: You have proficiency in the Perception skill.",
-                "Starlight Step: As a bonus action, you can magically teleport up to 30 feet to an unoccupied space you can see. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
-                "Astral Trance: You don't need to sleep, and magic can't put you to sleep. You can finish a long rest in 4 hours if you spend those hours in a trancelike meditation, during which you remain conscious. Whenever you finish this trance, you gain proficiency in one skill of your choice and with one weapon or tool of your choice, selected from the Player's Handbook. You magically acquire these proficiencies by drawing them from shared elven memory and the experiences of entities on the Astral Plane, and you retain them until you finish your next long rest.",
-            ],
+            other_active_abilities=(
+                "Astral Fire",
+                "Fey Ancestry",
+                "Keen Senses",
+                "Starlight Step",
+                "Astral Trance",
+            ),
         ),
         Subrace.FIRBOLG_FIRBOLG_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -1145,12 +1124,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Firbolg Magic",
                 "Hidden Step",
                 "Powerful Build",
                 "Speech of Beast and Leaf",
-            ],
+            ),
         ),
         Subrace.FIRBOLG_FIRBOLG_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -1161,11 +1140,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.GIANT,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.NATURE,
                 Skill.PERCEPTION,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1178,12 +1157,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Firbolg Magic",
                 "Hidden Step",
                 "Powerful Build",
                 "Speech of Beast and Leaf",
-            ],
+            ),
         ),
         Subrace.GENASI_AIR_AIR_GENASI_ELEMENTALEVILPLAYERSCOMPANION: SubraceStats(
             speed=30,
@@ -1206,10 +1185,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Unending Breath: You can hold your breath indefinitely while you’re not incapacitated.",
-                "Mingle with the Wind: You can cast the Levitate spell once with this trait, requiring no material components, and you regain the ability to cast it this way when you finish a long rest. Constitution is your spellcasting ability for this spell.",
-            ],
+            other_active_abilities=(
+                "Unending Breath",
+                "Mingle with the Wind",
+            ),
         ),
         Subrace.GENASI_AIR_AIR_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=35,
@@ -1232,13 +1211,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
-                "Creature Type: Humanoid",
-                "Size: Medium or Small",
-                "Unending Breath: You can hold your breath indefinitely while you’re not incapacitated.",
-                "Lightning Resistance: You have resistance to lightning damage.",
-                "Mingle with the Wind: You know the Shocking Grasp cantrip. Starting at 3rd level, you can cast the Feather Fall spell with this trait, without requiring a material component. Starting at 5th level, you can also cast the Levitate spell with this trait, without requiring a material component. Once you cast Feather Fall or Levitate with this trait, you can’t cast that spell with it again until you finish a long rest. You can also cast either of those spells using any spell slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
-            ],
+            other_active_abilities=(
+                "Creature Type",
+                "Size",
+                "Unending Breath",
+                "Lightning Resistance",
+                "Mingle with the Wind",
+            ),
         ),
         Subrace.GENASI_EARTH_EARTH_GENASI_ELEMENTALEVILPLAYERSCOMPANION: SubraceStats(
             speed=30,
@@ -1261,10 +1240,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Earth Walk: You can move across difficult terrain made of earth or stone without expending extra movement.",
-                "Merge with Stone: You can cast the Pass without Trace spell once with this trait, requiring no material components, and you regain the ability to cast it this way when you finish a long rest. Constitution is your spellcasting ability for this spell.",
-            ],
+            other_active_abilities=(
+                "Earth Walk",
+                "Merge with Stone",
+            ),
         ),
         Subrace.GENASI_EARTH_EARTH_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -1287,10 +1266,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
-                "Earth Walk: You can move across difficult terrain without expending extra movement if you are using your walking speed on the ground or a floor.",
-                "Merge with Stone: You know the Blade Ward cantrip. You can cast it as normal, and you can also cast it as a bonus action a number of times equal to your proficiency bonus, regaining all expended uses when you finish a long rest. Starting at 5th level, you can cast the Pass Without Trace spell with this trait, without requiring a material component. Once you cast that spell with this trait, you can’t do so again until you finish a long rest. You can also cast it using any spell slots you have of 2nd level or higher. Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
-            ],
+            other_active_abilities=(
+                "Earth Walk",
+                "Merge with Stone",
+            ),
         ),
         Subrace.GENASI_FIRE_FIRE_GENASI_ELEMENTALEVILPLAYERSCOMPANION: SubraceStats(
             speed=30,
@@ -1313,10 +1292,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Fire Resistance: You have resistance to fire damage.",
-                "Reach to the Blaze: You know the Produce Flame cantrip. Once you reach 3rd level, you can cast the Burning Hands spell once with this trait as a 1st-level spell, and you regain the ability to cast it this way when you finish a long rest. Constitution is your spellcasting ability for these spells.",
-            ],
+            other_active_abilities=(
+                "Fire Resistance",
+                "Reach to the Blaze",
+            ),
         ),
         Subrace.GENASI_FIRE_FIRE_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -1339,10 +1318,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
-                "Fire Resistance: You have resistance to fire damage.",
-                "Reach to the Blaze: You know the Produce Flame cantrip. Starting at 3rd level, you can cast the Burning Hands spell with this trait. Starting at 5th level, you can also cast the Flame Blade spell with this trait, without requiring a material component. Once you cast Burning Hands or Flame Blade with this trait, you can’t cast that spell with it again until you finish a long rest. You can also cast either of those spells using any spell slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
-            ],
+            other_active_abilities=(
+                "Fire Resistance",
+                "Reach to the Blaze",
+            ),
         ),
         Subrace.GENASI_WATER_WATER_GENASI_ELEMENTALEVILPLAYERSCOMPANION: SubraceStats(
             speed=30,
@@ -1365,11 +1344,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Acid Resistance: You have resistance to acid damage.",
-                "Amphibious: You can breathe air and water.",
-                "Call to the Wave: You know the Shape Water cantrip. When you reach 3rd level, you can cast the Create or Destroy Water spell as a 2nd-level spell once with this trait, and you regain the ability to cast it this way when you finish a long rest. Constitution is your spellcasting ability for these spells.",
-            ],
+            other_active_abilities=(
+                "Acid Resistance",
+                "Amphibious",
+                "Call to the Wave",
+            ),
         ),
         Subrace.GENASI_WATER_WATER_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -1392,11 +1371,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
-                "Acid Resistance: You have resistance to acid damage.",
-                "Amphibious: You can breathe air and water.",
-                "Call to the Wave: You know the Acid Splash cantrip. Starting at 3rd level, you can cast the Create or Destroy Water spell with this trait. Starting at 5th level, you can also cast the Water Walk spell with this trait, without requiring a material component. Once you cast Create or Destroy Water or Water Walk with this trait, you can’t cast that spell with it again until you finish a long rest. You can also cast either of those spells using any spell slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
-            ],
+            other_active_abilities=(
+                "Acid Resistance",
+                "Amphibious",
+                "Call to the Wave",
+            ),
         ),
         Subrace.GNOME_MARK_OF_SCRIBING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=25,
@@ -1419,11 +1398,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Gifted Scribe: Whenever you make an Intelligence (History) or an Ability Check involving Calligrapher's Supplies, you can roll a d4 and add the number rolled to the total ability check.",
-                "Scribe's Insight: You know the Message cantrip. You can also cast the Comprehend Languages spell with this trait. Starting at 3rd level, you can also cast the Magic Mouth spell with it. Once you cast either spell with this trait, you can't cast that spell again until you finish a Long Rest. Intelligence is your Spellcasting Ability for these spells.",
-                "Spells of the Mark: If you have the Spellcasting or Pact Magic class feature, the spells on the Mark of Scribing Spells table are added to the spell list of your Spellcasting class.",
-            ],
+            other_active_abilities=(
+                "Gifted Scribe",
+                "Scribe's Insight",
+                "Spells of the Mark",
+            ),
         ),
         Subrace.GNOME_FOREST_GNOME_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
@@ -1446,10 +1425,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Natural Illusionist: You know the Minor Illusion cantrip. Intelligence is your spellcasting modifier for it.",
-                "Speak with Small Beasts: Through sound and gestures, you may communicate simple ideas with Small or smaller beasts.",
-            ],
+            other_active_abilities=(
+                "Natural Illusionist",
+                "Speak with Small Beasts",
+            ),
         ),
         Subrace.GNOME_ROCK_GNOME_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
@@ -1472,10 +1451,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Artificer's Lore: Whenever you make an Intelligence (History) check related to magical, alchemical, or technological items, you can add twice your proficiency bonus instead of any other proficiency bonus that may apply.",
-                "Tinker: You have proficiency with artisan tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours, or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time. When you create a device, choose one of the following options: Clockwork Toy, Fire Starter, Music Box.",
-            ],
+            other_active_abilities=(
+                "Artificer's Lore",
+                "Tinker",
+            ),
         ),
         Subrace.GOBLIN_DANKWOOD_GOBLIN_ADVENTURESWITHMUKDANKWOOD: SubraceStats(
             speed=30,
@@ -1498,10 +1477,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Speak with Small Beasts",
                 "Nimble Escape",
-            ],
+            ),
         ),
         Subrace.GOBLIN_GOBLIN_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -1511,7 +1490,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ACROBATICS, Skill.STEALTH],
+            skills_to_choose_from=(Skill.ACROBATICS, Skill.STEALTH),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1524,14 +1503,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Creature Type: You are a Humanoid. You are also considered a goblinoid for any prerequisite or effect that requires you to be a goblinoid.",
-                "Size: You are Small.",
-                "Darkvision: You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
-                "Fey Ancestry: You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
-                "Fury of the Small: When you damage a creature with an attack or a spell and the creature’s size is larger than yours, you can cause the attack or spell to deal extra damage to the creature. The extra damage equals your proficiency bonus. You can use this trait a number of times equal to your proficiency bonus, regaining all expended uses when you finish a long rest, and you can use it no more than once per turn.",
-                "Nimble Escape: You can take the Disengage or Hide action as a bonus action on each of your turns.",
-            ],
+            other_active_abilities=(
+                "Creature Type",
+                "Size",
+                "Fey Ancestry",
+                "Fury of the Small",
+                "Nimble Escape",
+            ),
         ),
         Subrace.GOBLIN_GOBLIN_PLANESHIFTIXALAN: SubraceStats(
             speed=25,
@@ -1554,7 +1532,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Agile Climber", "Darkvision"],
+            other_active_abilities=("Agile Climber", "Darkvision"),
         ),
         Subrace.GOBLIN_GOBLIN_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -1577,7 +1555,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Fury of the Small", "Nimble Escape"],
+            other_active_abilities=("Fury of the Small", "Nimble Escape"),
         ),
         Subrace.GOLIATH_GOLIATH_ELEMENTALEVILPLAYERSGUIDE: SubraceStats(
             speed=30,
@@ -1587,7 +1565,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.GIANT,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ATHLETICS],
+            skills_to_choose_from=(Skill.ATHLETICS,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1600,12 +1578,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Natural Athlete: You have proficiency in the Athletics skill.",
-                "Stone's Endurance: You can focus yourself to occasionally shrug off injury. When you take damage, you can use your reaction to roll a d12. Add your Constitution modifier to the number rolled, and reduce the damage by that total. After you use this trait, you can’t use it again until you finish a short or long rest.",
-                "Powerful Build: You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
-                "Mountain Born: You have resistance to cold damage. You’re also acclimated to high altitude, including elevations above 20,000 feet.",
-            ],
+            other_active_abilities=(
+                "Natural Athlete",
+                "Stone's Endurance",
+                "Powerful Build",
+                "Mountain Born",
+            ),
         ),
         Subrace.GOLIATH_GOLIATH_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -1615,7 +1593,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ATHLETICS],
+            skills_to_choose_from=(Skill.ATHLETICS,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1628,18 +1606,18 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Little Giant",
                 "Mountain Born",
                 "Stone's Endurance",
-            ],
+            ),
         ),
         Subrace.GRUNG_GRUNG_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
             dark_vision_range=0,
             languages=(Language.GRUNG,),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERCEPTION],
+            skills_to_choose_from=(Skill.PERCEPTION,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1652,13 +1630,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Amphibious",
                 "Poison Immunity",
                 "Poisonous Skin",
                 "Standing Leap",
                 "Water Dependency",
-            ],
+            ),
         ),
         Subrace.HALF_ELF_AQUATIC_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -1682,9 +1660,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "Swim Speed: You have a swimming speed of 30 feet."
-            ],
+            other_active_abilities=("Swim",),
         ),
         Subrace.HALF_ELF_DARK_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -1708,9 +1684,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "Drow Magic: You know the Dancing Lights cantrip. When you reach 3rd level, you can cast Faerie Fire once, and it recharges after a long rest. When you reach 5th level, you can cast Darkness once, and it recharges after a long rest. Charisma is your spellcasting ability for these spells."
-            ],
+            other_active_abilities=("Drow Magic",),
         ),
         Subrace.HALF_ELF_HIGH_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -1734,9 +1708,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "Cantrip: You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."
-            ],
+            other_active_abilities=("Cantrip",),
         ),
         Subrace.HALF_ELF_WOOD_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=35,
@@ -1760,10 +1732,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "Fleet of Foot: Your base walking speed increases to 35 feet.",
-                "Mask of the Wild: You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena.",
-            ],
+            other_active_abilities=(
+                "Fleet of Foot",
+                "Mask of the Wild",
+            ),
         ),
         Subrace.HALF_ORC_MARK_OF_FINDING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -1773,7 +1745,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.GOBLIN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERCEPTION, Skill.SURVIVAL],
+            skills_to_choose_from=(Skill.PERCEPTION, Skill.SURVIVAL),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1786,11 +1758,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Darkvision: You can see in dim light within 60ft. of you as if it were bright light, and in darkness as if it were dim light. You can't discern colors in darkness, only shades of grey.",
-                "Hunter's Intuition: Whenever you make a Wisdom (Perception) or a Wisdom (Survival) check, you can roll a d4 and add the number rolled to the total ability check.",
-                "Finder's Magic: You can cast the Hunter's Mark spell with this trait. Starting at 3rd level, you can also cast the Locate Object spell with it. Once you cast either spell with this trait, you can't cast that spell again until you finish a Long Rest. Wisdom is your Spellcasting Ability for these spells.",
-            ],
+            other_active_abilities=(
+                "Hunter's Intuition",
+                "Finder's Magic",
+            ),
         ),
         Subrace.HALF_ORC_HALF_ORC_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -1800,7 +1771,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ORC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.INTIMIDATION,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1813,11 +1784,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Relentless Endurance",
                 "Savage Attacks",
                 "Menacing",
-            ],
+            ),
         ),
         Subrace.HALFLING_MARK_OF_HEALING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=25,
@@ -1840,11 +1811,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Medical Intuition: Whenever you roll a Wisdom (Medicine) check or an ability check involving an Herbalism Kit, roll a d4 and add the number rolled to the total ability check.",
-                "Healing Touch: You can cast the Cure Wounds spell with this trait. Beginning at 3rd level, you can also cast the Lesser Restoration spell with this trait. Once you cast either spell with this trait, you can't cast that spell again until you finish a long rest. Wisdom is your Spellcasting Ability for these spells.",
-                "Spells of the Mark: If you have the Spellcasting or Pact Magic class features, the spells on the Mark of Healing Spells table are added to the spell list of your spellcasting class.",
-            ],
+            other_active_abilities=(
+                "Medical Intuition",
+                "Healing Touch",
+                "Spells of the Mark",
+            ),
         ),
         Subrace.HALFLING_MARK_OF_HOSPITALITY_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=25,
@@ -1867,11 +1838,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Ever Hospitable: Whenever you roll a Charisma (Persuasion) check or an ability check involving Brewer's Tools or Cook's Utensils, roll a d4 and add the number rolled to the total ability check.",
-                "Innkeeper's Magic: You know the Prestidigitation cantrip. You can also cast Purify Food and Drink and Unseen Servant with this trait. Once you cast either spell with this trait, you can't cast that spell again until you finish a long rest. Charisma is your Spellcasting Ability for these spells.",
-                "Spells of the Mark: If you have the Spellcasting or Pact Magic class features, the spells on the Mark of Hospitality Spells table are added to the spell list of your spellcasting class.",
-            ],
+            other_active_abilities=(
+                "Ever Hospitable",
+                "Innkeeper's Magic",
+                "Spells of the Mark",
+            ),
         ),
         Subrace.HALFLING_LOTUSDEN_HALFLING_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=25,
@@ -1894,10 +1865,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Children of the Woods: You know the Druidcraft Cantrip. At 3rd level, you can cast the Entangle spell once per long rest. At 5th level, you can cast Spike Growth once per long rest. Wisdom is your spellcasting ability for these spells.",
-                "Timberwalk: Ability checks made to track you are at disadvantage and you can move through difficult terrain made of non-magical plants and overgrowth without expending extra movement.",
-            ],
+            other_active_abilities=(
+                "Children of the Woods",
+                "Timberwalk",
+            ),
         ),
         Subrace.HALFLING_LIGHTFOOT_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
@@ -1920,9 +1891,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Naturally Stealthy: You can attempt to hide even when you are only obscured by a creature that is at least one size larger than you."
-            ],
+            other_active_abilities=("Naturally Stealthy",),
         ),
         Subrace.HALFLING_STOUT_PLAYERSHANDBOOK: SubraceStats(
             speed=25,
@@ -1945,9 +1914,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Stout Resilience: You have advantage on saving throws against poison, and you have resistance to poison damage."
-            ],
+            other_active_abilities=("Stout Resilience",),
         ),
         Subrace.HALFLING_GHOSTWISE_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=25,
@@ -1970,9 +1937,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Silent Speech: You can speak telepathically to any creature within 30 feet of you. The creature understands you only if the two of you share a language. You can speak telepathically in this way to one creature at a time."
-            ],
+            other_active_abilities=("Silent Speech",),
         ),
         Subrace.HOBGOBLIN_HOBGOBLIN_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -1982,11 +1947,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.GOBLIN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ATHLETICS,
                 Skill.INTIMIDATION,
                 Skill.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -1999,11 +1964,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Fey Ancestry: You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
-                "Fey Gift: You can use this trait to take the Help action as a bonus action, and you can do so a number of times equal to your proficiency bonus. You regain all expended uses when you finish a long rest. Starting at 3rd level, choose one of the options below each time you take the Help action with this trait: Hospitality (you and the creature you help each gain temporary hit points), Passage (you and the creature you help each increase your walking speeds), Spite (the target has disadvantage on the next attack roll it makes).",
-                "Fortune from the Many: If you miss with an attack roll or fail an ability check or saving throw, you can draw on your bonds of reciprocity to gain a bonus to the roll equal to the number of allies you can see within 30 feet of you, maximum bonus of +3.",
-            ],
+            other_active_abilities=(
+                "Fey Ancestry",
+                "Fey Gift",
+                "Fortune from the Many",
+            ),
         ),
         Subrace.HOBGOBLIN_HOBGOBLIN_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -2013,7 +1978,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.GOBLIN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ATHLETICS, Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.ATHLETICS, Skill.INTIMIDATION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2026,10 +1991,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Martial Training: Proficiency with two martial weapons and light armor",
-                "Hobgoblin Resilience: Advantage on saving throws against being frightened",
-            ],
+            other_active_abilities=(
+                "Martial Training",
+                "Hobgoblin Resilience",
+            ),
         ),
         Subrace.HOBGOBLIN_HOBGOBLIN_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -2052,7 +2017,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Martial Training", "Saving Face"],
+            other_active_abilities=("Martial Training", "Saving Face"),
         ),
         Subrace.HUMAN_MARK_OF_FINDING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -2075,12 +2040,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Darkvision",
+            other_active_abilities=(
                 "Hunter's Intuition",
                 "Finder's Magic",
                 "Spells of the Mark",
-            ],
+            ),
         ),
         Subrace.HUMAN_MARK_OF_HANDLING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -2100,12 +2064,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
-                "Wild Intuition",
+            other_active_abilities=(
+                "Wild Intuition (Mark of Handling)",
                 "Primal Connection",
                 "The Bigger They Are",
                 "Spells of the Mark",
-            ],
+            ),
         ),
         Subrace.HUMAN_MARK_OF_MAKING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -2125,12 +2089,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Artisan's Intuition",
                 "Artisan's Gift",
                 "Spellsmith",
                 "Spells of the Mark",
-            ],
+            ),
         ),
         Subrace.HUMAN_MARK_OF_PASSAGE_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -2150,12 +2114,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Courier's Speed",
                 "Intuitive Motion",
                 "Magical Passage",
                 "Spells of the Mark",
-            ],
+            ),
         ),
         Subrace.HUMAN_MARK_OF_SENTINEL_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -2175,12 +2139,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Sentinel's Intuition",
                 "Guardian's Shield",
                 "Vigilant Guardian",
                 "Spells of the Mark",
-            ],
+            ),
         ),
         Subrace.HUMAN_KELDON_PLANESHIFTDOMINARIA: SubraceStats(
             speed=30,
@@ -2203,10 +2167,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Keldon Resilience: You have proficiency in Strength saving throws.",
-                "Icehaven Born: You are naturally adapted to cold climates.",
-            ],
+            other_active_abilities=(
+                "Keldon Resilience (Keldon)",
+                "Icehaven Born (Keldon)",
+            ),
         ),
         Subrace.HUMAN_GAVONY_PLANESHIFTINNISTRAD: SubraceStats(
             speed=30,
@@ -2229,9 +2193,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Ability Score Increase: Your ability scores each increase by 1."
-            ],
+            other_active_abilities=("Ability Score Increase",),
         ),
         Subrace.HUMAN_KESSIG_PLANESHIFTINNISTRAD: SubraceStats(
             speed=30,
@@ -2254,13 +2216,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Ability Score Increase: Your Dexterity and Wisdom scores each increase by 1.",
-                "Forest Folk: You have proficiency in the Survival skill.",
-                "Fleet of Foot: Your base walking speed is 40 feet.",
-                "Sure-Footed: When you use the Dash action, difficult terrain doesn’t cost you extra movement on that turn.",
-                "Spring Attack: When you make a melee attack against a creature, you don’t provoke opportunity attacks from that creature for the rest of your turn, whether you hit or not.",
-            ],
+            other_active_abilities=(
+                "Ability Score Increase (Kessig)",
+                "Forest Folk (Kessig)",
+                "Fleet of Foot (Kessig)",
+                "Sure-Footed (Kessig)",
+                "Spring Attack (Kessig)",
+            ),
         ),
         Subrace.HUMAN_NEPHALIA_PLANESHIFTINNISTRAD: SubraceStats(
             speed=30,
@@ -2283,10 +2245,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Ability Score Increase: Your Intelligence and Charisma scores each increase by 1.",
-                "Breadth of Knowledge: You gain proficiency in any combination of four skills or with four tools of your choice.",
-            ],
+            other_active_abilities=(
+                "Ability Score Increase (Nephalia)",
+                "Breadth of Knowledge (Nephalia)",
+            ),
         ),
         Subrace.HUMAN_STENSIA_PLANESHIFTINNISTRAD: SubraceStats(
             speed=30,
@@ -2309,11 +2271,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Ability Score Increase: Your Strength and Constitution scores each increase by 1.",
-                "Daunting: You have proficiency in the Intimidation skill.",
-                "Tough: Your hit point maximum increases by 2, and it increases by 2 every time you gain a level.",
-            ],
+            other_active_abilities=(
+                "Ability Score Increase (Stensia)",
+                "Daunting (Stensia)",
+                "Tough (Stensia)",
+            ),
         ),
         Subrace.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -2323,7 +2285,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2336,7 +2298,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[],
+            other_active_abilities=(),
         ),
         Subrace.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -2346,7 +2308,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=True,
@@ -2359,7 +2321,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[],
+            other_active_abilities=(),
         ),
         Subrace.KENKU_KENKU_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -2369,10 +2331,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANY_OF_YOUR_CHOICE,
                 Skill.ANY_OF_YOUR_CHOICE,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2385,11 +2347,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Expert Duplication",
                 "Kenku Recall",
                 "Mimicry",
-            ],
+            ),
         ),
         Subrace.KALASHTAR_KALASHTAR_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -2413,12 +2375,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Dual Mind: You have advantage on all Wisdom saving throws.",
-                "Mental Discipline: You have resistance to psychic damage.",
-                "Mind Link: You can speak telepathically to any creature you can see within 10 feet x your level; you can grant it telepathy with you for 1 hour.",
-                "Severed from Dreams: You are immune to magical effects that require you to dream.",
-            ],
+            other_active_abilities=(
+                "Dual Mind",
+                "Mental Discipline",
+                "Mind Link",
+                "Severed from Dreams",
+            ),
         ),
         Subrace.KALASHTAR_KALASHTAR_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -2442,13 +2404,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
-                "Dual Mind: When you make a Wisdom saving throw, you can use your reaction to gain advantage.",
-                "Mental Discipline: You have resistance to psychic damage.",
-                "Mind Link: You can speak telepathically to any creature you can see within 60 feet; as a bonus action you can grant it telepathy with you until the start of your next turn.",
-                "Psychic Glamour: Choose Insight, Intimidation, Performance, or Persuasion; you have advantage on checks with that skill.",
-                "Severed from Dreams: You are immune to magical effects that require you to dream.",
-            ],
+            other_active_abilities=(
+                "Dual Mind (Unearthed Arcana)",
+                "Mental Discipline",
+                "Mind Link",
+                "Psychic Glamour",
+                "Severed from Dreams",
+            ),
         ),
         Subrace.KOBOLD_KOBOLD_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -2458,13 +2420,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ARCANA,
                 Skill.INVESTIGATION,
                 Skill.MEDICINE,
                 Skill.SLEIGHT_OF_HAND,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2477,7 +2439,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Draconic Cry", "Kobold Legacy"],
+            other_active_abilities=("Draconic Cry", "Kobold Legacy"),
         ),
         Subrace.KOBOLD_KOBOLD_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -2487,7 +2449,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.DRACONIC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.STEALTH],
+            skills_to_choose_from=(Skill.STEALTH,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2500,7 +2462,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Draconic Legacy", "Draconic Roar"],
+            other_active_abilities=("Draconic Legacy", "Draconic Roar"),
         ),
         Subrace.KOBOLD_KOBOLD_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -2523,11 +2485,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Grovel, Cower, and Beg",
                 "Pack Tactics",
                 "Sunlight Sensitivity",
-            ],
+            ),
         ),
         Subrace.LEONIN_LEONIN_LEONINFEATURES: SubraceStats(
             speed=35,
@@ -2537,12 +2499,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.LEONIN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ATHLETICS,
                 Skill.INTIMIDATION,
                 Skill.PERCEPTION,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2555,11 +2517,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Claws: Your claws are natural weapons, which you can use to make unarmed strikes. If you hit with them, you can deal slashing damage equal to 1d4 + your Strength modifier.",
-                "Hunter's Instincts: You have proficiency in one of the following skills of your choice: Athletics, Intimidation, Perception, or Survival.",
-                "Daunting Roar: As a bonus action, you can let out an especially menacing roar. Creatures of your choice within 10 feet of you that can hear you must succeed on a Wisdom saving throw or become frightened of you until the end of your next turn. The DC of the save equals 8 + your proficiency bonus + your Constitution modifier. Once you use this trait, you can't use it again until you finish a short or long rest.",
-            ],
+            other_active_abilities=(
+                "Claws",
+                "Hunter's Instincts",
+                "Daunting Roar",
+            ),
         ),
         Subrace.LIZARDFOLK_LIZARDFOLK_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -2569,13 +2531,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.NATURE,
                 Skill.PERCEPTION,
                 Skill.STEALTH,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2588,13 +2550,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
-                "Bite: You have a fanged maw that you can use to make unarmed strikes. When you hit with it, the strike deals 1d6 + your Strength modifier slashing damage, instead of the bludgeoning damage normal for an unarmed strike.",
-                "Hold Breath: You can hold your breath for up to 15 minutes at a time.",
-                "Hungry Jaws: You can throw yourself into a feeding frenzy. As a bonus action, you can make a special attack with your Bite. If the attack hits, it deals its normal damage, and you gain temporary hit points equal to your proficiency bonus. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
-                "Natural Armor: You have tough, scaly skin. When you aren’t wearing armor, your base AC is 13 + your Dexterity modifier. You can use your natural armor to determine your AC if the armor you wear would leave you with a lower AC. A shield’s benefits apply as normal while you use your natural armor.",
-                "Nature's Intuition: Thanks to your mystical connection to nature, you gain proficiency with two of the following skills of your choice: Animal Handling, Medicine, Nature, Perception, Stealth, or Survival.",
-            ],
+            other_active_abilities=(
+                "Bite",
+                "Hold Breath",
+                "Hungry Jaws",
+                "Natural Armor",
+                "Nature's Intuition",
+            ),
         ),
         Subrace.LIZARDFOLK_LIZARDFOLK_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -2604,13 +2566,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.DRACONIC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.NATURE,
                 Skill.PERCEPTION,
                 Skill.STEALTH,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2623,14 +2585,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Bite",
                 "Cunning Artisan",
                 "Hold Breath",
                 "Hunter's Lore",
                 "Natural Armor",
                 "Hungry Jaws",
-            ],
+            ),
         ),
         Subrace.MINOTAUR_MINOTAUR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -2653,12 +2615,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Horns: You have horns that you can use to make unarmed strikes. When you hit with them, the strike deals 1d6 + your Strength modifier piercing damage, instead of the bludgeoning damage normal for an unarmed strike.",
-                "Goring Rush: Immediately after you take the Dash action on your turn and move at least 20 feet, you can make one melee attack with your Horns as a bonus action.",
-                "Hammering Horns: Immediately after you hit a creature with a melee attack as part of the Attack action on your turn, you can use a bonus action to attempt to push that target with your horns. The target must be within 5 feet of you and no more than one size larger than you. Unless it succeeds on a Strength saving throw against a DC equal to 8 + your proficiency bonus + your Strength modifier, you push it up to 10 feet away from you.",
-                "Labyrinthine Recall: You always know which direction is north, and you have advantage on any Wisdom (Survival) check you make to navigate or track.",
-            ],
+            other_active_abilities=(
+                "Horns",
+                "Goring Rush",
+                "Hammering Horns",
+                "Labyrinthine Recall",
+            ),
         ),
         Subrace.ORC_ORC_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -2668,7 +2630,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ORC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.INSIGHT,
                 Skill.INTIMIDATION,
@@ -2676,7 +2638,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Skill.NATURE,
                 Skill.PERCEPTION,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2689,11 +2651,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Aggressive",
                 "Powerful Build",
                 "Primal Intuition",
-            ],
+            ),
         ),
         Subrace.ORC_ORC_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
             speed=30,
@@ -2703,7 +2665,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ORC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.INSIGHT,
                 Skill.INTIMIDATION,
@@ -2711,7 +2673,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Skill.NATURE,
                 Skill.PERCEPTION,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2724,11 +2686,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Aggressive",
                 "Powerful Build",
                 "Primal Intuition",
-            ],
+            ),
         ),
         Subrace.ORC_ORC_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -2751,12 +2713,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Adrenaline Rush",
-                "Darkvision",
                 "Powerful Build",
                 "Relentless Endurance",
-            ],
+            ),
         ),
         Subrace.ORC_ORC_PLANESHIFTIXALAN: SubraceStats(
             speed=30,
@@ -2766,7 +2727,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ORC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.INTIMIDATION,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2779,11 +2740,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Menacing",
                 "Relentless Endurance",
                 "Savage Attacks",
-            ],
+            ),
         ),
         Subrace.ORC_ORC_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -2793,14 +2754,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ORC,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.INTIMIDATION,
                 Skill.MEDICINE,
                 Skill.NATURE,
                 Skill.PERCEPTION,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2813,11 +2774,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Aggressive",
                 "Primal Intuition",
                 "Powerful Build",
-            ],
+            ),
         ),
         Subrace.YUAN_TI_PUREBLOOD_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -2840,14 +2801,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
-                "Creature Type: Humanoid",
-                "Size: Medium or Small (choose when you select this race).",
-                "Darkvision: You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
-                "Magic Resistance: You have advantage on saving throws against spells.",
-                "Poison Resilience: You have advantage on saving throws to avoid or end the poisoned condition, and you have resistance to poison damage.",
-                "Serpentine Spellcasting: You know the Poison Spray cantrip. You can cast Animal Friendship at will, but you can target only snakes. Starting at 3rd level, you can cast Suggestion with this trait once per long rest, and you can also cast it using spell slots of 2nd level or higher. Choose Intelligence, Wisdom, or Charisma as your spellcasting ability for these spells.",
-            ],
+            other_active_abilities=(
+                "Creature Type",
+                "Size",
+                "Magic Resistance",
+                "Poison Resilience",
+                "Serpentine Spellcasting",
+            ),
         ),
         Subrace.YUAN_TI_PUREBLOOD_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -2871,12 +2831,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Darkvision: You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
-                "Innate Spellcasting: You know the Poison Spray cantrip. You can cast Animal Friendship at will, but you can target only snakes. Starting at 3rd level, you can cast Suggestion with this trait once per long rest. Charisma is your spellcasting ability for these spells.",
-                "Magic Resistance: You have advantage on saving throws against spells and other magical effects.",
-                "Poison Immunity: You are immune to poison damage and the poisoned condition.",
-            ],
+            other_active_abilities=(
+                "Innate Spellcasting",
+                "Magic Resistance",
+                "Poison Immunity",
+            ),
         ),
         Subrace.SATYR_SATYR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=35,
@@ -2899,13 +2858,12 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
-                "Fey Creature Type",
+            other_active_abilities=(
                 "Ram",
                 "Magic Resistance",
                 "Mirthful Leaps",
                 "Reveler",
-            ],
+            ),
         ),
         Subrace.SATYR_SATYR_MYTHICODYSSEYSOFTHEROS: SubraceStats(
             speed=35,
@@ -2915,7 +2873,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.SYLVAN,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERFORMANCE, Skill.PERSUASION],
+            skills_to_choose_from=(Skill.PERFORMANCE, Skill.PERSUASION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2928,20 +2886,20 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Fey: Your creature type is fey, rather than humanoid.",
-                "Ram: You can use your head and horns to make unarmed strikes. If you hit with them, you deal bludgeoning damage equal to 1d4 + your Strength modifier.",
-                "Magic Resistance: You have advantage on saving throws against spells and other magical effects.",
-                "Mirthful Leaps: Whenever you make a long or high jump, you can roll a d8 and add the number to the number of feet you cover, even when making a standing jump. This extra distance costs movement as normal.",
-                "Reveler: You have proficiency in the Performance and Persuasion skills, and you have proficiency with one musical instrument of your choice.",
-            ],
+            other_active_abilities=(
+                "Fey (Satyrs)",
+                "Ram (Satyrs)",
+                "Magic Resistance",
+                "Mirthful Leaps (Satyrs)",
+                "Reveler (Satyrs)",
+            ),
         ),
         Subrace.SHIFTER_BEASTHIDE_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
             languages=(Language.COMMON,),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ATHLETICS],
+            skills_to_choose_from=(Skill.ATHLETICS,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2954,16 +2912,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Whenever you shift, you gain 1d6 additional temporary hit points, and while shifted, you have a +1 bonus to your Armor Class."
-            ],
+            other_active_abilities=("Beasthide",),
         ),
         Subrace.SHIFTER_LONGTOOTH_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
             languages=(Language.COMMON,),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.INTIMIDATION,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2976,16 +2932,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "While shifted, you can use your elongated fangs to make an unarmed strike as a bonus action. If you hit with your fangs, you can deal piercing damage equal to 1d6 + your Strength modifier, instead of the bludgeoning damage normal for an unarmed strike."
-            ],
+            other_active_abilities=("Longtooth",),
         ),
         Subrace.SHIFTER_SWIFTSTRIDE_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
             languages=(Language.COMMON,),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ACROBATICS],
+            skills_to_choose_from=(Skill.ACROBATICS,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -2998,16 +2952,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "While shifted, your walking speed increases by 10 feet. Additionally, you can move up to 10 feet as a reaction when an enemy ends its turn within 5 feet of you. This reactive movement doesn’t provoke opportunity attacks."
-            ],
+            other_active_abilities=("Swiftstride",),
         ),
         Subrace.SHIFTER_WILDHUNT_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
             dark_vision_range=60,
             languages=(Language.COMMON,),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.SURVIVAL],
+            skills_to_choose_from=(Skill.SURVIVAL,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3020,9 +2972,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "As a bonus action, you can mark one creature you can see within 10 feet of you. Until the end of your next long rest, your proficiency bonus is doubled for any ability check you make to find the marked creature, and you always know the location of that creature if it is within 60 feet of you. You can’t use this trait again until you finish a short or long rest."
-            ],
+            other_active_abilities=("Mark the Scent",),
         ),
         Subrace.SHIFTER_BEASTHIDE_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -3032,7 +2982,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.SURVIVAL],
+            skills_to_choose_from=(Skill.SURVIVAL,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3045,9 +2995,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "You gain 1d6 additional temporary hit points. While shifted, you have a +1 bonus to your Armor Class."
-            ],
+            other_active_abilities=("Beasthide",),
         ),
         Subrace.SHIFTER_LONGTOOTH_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -3057,7 +3005,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ATHLETICS],
+            skills_to_choose_from=(Skill.ATHLETICS,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3070,9 +3018,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "When you shift and as a bonus action on your other turns while shifted, you can use your elongated fangs to make an unarmed strike. If you hit with your fangs, you can deal piercing damage equal to 1d6 + your Strength modifier."
-            ],
+            other_active_abilities=("Longtooth",),
         ),
         Subrace.SHIFTER_SWIFTSTRIDE_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -3082,7 +3028,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ACROBATICS],
+            skills_to_choose_from=(Skill.ACROBATICS,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3095,9 +3041,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "While shifted, your walking speed increases by 10 feet. Additionally, you can move up to 10 feet as a reaction when a creature ends its turn within 5 feet of you."
-            ],
+            other_active_abilities=("Swiftstride",),
         ),
         Subrace.SHIFTER_WILDHUNT_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -3107,7 +3051,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.INSIGHT],
+            skills_to_choose_from=(Skill.INSIGHT,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3120,9 +3064,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "While shifted, you have advantage on Wisdom checks, and no creature within 30 feet of you can make an attack roll with advantage against you unless you’re incapacitated."
-            ],
+            other_active_abilities=("Wildhunt",),
         ),
         Subrace.SHIFTER_CLIFFWALK_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -3145,9 +3087,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "While shifting, you gain a climb speed of 30 feet."
-            ],
+            other_active_abilities=("Cliffwalk",),
         ),
         Subrace.SHIFTER_RAZORCLAW_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -3170,9 +3110,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "While shifting, you can make an unarmed strike as a bonus action. You can use your Dexterity for its attack roll and damage bonus, and this attack deals slashing damage."
-            ],
+            other_active_abilities=("Razorclaw",),
         ),
         Subrace.TABAXI_TABAXI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -3182,7 +3120,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERCEPTION, Skill.STEALTH],
+            skills_to_choose_from=(Skill.PERCEPTION, Skill.STEALTH),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3195,12 +3133,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
-                "Cat's Claws: You can use your claws to make unarmed strikes. When you hit with them, the strike deals 1d6 + your Strength modifier slashing damage, instead of the bludgeoning damage normal for an unarmed strike.",
-                "Cat's Talent: You have proficiency in the Perception and Stealth skills.",
-                "Darkvision: You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
-                "Feline Agility: Your reflexes and agility allow you to move with a burst of speed. When you move on your turn in combat, you can double your speed until the end of the turn. Once you use this trait, you can’t use it again until you move 0 feet on one of your turns.",
-            ],
+            other_active_abilities=(
+                "Cat's Claws",
+                "Cat's Talent",
+                "Feline Agility",
+            ),
         ),
         Subrace.TABAXI_TABAXI_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -3210,7 +3147,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERCEPTION, Skill.STEALTH],
+            skills_to_choose_from=(Skill.PERCEPTION, Skill.STEALTH),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3223,11 +3160,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=1,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Feline Agility",
                 "Cat's Claws",
                 "Cat's Talent",
-            ],
+            ),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_BAALZEBUL_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
@@ -3237,7 +3174,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ARCANA, Skill.DECEPTION],
+            skills_to_choose_from=(Skill.ARCANA, Skill.DECEPTION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3250,9 +3187,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Legacy of Maladomini: Thaumaturgy cantrip, Ray of Sickness spell at 3rd level, Crown of Madness spell at 5th level."
-            ],
+            other_active_abilities=("Legacy of Maladomini",),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_DISPATER_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
@@ -3262,7 +3197,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.INVESTIGATION, Skill.STEALTH],
+            skills_to_choose_from=(Skill.INVESTIGATION, Skill.STEALTH),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3275,9 +3210,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Legacy of Dis: Thaumaturgy cantrip, Disguise Self spell at 3rd level, Detect Thoughts spell at 5th level."
-            ],
+            other_active_abilities=("Legacy of Dis",),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_FIERNA_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
@@ -3287,7 +3220,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERSUASION, Skill.INSIGHT],
+            skills_to_choose_from=(Skill.PERSUASION, Skill.INSIGHT),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3300,9 +3233,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Legacy of Phlegethos: Friends cantrip, Charm Person spell at 3rd level, Suggestion spell at 5th level."
-            ],
+            other_active_abilities=("Legacy of Phlegethos",),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_GLASYA_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
@@ -3312,7 +3243,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.SLEIGHT_OF_HAND, Skill.DECEPTION],
+            skills_to_choose_from=(Skill.SLEIGHT_OF_HAND, Skill.DECEPTION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3325,9 +3256,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Legacy of Malbolge: Minor Illusion cantrip, Disguise Self spell at 3rd level, Invisibility spell at 5th level."
-            ],
+            other_active_abilities=("Legacy of Malbolge",),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_LEVISTUS_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
@@ -3337,7 +3266,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.SURVIVAL, Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.SURVIVAL, Skill.INTIMIDATION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3350,9 +3279,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Legacy of Stygia: Ray of Frost cantrip, Armor of Agathys spell at 3rd level, Darkness spell at 5th level."
-            ],
+            other_active_abilities=("Legacy of Stygia",),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_MAMMON_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
@@ -3362,7 +3289,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.INSIGHT, Skill.PERSUASION],
+            skills_to_choose_from=(Skill.INSIGHT, Skill.PERSUASION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3375,9 +3302,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Legacy of Minauros: Mage Hand cantrip, Tenser's Floating Disk spell at 3rd level, Arcane Lock spell at 5th level."
-            ],
+            other_active_abilities=("Legacy of Minauros",),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_MEPHISTOPHELES_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
@@ -3387,7 +3312,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ARCANA, Skill.HISTORY],
+            skills_to_choose_from=(Skill.ARCANA, Skill.HISTORY),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3400,9 +3325,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Legacy of Cania: Mage Hand cantrip, Burning Hands spell at 3rd level, Flame Blade spell at 5th level."
-            ],
+            other_active_abilities=("Legacy of Cania",),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_ZARIEL_MORDENKAINENSTOMEOFFOES: SubraceStats(
             speed=30,
@@ -3412,7 +3335,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ATHLETICS, Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.ATHLETICS, Skill.INTIMIDATION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3425,9 +3348,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Legacy of Avernus: Thaumaturgy cantrip, Searing Smite spell at 3rd level, Branding Smite spell at 5th level."
-            ],
+            other_active_abilities=("Legacy of Avernus",),
         ),
         Subrace.TIEFLING_BLOODLINE_OF_ASMODEUS_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -3450,9 +3371,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Infernal Legacy: You know the Thaumaturgy cantrip. Once you reach 3rd level, you can cast the Hellish Rebuke spell once as a 2nd-level spell. Once you reach 5th level, you can also cast the Darkness spell once. You must finish a long rest to cast these spells again with this trait. Charisma is your spellcasting ability for these spells."
-            ],
+            other_active_abilities=("Infernal Legacy",),
         ),
         Subrace.TIEFLING_DEVILS_TONGUE_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
@@ -3462,7 +3381,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.DECEPTION, Skill.PERSUASION],
+            skills_to_choose_from=(Skill.DECEPTION, Skill.PERSUASION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3475,11 +3394,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Vicious Mockery cantrip",
                 "Charm Person spell (2nd-level once)",
                 "Enthrall spell (once)",
-            ],
+            ),
         ),
         Subrace.TIEFLING_FERAL_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
@@ -3489,7 +3408,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.DECEPTION, Skill.STEALTH],
+            skills_to_choose_from=(Skill.DECEPTION, Skill.STEALTH),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3502,7 +3421,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Replace Ability Score Increase trait"],
+            other_active_abilities=("Replace Ability Score Increase trait",),
         ),
         Subrace.TIEFLING_HELLFIRE_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
@@ -3512,7 +3431,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ARCANA, Skill.INTIMIDATION],
+            skills_to_choose_from=(Skill.ARCANA, Skill.INTIMIDATION),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3525,7 +3444,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=["Burning Hands spell (2nd-level once)"],
+            other_active_abilities=("Burning Hands spell (2nd-level once,2",),
         ),
         Subrace.TIEFLING_WINGED_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
@@ -3535,7 +3454,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.INFERNAL,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ACROBATICS, Skill.ATHLETICS],
+            skills_to_choose_from=(Skill.ACROBATICS, Skill.ATHLETICS),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3548,9 +3467,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Flying speed of 30 feet without heavy armor"
-            ],
+            other_active_abilities=("Flight",),
         ),
         Subrace.TIEFLING_ABYSSAL_TIEFLING_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -3573,10 +3490,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Abyssal Arcana: Each time you finish a long rest, you gain the ability to cast cantrips and spells randomly determined from a short list. At 1st level, you can cast a cantrip. When you reach 3rd level, you can also cast a 1st-level spell. At 5th level, you can cast a 2nd-level spell.",
-                "Abyssal Fortitude: Your hit point maximum increases by half your level (minimum 1).",
-            ],
+            other_active_abilities=(
+                "Abyssal Arcana",
+                "Abyssal Fortitude",
+            ),
         ),
         Subrace.TORTLE_TORTLE_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE: SubraceStats(
             speed=30,
@@ -3586,14 +3503,14 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[
+            skills_to_choose_from=(
                 Skill.ANIMAL_HANDLING,
                 Skill.MEDICINE,
                 Skill.NATURE,
                 Skill.PERCEPTION,
                 Skill.STEALTH,
                 Skill.SURVIVAL,
-            ],
+            ),
             n_skills=2,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3606,13 +3523,13 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=3,
             ),
-            other_active_abilities=[
-                "Claws: You have claws that you can use to make unarmed strikes. When you hit with them, the strike deals 1d6 + your Strength modifier slashing damage, instead of the bludgeoning damage normal for an unarmed strike.",
-                "Hold Breath: You can hold your breath for up to 1 hour.",
-                "Natural Armor: Your shell provides you a base AC of 17 (your Dexterity modifier doesn’t affect this number). You can’t wear light, medium, or heavy armor, but if you are using a shield, you can apply the shield’s bonus as normal.",
-                "Nature's Intuition: Thanks to your mystical connection to nature, you gain proficiency with one of the following skills of your choice: Animal Handling, Medicine, Nature, Perception, Stealth, or Survival.",
-                "Shell Defense: You can withdraw into your shell as an action. Until you emerge, you gain a +4 bonus to your AC, and you have advantage on Strength and Constitution saving throws. While in your shell, you are prone, your speed is 0 and can’t increase, you have disadvantage on Dexterity saving throws, you can’t take reactions, and the only action you can take is a bonus action to emerge from your shell.",
-            ],
+            other_active_abilities=(
+                "Claws",
+                "Hold Breath",
+                "Natural Armor",
+                "Nature's Intuition",
+                "Shell Defense",
+            ),
         ),
         Subrace.VERDAN_VERDAN_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -3623,7 +3540,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.PERSUASION],
+            skills_to_choose_from=(Skill.PERSUASION,),
             n_skills=1,
             tool_proficiencies=(),
             additional_feat=False,
@@ -3636,11 +3553,11 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
+            other_active_abilities=(
                 "Black Blood Healing",
                 "Limited Telepathy",
                 "Telepathic Insight",
-            ],
+            ),
         ),
         Subrace.WARFORGED_WARFORGED_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
             speed=30,
@@ -3650,7 +3567,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 Language.ANY_OF_YOUR_CHOICE,
             ),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
             n_skills=1,
             tool_proficiencies=(),  # TODO: Parse ['Any of your choice']
             additional_feat=False,
@@ -3663,19 +3580,19 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=1,
             ),
-            other_active_abilities=[
-                "Constructed Resilience: You have advantage on saving throws against being poisoned, and you have resistance to poison damage. You don’t need to eat, drink, or breathe. You are immune to disease. You don't need to sleep, and magic can't put you to sleep.",
-                "Sentry's Rest: When you take a long rest, you must spend at least six hours in an inactive, motionless state, rather than sleeping. In this state, you appear inert, but it doesn’t render you unconscious, and you can see and hear as normal.",
-                "Integrated Protection: You gain a +1 bonus to Armor Class. You can don only armor with which you have proficiency. To don armor, you must incorporate it into your body over the course of 1 hour, during which you must remain in contact with the armor. To doff armor, you must spend 1 hour removing it. You can rest while donning or doffing armor in this way. While you live, your armor can't be removed from your body against your will.",
-                "Specialized Design: You gain one skill proficiency and one tool proficiency of your choice.",
-            ],
+            other_active_abilities=(
+                "Constructed Resilience",
+                "Sentry's Rest",
+                "Integrated Protection",
+                "Specialized Design",
+            ),
         ),
         Subrace.WARFORGED_ENVOY_UNEARTHEDARCANA: SubraceStats(
             speed=30,
             dark_vision_range=0,
             languages=(Language.COMMON,),
             obligatory_skills=(),
-            skills_to_choose_from=[Skill.ANY_OF_YOUR_CHOICE],
+            skills_to_choose_from=(Skill.ANY_OF_YOUR_CHOICE,),
             n_skills=1,
             tool_proficiencies=(),  # TODO: Parse ['Any of your choice']
             additional_feat=False,
@@ -3688,10 +3605,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=[
-                "Specialized Design: You gain one skill proficiency of your choice, one tool proficiency of your choice, and fluency in one language of your choice.",
-                "Integrated Tool: Choose one tool you’re proficient with. This tool is integrated into your body, and you double your proficiency bonus for any ability checks you make with it. You must have your hands free to use this integrated tool.",
-            ],
+            other_active_abilities=(
+                "Specialized Design",
+                "Integrated Tool",
+            ),
         ),
         Subrace.WARFORGED_JUGGERNAUT_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -3711,10 +3628,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Iron Fists: When you make an unarmed strike, you can deal 1d4 + your Strength modifier bludgeoning damage instead of the normal damage.",
-                "Powerful Build: You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
-            ],
+            other_active_abilities=(
+                "Iron Fists",
+                "Powerful Build",
+            ),
         ),
         Subrace.WARFORGED_SKIRMISHER_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -3734,10 +3651,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=[
-                "Swift: Your walking speed is increased by 5 feet.",
-                "Light Step: When you are traveling alone for an extended period of time (one hour or more), you can move stealthily at a normal pace.",
-            ],
+            other_active_abilities=(
+                "Swift",
+                "Light Step",
+            ),
         ),
     }
 )

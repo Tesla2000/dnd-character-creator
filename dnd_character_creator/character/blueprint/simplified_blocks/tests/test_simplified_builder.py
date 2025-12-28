@@ -8,6 +8,9 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.level_in
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     RandomSpellAssigner,
 )
+from dnd_character_creator.character.blueprint.building_blocks.race_assigner import (
+    RaceAssigner,
+)
 from dnd_character_creator.character.blueprint.simplified_blocks.class_to_stats_priority import (
     CLASS_TO_STATS_PRIORITY,
 )
@@ -21,9 +24,21 @@ from dnd_character_creator.character.builder import Builder
 from dnd_character_creator.character.presentable_character import (
     PresentableCharacter,
 )
+from dnd_character_creator.character.race.subraces import (
+    RACE_TO_SUBRACES,
+)
 from dnd_character_creator.choices.class_creation.character_class import Class
 from frozendict import frozendict
 from pydantic import ValidationError
+
+RACE_SUBRACE_PAIRS = tuple(
+    (race, subrace)
+    for race, subraces in RACE_TO_SUBRACES.items()
+    for subrace in subraces
+)
+RACE_SUBRACE_IDS = [
+    f"{race.name}-{subrace.name}" for race, subrace in RACE_SUBRACE_PAIRS
+]
 
 
 class TestSimplifiedBuilder:
@@ -187,3 +202,20 @@ class TestSimplifiedBuilder:
         assert "Level increment classes don't match for level=1" in str(
             exc_info.value
         )
+
+    @pytest.mark.parametrize(
+        ("race", "subrace"),
+        RACE_SUBRACE_PAIRS,
+        ids=RACE_SUBRACE_IDS,
+    )
+    def test_all_races_and_subraces_assign(self, race, subrace):
+        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
+        blocks = SimplifiedBlocks(
+            classes=classes,
+            race_assigner=RaceAssigner(race=race, subrace=subrace),
+        )
+        builder = Builder(building_blocks=(blocks,))
+        result = builder.build()
+        assert result.error is None
+        assert isinstance(result.character, PresentableCharacter)
+        assert result.character.model_dump()
