@@ -46,6 +46,9 @@ class _CreateCharacterRequestSchema(BaseModel):
             SimplifiedBlocks(
                 classes=Classes(class_levels={Class.WIZARD: 1})
             ).model_dump(exclude={"blocks"}),
+            SimplifiedBlocks(
+                classes=Classes(class_levels={Class.WIZARD: 1})
+            ).model_dump(include={"classes"}),
             example_building_blocks().model_dump(),
         ]
     )

@@ -2,14 +2,12 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    git \
-    && apt-get clean
-
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 RUN pip install uvicorn
 
 COPY dnd_character_creator ./dnd_character_creator
+COPY scraped_data ./scraped_data
+COPY subclass_getter ./subclass_getter
 
 CMD ["uv", "run", "uvicorn", "dnd_character_creator.server.app:app", "--host", "0.0.0.0", "--port", "8000"]
