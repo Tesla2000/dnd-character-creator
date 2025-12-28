@@ -270,14 +270,10 @@ class PresentableCharacter(Character):
                 actions[ability.action_type].append(ability)
         for ability_name in self.other_active_abilities:
             ability_name = ability_name.split(":")[0]
-            ability = Ability(
-                **json.loads(
-                    resource_paths.race_abilities_root.joinpath(
-                        self.race.value
-                    )
-                    .joinpath(f"{ability_name}.json")
-                    .read_text()
-                )
+            ability = Ability.model_validate_json(
+                resource_paths.race_abilities_root.joinpath(self.race.value)
+                .joinpath(f"{ability_name}.json")
+                .read_text()
             )
             actions[ability.action_type].append(ability)
         for class_, class_level in self.classes.items():
