@@ -23,6 +23,9 @@ from dnd_character_creator.character.blueprint.building_blocks import (
     RandomLanguageChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
+    RandomMagicalItemChooser,
+)
+from dnd_character_creator.character.blueprint.building_blocks import (
     RandomSkillChoiceResolver,
 )
 from dnd_character_creator.character.blueprint.building_blocks import (
@@ -82,6 +85,9 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_as
 from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_assignment import (
     RandomSpellAssigner,
 )
+from dnd_character_creator.character.blueprint.building_blocks.magical_item_chooser import (
+    AnyMagicalItemChooser,
+)
 from dnd_character_creator.character.blueprint.building_blocks.race_assigner import (
     AnyRaceAssigner,
 )
@@ -125,6 +131,7 @@ from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import model_validator
 from pydantic import ModelWrapValidatorHandler
+from pydantic._internal._model_construction import ModelMetaclass
 
 
 class Classes(BaseModel):
@@ -151,11 +158,18 @@ class Classes(BaseModel):
         return sum(self.class_levels.values())
 
 
-class SimplifiedBlocks(CombinedBlock):
+class FieldToNameMeta(ModelMetaclass):
+    def __getattr__(self, item):
+        if item in self.model_fields:
+            return item
+        return super().__getattr__(item)
+
+
+class SimplifiedBlocks(CombinedBlock, metaclass=FieldToNameMeta):
     classes: Classes
     stats_priority: StatsPriority = Field(
         default_factory=lambda validated_data: CLASS_TO_STATS_PRIORITY[
-            validated_data["classes"].main_class
+            validated_data[SimplifiedBlocks.classes].main_class
         ]
     )
     language_choice_resolver: AnyLanguageChoiceResolver = Field(
@@ -166,7 +180,7 @@ class SimplifiedBlocks(CombinedBlock):
     )
     feat_choice_resolver: AnyFeatChoiceResolver = Field(
         default_factory=lambda validated_data: MaxFirstResolver(
-            priority=validated_data["stats_priority"],
+            priority=validated_data[SimplifiedBlocks.stats_priority],
             then=RandomFeatChoiceResolver(),
         )
     )
@@ -175,7 +189,7 @@ class SimplifiedBlocks(CombinedBlock):
     )
     stat_choice_resolver: AnyStatChoiceResolver = Field(
         default_factory=lambda validated_data: PriorityStatChoiceResolver(
-            priority=validated_data["stats_priority"]
+            priority=validated_data[SimplifiedBlocks.stats_priority]
         )
     )
     equipment_chooser: AnyEquipmentChooser = Field(
@@ -184,12 +198,12 @@ class SimplifiedBlocks(CombinedBlock):
     all_choices_resolver: AnyChoiceResolver = Field(
         default_factory=lambda validated_data: AllChoicesResolver(
             blocks=(
-                validated_data["language_choice_resolver"],
-                validated_data["skill_choice_resolver"],
-                validated_data["feat_choice_resolver"],
-                validated_data["tool_proficiencies_resolver"],
-                validated_data["stat_choice_resolver"],
-                validated_data["equipment_chooser"],
+                validated_data[SimplifiedBlocks.language_choice_resolver],
+                validated_data[SimplifiedBlocks.skill_choice_resolver],
+                validated_data[SimplifiedBlocks.feat_choice_resolver],
+                validated_data[SimplifiedBlocks.tool_proficiencies_resolver],
+                validated_data[SimplifiedBlocks.stat_choice_resolver],
+                validated_data[SimplifiedBlocks.equipment_chooser],
             ),
         )
     )
@@ -199,7 +213,7 @@ class SimplifiedBlocks(CombinedBlock):
                 (
                     level * (LevelIncrementer(class_=class_),)
                     for class_, level in validated_data[
-                        "classes"
+                        SimplifiedBlocks.classes
                     ].class_levels.items()
                 )
             )
@@ -230,7 +244,7 @@ class SimplifiedBlocks(CombinedBlock):
                 (
                     level * (HealthIncreaseAverage(class_=class_),)
                     for class_, level in validated_data[
-                        "classes"
+                        SimplifiedBlocks.classes
                     ].class_levels.items()
                 )
             )
@@ -261,7 +275,7 @@ class SimplifiedBlocks(CombinedBlock):
                 (
                     level * (RandomSpellAssigner(class_=class_),)
                     for class_, level in validated_data[
-                        "classes"
+                        SimplifiedBlocks.classes
                     ].class_levels.items()
                 )
             )
@@ -295,13 +309,15 @@ class SimplifiedBlocks(CombinedBlock):
                     level_increment=level,
                     health_increase=health,
                     spell_assigner=spell,
-                    all_choice_resolver=validated_data["all_choices_resolver"],
+                    all_choice_resolver=validated_data[
+                        SimplifiedBlocks.all_choices_resolver
+                    ],
                 ),
             )
             for level, health, spell in zip(
-                validated_data["level_incrementers"],
-                validated_data["health_increases"],
-                validated_data["spell_assigners"],
+                validated_data[SimplifiedBlocks.level_incrementers],
+                validated_data[SimplifiedBlocks.health_increases],
+                validated_data[SimplifiedBlocks.spell_assigners],
                 strict=True,
             )
         )
@@ -327,7 +343,7 @@ class SimplifiedBlocks(CombinedBlock):
 
     stats_builder: AnyStatsBuilder = Field(
         default_factory=lambda validated_data: StandardArray(
-            stats_priority=validated_data["stats_priority"]
+            stats_priority=validated_data[SimplifiedBlocks.stats_priority]
         )
     )
     race_assigner: AnyRaceAssigner = Field(default_factory=RandomRaceAssigner)
@@ -335,11 +351,15 @@ class SimplifiedBlocks(CombinedBlock):
         default_factory=lambda validated_data: InitialBuilder(
             blocks=InitialBuilderBlocks(
                 level_assigner=LevelAssigner(
-                    level=validated_data["classes"].get_total_level()
+                    level=validated_data[
+                        SimplifiedBlocks.classes
+                    ].get_total_level()
                 ),
-                stats_builder=validated_data["stats_builder"],
-                race_assigner=validated_data["race_assigner"],
-                all_choices_resolver=validated_data["all_choices_resolver"],
+                stats_builder=validated_data[SimplifiedBlocks.stats_builder],
+                race_assigner=validated_data[SimplifiedBlocks.race_assigner],
+                all_choices_resolver=validated_data[
+                    SimplifiedBlocks.all_choices_resolver
+                ],
             )
         )
     )
@@ -351,8 +371,11 @@ class SimplifiedBlocks(CombinedBlock):
             OptionalSubclassAssigner(
                 class_=class_, assigner=RandomSubclassAssigner(class_=class_)
             )
-            for class_ in validated_data["classes"].class_levels
+            for class_ in validated_data[SimplifiedBlocks.classes].class_levels
         )
+    )
+    magical_items_assigner: AnyMagicalItemChooser = Field(
+        default_factory=RandomMagicalItemChooser
     )
 
     blocks: tuple[AnyBuildingBlock, ...] = ()
@@ -368,11 +391,12 @@ class SimplifiedBlocks(CombinedBlock):
         return handler(
             {
                 **data,
-                "blocks": (
+                SimplifiedBlocks.blocks: (
                     self.initial_builder,
                     self.initial_data_filler,
                     CombinedBlock(blocks=self.level_ups),
                     CombinedBlock(blocks=self.subclass_assigners),
+                    self.magical_items_assigner,
                 ),
             }
         )
