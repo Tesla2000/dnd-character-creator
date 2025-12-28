@@ -38,7 +38,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 "Ability Score Increase",
                 "Creature Type",
                 "Size",
-                "Flight",
+                # "Flight",
                 "Talons",
                 "Wind Caller",
             ),
@@ -486,7 +486,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=0,
             ),
             other_active_abilities=(
-                "Change Appearance",
+                # "Change Appearance",
                 "Unsettling Visage",
                 "Divergent Persona",
             ),
@@ -587,7 +587,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=3,
             ),
             other_active_abilities=(
-                "Gem Ancestry",
+                # "Gem Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Psionic Mind",
@@ -616,7 +616,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=3,
             ),
             other_active_abilities=(
-                "Metallic Ancestry",
+                # "Metallic Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Metallic Breath Weapon",
@@ -644,7 +644,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=0,
             ),
             other_active_abilities=(
-                "Draconic Ancestry",
+                # "Draconic Ancestry",
                 "Breath Weapon",
                 "Damage Resistance",
             ),
@@ -699,7 +699,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=3,
             ),
             other_active_abilities=(
-                "Gem Ancestry",
+                # "Gem Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Psionic Mind",
@@ -728,7 +728,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=3,
             ),
             other_active_abilities=(
-                "Metallic Ancestry",
+                # "Metallic Ancestry",
                 "Breath Weapon",
                 "Draconic Resistance",
                 "Metallic Breath Weapon",
@@ -804,7 +804,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
             other_active_abilities=(
                 "Cunning Intuition",
                 "Shape Shadows",
-                "Spells of the Mark",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.ELF_PALLID_ELF_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
@@ -1401,7 +1401,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
             other_active_abilities=(
                 "Gifted Scribe",
                 "Scribe's Insight",
-                "Spells of the Mark",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.GNOME_FOREST_GNOME_PLAYERSHANDBOOK: SubraceStats(
@@ -1660,7 +1660,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=2,
             ),
-            other_active_abilities=("Swim",),
+            other_active_abilities=(
+                # "Swim",
+            ),
         ),
         Subrace.HALF_ELF_DARK_ELF_HERITAGE_PLAYERSHANDBOOK: SubraceStats(
             speed=30,
@@ -1759,8 +1761,8 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=0,
             ),
             other_active_abilities=(
-                "Hunter's Intuition",
-                "Finder's Magic",
+                # "Hunter's Intuition",
+                # "Finder's Magic",
             ),
         ),
         Subrace.HALF_ORC_HALF_ORC_PLAYERSHANDBOOK: SubraceStats(
@@ -1814,7 +1816,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
             other_active_abilities=(
                 "Medical Intuition",
                 "Healing Touch",
-                "Spells of the Mark",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.HALFLING_MARK_OF_HOSPITALITY_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
@@ -1841,7 +1843,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
             other_active_abilities=(
                 "Ever Hospitable",
                 "Innkeeper's Magic",
-                "Spells of the Mark",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.HALFLING_LOTUSDEN_HALFLING_EXPLORERSGUIDETOWILDEMOUNT: SubraceStats(
@@ -1993,7 +1995,7 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
             ),
             other_active_abilities=(
                 "Martial Training",
-                "Hobgoblin Resilience",
+                # "Hobgoblin Resilience",
             ),
         ),
         Subrace.HOBGOBLIN_HOBGOBLIN_VOLOSGUIDETOMONSTERS: SubraceStats(
@@ -2041,9 +2043,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=0,
             ),
             other_active_abilities=(
-                "Hunter's Intuition",
-                "Finder's Magic",
-                "Spells of the Mark",
+                # "Hunter's Intuition",
+                # "Finder's Magic",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.HUMAN_MARK_OF_HANDLING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
@@ -2066,9 +2068,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
             ),
             other_active_abilities=(
                 "Wild Intuition (Mark of Handling)",
-                "Primal Connection",
-                "The Bigger They Are",
-                "Spells of the Mark",
+                # "Primal Connection",
+                # "The Bigger They Are",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.HUMAN_MARK_OF_MAKING_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
@@ -2090,10 +2092,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=1,
             ),
             other_active_abilities=(
-                "Artisan's Intuition",
-                "Artisan's Gift",
-                "Spellsmith",
-                "Spells of the Mark",
+                # "Artisan's Intuition",
+                # "Artisan's Gift",
+                # "Spellsmith",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.HUMAN_MARK_OF_PASSAGE_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
@@ -2115,10 +2117,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=1,
             ),
             other_active_abilities=(
-                "Courier's Speed",
-                "Intuitive Motion",
-                "Magical Passage",
-                "Spells of the Mark",
+                # "Courier's Speed",
+                # "Intuitive Motion",
+                # "Magical Passage",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.HUMAN_MARK_OF_SENTINEL_EBERRONRISINGFROMTHELASTWAR: SubraceStats(
@@ -2140,10 +2142,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=0,
             ),
             other_active_abilities=(
-                "Sentinel's Intuition",
-                "Guardian's Shield",
-                "Vigilant Guardian",
-                "Spells of the Mark",
+                # "Sentinel's Intuition",
+                # "Guardian's Shield",
+                # "Vigilant Guardian",
+                # "Spells of the Mark",
             ),
         ),
         Subrace.HUMAN_KELDON_PLANESHIFTDOMINARIA: SubraceStats(
@@ -2439,7 +2441,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=("Draconic Cry", "Kobold Legacy"),
+            other_active_abilities=(
+                "Draconic Cry",
+                # "Kobold Legacy",
+            ),
         ),
         Subrace.KOBOLD_KOBOLD_UNEARTHEDARCANA: SubraceStats(
             speed=30,
@@ -2462,7 +2467,10 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=("Draconic Legacy", "Draconic Roar"),
+            other_active_abilities=(
+                # "Draconic Legacy",
+                "Draconic Roar",
+            ),
         ),
         Subrace.KOBOLD_KOBOLD_VOLOSGUIDETOMONSTERS: SubraceStats(
             speed=30,
@@ -3395,9 +3403,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 any_of_your_choice=0,
             ),
             other_active_abilities=(
-                "Vicious Mockery cantrip",
-                "Charm Person spell (2nd-level once)",
-                "Enthrall spell (once)",
+                # "Vicious Mockery cantrip",
+                # "Charm Person spell (2nd-level once)",
+                # "Enthrall spell (once)",
             ),
         ),
         Subrace.TIEFLING_FERAL_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
@@ -3421,7 +3429,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=0,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=("Replace Ability Score Increase trait",),
+            other_active_abilities=(
+                # "Replace Ability Score Increase trait",
+            ),
         ),
         Subrace.TIEFLING_HELLFIRE_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
@@ -3444,7 +3454,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=("Burning Hands spell (2nd-level once,2",),
+            other_active_abilities=(
+                # "Burning Hands spell (2nd-level once,2",
+            ),
         ),
         Subrace.TIEFLING_WINGED_SWORDCOASTADVENTURERSGUIDE: SubraceStats(
             speed=30,
@@ -3467,7 +3479,9 @@ SUBRACE_STATS: frozendict[Subrace, SubraceStats] = frozendict(
                 charisma=2,
                 any_of_your_choice=0,
             ),
-            other_active_abilities=("Flight",),
+            other_active_abilities=(
+                # "Flight",
+            ),
         ),
         Subrace.TIEFLING_ABYSSAL_TIEFLING_UNEARTHEDARCANA: SubraceStats(
             speed=30,
