@@ -10,4 +10,13 @@ from pydantic import Field
 
 
 class LevelUpMultiple(CombinedBlock):
-    blocks: tuple[LevelUp, ...] = Field(alias="blocks")
+    """Container for multiple level up operations.
+
+    Combines multiple LevelUp building blocks to apply sequential level ups
+    for different classes.
+    """
+
+    blocks: tuple[LevelUp, ...] = Field(
+        alias="blocks",
+        description="Tuple of LevelUp blocks to apply sequentially",
+    )

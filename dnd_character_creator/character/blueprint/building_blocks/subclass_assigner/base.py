@@ -21,6 +21,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
     SUBCLASSES,
 )
 from pydantic import ConfigDict
+from pydantic import Field
 from pydantic import model_validator
 
 
@@ -42,8 +43,13 @@ class SubclassAssigner(BuildingBlock, ABC):
 
     model_config = ConfigDict(frozen=True)
 
-    class_: Class
-    available_subclasses: tuple[AnySubclass, ...] = None
+    class_: Class = Field(
+        description="The character class for which to assign a subclass"
+    )
+    available_subclasses: tuple[AnySubclass, ...] = Field(
+        default=None,
+        description="Tuple of subclasses available for selection (defaults to all valid subclasses)",
+    )
 
     @model_validator(mode="before")
     @classmethod

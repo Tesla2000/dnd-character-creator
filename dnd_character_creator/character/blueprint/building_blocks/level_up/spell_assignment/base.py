@@ -27,6 +27,7 @@ from dnd_character_creator.character.spells.max_spell_levels import (
 )
 from dnd_character_creator.choices.class_creation.character_class import Class
 from frozendict import frozendict
+from pydantic import Field
 
 
 class SpellAssigner(BuildingBlock, ABC):
@@ -36,7 +37,9 @@ class SpellAssigner(BuildingBlock, ABC):
     and assigned to the character.
     """
 
-    class_: Class
+    class_: Class = Field(
+        description="The character class for which spells are being assigned"
+    )
 
     _class_to_caster: ClassVar[frozendict[Class, CasterType]] = frozendict(
         {

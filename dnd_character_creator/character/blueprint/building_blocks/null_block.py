@@ -5,5 +5,12 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
 
 
 class NullBlock(BuildingBlock):
+    """A building block that applies no changes to the blueprint.
+
+    Useful as a placeholder or default no-op building block when
+    a block is required but no modification is needed.
+    """
+
     def get_change(self, blueprint: Blueprint) -> Blueprint:
+        """Return an empty Blueprint (no changes)."""
         return Blueprint()

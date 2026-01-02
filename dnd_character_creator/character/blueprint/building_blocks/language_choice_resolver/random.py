@@ -9,6 +9,7 @@ from dnd_character_creator.character.blueprint.building_blocks.language_choice_r
 )
 from dnd_character_creator.choices.language import Language
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class RandomLanguageChoiceResolver(LanguageChoiceResolver):
@@ -25,7 +26,10 @@ class RandomLanguageChoiceResolver(LanguageChoiceResolver):
 
     model_config = ConfigDict(frozen=True)
 
-    seed: Optional[int] = None
+    seed: Optional[int] = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
 
     def _select_from_available(
         self, available: list[Language], _: Blueprint

@@ -28,4 +28,13 @@ class InitialBuilderBlocks(NamedTuple):
 
 
 class InitialBuilder(CombinedBlock):
-    blocks: InitialBuilderBlocks = Field(alias="blocks")
+    """Building block that performs initial character generation.
+
+    Combines level assignment, ability score building, race selection,
+    and choice resolution into a single orchestrated process.
+    """
+
+    blocks: InitialBuilderBlocks = Field(
+        alias="blocks",
+        description="Building blocks for level, stats, race, and choices",
+    )

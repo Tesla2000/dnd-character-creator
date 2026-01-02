@@ -7,12 +7,15 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
 from dnd_character_creator.choices.background_creatrion.background import (
     Background,
 )
+from pydantic import Field
 
 
 class BackgroundAssigner(BuildingBlock):
     """Assigns a background to the character."""
 
-    background: Background
+    background: Background = Field(
+        description="Character's background story and origin"
+    )
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the background difference."""

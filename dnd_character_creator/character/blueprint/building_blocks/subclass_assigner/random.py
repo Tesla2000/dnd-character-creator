@@ -13,6 +13,7 @@ from dnd_character_creator.choices.class_creation.character_class import (
     AnySubclass,
 )
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class RandomSubclassAssigner(SubclassAssigner):
@@ -33,7 +34,10 @@ class RandomSubclassAssigner(SubclassAssigner):
 
     model_config = ConfigDict(frozen=True)
 
-    seed: Optional[int] = None
+    seed: Optional[int] = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
 
     def _select_subclass(self, blueprint: Blueprint) -> AnySubclass:
         """Randomly select a subclass for the character's class.

@@ -11,6 +11,7 @@ from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument
 from dnd_character_creator.other_profficiencies import ToolProficiency
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
@@ -27,7 +28,10 @@ class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
 
     model_config = ConfigDict(frozen=True)
 
-    seed: Optional[int] = None
+    seed: Optional[int] = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
 
     def _select_tool_proficiency(
         self, available: list[ToolProficiency], _: Blueprint

@@ -4,6 +4,7 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
+from pydantic import Field
 
 
 class EquipmentAdder(BuildingBlock):
@@ -20,7 +21,9 @@ class EquipmentAdder(BuildingBlock):
         ... ])
     """
 
-    item: str
+    item: str = Field(
+        description="Equipment item to add to character's inventory"
+    )
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Add the item to the existing equipment tuple.

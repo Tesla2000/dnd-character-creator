@@ -11,6 +11,7 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
 from dnd_character_creator.choices.class_creation.character_class import Class
 from dnd_character_creator.choices.equipment_creation.weapons import HitDieSize
 from frozendict import frozendict
+from pydantic import Field
 
 
 class HealthIncrease(BuildingBlock, ABC):
@@ -20,7 +21,9 @@ class HealthIncrease(BuildingBlock, ABC):
     health to gain from the hit die (fixed value, random roll, etc.).
     """
 
-    class_: Class
+    class_: Class = Field(
+        description="The character class for which health is being increased"
+    )
 
     _class2hit_die: ClassVar[frozendict[Class, HitDieSize]] = frozendict(
         {

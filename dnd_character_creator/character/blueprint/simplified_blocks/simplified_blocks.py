@@ -132,14 +132,24 @@ from pydantic import model_validator
 
 
 class Classes(BaseModel):
+    """Represents character class and level configuration.
+
+    Handles multiclass combinations with automatic calculation of the main class
+    (highest level class) and validation that total level does not exceed 20.
+    """
+
     model_config = ConfigDict(frozen=True)
-    class_levels: Mapping[Class, ClassLevel] = Field(min_length=1)
+    class_levels: Mapping[Class, ClassLevel] = Field(
+        min_length=1,
+        description="Mapping of character classes to their respective levels",
+    )
     main_class: Class = Field(
         default_factory=lambda validated_data: max(
             validated_data["class_levels"],
             key=validated_data["class_levels"].__getitem__,
         ),
         exclude=True,
+        description="The class with the highest level, automatically calculated",
     )
 
     @model_validator(mode="after")
@@ -156,34 +166,51 @@ class Classes(BaseModel):
 
 
 class _SimplifiedBlocksFields(BaseModel):
-    classes: Classes
+    """Configuration fields for the simplified character building process.
+
+    Aggregates all the building block resolvers and assigners needed for character
+    creation, with sensible defaults based on class selection and stats priority.
+    Automatically constructs dependent fields like level_ups, health_increases,
+    and spell_assigners based on class levels.
+    """
+
+    classes: Classes = Field(
+        description="Character class and level configuration"
+    )
     stats_priority: StatsPriority = Field(
         default_factory=lambda validated_data: CLASS_TO_STATS_PRIORITY[
             validated_data["classes"].main_class
-        ]
+        ],
+        description="Ability score priority based on main character class",
     )
     language_choice_resolver: AnyLanguageChoiceResolver = Field(
-        default_factory=RandomLanguageChoiceResolver
+        default_factory=RandomLanguageChoiceResolver,
+        description="Resolver for choosing bonus languages",
     )
     skill_choice_resolver: AnySkillChoiceResolver = Field(
-        default_factory=RandomSkillChoiceResolver
+        default_factory=RandomSkillChoiceResolver,
+        description="Resolver for choosing skill proficiencies",
     )
     feat_choice_resolver: AnyFeatChoiceResolver = Field(
         default_factory=lambda validated_data: MaxFirstResolver(
             priority=validated_data["stats_priority"],
             then=RandomFeatChoiceResolver(),
-        )
+        ),
+        description="Resolver for choosing feats, prioritizes class-related feats",
     )
     tool_proficiencies_resolver: AnyToolProficiencyChoiceResolver = Field(
-        default_factory=RandomToolProficiencyChoiceResolver
+        default_factory=RandomToolProficiencyChoiceResolver,
+        description="Resolver for choosing tool proficiencies",
     )
     stat_choice_resolver: AnyStatChoiceResolver = Field(
         default_factory=lambda validated_data: PriorityStatChoiceResolver(
             priority=validated_data["stats_priority"]
-        )
+        ),
+        description="Resolver for choosing ability score increases",
     )
     equipment_chooser: AnyEquipmentChooser = Field(
-        default_factory=RandomEquipmentChooser
+        default_factory=RandomEquipmentChooser,
+        description="Chooser for selecting equipment from available options",
     )
     all_choices_resolver: AnyChoiceResolver = Field(
         default_factory=lambda validated_data: AllChoicesResolver(
@@ -195,7 +222,8 @@ class _SimplifiedBlocksFields(BaseModel):
                 validated_data["stat_choice_resolver"],
                 validated_data["equipment_chooser"],
             ),
-        )
+        ),
+        description="Combined resolver that handles all character choice decisions",
     )
     level_incrementers: tuple[LevelIncrementer, ...] = Field(
         default_factory=lambda validated_data: tuple(
@@ -207,7 +235,8 @@ class _SimplifiedBlocksFields(BaseModel):
                     ].class_levels.items()
                 )
             )
-        )
+        ),
+        description="Level incrementers for each level, one per class per level",
     )
 
     @model_validator(mode="after")
@@ -238,7 +267,8 @@ class _SimplifiedBlocksFields(BaseModel):
                     ].class_levels.items()
                 )
             )
-        )
+        ),
+        description="Health increase methods for each level, one per class per level",
     )
 
     @model_validator(mode="after")
@@ -269,7 +299,8 @@ class _SimplifiedBlocksFields(BaseModel):
                     ].class_levels.items()
                 )
             )
-        )
+        ),
+        description="Spell assigners for each level, one per class per level",
     )
 
     @model_validator(mode="after")
@@ -307,7 +338,8 @@ class _SimplifiedBlocksFields(BaseModel):
                 validated_data["health_increases"],
                 validated_data["spell_assigners"],
             )
-        )
+        ),
+        description="Level up blocks combining level increment, health, and spell assignment",
     )
 
     @model_validator(mode="after")
@@ -331,9 +363,13 @@ class _SimplifiedBlocksFields(BaseModel):
     stats_builder: AnyStatsBuilder = Field(
         default_factory=lambda validated_data: StandardArray(
             stats_priority=validated_data["stats_priority"]
-        )
+        ),
+        description="Builder for generating ability scores using standard array method",
     )
-    race_assigner: AnyRaceAssigner = Field(default_factory=RandomRaceAssigner)
+    race_assigner: AnyRaceAssigner = Field(
+        default_factory=RandomRaceAssigner,
+        description="Assigner for selecting character race and subrace",
+    )
     initial_builder: InitialBuilder = Field(
         default_factory=lambda validated_data: InitialBuilder(
             blocks=InitialBuilderBlocks(
@@ -344,10 +380,12 @@ class _SimplifiedBlocksFields(BaseModel):
                 race_assigner=validated_data["race_assigner"],
                 all_choices_resolver=validated_data["all_choices_resolver"],
             )
-        )
+        ),
+        description="Builder for initial character generation including level, stats, and race",
     )
     initial_data_filler: AnyInitialDataFiller = Field(
-        default_factory=RandomInitialDataFiller
+        default_factory=RandomInitialDataFiller,
+        description="Filler for generating initial character data like name and background",
     )
     subclass_assigners: tuple[AnySubclassAssigner, ...] = Field(
         default_factory=lambda validated_data: tuple(
@@ -355,14 +393,24 @@ class _SimplifiedBlocksFields(BaseModel):
                 class_=class_, assigner=RandomSubclassAssigner(class_=class_)
             )
             for class_ in validated_data["classes"].class_levels
-        )
+        ),
+        description="Assigners for selecting subclasses, one per character class",
     )
     magical_items_assigner: AnyMagicalItemChooser = Field(
-        default_factory=RandomMagicalItemChooser
+        default_factory=RandomMagicalItemChooser,
+        description="Chooser for assigning magical items to character",
     )
 
 
 class SimplifiedBlocks(CombinedBlock, _SimplifiedBlocksFields):
+    """Simplified building blocks pipeline for complete character creation.
+
+    Combines initial character generation, data filling, level progression,
+    subclass selection, and magical item assignment into a single orchestrated
+    building process. This is the primary entry point for creating fully-formed
+    D&D 5e characters with all attributes, choices, and equipment resolved.
+    """
+
     blocks: Blocks = Field(
         default_factory=lambda validated_data: (
             validated_data["initial_builder"],
@@ -370,5 +418,6 @@ class SimplifiedBlocks(CombinedBlock, _SimplifiedBlocksFields):
             CombinedBlock(blocks=validated_data["level_ups"]),
             CombinedBlock(blocks=validated_data["subclass_assigners"]),
             validated_data["magical_items_assigner"],
-        )
+        ),
+        description="Ordered building blocks executed sequentially: initial build, data fill, level ups, subclasses, and magic items",
     )

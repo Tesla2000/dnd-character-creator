@@ -16,10 +16,19 @@ from dnd_character_creator.character.blueprint.building_blocks.subclass_assigner
 from dnd_character_creator.choices.class_creation.character_class import (
     AnySubclass,
 )
+from pydantic import Field
 
 
 class OptionalSubclassAssigner(SubclassAssigner):
-    assigner: Union[RandomSubclassAssigner, AISubclassAssigner]
+    """Optionally assigns a subclass, gracefully handling cases where assignment is not possible.
+
+    Wraps another subclass assigner and silently succeeds if the assignment would fail
+    (e.g., character not high enough level for subclass selection).
+    """
+
+    assigner: Union[RandomSubclassAssigner, AISubclassAssigner] = Field(
+        description="The subclass assigner strategy to use (random or AI)"
+    )
 
     def _select_subclass(self, blueprint: Blueprint) -> AnySubclass:
         return self.assigner._select_subclass(blueprint)

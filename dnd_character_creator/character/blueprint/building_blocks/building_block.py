@@ -13,6 +13,7 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from pydantic import BaseModel
 from pydantic import computed_field
 from pydantic import ConfigDict
+from pydantic import Field
 from pydantic import InstanceOf
 from pydantic.main import IncEx
 
@@ -20,6 +21,12 @@ BLOCK_TYPE_FIELD_NAME = "block_type"
 
 
 class SerializableBlock(BaseModel):
+    """Base model for serializable building blocks with polymorphic type discrimination.
+
+    Provides functionality for serializing building blocks to JSON/dict format
+    with a computed 'block_type' field for polymorphic deserialization.
+    """
+
     model_config = ConfigDict(frozen=True)
 
     @computed_field(alias=BLOCK_TYPE_FIELD_NAME)
@@ -124,7 +131,9 @@ class CombinedBlock(SerializableBlock):
     """Combines multiple building blocks to apply sequentially."""
 
     model_config = ConfigDict(validate_by_alias=True, validate_by_name=True)
-    blocks: Blocks
+    blocks: Blocks = Field(
+        description="Tuple of building blocks to apply in order"
+    )
 
     def __add__(self, other: Any) -> Self:
         allowed_types = (BuildingBlock, CombinedBlock)
