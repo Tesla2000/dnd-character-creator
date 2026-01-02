@@ -1,7 +1,6 @@
 from collections import Counter
 from collections.abc import Mapping
 from itertools import chain
-from typing import Any
 from typing import Self
 
 from dnd_character_creator.character.blueprint.building_blocks import (
@@ -130,7 +129,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import model_validator
-from pydantic import ModelWrapValidatorHandler
 
 
 class Classes(BaseModel):
@@ -157,7 +155,7 @@ class Classes(BaseModel):
         return sum(self.class_levels.values())
 
 
-class SimplifiedBlocks(CombinedBlock):
+class _SimplifiedBlocksFields(BaseModel):
     classes: Classes
     stats_priority: StatsPriority = Field(
         default_factory=lambda validated_data: CLASS_TO_STATS_PRIORITY[
@@ -362,25 +360,15 @@ class SimplifiedBlocks(CombinedBlock):
     magical_items_assigner: AnyMagicalItemChooser = Field(
         default_factory=RandomMagicalItemChooser
     )
-    blocks: Blocks = ()
 
-    @model_validator(mode="wrap")
-    @classmethod
-    def _create_blocks(
-        cls, data: Any, handler: ModelWrapValidatorHandler[Self]
-    ) -> Self:
-        self: Self = handler(data)
-        if self.blocks or not isinstance(data, dict):
-            return self
-        return handler(
-            {
-                **data,
-                "blocks": (
-                    self.initial_builder,
-                    self.initial_data_filler,
-                    CombinedBlock(blocks=self.level_ups),
-                    CombinedBlock(blocks=self.subclass_assigners),
-                    self.magical_items_assigner,
-                ),
-            }
+
+class SimplifiedBlocks(CombinedBlock, _SimplifiedBlocksFields):
+    blocks: Blocks = Field(
+        default_factory=lambda validated_data: (
+            validated_data["initial_builder"],
+            validated_data["initial_data_filler"],
+            CombinedBlock(blocks=validated_data["level_ups"]),
+            CombinedBlock(blocks=validated_data["subclass_assigners"]),
+            validated_data["magical_items_assigner"],
         )
+    )
