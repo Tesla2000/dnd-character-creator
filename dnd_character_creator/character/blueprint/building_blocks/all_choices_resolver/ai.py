@@ -69,7 +69,7 @@ class AIAllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
         >>> builder = Builder().add(resolver)
     """
 
-    input_blocks: tuple[
+    blocks: tuple[
         AnyStatChoiceResolver,
         AnyEquipmentChooser,
         Union[NullBlock, MaxIfNotMaxedResolver],

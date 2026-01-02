@@ -28,4 +28,4 @@ class InitialBuilderBlocks(NamedTuple):
 
 
 class InitialBuilder(CombinedBlock):
-    input_blocks: InitialBuilderBlocks = Field(alias="blocks")
+    blocks: InitialBuilderBlocks = Field(alias="blocks")

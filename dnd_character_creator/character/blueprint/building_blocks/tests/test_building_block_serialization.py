@@ -98,7 +98,7 @@ class TestBuildingBlockSerialization:
             race=Race.HUMAN,
             subrace=Subrace.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK,
         )
-        combined = CombinedBlock(input_blocks=(block1, block2))
+        combined = CombinedBlock(blocks=(block1, block2))
 
         serialized = combined.model_dump()
 
@@ -145,7 +145,7 @@ class TestBuildingBlockSerialization:
             race=Race.TIEFLING,
             subrace=Subrace.TIEFLING_BLOODLINE_OF_ASMODEUS_PLAYERSHANDBOOK,
         )
-        original = CombinedBlock(input_blocks=(block1, block2))
+        original = CombinedBlock(blocks=(block1, block2))
 
         serialized = original.model_dump()
 
@@ -178,7 +178,7 @@ class TestBuildingBlockSerialization:
             race=Race.TIEFLING,
             subrace=Subrace.TIEFLING_BLOODLINE_OF_ASMODEUS_PLAYERSHANDBOOK,
         )
-        original = CombinedBlock(input_blocks=(block1, block2))
+        original = CombinedBlock(blocks=(block1, block2))
 
         serialized = original.model_dump()
         serialized["blocks"][0].pop("sex")
@@ -202,10 +202,10 @@ class TestBuildingBlockSerialization:
             race=Race.HUMAN,
             subrace=Subrace.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK,
         )
-        inner_combined = CombinedBlock(input_blocks=(block1, block2))
+        inner_combined = CombinedBlock(blocks=(block1, block2))
 
         block3 = SexAssigner(sex=Sex.FEMALE)
-        outer_combined = CombinedBlock(input_blocks=(inner_combined, block3))
+        outer_combined = CombinedBlock(blocks=(inner_combined, block3))
 
         serialized = outer_combined.model_dump()
         deserialized = TypeAdapter(AnyBuildingBlock).validate_python(

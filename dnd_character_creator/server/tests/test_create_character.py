@@ -60,7 +60,7 @@ class TestCreateCharacter(TestClient):
         first_chain = first_data["increment_chain"]
 
         additional_blocks = CombinedBlock(
-            input_blocks=(
+            blocks=(
                 SexAssigner(
                     sex=Sex.MALE,
                 ),
@@ -107,7 +107,7 @@ class TestCreateCharacter(TestClient):
         response = client.post(
             "/create_character",
             json={
-                "building_blocks": CombinedBlock(input_blocks=()).model_dump(
+                "building_blocks": CombinedBlock(blocks=()).model_dump(
                     mode="json"
                 ),
                 "increment_chain": IncrementChain().model_dump(mode="json"),
@@ -137,7 +137,7 @@ class TestCreateCharacter(TestClient):
         """Test creating multiple characters."""
         for i in range(3):
             building_blocks = CombinedBlock(
-                input_blocks=(
+                blocks=(
                     SexAssigner(sex=Sex.MALE if i % 2 == 0 else Sex.FEMALE),
                     LevelAssigner(level=i + 1),
                 )
@@ -161,7 +161,7 @@ class TestCreateCharacter(TestClient):
     def test_response_model_structure(self, client):
         """Test that response follows expected model structure."""
         building_blocks = CombinedBlock(
-            input_blocks=(
+            blocks=(
                 SexAssigner(sex=Sex.MALE),
                 LevelAssigner(level=1),
             )

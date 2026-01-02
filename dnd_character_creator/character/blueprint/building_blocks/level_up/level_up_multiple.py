@@ -10,4 +10,4 @@ from pydantic import Field
 
 
 class LevelUpMultiple(CombinedBlock):
-    input_blocks: tuple[LevelUp, ...] = Field(alias="blocks")
+    blocks: tuple[LevelUp, ...] = Field(alias="blocks")

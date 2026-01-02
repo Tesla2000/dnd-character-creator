@@ -47,7 +47,7 @@ class LevelUp(CombinedBlock):
         ... ])  # Character at level 10 with 2 Fighter / 1 Wizard (7 unused levels)
     """
 
-    input_blocks: LevelUpBlocks = Field(alias="blocks")
+    blocks: LevelUpBlocks = Field(alias="blocks")
 
     def _get_change(self, blueprint: Blueprint) -> Blueprint:
         if blueprint.race is None:
