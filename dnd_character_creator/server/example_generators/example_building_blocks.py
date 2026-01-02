@@ -75,7 +75,7 @@ def example_building_blocks():
     )
     class_ = Class.WIZARD
     all_choices_resolver = AllChoicesResolver(
-        input_blocks=(
+        blocks=(
             RandomLanguageChoiceResolver(),
             RandomSkillChoiceResolver(),
             MaxFirstResolver(
@@ -89,7 +89,7 @@ def example_building_blocks():
     )
     spell_assigner = RandomSpellAssigner(class_=class_)
     level_up = LevelUp(
-        input_blocks=(
+        blocks=(
             LevelIncrementer(class_=class_),
             HealthIncreaseAverage(class_=class_),
             spell_assigner,
@@ -98,9 +98,9 @@ def example_building_blocks():
     )
     level = 16
     return CombinedBlock(
-        input_blocks=(
+        blocks=(
             InitialBuilder(
-                input_blocks=(
+                blocks=(
                     LevelAssigner(level=level),
                     StandardArray(stats_priority=stats_priority),
                     RaceAssigner(
@@ -108,7 +108,7 @@ def example_building_blocks():
                         subrace=Subrace.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,
                     ),
                     AllChoicesResolver(
-                        input_blocks=(
+                        blocks=(
                             RandomLanguageChoiceResolver(),
                             RandomSkillChoiceResolver(),
                             MaxFirstResolver(
@@ -125,9 +125,7 @@ def example_building_blocks():
                 )
             ),
             RandomInitialDataFiller(),
-            LevelUpMultiple(
-                input_blocks=tuple(level_up for _ in range(level))
-            ),
+            LevelUpMultiple(blocks=tuple(level_up for _ in range(level))),
             RandomSubclassAssigner(
                 class_=class_,
             ),

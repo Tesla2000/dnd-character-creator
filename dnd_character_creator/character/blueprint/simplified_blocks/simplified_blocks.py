@@ -1,6 +1,7 @@
 from collections import Counter
 from collections.abc import Mapping
 from itertools import chain
+from typing import Any
 from typing import Self
 
 from dnd_character_creator.character.blueprint.building_blocks import (
@@ -126,10 +127,10 @@ from dnd_character_creator.character.blueprint.simplified_blocks.class_to_stats_
 from dnd_character_creator.character.character import ClassLevel
 from dnd_character_creator.choices.class_creation.character_class import Class
 from pydantic import BaseModel
-from pydantic import computed_field
 from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import model_validator
+from pydantic import ModelWrapValidatorHandler
 
 
 class Classes(BaseModel):
@@ -188,7 +189,7 @@ class SimplifiedBlocks(CombinedBlock):
     )
     all_choices_resolver: AnyChoiceResolver = Field(
         default_factory=lambda validated_data: AllChoicesResolver(
-            input_blocks=(
+            blocks=(
                 validated_data["language_choice_resolver"],
                 validated_data["skill_choice_resolver"],
                 validated_data["feat_choice_resolver"],
@@ -296,7 +297,7 @@ class SimplifiedBlocks(CombinedBlock):
     level_ups: tuple[LevelUp, ...] = Field(
         default_factory=lambda validated_data: tuple(
             LevelUp(
-                input_blocks=LevelUpBlocks(
+                blocks=LevelUpBlocks(
                     level_increment=level,
                     health_increase=health,
                     spell_assigner=spell,
@@ -337,7 +338,7 @@ class SimplifiedBlocks(CombinedBlock):
     race_assigner: AnyRaceAssigner = Field(default_factory=RandomRaceAssigner)
     initial_builder: InitialBuilder = Field(
         default_factory=lambda validated_data: InitialBuilder(
-            input_blocks=InitialBuilderBlocks(
+            blocks=InitialBuilderBlocks(
                 level_assigner=LevelAssigner(
                     level=validated_data["classes"].get_total_level()
                 ),
@@ -361,20 +362,25 @@ class SimplifiedBlocks(CombinedBlock):
     magical_items_assigner: AnyMagicalItemChooser = Field(
         default_factory=RandomMagicalItemChooser
     )
-    input_blocks: Blocks = Field((), init=False, exclude=True)
-    overwritten_blocks: Blocks = Field(
-        default_factory=lambda validated_data: (
-            validated_data["initial_builder"],
-            validated_data["initial_data_filler"],
-            CombinedBlock(input_blocks=validated_data["level_ups"]),
-            CombinedBlock(input_blocks=validated_data["subclass_assigners"]),
-            validated_data["magical_items_assigner"],
-        ),
-        validation_alias="blocks",
-        exclude=True,
-    )
+    blocks: Blocks = ()
 
-    @computed_field(alias="blocks")
-    @property
-    def blocks(self) -> Blocks:
-        return self.overwritten_blocks
+    @model_validator(mode="wrap")
+    @classmethod
+    def _create_blocks(
+        cls, data: Any, handler: ModelWrapValidatorHandler[Self]
+    ) -> Self:
+        self: Self = handler(data)
+        if self.blocks or not isinstance(data, dict):
+            return self
+        return handler(
+            {
+                **data,
+                "blocks": (
+                    self.initial_builder,
+                    self.initial_data_filler,
+                    CombinedBlock(blocks=self.level_ups),
+                    CombinedBlock(blocks=self.subclass_assigners),
+                    self.magical_items_assigner,
+                ),
+            }
+        )

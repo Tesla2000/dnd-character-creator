@@ -13,7 +13,6 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from pydantic import BaseModel
 from pydantic import computed_field
 from pydantic import ConfigDict
-from pydantic import Field
 from pydantic import InstanceOf
 from pydantic.main import IncEx
 
@@ -112,7 +111,7 @@ class BuildingBlock(SerializableBlock, ABC):
         """
 
     def __add__(self, other: BuildingBlock) -> CombinedBlock:
-        return CombinedBlock(input_blocks=(self, other))
+        return CombinedBlock(blocks=(self, other))
 
 
 Blocks = tuple[
@@ -125,12 +124,7 @@ class CombinedBlock(SerializableBlock):
     """Combines multiple building blocks to apply sequentially."""
 
     model_config = ConfigDict(validate_by_alias=True, validate_by_name=True)
-    input_blocks: Blocks = Field(validation_alias="blocks", exclude=True)
-
-    @computed_field(alias="blocks")
-    @property
-    def blocks(self) -> Blocks:
-        return self.input_blocks
+    blocks: Blocks
 
     def __add__(self, other: Any) -> Self:
         allowed_types = (BuildingBlock, CombinedBlock)
@@ -139,9 +133,9 @@ class CombinedBlock(SerializableBlock):
                 f"Only instances of {allowed_types} allowed for {type(self).__name__} addition"
             )
         if isinstance(other, CombinedBlock):
-            return type(self)(input_blocks=self.blocks + other.blocks)
+            return type(self)(blocks=self.blocks + other.blocks)
         if isinstance(other, BuildingBlock):
-            return type(self)(input_blocks=self.blocks + (other,))
+            return type(self)(blocks=self.blocks + (other,))
         raise ValueError("What?")
 
     def flatten(self) -> Generator[BuildingBlock, None, None]:

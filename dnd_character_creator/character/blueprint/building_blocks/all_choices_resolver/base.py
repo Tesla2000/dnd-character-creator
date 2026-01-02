@@ -28,7 +28,7 @@ from pydantic import Field
 
 
 class AllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
-    input_blocks: tuple[
+    blocks: tuple[
         AnyLanguageChoiceResolver,
         AnySkillChoiceResolver,
         AnyFeatChoiceResolver,
