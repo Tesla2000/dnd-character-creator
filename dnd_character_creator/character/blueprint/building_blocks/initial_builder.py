@@ -35,6 +35,5 @@ class InitialBuilder(CombinedBlock):
     """
 
     blocks: InitialBuilderBlocks = Field(
-        alias="blocks",
         description="Building blocks for level, stats, race, and choices",
     )

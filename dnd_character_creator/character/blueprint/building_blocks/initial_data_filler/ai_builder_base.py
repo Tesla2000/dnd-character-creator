@@ -23,7 +23,9 @@ class AIBuilderBase(InitialDataFiller, ABC):
         description="Natural language description of the character to generate"
     )
 
-    llm: ChatOpenAI
+    llm: ChatOpenAI = Field(
+        description="Language model for making AI-powered decisions"
+    )
 
     def _generate_character_template(
         self, prompt: str

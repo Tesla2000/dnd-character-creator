@@ -10,6 +10,17 @@ from dnd_character_creator.character.stats import Stats
 
 
 class StandardArray(StatsBuilder):
+    """Assigns ability scores using the standard array method (15, 14, 13, 12, 10, 8).
+
+    Distributes the standard D&D 5e ability score array to the six ability scores
+    based on the provided stats priority, assigning higher values to more important stats.
+
+    Example:
+        >>> stats_priority = StatsPriority((Statistic.STR, Statistic.CON, ...))
+        >>> builder = StandardArray(stats_priority=stats_priority)
+        >>> # Will assign 15 to STR, 14 to CON, etc.
+    """
+
     _standard_array_descending: ClassVar[
         tuple[int, int, int, int, int, int]
     ] = (15, 14, 13, 12, 10, 8)

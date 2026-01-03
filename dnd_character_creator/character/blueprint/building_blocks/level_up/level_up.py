@@ -48,7 +48,6 @@ class LevelUp(CombinedBlock):
     """
 
     blocks: LevelUpBlocks = Field(
-        alias="blocks",
         description="Level increment, health increase, spell assignment, and choice resolution",
     )
 

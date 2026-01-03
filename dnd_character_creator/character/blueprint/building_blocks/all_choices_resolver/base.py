@@ -28,6 +28,23 @@ from pydantic import Field
 
 
 class AllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
+    """Resolves all character choices by chaining individual resolvers sequentially.
+
+    Combines language, skill, feat, tool, stat, and equipment resolvers into a
+    single pipeline that processes all character choices in order. Each resolver
+    handles its specific choice type independently.
+
+    Example:
+        >>> resolver = AllChoicesResolver(blocks=(
+        ...     RandomLanguageChoiceResolver(),
+        ...     RandomSkillChoiceResolver(),
+        ...     RandomFeatChoiceResolver(),
+        ...     RandomToolProficiencyChoiceResolver(),
+        ...     PriorityStatChoiceResolver(priority=stats_priority),
+        ...     RandomEquipmentChooser(),
+        ... ))
+    """
+
     blocks: tuple[
         AnyLanguageChoiceResolver,
         AnySkillChoiceResolver,
@@ -35,4 +52,6 @@ class AllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
         AnyToolProficiencyChoiceResolver,
         AnyStatChoiceResolver,
         AnyEquipmentChooser,
-    ] = Field(alias="blocks")
+    ] = Field(
+        description="Ordered sequence of choice resolvers: language, skill, feat, tool, stat, and equipment",
+    )

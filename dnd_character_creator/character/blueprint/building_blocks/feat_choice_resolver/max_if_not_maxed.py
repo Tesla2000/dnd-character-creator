@@ -6,6 +6,7 @@ from dnd_character_creator.character.blueprint.building_blocks.stats_priority im
     StatsPriority,
 )
 from dnd_character_creator.character.feature.feats import FeatName
+from pydantic import Field
 
 
 class _AlreadyMaxed(Exception):
@@ -13,7 +14,22 @@ class _AlreadyMaxed(Exception):
 
 
 class MaxIfNotMaxedResolver(FeatChoiceResolver):
-    priority: StatsPriority
+    """Chooses Ability Score Improvement only if the highest priority stat is not maxed.
+
+    If the highest priority stat is already at its cap, returns an empty blueprint
+    instead of choosing a feat. Useful for builds that want ASI when possible but
+    skip the feat choice entirely when not needed.
+
+    Example:
+        >>> resolver = MaxIfNotMaxedResolver(
+        ...     priority=StatsPriority((Statistic.DEX, ...))
+        ... )
+        >>> # Chooses ASI if DEX < cap, otherwise returns empty blueprint
+    """
+
+    priority: StatsPriority = Field(
+        description="Ability score priority order for determining which stat to check"
+    )
 
     def _select_from_available(
         self, available: list[FeatName], blueprint: Blueprint

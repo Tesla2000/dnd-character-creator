@@ -33,7 +33,9 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
         ...  )
     """
 
-    llm: ChatOpenAI
+    llm: ChatOpenAI = Field(
+        description="Language model for making AI-powered decisions"
+    )
 
     formatter: BlueprintFormatter = Field(
         default_factory=BlueprintFormatter,

@@ -13,6 +13,7 @@ from dnd_character_creator.choices.background_creatrion.background import (
 )
 from dnd_character_creator.choices.sex import Sex
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class RandomInitialDataFiller(InitialDataFiller):
@@ -28,7 +29,10 @@ class RandomInitialDataFiller(InitialDataFiller):
 
     model_config = ConfigDict(frozen=True)
 
-    seed: Optional[int] = None
+    seed: Optional[int] = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
 
     _BACKSTORIES: tuple[str, ...] = (
         "A mysterious wanderer with a hidden past.",

@@ -17,6 +17,5 @@ class LevelUpMultiple(CombinedBlock):
     """
 
     blocks: tuple[LevelUp, ...] = Field(
-        alias="blocks",
         description="Tuple of LevelUp blocks to apply sequentially",
     )
