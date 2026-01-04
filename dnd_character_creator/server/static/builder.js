@@ -24,6 +24,9 @@ async function init() {
     // Initialize Monaco Editor
     initEditor();
 
+    // Load JSON schema for validation
+    await loadSchema();
+
     // Setup event listeners
     setupEventListeners();
 
@@ -50,6 +53,35 @@ function initEditor() {
     editor.onDidChangeModelContent(() => {
         validateJSON();
     });
+}
+
+// Load JSON schema for validation and autocomplete
+async function loadSchema() {
+    try {
+        const response = await fetch('/schema/simplified-blocks');
+        if (!response.ok) {
+            console.warn('Schema not available:', response.statusText);
+            return;
+        }
+
+        const schema = await response.json();
+
+        // Configure Monaco JSON validation
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: true,
+            schemaValidation: 'error',
+            allowComments: false,
+            schemas: [{
+                uri: "http://dnd-character-creator.local/simplified-blocks.schema.json",
+                fileMatch: ["*"],
+                schema: schema
+            }]
+        });
+
+        console.log('✓ Schema validation enabled for: classes, stats_priority');
+    } catch (error) {
+        console.warn('Schema loading failed:', error);
+    }
 }
 
 // Setup event listeners

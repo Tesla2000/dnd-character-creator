@@ -1,6 +1,9 @@
 import os
+import typing
 from contextlib import suppress
 from typing import Any
+from typing import get_args
+from typing import get_origin
 from typing import Optional
 
 from dnd_character_creator.character.blueprint.building_blocks import (
@@ -11,6 +14,9 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
 )
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     SerializableBlock,
+)
+from dnd_character_creator.character.blueprint.building_blocks.stats_priority import (
+    StatsPriority,
 )
 from dnd_character_creator.character.blueprint.simplified_blocks.simplified_blocks import (
     Classes,
@@ -311,6 +317,119 @@ def create_app(storage: IncrementStorage):
                 )
         except ValidationError as e:
             raise HTTPException(status_code=422, detail=str(e))
+
+    @app_.get("/schema/simplified-blocks")
+    def get_simplified_blocks_schema():
+        """Return JSON schema for SimplifiedBlocks editor validation.
+
+        Recursively generates validation for:
+        - classes (Classes model)
+        - stats_priority (tuple of Statistic enums)
+        - block_type fields within all Union type resolvers/choosers (recursive)
+        """
+
+        def get_union_schema(
+            annotation: Any, field_name: str, visited: set[Any] | None = None
+        ) -> dict[str, Any] | None:
+            """Recursively build schema for Union type fields.
+
+            Returns a schema that validates block_type and recursively validates
+            nested Union fields within the Union member types.
+            """
+            if visited is None:
+                visited = set()
+
+            if annotation in visited:
+                return None
+            visited.add(annotation)
+
+            origin = get_origin(annotation)
+            if origin is not typing.Union:
+                return None
+
+            args = get_args(annotation)
+
+            block_types = []
+            nested_properties = {}
+
+            for arg in args:
+                if not isinstance(arg, SerializableBlock):
+                    continue
+                block_types.append(arg.get_block_type())
+
+                for (
+                    nested_field_name,
+                    nested_field_info,
+                ) in arg.model_fields.items():
+                    nested_schema = get_union_schema(
+                        nested_field_info.annotation,
+                        nested_field_name,
+                        visited.copy(),
+                    )
+                    if nested_schema:
+                        if nested_field_name not in nested_properties:
+                            nested_properties[nested_field_name] = (
+                                nested_schema
+                            )
+
+            if not block_types:
+                return None
+
+            return {
+                "type": "object",
+                "properties": {
+                    BLOCK_TYPE_FIELD_NAME: {
+                        "type": "string",
+                        "enum": sorted(block_types),
+                        "description": f"Block type for {field_name}",
+                    },
+                    **nested_properties,
+                },
+                "required": [BLOCK_TYPE_FIELD_NAME],
+                "additionalProperties": True,
+            }
+
+        # Generate schemas for non-Union fields
+        classes_adapter = TypeAdapter(Classes)
+        stats_priority_adapter = TypeAdapter(StatsPriority)
+
+        classes_schema = classes_adapter.json_schema()
+        stats_priority_schema = stats_priority_adapter.json_schema()
+
+        # Extract the actual type definitions (handle $defs if present)
+        classes_def = classes_schema.get("$defs", {}).get(
+            "Classes", classes_schema
+        )
+
+        # Dynamically discover Union fields and build schemas recursively
+        union_properties = {}
+        for field_name, field_info in SimplifiedBlocks.model_fields.items():
+            union_schema = get_union_schema(field_info.annotation, field_name)
+            if union_schema:
+                union_properties[field_name] = union_schema
+
+        # Build schema
+        schema = {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "title": "SimplifiedBlocks",
+            "description": "Schema for SimplifiedBlocks editor with recursive validation for classes, stats_priority, and block_type fields",
+            "type": "object",
+            "properties": {
+                "classes": {
+                    **classes_def,
+                    "description": 'Character class levels (e.g., {"Wizard": 1})',
+                },
+                "stats_priority": {
+                    **stats_priority_schema,
+                    "description": 'Ability score priority: 6 stats in order (e.g., ["intelligence", "constitution", ...])',
+                },
+                **union_properties,
+            },
+            "required": ["classes"],
+            "additionalProperties": True,  # Allow other fields without validation
+        }
+
+        return schema
 
     @app_.get("/health")
     def health():
