@@ -1,4 +1,5 @@
 from collections import Counter
+from collections.abc import Generator
 from collections.abc import Mapping
 from itertools import chain
 from typing import Any
@@ -126,6 +127,7 @@ from dnd_character_creator.character.character import ClassLevel
 from dnd_character_creator.choices.class_creation.character_class import Class
 from pydantic import BaseModel
 from pydantic import ConfigDict
+from pydantic import create_model
 from pydantic import Field
 from pydantic import model_serializer
 from pydantic import model_validator
@@ -515,29 +517,24 @@ class SimplifiedBlocks(CombinedBlock, _SimplifiedBlocksFields):
             isinstance(context, dict) and context.get(EXCLUDE_FACTORY_DEFAULTS)
         ):
             return serialized_value
-        default_model = self._create_from_classes(self.classes)
-        default_values = default_model.model_dump()
-        difference = self._get_difference(default_values, serialized_value)
-        assert self == self.model_validate(
-            {"classes": self.classes, **difference}
-        )
-        return difference
+        differences = {"classes": self.classes}
+        for field_name, partial_model in _PARTIAL_MODELS:
+            if partial_model.model_validate(
+                differences
+            ) != partial_model.model_validate(serialized_value):
+                differences[field_name] = serialized_value[field_name]
+        return differences
 
-    @staticmethod
-    def _get_difference(
-        dict1: dict[str, Any], dict2: dict[str, Any]
-    ) -> dict[str, Any]:
-        difference = {}
-        for key, value in dict2.items():
-            if value == dict1.get(key):
-                continue
-            difference[key] = value
-        return {
-            key: value
-            for key, value in dict2.items()
-            if key not in dict1 or value != dict1[key]
-        }
 
-    @classmethod
-    def _create_from_classes(cls, classes: Classes) -> Self:
-        return cls(classes=classes)
+def _partial_models_creator() -> (
+    Generator[tuple[str, type[BaseModel]], None, None]
+):
+    combined_fields = {}
+    for field_name, field_info in SimplifiedBlocks.model_fields.items():
+        combined_fields[field_name] = (field_info.annotation, field_info)
+        yield field_name, create_model("Partial", **combined_fields)
+
+
+_PARTIAL_MODELS: tuple[tuple[str, type[BaseModel]], ...] = tuple(
+    _partial_models_creator()
+)

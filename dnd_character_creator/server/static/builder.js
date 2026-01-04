@@ -1,9 +1,17 @@
 // SimplifiedBlocks JSON Editor with Monaco
 
 let editor = null;
-let templates = [];
 let currentConfig = null;
 let showDefaults = true;
+
+// Level 1 Wizard template config (embedded, no API call needed)
+const LEVEL_1_WIZARD_CONFIG = {
+    "classes": {
+        "class_levels": {
+            "Wizard": 1
+        }
+    }
+};
 
 // Initialize Monaco Editor
 require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
@@ -13,9 +21,6 @@ require(['vs/editor/editor.main'], async function() {
 });
 
 async function init() {
-    // Load templates
-    await loadTemplates();
-
     // Initialize Monaco Editor
     initEditor();
 
@@ -47,35 +52,8 @@ function initEditor() {
     });
 }
 
-// Load templates from backend
-async function loadTemplates() {
-    try {
-        const response = await fetch('/simplified_templates');
-        const data = await response.json();
-        templates = data.templates;
-
-        populateTemplateSelect();
-    } catch (error) {
-        console.error('Failed to load templates:', error);
-    }
-}
-
-// Populate template selector
-function populateTemplateSelect() {
-    const select = document.getElementById('templateSelect');
-
-    templates.forEach((template, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = `${template.name} - ${template.description}`;
-        select.appendChild(option);
-    });
-}
-
 // Setup event listeners
 function setupEventListeners() {
-    const templateSelect = document.getElementById('templateSelect');
-    const loadTemplateBtn = document.getElementById('loadTemplateBtn');
     const showDefaultsToggle = document.getElementById('showDefaultsToggle');
     const validateBtn = document.getElementById('validateBtn');
     const formatBtn = document.getElementById('formatBtn');
@@ -84,11 +62,6 @@ function setupEventListeners() {
     const saveBtn = document.getElementById('saveBtn');
     const loadBtn = document.getElementById('loadBtn');
 
-    templateSelect.addEventListener('change', (e) => {
-        loadTemplateBtn.disabled = !e.target.value;
-    });
-
-    loadTemplateBtn.addEventListener('click', loadSelectedTemplate);
     showDefaultsToggle.addEventListener('change', toggleDefaults);
     validateBtn.addEventListener('click', () => validateJSON());
     formatBtn.addEventListener('click', formatJSON);
@@ -100,55 +73,26 @@ function setupEventListeners() {
 
 // Load default config
 function loadDefaultConfig() {
-    const defaultConfig = {
-        "block_type": "SimplifiedBlocks",
-        "classes": {
-            "class_levels": {
-                "WIZARD": 1
-            }
-        }
-    };
-
-    currentConfig = defaultConfig;
-    editor.setValue(JSON.stringify(defaultConfig, null, 2));
-}
-
-// Load selected template
-function loadSelectedTemplate() {
-    const select = document.getElementById('templateSelect');
-    const index = parseInt(select.value);
-
-    if (isNaN(index)) return;
-
-    const template = templates[index];
-    const config = showDefaults ? template.config_with_defaults : template.config;
-
-    currentConfig = config;
-    editor.setValue(JSON.stringify(config, null, 2));
+    currentConfig = LEVEL_1_WIZARD_CONFIG;
+    editor.setValue(JSON.stringify(LEVEL_1_WIZARD_CONFIG, null, 2));
 }
 
 // Toggle between showing/hiding defaults
 async function toggleDefaults(e) {
     showDefaults = e.target.checked;
 
-    // If a template is selected, reload it with new display mode
-    const select = document.getElementById('templateSelect');
-    if (select.value) {
-        loadSelectedTemplate();
-    } else {
-        // Try to parse current editor content and reformat it
-        try {
-            const current = JSON.parse(editor.getValue());
+    // Try to parse current editor content and reformat it
+    try {
+        const current = JSON.parse(editor.getValue());
 
-            // Call backend to validate and reformat with or without defaults
-            const formatted = await formatWithDefaults(current, showDefaults);
-            if (formatted) {
-                editor.setValue(JSON.stringify(formatted, null, 2));
-            }
-        } catch (error) {
-            // Invalid JSON, do nothing
-            console.error('Failed to toggle defaults:', error);
+        // Call backend to validate and reformat with or without defaults
+        const formatted = await formatWithDefaults(current, showDefaults);
+        if (formatted) {
+            editor.setValue(JSON.stringify(formatted, null, 2));
         }
+    } catch (error) {
+        // Invalid JSON, do nothing
+        console.error('Failed to toggle defaults:', error);
     }
 }
 
@@ -181,10 +125,6 @@ function validateJSON() {
         const json = JSON.parse(editor.getValue());
 
         // Basic validation checks
-        if (!json.block_type || json.block_type !== 'SimplifiedBlocks') {
-            throw new Error('block_type must be "SimplifiedBlocks"');
-        }
-
         if (!json.classes || !json.classes.class_levels) {
             throw new Error('classes.class_levels is required');
         }

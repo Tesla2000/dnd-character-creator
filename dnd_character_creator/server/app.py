@@ -16,6 +16,9 @@ from dnd_character_creator.character.blueprint.simplified_blocks.simplified_bloc
     Classes,
 )
 from dnd_character_creator.character.blueprint.simplified_blocks.simplified_blocks import (
+    EXCLUDE_FACTORY_DEFAULTS,
+)
+from dnd_character_creator.character.blueprint.simplified_blocks.simplified_blocks import (
     SimplifiedBlocks,
 )
 from dnd_character_creator.character.builder import Builder
@@ -254,7 +257,9 @@ def create_app(storage: IncrementStorage):
                     "name": "Level 1 Wizard",
                     "description": "Minimal configuration with only class specified",
                     "config": wizard_l1.model_dump(
-                        exclude={"blocks"}, exclude_unset=True, mode="json"
+                        exclude={"blocks"},
+                        context={EXCLUDE_FACTORY_DEFAULTS: True},
+                        mode="json",
                     ),
                     "config_with_defaults": wizard_l1.model_dump(
                         exclude={"blocks"}, mode="json"
@@ -264,7 +269,9 @@ def create_app(storage: IncrementStorage):
                     "name": "Level 3 Wizard",
                     "description": "Mid-level wizard with standard defaults",
                     "config": wizard_l3.model_dump(
-                        exclude={"blocks"}, exclude_unset=True, mode="json"
+                        exclude={"blocks"},
+                        context={EXCLUDE_FACTORY_DEFAULTS: True},
+                        mode="json",
                     ),
                     "config_with_defaults": wizard_l3.model_dump(
                         exclude={"blocks"}, mode="json"
@@ -274,7 +281,9 @@ def create_app(storage: IncrementStorage):
                     "name": "Level 5 Sorcerer",
                     "description": "Mid-level sorcerer caster",
                     "config": sorcerer_l5.model_dump(
-                        exclude={"blocks"}, exclude_unset=True, mode="json"
+                        exclude={"blocks"},
+                        context={EXCLUDE_FACTORY_DEFAULTS: True},
+                        mode="json",
                     ),
                     "config_with_defaults": sorcerer_l5.model_dump(
                         exclude={"blocks"}, mode="json"
@@ -296,7 +305,9 @@ def create_app(storage: IncrementStorage):
                 return simplified.model_dump(exclude={"blocks"}, mode="json")
             else:
                 return simplified.model_dump(
-                    exclude={"blocks"}, exclude_unset=True, mode="json"
+                    exclude={"blocks"},
+                    context={EXCLUDE_FACTORY_DEFAULTS: True},
+                    mode="json",
                 )
         except ValidationError as e:
             raise HTTPException(status_code=422, detail=str(e))

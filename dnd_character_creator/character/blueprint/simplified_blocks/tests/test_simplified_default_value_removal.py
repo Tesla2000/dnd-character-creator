@@ -30,21 +30,19 @@ class TestSimplifiedBuilder:
         blocks = SimplifiedBlocks(classes=classes)
         blocks = SimplifiedBlocks.model_validate(blocks.model_dump())
         result = blocks.model_dump(context={EXCLUDE_FACTORY_DEFAULTS: True})
-        assert result == {}, "Expected empty dict when all values are defaults"
+        assert result == {"classes": classes.model_dump()}
 
     def test_default_values_removal_with_custom_stats_priority(self):
-        """Test that custom stats_priority is preserved in the diff."""
+        """Test that all default values are excluded when nothing is customized."""
         classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
-
-        # Create custom stats priority different from default
         default_priority = CLASS_TO_STATS_PRIORITY[Class.WIZARD]
         custom_priority = (
-            Statistic.STRENGTH,
-            Statistic.DEXTERITY,
-            Statistic.CONSTITUTION,
             Statistic.INTELLIGENCE,
+            Statistic.CONSTITUTION,
+            Statistic.DEXTERITY,
             Statistic.WISDOM,
             Statistic.CHARISMA,
+            Statistic.STRENGTH,
         )
 
         assert (
@@ -54,14 +52,51 @@ class TestSimplifiedBuilder:
         blocks = SimplifiedBlocks(
             classes=classes, stats_priority=custom_priority
         )
+        blocks = SimplifiedBlocks.model_validate(blocks.model_dump())
+        result = blocks.model_dump(
+            context={EXCLUDE_FACTORY_DEFAULTS: True},
+            exclude={"blocks"},
+        )
+        assert result == {
+            "classes": classes.model_dump(),
+            "stats_priority": custom_priority,
+        }
 
-        result = blocks.model_dump(context={EXCLUDE_FACTORY_DEFAULTS: True})
+    def test_default_values_removal_with_custom_stats_priorities(self):
+        """Test that all default values are excluded when nothing is customized."""
+        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
+        default_priority = CLASS_TO_STATS_PRIORITY[Class.WIZARD]
+        custom_priority = (
+            Statistic.INTELLIGENCE,
+            Statistic.CONSTITUTION,
+            Statistic.DEXTERITY,
+            Statistic.WISDOM,
+            Statistic.CHARISMA,
+            Statistic.STRENGTH,
+        )
 
-        # The result should contain stats_priority since it's not the default
         assert (
-            "stats_priority" in result
-        ), "Custom stats_priority should be in result"
-        assert result["stats_priority"] != default_priority
+            custom_priority != default_priority
+        ), "Custom priority should differ from default"
+
+        default_stat_choice_resolver = SimplifiedBlocks(
+            classes=classes
+        ).stat_choice_resolver
+        blocks = SimplifiedBlocks(
+            classes=classes,
+            stats_priority=custom_priority,
+            stat_choice_resolver=default_stat_choice_resolver,
+        )
+        blocks = SimplifiedBlocks.model_validate(blocks.model_dump())
+        result = blocks.model_dump(
+            context={EXCLUDE_FACTORY_DEFAULTS: True},
+            exclude={"blocks"},
+        )
+        assert result == {
+            "classes": classes.model_dump(),
+            "stats_priority": custom_priority,
+            "stat_choice_resolver": default_stat_choice_resolver.model_dump(),
+        }
 
     def test_default_values_removal_with_custom_race_assigner(self):
         """Test that custom race_assigner is preserved in the diff."""
