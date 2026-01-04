@@ -126,3 +126,31 @@ class TestSimplifiedBlocksSchema(TestClient):
 
         # Only classes should be required
         assert schema["required"] == ["classes"]
+
+    def test_static_schema_matches_runtime_schema(self, client):
+        """Verify pre-generated static schema matches runtime endpoint."""
+        import json
+        from pathlib import Path
+
+        # Get runtime schema from endpoint
+        runtime_response = client.get("/schema/simplified-blocks")
+        runtime_schema = runtime_response.json()
+
+        # Load static schema file
+        static_dir = Path(__file__).parent.parent / "static"
+        static_file = static_dir / "simplified-blocks-schema.json"
+
+        if not static_file.exists():
+            import pytest
+
+            pytest.skip(
+                "Static schema not generated yet (run scripts/generate_schema.py)"
+            )
+
+        with static_file.open() as f:
+            static_schema = json.load(f)
+
+        # Schemas should match exactly
+        assert (
+            static_schema == runtime_schema
+        ), "Static and runtime schemas differ"

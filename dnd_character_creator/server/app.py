@@ -353,24 +353,35 @@ def create_app(storage: IncrementStorage):
             nested_properties = {}
 
             for arg in args:
-                if not isinstance(arg, SerializableBlock):
-                    continue
-                block_types.append(arg.get_block_type())
+                # Unwrap Annotated types to get the actual class
+                actual_type = arg
+                if get_origin(arg) is typing.Annotated:
+                    actual_type = get_args(arg)[0]
 
-                for (
-                    nested_field_name,
-                    nested_field_info,
-                ) in arg.model_fields.items():
-                    nested_schema = get_union_schema(
-                        nested_field_info.annotation,
+                # Check if it's a class and is a subclass of SerializableBlock
+                if not (
+                    isinstance(actual_type, type)
+                    and issubclass(actual_type, SerializableBlock)
+                ):
+                    continue
+                block_types.append(actual_type.get_block_type())
+
+                # Recursively process fields of this Union member
+                if hasattr(actual_type, "model_fields"):
+                    for (
                         nested_field_name,
-                        visited.copy(),
-                    )
-                    if nested_schema:
-                        if nested_field_name not in nested_properties:
-                            nested_properties[nested_field_name] = (
-                                nested_schema
-                            )
+                        nested_field_info,
+                    ) in actual_type.model_fields.items():
+                        nested_schema = get_union_schema(
+                            nested_field_info.annotation,
+                            nested_field_name,
+                            visited.copy(),
+                        )
+                        if nested_schema:
+                            if nested_field_name not in nested_properties:
+                                nested_properties[nested_field_name] = (
+                                    nested_schema
+                                )
 
             if not block_types:
                 return None

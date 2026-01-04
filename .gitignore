@@ -10,3 +10,6 @@
 /lib/
 /config_files/
 /.run/
+
+# Generated schema file (built at container build time)
+/dnd_character_creator/server/static/simplified-blocks-schema.json

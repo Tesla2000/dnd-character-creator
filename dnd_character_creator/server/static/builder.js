@@ -55,10 +55,10 @@ function initEditor() {
     });
 }
 
-// Load JSON schema for validation and autocomplete
+// Load JSON schema from static file (pre-generated during build)
 async function loadSchema() {
     try {
-        const response = await fetch('/schema/simplified-blocks');
+        const response = await fetch('/static/simplified-blocks-schema.json');
         if (!response.ok) {
             console.warn('Schema not available:', response.statusText);
             return;
@@ -78,7 +78,7 @@ async function loadSchema() {
             }]
         });
 
-        console.log('✓ Schema validation enabled for: classes, stats_priority');
+        console.log('✓ Schema validation enabled (pre-generated at build time)');
     } catch (error) {
         console.warn('Schema loading failed:', error);
     }
