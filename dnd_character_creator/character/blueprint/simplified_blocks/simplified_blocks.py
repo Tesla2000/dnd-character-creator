@@ -1,8 +1,10 @@
 from collections import Counter
 from collections.abc import Mapping
 from itertools import chain
+from typing import Any
 from typing import Self
 
+from dnd_character_creator.character.blueprint.building_blocks import Blocks
 from dnd_character_creator.character.blueprint.building_blocks import (
     LevelAssigner,
 )
@@ -32,9 +34,6 @@ from dnd_character_creator.character.blueprint.building_blocks.all_choices_resol
 )
 from dnd_character_creator.character.blueprint.building_blocks.all_choices_resolver import (
     AnyChoiceResolver,
-)
-from dnd_character_creator.character.blueprint.building_blocks.building_block import (
-    Blocks,
 )
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     CombinedBlock,
@@ -128,7 +127,10 @@ from dnd_character_creator.choices.class_creation.character_class import Class
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
+from pydantic import model_serializer
 from pydantic import model_validator
+from pydantic_core.core_schema import SerializationInfo
+from pydantic_core.core_schema import SerializerFunctionWrapHandler
 
 
 class Classes(BaseModel):
@@ -178,10 +180,13 @@ class _SimplifiedBlocksFields(BaseModel):
         description="Character class and level configuration"
     )
     stats_priority: StatsPriority = Field(
-        default_factory=lambda validated_data: CLASS_TO_STATS_PRIORITY[
-            validated_data["classes"].main_class
-        ],
+        default_factory=lambda validated_data: (
+            CLASS_TO_STATS_PRIORITY[validated_data["classes"].main_class]
+            if "classes" in validated_data
+            else None
+        ),
         description="Ability score priority based on main character class",
+        validate_default=True,
     )
     language_choice_resolver: AnyLanguageChoiceResolver = Field(
         default_factory=RandomLanguageChoiceResolver,
@@ -226,17 +231,22 @@ class _SimplifiedBlocksFields(BaseModel):
         description="Combined resolver that handles all character choice decisions",
     )
     level_incrementers: tuple[LevelIncrementer, ...] = Field(
-        default_factory=lambda validated_data: tuple(
-            chain.from_iterable(
-                (
-                    level * (LevelIncrementer(class_=class_),)
-                    for class_, level in validated_data[
-                        "classes"
-                    ].class_levels.items()
+        default_factory=lambda validated_data: (
+            tuple(
+                chain.from_iterable(
+                    (
+                        level * (LevelIncrementer(class_=class_),)
+                        for class_, level in validated_data[
+                            "classes"
+                        ].class_levels.items()
+                    )
                 )
             )
+            if "classes" in validated_data
+            else None
         ),
         description="Level incrementers for each level, one per class per level",
+        validate_default=True,
     )
 
     @model_validator(mode="after")
@@ -258,17 +268,22 @@ class _SimplifiedBlocksFields(BaseModel):
         raise ValueError(f"{increment_classes=} don't match {class_levels=}")
 
     health_increases: tuple[AnyHealthIncrease, ...] = Field(
-        default_factory=lambda validated_data: tuple(
-            chain.from_iterable(
-                (
-                    level * (HealthIncreaseAverage(class_=class_),)
-                    for class_, level in validated_data[
-                        "classes"
-                    ].class_levels.items()
+        default_factory=lambda validated_data: (
+            tuple(
+                chain.from_iterable(
+                    (
+                        level * (HealthIncreaseAverage(class_=class_),)
+                        for class_, level in validated_data[
+                            "classes"
+                        ].class_levels.items()
+                    )
                 )
             )
+            if "classes" in validated_data
+            else None
         ),
         description="Health increase methods for each level, one per class per level",
+        validate_default=True,
     )
 
     @model_validator(mode="after")
@@ -290,17 +305,22 @@ class _SimplifiedBlocksFields(BaseModel):
         raise ValueError(f"{increases_classes=} don't match {class_levels=}")
 
     spell_assigners: tuple[AnySpellAssigner, ...] = Field(
-        default_factory=lambda validated_data: tuple(
-            chain.from_iterable(
-                (
-                    level * (RandomSpellAssigner(class_=class_),)
-                    for class_, level in validated_data[
-                        "classes"
-                    ].class_levels.items()
+        default_factory=lambda validated_data: (
+            tuple(
+                chain.from_iterable(
+                    (
+                        level * (RandomSpellAssigner(class_=class_),)
+                        for class_, level in validated_data[
+                            "classes"
+                        ].class_levels.items()
+                    )
                 )
             )
+            if "classes" in validated_data
+            else None
         ),
         description="Spell assigners for each level, one per class per level",
+        validate_default=True,
     )
 
     @model_validator(mode="after")
@@ -324,21 +344,38 @@ class _SimplifiedBlocksFields(BaseModel):
         )
 
     level_ups: tuple[LevelUp, ...] = Field(
-        default_factory=lambda validated_data: tuple(
-            LevelUp(
-                blocks=LevelUpBlocks(
-                    level_increment=level,
-                    health_increase=health,
-                    spell_assigner=spell,
-                    all_choice_resolver=validated_data["all_choices_resolver"],
-                ),
+        default_factory=lambda validated_data: (
+            tuple(
+                LevelUp(
+                    blocks=LevelUpBlocks(
+                        level_increment=level,
+                        health_increase=health,
+                        spell_assigner=spell,
+                        all_choice_resolver=validated_data[
+                            "all_choices_resolver"
+                        ],
+                    ),
+                )
+                for level, health, spell in zip(
+                    validated_data["level_incrementers"],
+                    validated_data["health_increases"],
+                    validated_data["spell_assigners"],
+                )
             )
-            for level, health, spell in zip(
-                validated_data["level_incrementers"],
-                validated_data["health_increases"],
-                validated_data["spell_assigners"],
+            if all(
+                map(
+                    validated_data.__contains__,
+                    (
+                        "level_incrementers",
+                        "health_increases",
+                        "spell_assigners",
+                        "all_choices_resolver",
+                    ),
+                )
             )
+            else None
         ),
+        validate_default=True,
         description="Level up blocks combining level increment, health, and spell assignment",
     )
 
@@ -361,26 +398,47 @@ class _SimplifiedBlocksFields(BaseModel):
         return self
 
     stats_builder: AnyStatsBuilder = Field(
-        default_factory=lambda validated_data: StandardArray(
-            stats_priority=validated_data["stats_priority"]
+        default_factory=lambda validated_data: (
+            StandardArray(stats_priority=validated_data["stats_priority"])
+            if "stats_priority" in validated_data
+            else None
         ),
+        validate_default=True,
         description="Builder for generating ability scores using standard array method",
     )
     race_assigner: AnyRaceAssigner = Field(
         default_factory=RandomRaceAssigner,
+        validate_default=True,
         description="Assigner for selecting character race and subrace",
     )
     initial_builder: InitialBuilder = Field(
-        default_factory=lambda validated_data: InitialBuilder(
-            blocks=InitialBuilderBlocks(
-                level_assigner=LevelAssigner(
-                    level=validated_data["classes"].get_total_level()
-                ),
-                stats_builder=validated_data["stats_builder"],
-                race_assigner=validated_data["race_assigner"],
-                all_choices_resolver=validated_data["all_choices_resolver"],
+        default_factory=lambda validated_data: (
+            InitialBuilder(
+                blocks=InitialBuilderBlocks(
+                    level_assigner=LevelAssigner(
+                        level=validated_data["classes"].get_total_level()
+                    ),
+                    stats_builder=validated_data["stats_builder"],
+                    race_assigner=validated_data["race_assigner"],
+                    all_choices_resolver=validated_data[
+                        "all_choices_resolver"
+                    ],
+                )
             )
+            if all(
+                map(
+                    validated_data.__contains__,
+                    (
+                        "classes",
+                        "stats_builder",
+                        "race_assigner",
+                        "all_choices_resolver",
+                    ),
+                )
+            )
+            else None
         ),
+        validate_default=True,
         description="Builder for initial character generation including level, stats, and race",
     )
     initial_data_filler: AnyInitialDataFiller = Field(
@@ -388,18 +446,27 @@ class _SimplifiedBlocksFields(BaseModel):
         description="Filler for generating initial character data like name and background",
     )
     subclass_assigners: tuple[AnySubclassAssigner, ...] = Field(
-        default_factory=lambda validated_data: tuple(
-            OptionalSubclassAssigner(
-                class_=class_, assigner=RandomSubclassAssigner(class_=class_)
+        default_factory=lambda validated_data: (
+            tuple(
+                OptionalSubclassAssigner(
+                    class_=class_,
+                    assigner=RandomSubclassAssigner(class_=class_),
+                )
+                for class_ in validated_data["classes"].class_levels
             )
-            for class_ in validated_data["classes"].class_levels
+            if "classes" in validated_data
+            else None
         ),
+        validate_default=True,
         description="Assigners for selecting subclasses, one per character class",
     )
     magical_items_assigner: AnyMagicalItemChooser = Field(
         default_factory=RandomMagicalItemChooser,
         description="Chooser for assigning magical items to character",
     )
+
+
+EXCLUDE_FACTORY_DEFAULTS = "exclude_factory_defaults"
 
 
 class SimplifiedBlocks(CombinedBlock, _SimplifiedBlocksFields):
@@ -413,11 +480,64 @@ class SimplifiedBlocks(CombinedBlock, _SimplifiedBlocksFields):
 
     blocks: Blocks = Field(
         default_factory=lambda validated_data: (
-            validated_data["initial_builder"],
-            validated_data["initial_data_filler"],
-            CombinedBlock(blocks=validated_data["level_ups"]),
-            CombinedBlock(blocks=validated_data["subclass_assigners"]),
-            validated_data["magical_items_assigner"],
+            (
+                validated_data["initial_builder"],
+                validated_data["initial_data_filler"],
+                CombinedBlock(blocks=validated_data["level_ups"]),
+                CombinedBlock(blocks=validated_data["subclass_assigners"]),
+                validated_data["magical_items_assigner"],
+            )
+            if all(
+                map(
+                    validated_data.__contains__,
+                    (
+                        "initial_builder",
+                        "initial_data_filler",
+                        "level_ups",
+                        "subclass_assigners",
+                        "magical_items_assigner",
+                    ),
+                )
+            )
+            else None
         ),
+        validate_default=True,
         description="Ordered building blocks executed sequentially: initial build, data fill, level ups, subclasses, and magic items",
     )
+
+    @model_serializer(mode="wrap")
+    def _exclude_factory_defaults(
+        self, nxt: SerializerFunctionWrapHandler, info: SerializationInfo
+    ) -> dict[str, Any]:
+        serialized_value = nxt(self)
+        context = info.context
+        if not (
+            isinstance(context, dict) and context.get(EXCLUDE_FACTORY_DEFAULTS)
+        ):
+            return serialized_value
+        default_model = self._create_from_classes(self.classes)
+        default_values = default_model.model_dump()
+        difference = self._get_difference(default_values, serialized_value)
+        assert self == self.model_validate(
+            {"classes": self.classes, **difference}
+        )
+        return difference
+
+    @staticmethod
+    def _get_difference(
+        dict1: dict[str, Any], dict2: dict[str, Any]
+    ) -> dict[str, Any]:
+        difference = {}
+        for key, value in dict2.items():
+            if value == dict1.get(key):
+                continue
+            difference[key] = value
+        return {
+            key: value
+            for key, value in dict2.items()
+            if key not in dict1 or value != dict1[key]
+        }
+
+    @classmethod
+    def _create_from_classes(cls, classes: Classes) -> Self:
+        return cls(classes=classes)

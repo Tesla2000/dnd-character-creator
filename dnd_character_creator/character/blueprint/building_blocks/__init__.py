@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Annotated
+from typing import Self
 from typing import Union
 
 from dnd_character_creator.character.blueprint.building_blocks.age_assigner import (
@@ -19,7 +20,7 @@ from dnd_character_creator.character.blueprint.building_blocks.background_assign
     BackgroundAssigner,
 )
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
-    Blocks,
+    BuildingBlock,
 )
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     CombinedBlock,
@@ -159,6 +160,7 @@ from dnd_character_creator.character.blueprint.building_blocks.tool_proficiency_
 from dnd_character_creator.character.blueprint.building_blocks.weapon_adder import (
     WeaponAdder,
 )
+from pydantic import InstanceOf
 from pydantic import Tag
 from subclass_getter import get_unique_subclasses
 
@@ -172,6 +174,10 @@ AnyBuildingBlock = Annotated[
     get_discriminator(),
 ]
 CombinedBlock.model_rebuild()
+Blocks = tuple[
+    Union[AnyBuildingBlock, Self, InstanceOf[BuildingBlock]],  # noqa: F821
+    ...,
+]
 __all__ = [
     "AgeAssigner",
     "AIBaseBuilderAssigner",

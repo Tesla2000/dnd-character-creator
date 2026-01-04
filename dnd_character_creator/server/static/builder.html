@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimplifiedBlocks Character Builder</title>
+    <link rel="stylesheet" href="builder.css">
+    <!-- Monaco Editor CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/editor/editor.main.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SimplifiedBlocks Character Builder</h1>
+            <nav>
+                <a href="/static/building_blocks.html">📖 Documentation</a>
+                <a href="/docs">🔧 API Docs</a>
+            </nav>
+        </header>
+
+        <!-- Template Selector -->
+        <section class="template-section">
+            <h2>Templates</h2>
+            <select id="templateSelect" class="template-selector">
+                <option value="">-- Choose a template to start --</option>
+                <!-- Populated from /simplified_templates -->
+            </select>
+            <button id="loadTemplateBtn" class="btn-secondary" disabled>Load Template</button>
+        </section>
+
+        <!-- Editor Controls -->
+        <section class="controls-section">
+            <h2>Configuration Editor</h2>
+            <div class="control-group">
+                <label class="toggle-label">
+                    <input type="checkbox" id="showDefaultsToggle" checked>
+                    <span>Show Default Values</span>
+                </label>
+
+                <div class="button-group">
+                    <button id="validateBtn" class="btn-secondary">✓ Validate JSON</button>
+                    <button id="formatBtn" class="btn-secondary">⚡ Format</button>
+                    <button id="clearBtn" class="btn-secondary">🗑️ Clear</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Monaco JSON Editor -->
+        <section class="editor-section">
+            <div id="editor-container" class="editor-container"></div>
+            <div id="validation-status" class="validation-status"></div>
+        </section>
+
+        <!-- Build Controls -->
+        <section class="build-section">
+            <h2>Build Character</h2>
+            <div class="build-controls">
+                <button id="buildBtn" class="btn-primary btn-large">🎲 Build Character</button>
+                <button id="saveBtn" class="btn-secondary">💾 Save Configuration</button>
+                <button id="loadBtn" class="btn-secondary">📂 Load Configuration</button>
+            </div>
+        </section>
+
+        <!-- Build Results -->
+        <section id="buildResults" class="build-results" style="display: none;">
+            <h2>Build Results</h2>
+            <div id="buildOutput"></div>
+        </section>
+    </div>
+
+    <!-- Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <script type="module" src="builder.js"></script>
+</body>
+</html>

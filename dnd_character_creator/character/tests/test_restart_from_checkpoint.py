@@ -43,6 +43,7 @@ class TestRestartFromCheckpoint:
         error_message = "Error message"
 
         class ErrorBuildingBlock(BuildingBlock):
+            """Docstring"""
 
             def get_change(self, blueprint: Blueprint) -> Blueprint:
                 raise ValueError(error_message)

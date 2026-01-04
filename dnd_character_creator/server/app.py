@@ -32,6 +32,7 @@ from dnd_character_creator.server.example_generators.example_building_blocks imp
 from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi.staticfiles import StaticFiles
+from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import TypeAdapter
@@ -64,6 +65,54 @@ class _CreateCharacterRequestSchema(BaseModel):
 
 
 _building_block_creator = TypeAdapter(AnyBuildingBlock)
+
+
+# LLM configuration factory (lazy initialization to avoid API key issues at import time)
+def _get_llm_config(config_id: str) -> ChatOpenAI:
+    """Get LLM configuration by ID with lazy initialization.
+
+    Args:
+        config_id: Configuration ID (e.g., 'gpt-4o', 'gpt-4o-mini').
+
+    Returns:
+        ChatOpenAI instance for the specified configuration.
+    """
+    configs = {
+        "gpt-4o": lambda: ChatOpenAI(model="gpt-4o", temperature=0.7),
+        "gpt-4o-mini": lambda: ChatOpenAI(
+            model="gpt-4o-mini", temperature=0.3
+        ),
+        "gpt-3.5-turbo": lambda: ChatOpenAI(
+            model="gpt-3.5-turbo", temperature=0.5
+        ),
+    }
+    factory = configs.get(config_id, configs["gpt-4o-mini"])
+    return factory()
+
+
+def _preprocess_building_blocks(data: Any) -> Any:
+    """Replace LLM config strings with ChatOpenAI instances.
+
+    Args:
+        data: Dictionary, list, or other data structure to preprocess.
+
+    Returns:
+        Preprocessed data with LLM config strings replaced by ChatOpenAI objects.
+    """
+    if isinstance(data, dict):
+        result = {}
+        for key, value in data.items():
+            if key == "llm" and isinstance(value, str):
+                # Replace LLM config string with actual ChatOpenAI object
+                result[key] = _get_llm_config(value)
+            elif isinstance(value, (dict, list)):
+                result[key] = _preprocess_building_blocks(value)
+            else:
+                result[key] = value
+        return result
+    elif isinstance(data, list):
+        return [_preprocess_building_blocks(item) for item in data]
+    return data
 
 
 def _generate_building_blocks_metadata() -> list[dict[str, Any]]:
@@ -132,18 +181,23 @@ def create_app(storage: IncrementStorage):
     def create_character(
         request: _CreateCharacterRequestSchema, response: Response
     ) -> _CreateCharacterResponse:
+        # Preprocess building blocks to replace LLM config strings with ChatOpenAI objects
+        preprocessed_blocks = _preprocess_building_blocks(
+            request.building_blocks
+        )
+
         errors = []
         try:
             if (
-                request.building_blocks.get(BLOCK_TYPE_FIELD_NAME)
+                preprocessed_blocks.get(BLOCK_TYPE_FIELD_NAME)
                 == SimplifiedBlocks.get_block_type()
             ):
                 building_blocks = SimplifiedBlocks.model_validate(
-                    request.building_blocks
+                    preprocessed_blocks
                 )
             else:
                 building_blocks = _building_block_creator.validate_python(
-                    request.building_blocks
+                    preprocessed_blocks
                 )
         except ValidationError as e:
             errors.append(e)
@@ -175,6 +229,78 @@ def create_app(storage: IncrementStorage):
         """Return metadata about all available building blocks (cached at startup)."""
         return {"building_blocks": blocks_metadata}
 
+    @app_.get("/simplified_templates")
+    def get_simplified_templates():
+        """Return example SimplifiedBlocks configurations."""
+
+        # Template 1: Level 1 Wizard (minimal config)
+        wizard_l1 = SimplifiedBlocks(
+            classes=Classes(class_levels={Class.WIZARD: 1})
+        )
+
+        # Template 2: Level 3 Wizard
+        wizard_l3 = SimplifiedBlocks(
+            classes=Classes(class_levels={Class.WIZARD: 3})
+        )
+
+        # Template 3: Level 5 Sorcerer
+        sorcerer_l5 = SimplifiedBlocks(
+            classes=Classes(class_levels={Class.SORCERER: 5})
+        )
+
+        return {
+            "templates": [
+                {
+                    "name": "Level 1 Wizard",
+                    "description": "Minimal configuration with only class specified",
+                    "config": wizard_l1.model_dump(
+                        exclude={"blocks"}, exclude_unset=True, mode="json"
+                    ),
+                    "config_with_defaults": wizard_l1.model_dump(
+                        exclude={"blocks"}, mode="json"
+                    ),
+                },
+                {
+                    "name": "Level 3 Wizard",
+                    "description": "Mid-level wizard with standard defaults",
+                    "config": wizard_l3.model_dump(
+                        exclude={"blocks"}, exclude_unset=True, mode="json"
+                    ),
+                    "config_with_defaults": wizard_l3.model_dump(
+                        exclude={"blocks"}, mode="json"
+                    ),
+                },
+                {
+                    "name": "Level 5 Sorcerer",
+                    "description": "Mid-level sorcerer caster",
+                    "config": sorcerer_l5.model_dump(
+                        exclude={"blocks"}, exclude_unset=True, mode="json"
+                    ),
+                    "config_with_defaults": sorcerer_l5.model_dump(
+                        exclude={"blocks"}, mode="json"
+                    ),
+                },
+            ]
+        }
+
+    @app_.post("/format_simplified")
+    def format_simplified(request: dict[str, Any], show_defaults: bool = True):
+        """Validate and reformat SimplifiedBlocks config with or without defaults.
+
+        This endpoint preserves user changes while toggling default value display.
+        """
+
+        try:
+            simplified = SimplifiedBlocks.model_validate(request)
+            if show_defaults:
+                return simplified.model_dump(exclude={"blocks"}, mode="json")
+            else:
+                return simplified.model_dump(
+                    exclude={"blocks"}, exclude_unset=True, mode="json"
+                )
+        except ValidationError as e:
+            raise HTTPException(status_code=422, detail=str(e))
+
     @app_.get("/health")
     def health():
         return {"status": "ok"}
@@ -192,6 +318,11 @@ def create_app(storage: IncrementStorage):
     @app_.get("/blocks")
     def blocks_page():
         return RedirectResponse("/static/building_blocks.html")
+
+    # Redirect to builder page
+    @app_.get("/builder")
+    def builder_page():
+        return RedirectResponse("/static/builder.html")
 
     return app_
 
