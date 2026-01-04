@@ -55,17 +55,11 @@ function initEditor() {
 // Setup event listeners
 function setupEventListeners() {
     const showDefaultsToggle = document.getElementById('showDefaultsToggle');
-    const validateBtn = document.getElementById('validateBtn');
-    const formatBtn = document.getElementById('formatBtn');
-    const clearBtn = document.getElementById('clearBtn');
     const buildBtn = document.getElementById('buildBtn');
     const saveBtn = document.getElementById('saveBtn');
     const loadBtn = document.getElementById('loadBtn');
 
     showDefaultsToggle.addEventListener('change', toggleDefaults);
-    validateBtn.addEventListener('click', () => validateJSON());
-    formatBtn.addEventListener('click', formatJSON);
-    clearBtn.addEventListener('click', clearEditor);
     buildBtn.addEventListener('click', buildCharacter);
     saveBtn.addEventListener('click', saveConfiguration);
     loadBtn.addEventListener('click', loadConfiguration);
@@ -137,23 +131,6 @@ function validateJSON() {
         statusDiv.className = 'validation-status error';
         statusDiv.textContent = `✗ ${error.message}`;
         return false;
-    }
-}
-
-// Format JSON
-function formatJSON() {
-    try {
-        const json = JSON.parse(editor.getValue());
-        editor.setValue(JSON.stringify(json, null, 2));
-    } catch (error) {
-        alert('Cannot format invalid JSON');
-    }
-}
-
-// Clear editor
-function clearEditor() {
-    if (confirm('Clear all configuration?')) {
-        loadDefaultConfig();
     }
 }
 

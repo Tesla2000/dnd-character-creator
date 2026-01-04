@@ -26,7 +26,7 @@ from frozendict import frozendict
 class TestSimplifiedBuilder:
     def test_default_values_removal_all_defaults(self):
         """Test that all default values are excluded when nothing is customized."""
-        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
+        classes = Classes(class_levels={Class.WIZARD: 1})
         blocks = SimplifiedBlocks(classes=classes)
         blocks = SimplifiedBlocks.model_validate(blocks.model_dump())
         result = blocks.model_dump(context={EXCLUDE_FACTORY_DEFAULTS: True})
@@ -34,7 +34,7 @@ class TestSimplifiedBuilder:
 
     def test_default_values_removal_with_custom_stats_priority(self):
         """Test that all default values are excluded when nothing is customized."""
-        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
+        classes = Classes(class_levels={Class.WIZARD: 1})
         default_priority = CLASS_TO_STATS_PRIORITY[Class.WIZARD]
         custom_priority = (
             Statistic.INTELLIGENCE,
@@ -64,7 +64,7 @@ class TestSimplifiedBuilder:
 
     def test_default_values_removal_with_custom_stats_priorities(self):
         """Test that all default values are excluded when nothing is customized."""
-        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
+        classes = Classes(class_levels={Class.WIZARD: 1})
         default_priority = CLASS_TO_STATS_PRIORITY[Class.WIZARD]
         custom_priority = (
             Statistic.INTELLIGENCE,
@@ -100,7 +100,7 @@ class TestSimplifiedBuilder:
 
     def test_default_values_removal_with_custom_race_assigner(self):
         """Test that custom race_assigner is preserved in the diff."""
-        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
+        classes = Classes(class_levels={Class.WIZARD: 1})
 
         # Provide a specific race instead of random
         custom_race_assigner = RaceAssigner(
@@ -147,7 +147,7 @@ class TestSimplifiedBuilder:
 
     def test_roundtrip_validation(self):
         """Test that difference dict can be used to reconstruct the object."""
-        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
+        classes = Classes(class_levels={Class.WIZARD: 1})
         blocks = SimplifiedBlocks(classes=classes)
 
         # Get the difference (should be empty for all defaults)
