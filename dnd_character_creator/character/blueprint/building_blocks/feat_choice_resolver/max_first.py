@@ -14,11 +14,29 @@ from dnd_character_creator.character.blueprint.building_blocks.stats_priority im
     StatsPriority,
 )
 from dnd_character_creator.character.feature.feats import FeatName
+from pydantic import Field
 
 
 class MaxFirstResolver(FeatChoiceResolver):
-    priority: StatsPriority
-    then: Union[RandomFeatChoiceResolver, AIFeatChoiceResolver]
+    """Prioritizes maxing the highest priority stat before choosing other feats.
+
+    Checks if the highest priority stat is below its cap and selects Ability Score
+    Improvement if so. Otherwise, delegates to the fallback resolver (random or AI).
+
+    Example:
+        >>> resolver = MaxFirstResolver(
+        ...     priority=StatsPriority((Statistic.STR, ...)),
+        ...     then=RandomFeatChoiceResolver()
+        ... )
+        >>> # Will choose ASI if STR < cap, otherwise random feat
+    """
+
+    priority: StatsPriority = Field(
+        description="Ability score priority order for determining which stat to max"
+    )
+    then: Union[RandomFeatChoiceResolver, AIFeatChoiceResolver] = Field(
+        description="Fallback resolver to use when highest priority stat is already maxed"
+    )
 
     def _select_from_available(
         self, available: list[FeatName], blueprint: Blueprint

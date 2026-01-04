@@ -10,6 +10,7 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
 )
 from dnd_character_creator.character.magical_item.item import MagicalItem
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class MagicalItemChooserBase(BuildingBlock, ABC):
@@ -29,14 +30,30 @@ class MagicalItemChooserBase(BuildingBlock, ABC):
 
     model_config = ConfigDict(frozen=True)
 
-    n_common: int = 0
-    n_uncommon: int = 0
-    n_rare: int = 0
-    n_very_rare: int = 0
-    n_legendary: int = 0
-    n_artifact: int = 0
-    n_unique: int = 0
-    n_mistery: int = 0
+    n_common: int = Field(
+        default=0, description="Number of common magical items to select"
+    )
+    n_uncommon: int = Field(
+        default=0, description="Number of uncommon magical items to select"
+    )
+    n_rare: int = Field(
+        default=0, description="Number of rare magical items to select"
+    )
+    n_very_rare: int = Field(
+        default=0, description="Number of very rare magical items to select"
+    )
+    n_legendary: int = Field(
+        default=0, description="Number of legendary magical items to select"
+    )
+    n_artifact: int = Field(
+        default=0, description="Number of artifact magical items to select"
+    )
+    n_unique: int = Field(
+        default=0, description="Number of unique magical items to select"
+    )
+    n_mistery: int = Field(
+        default=0, description="Number of mystery magical items to select"
+    )
 
     @staticmethod
     def _add_items(

@@ -5,12 +5,15 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.choices.alignment import Alignment
+from pydantic import Field
 
 
 class AlignmentAssigner(BuildingBlock):
     """Assigns an alignment to the character."""
 
-    alignment: Alignment
+    alignment: Alignment = Field(
+        description="Character's moral and ethical alignment"
+    )
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the alignment difference."""

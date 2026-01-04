@@ -5,6 +5,7 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.character.feature.feature import Feature
+from pydantic import Field
 
 
 class FeatureAssigner(BuildingBlock):
@@ -36,7 +37,9 @@ class FeatureAssigner(BuildingBlock):
         >>> asi_assigner = FeatureAssigner(feature=asi)
     """
 
-    feature: Feature
+    feature: Feature = Field(
+        description="Character feature to assign (ability, trait, or stat boost)"
+    )
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Apply the feature to the blueprint.

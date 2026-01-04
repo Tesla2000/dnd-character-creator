@@ -5,6 +5,7 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.choices.equipment_creation.weapons import WeaponName
+from pydantic import Field
 
 
 class WeaponAdder(BuildingBlock):
@@ -20,7 +21,9 @@ class WeaponAdder(BuildingBlock):
         ... ])  # Character will have longsword and 2 daggers
     """
 
-    weapon: WeaponName
+    weapon: WeaponName = Field(
+        description="Weapon to add to character's inventory"
+    )
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Add the weapon to the existing weapons tuple.

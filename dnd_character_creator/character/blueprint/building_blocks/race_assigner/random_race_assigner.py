@@ -9,10 +9,16 @@ from dnd_character_creator.character.blueprint.building_blocks.race_assigner.bas
 )
 from dnd_character_creator.character.race.race import Race
 from dnd_character_creator.character.race.subraces import RACE_TO_SUBRACES
+from pydantic import Field
 
 
 class RandomRaceAssigner(BaseRaceAssigner):
-    seed: Optional[int] = None
+    """Building block that randomly assigns a race and subrace to a character."""
+
+    seed: Optional[int] = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
 
     def _get_race_and_subrace(self) -> RaceSubracePair:
         random.seed(self.seed)

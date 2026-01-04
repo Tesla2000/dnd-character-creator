@@ -11,10 +11,20 @@ from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from dnd_character_creator.other_profficiencies import WeaponProficiency
 from dnd_character_creator.skill_proficiency import Skill
 from frozendict import frozendict
+from pydantic import Field
 
 
 class LevelIncrementer(BuildingBlock):
-    class_: Class
+    """Building block that increments a character's level in a specific class.
+
+    Handles multiclass level progression with validation that total class levels
+    don't exceed character level, and automatically grants ability score improvements
+    at appropriate levels (4, 8, 12, 16, 19 for wizards/sorcerers).
+    """
+
+    class_: Class = Field(
+        description="The character class to increment level for"
+    )
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         existing_classes = dict(blueprint.classes)

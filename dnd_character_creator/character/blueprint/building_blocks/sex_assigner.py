@@ -5,12 +5,13 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.choices.sex import Sex
+from pydantic import Field
 
 
 class SexAssigner(BuildingBlock):
     """Assigns a sex to the character."""
 
-    sex: Sex
+    sex: Sex = Field(description="Character's biological sex")
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the sex difference."""

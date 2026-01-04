@@ -4,12 +4,13 @@ from dnd_character_creator.character.blueprint.blueprint import Blueprint
 from dnd_character_creator.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
+from pydantic import Field
 
 
 class NameAssigner(BuildingBlock):
     """Assigns a name to the character."""
 
-    name: str
+    name: str = Field(description="Character's full name")
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Yield the name difference."""

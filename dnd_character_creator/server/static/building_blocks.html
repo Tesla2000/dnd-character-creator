@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Character Creator - Building Blocks</title>
+    <style>
+        /* Simple, clean CSS styling */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .block-card {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .block-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        .block-type-label {
+            color: #007bff;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        .block-description {
+            color: #666;
+            margin: 10px 0;
+            font-style: italic;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #007bff;
+            white-space: pre-line;
+        }
+        .fields-section {
+            margin-top: 15px;
+        }
+        .field {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 3px solid #007bff;
+            border-radius: 3px;
+        }
+        .field-name {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .field-type {
+            color: #888;
+            font-size: 0.9em;
+        }
+        .field-description {
+            margin-top: 5px;
+            color: #555;
+            white-space: pre-line;
+        }
+        .field-default {
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .category-filter {
+            margin: 20px 0;
+        }
+        .category-btn {
+            margin: 5px;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        .category-btn:hover {
+            background: #e9ecef;
+        }
+        .category-btn.active {
+            background: #007bff;
+            color: white;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+        .count {
+            color: #666;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>D&D Character Creator - Available Building Blocks</h1>
+
+    <input type="text" id="search" class="search-box" placeholder="Search building blocks by name or description...">
+
+    <div id="category-filter" class="category-filter">
+        <button class="category-btn active" data-category="all">All</button>
+        <button class="category-btn" data-category="assigner">Assigners</button>
+        <button class="category-btn" data-category="resolver">Resolvers</button>
+        <button class="category-btn" data-category="chooser">Choosers</button>
+        <button class="category-btn" data-category="level">Level Up</button>
+        <button class="category-btn" data-category="builder">Builders</button>
+    </div>
+
+    <div class="count" id="count"></div>
+
+    <div id="blocks-container">
+        <div class="loading">Loading building blocks...</div>
+    </div>
+
+    <script>
+        // Fetch and display building blocks
+        let allBlocks = [];
+
+        async function loadBlocks() {
+            try {
+                const response = await fetch('/building_blocks');
+                const data = await response.json();
+                allBlocks = data.building_blocks;
+                displayBlocks(allBlocks);
+            } catch (error) {
+                document.getElementById('blocks-container').innerHTML =
+                    '<div class="no-results">Error loading building blocks: ' + error.message + '</div>';
+            }
+        }
+
+        function displayBlocks(blocks) {
+            const container = document.getElementById('blocks-container');
+            const countElement = document.getElementById('count');
+
+            countElement.textContent = `Showing ${blocks.length} building block${blocks.length !== 1 ? 's' : ''}`;
+
+            if (blocks.length === 0) {
+                container.innerHTML = '<div class="no-results">No building blocks found matching your search.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            blocks.forEach(block => {
+                const card = createBlockCard(block);
+                container.appendChild(card);
+            });
+        }
+
+        function createBlockCard(block) {
+            const card = document.createElement('div');
+            card.className = 'block-card';
+
+            let fieldsHTML = '';
+            const fieldEntries = Object.entries(block.fields);
+
+            if (fieldEntries.length > 0) {
+                for (const [fieldName, fieldInfo] of fieldEntries) {
+                    fieldsHTML += `
+                        <div class="field">
+                            <div class="field-name">${escapeHtml(fieldName)}</div>
+                            <div class="field-type">Type: ${escapeHtml(fieldInfo.type)}</div>
+                            ${fieldInfo.description ? `<div class="field-description">${escapeHtml(fieldInfo.description)}</div>` : ''}
+                            ${fieldInfo.default !== undefined && fieldInfo.default !== null ? `<div class="field-default">Default: ${escapeHtml(JSON.stringify(fieldInfo.default))}</div>` : ''}
+                        </div>
+                    `;
+                }
+            } else {
+                fieldsHTML = '<div style="color: #999; font-style: italic;">No configurable fields</div>';
+            }
+
+            card.innerHTML = `
+                <div class="block-name">${escapeHtml(block.name)}</div>
+                <div class="block-type-label">Block Type: ${escapeHtml(block.block_type)}</div>
+                ${block.description ? `<div class="block-description">${escapeHtml(block.description)}</div>` : ''}
+                <div class="fields-section">
+                    <strong>Fields:</strong>
+                    ${fieldsHTML}
+                </div>
+            `;
+
+            return card;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Search functionality
+        document.getElementById('search').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = allBlocks.filter(block =>
+                block.name.toLowerCase().includes(searchTerm) ||
+                block.description.toLowerCase().includes(searchTerm) ||
+                block.block_type.toLowerCase().includes(searchTerm)
+            );
+            displayBlocks(filtered);
+        });
+
+        // Category filter
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Update active state
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Clear search box
+                document.getElementById('search').value = '';
+
+                const category = e.target.dataset.category;
+                if (category === 'all') {
+                    displayBlocks(allBlocks);
+                } else {
+                    const filtered = allBlocks.filter(block =>
+                        block.name.toLowerCase().includes(category.toLowerCase())
+                    );
+                    displayBlocks(filtered);
+                }
+            });
+        });
+
+        // Load blocks on page load
+        loadBlocks();
+    </script>
+</body>
+</html>

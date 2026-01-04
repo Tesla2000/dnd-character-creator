@@ -13,12 +13,20 @@ from dnd_character_creator.character.race.subrace_stats.subrace_to_stats import 
 from dnd_character_creator.character.race.subraces import RACE_TO_SUBRACES
 from dnd_character_creator.character.race.subraces import Subrace
 from pydantic import BaseModel
+from pydantic import Field
 from pydantic import model_validator
 
 
 class RaceSubracePair(BaseModel):
-    race: Race
-    subrace: Subrace
+    """Represents a valid combination of race and subrace for character creation.
+
+    Ensures that the selected subrace belongs to the selected race through validation.
+    """
+
+    race: Race = Field(description="The character's primary race")
+    subrace: Subrace = Field(
+        description="The subrace, must be valid for the selected race"
+    )
 
     @model_validator(mode="after")
     def _check_subrace_correctness(self) -> Self:

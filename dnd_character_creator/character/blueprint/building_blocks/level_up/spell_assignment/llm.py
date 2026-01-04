@@ -11,6 +11,7 @@ from dnd_character_creator.choices.class_creation.character_class import Class
 from langchain_openai import ChatOpenAI
 from pydantic import ConfigDict
 from pydantic import create_model
+from pydantic import Field
 
 
 class LLMSpellAssigner(SpellAssigner):
@@ -30,9 +31,14 @@ class LLMSpellAssigner(SpellAssigner):
 
     model_config = ConfigDict(frozen=True)
 
-    class_: Class
-    llm: ChatOpenAI
-    character_description: Optional[str] = None
+    class_: Class = Field(description="Character class for spell assignment")
+    llm: ChatOpenAI = Field(
+        description="Language model for making AI-powered decisions"
+    )
+    character_description: Optional[str] = Field(
+        default=None,
+        description="Additional character context for AI spell selection",
+    )
 
     def _select_spells(
         self,

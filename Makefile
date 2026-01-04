@@ -13,4 +13,10 @@ git_add:
 uv:
 	uv sync
 
-.PHONY: setup
+generate-schema:
+	python scripts/generate_schema.py
+
+dev-setup: setup generate-schema
+	@echo "Development environment ready"
+
+.PHONY: setup generate-schema dev-setup

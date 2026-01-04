@@ -74,13 +74,28 @@ class AIAllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
         AnyEquipmentChooser,
         Union[NullBlock, MaxIfNotMaxedResolver],
         AIAllNonStatChoicesResolver,
-    ] = Field(alias="blocks")
+    ] = Field(
+        description="Ordered building blocks: stat resolver, equipment chooser, optional feat resolver, and non-stat choices resolver",
+    )
 
 
 class AIAllNonStatChoicesResolver(BuildingBlock):
+    """AI-powered resolver for non-stat character choices (languages, skills, feats, tools).
+
+    Handles all non-stat character choices in a single AI call, making coherent
+    decisions across languages, skill proficiencies, feats, and tool proficiencies.
+    Used internally by AIAllChoicesResolver after stat choices are handled separately.
+
+    Example:
+        >>> llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
+        >>> resolver = AIAllNonStatChoicesResolver(llm=llm)
+    """
+
     model_config = ConfigDict(frozen=True)
 
-    llm: ChatOpenAI
+    llm: ChatOpenAI = Field(
+        description="Language model for making AI-powered decisions"
+    )
 
     formatter: BlueprintFormatter = Field(
         default_factory=BlueprintFormatter,

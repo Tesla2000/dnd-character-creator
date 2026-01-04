@@ -5,6 +5,7 @@ from dnd_character_creator.character.blueprint.building_blocks.building_block im
     BuildingBlock,
 )
 from dnd_character_creator.character.feature.feats import FeatName
+from pydantic import Field
 
 
 class FeatAdder(BuildingBlock):
@@ -21,7 +22,7 @@ class FeatAdder(BuildingBlock):
         ... ])  # Character will have all three feats
     """
 
-    feat: FeatName
+    feat: FeatName = Field(description="Feat to add to character's feat list")
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Add the feat to the existing feat tuple.

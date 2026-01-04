@@ -11,6 +11,7 @@ from dnd_character_creator.character.blueprint.building_blocks.magical_item_choo
 from dnd_character_creator.character.magical_item.items import MAGICAL_ITEMS
 from dnd_character_creator.character.magical_item.level import Level
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class RandomMagicalItemChooser(MagicalItemChooserBase):
@@ -30,7 +31,10 @@ class RandomMagicalItemChooser(MagicalItemChooserBase):
 
     model_config = ConfigDict(frozen=True)
 
-    seed: int | None = None
+    seed: int | None = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
 
     def get_change(self, blueprint: Blueprint) -> Blueprint:
         """Select magical items by rarity level using random selection.

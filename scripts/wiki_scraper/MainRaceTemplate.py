@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from dnd_character_creator.character.race import RaceStatistics
+from dnd_character_creator.character.race.subrace_stats.race_statistics import (
+    RaceStatistics,
+)
 from dnd_character_creator.choices.language import Language
 from dnd_character_creator.other_profficiencies import GamingSet
 from dnd_character_creator.other_profficiencies import MusicalInstrument

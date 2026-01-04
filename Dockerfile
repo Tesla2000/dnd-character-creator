@@ -8,4 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY dnd_character_creator ./dnd_character_creator
 COPY scraped_data ./scraped_data
 
+COPY scripts/generate_schema.py ./scripts/
+RUN python scripts/generate_schema.py
+
 CMD ["dnd_character_creator.server.handler.handler"]

@@ -9,6 +9,7 @@ from dnd_character_creator.character.blueprint.building_blocks.stats_priority im
 )
 from dnd_character_creator.choices.stats_creation.statistic import Statistic
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class PriorityStatChoiceResolver(StatChoiceResolver):
@@ -39,7 +40,9 @@ class PriorityStatChoiceResolver(StatChoiceResolver):
 
     model_config = ConfigDict(frozen=True)
 
-    priority: StatsPriority
+    priority: StatsPriority = Field(
+        description="Ability scores ranked by priority for stat increase allocation"
+    )
 
     def select_stats_to_increase(
         self, blueprint: Blueprint

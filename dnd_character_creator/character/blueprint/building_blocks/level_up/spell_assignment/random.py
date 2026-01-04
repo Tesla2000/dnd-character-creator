@@ -8,8 +8,8 @@ from dnd_character_creator.character.blueprint.building_blocks.level_up.spell_as
     SpellAssigner,
 )
 from dnd_character_creator.character.spells import Spell
-from dnd_character_creator.choices.class_creation.character_class import Class
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class RandomSpellAssigner(SpellAssigner):
@@ -27,8 +27,10 @@ class RandomSpellAssigner(SpellAssigner):
 
     model_config = ConfigDict(frozen=True)
 
-    class_: Class
-    seed: Optional[int] = None
+    seed: Optional[int] = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
 
     def _select_spells(
         self,
