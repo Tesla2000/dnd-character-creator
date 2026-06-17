@@ -1,0 +1,39 @@
+{
+  "name": "dnd-character-creator",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+"workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "mounts": [
+    {
+      "source": "claude-config",
+      "target": "/root/.claude",
+      "type": "volume"
+    },
+    {
+      "source": "${localEnv:SSH_AUTH_SOCK}",
+      "target": "/ssh-agent",
+      "type": "bind"
+    }
+  ],
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "anthropic.claude-code"
+      ]
+    },
+    "jetbrains": {
+      "backend": "PyCharm",
+      "plugins": ["31507", "16313"]
+    }
+  },
+  "containerEnv": {
+    "IS_SANDBOX": "1",
+    "SSH_AUTH_SOCK": "/ssh-agent"
+  }
+}
