@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dnd.character.armor.category import ArmorCategory
+from dnd.character.armor.names import ArmorName
 from dnd.character.armor.names import SHIELD
 from dnd.character.character import Character
 from dnd.character.race.race import Race
@@ -11,7 +12,7 @@ from dnd.other_profficiencies import ArmorProficiency
 
 
 class Armor(Item):
-    name: str
+    name: ArmorName
     category: ArmorCategory
     disadvantage_on_stealth: bool
     base_ac: int
