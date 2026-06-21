@@ -1,3 +1,0 @@
-from typing import Any
-
-def update_prototype(character_wrapper: Any, character: Any, tex_text: str) -> str: ...

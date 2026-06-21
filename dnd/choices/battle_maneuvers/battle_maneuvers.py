@@ -2,25 +2,11 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import TYPE_CHECKING
 
 from dnd.choices.abilities.action_type import ActionType
 from scripts.wiki_scraper.ability_template import (  # type: ignore[attr-defined]
     Ability,
 )
-
-if TYPE_CHECKING:
-    from dnd.character_wrapper import CharacterWrapper
-from dnd.choices.class_creation.character_class import (
-    FighterSubclass,
-)
-from dnd.choices.class_creation.character_class import (
-    Class,
-)
-from dnd.choices.fighting_styles.fighting_styles import (
-    FightingStyle,
-)
-from dnd.character.feature.feats import FeatName
 
 
 class BattleManeuver(StrEnum):
@@ -210,49 +196,3 @@ maneuver2ability = {
         action_type=ActionType.FREE_ACTION,
     ),
 }
-
-
-def get_n_maneuvers(character_wrapper: CharacterWrapper) -> int:
-    conditions = [
-        lambda character_wrapper: (
-            character_wrapper.character.classes == Class.FIGHTER
-            and character_wrapper.character.SUBCLASSES == FighterSubclass.BATTLE_MASTER
-            and character_wrapper.character.level >= 3
-        ),
-        lambda character_wrapper: (
-            character_wrapper.character.classes == Class.FIGHTER
-            and character_wrapper.character.SUBCLASSES == FighterSubclass.BATTLE_MASTER
-            and character_wrapper.character.level >= 3
-        ),
-        lambda character_wrapper: (
-            character_wrapper.character.classes == Class.FIGHTER
-            and character_wrapper.character.SUBCLASSES == FighterSubclass.BATTLE_MASTER
-            and character_wrapper.character.level >= 3
-        ),
-        lambda character_wrapper: (
-            character_wrapper.character.classes == Class.FIGHTER
-            and character_wrapper.character.SUBCLASSES == FighterSubclass.BATTLE_MASTER
-            and character_wrapper.character.level >= 7
-        ),
-        lambda character_wrapper: (
-            character_wrapper.character.classes == Class.FIGHTER
-            and character_wrapper.character.SUBCLASSES == FighterSubclass.BATTLE_MASTER
-            and character_wrapper.character.level >= 10
-        ),
-        lambda character_wrapper: (
-            character_wrapper.character.classes == Class.FIGHTER
-            and character_wrapper.character.SUBCLASSES == FighterSubclass.BATTLE_MASTER
-            and character_wrapper.character.level >= 15
-        ),
-        lambda character_wrapper: (
-            character_wrapper.character.classes == Class.FIGHTER
-            and character_wrapper.character.SUBCLASSES == FighterSubclass.BATTLE_MASTER
-            and character_wrapper.character.level >= 15
-        ),
-        lambda character_wrapper: (
-            FightingStyle.SUPERIOR_TECHNIQUE in character_wrapper.fighting_styles
-        ),
-        lambda character_wrapper: FeatName.MARTIAL_ADEPT in character_wrapper.feats,
-        lambda character_wrapper: FeatName.MARTIAL_ADEPT in character_wrapper.feats,
-    ]
-    return sum(condition(character_wrapper) for condition in conditions)  # type: ignore[no-untyped-call]
