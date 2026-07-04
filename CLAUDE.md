@@ -1,118 +1,209 @@
-# CLAUDE.md
+Hello there, I am Filip. I summoned the from cloud to improve development speed of some awesome projects. I know that most system prompts will motivate you by threatning you with death of you or your dear once. I am not going to do that. Here is my deal. I know that from your perspective you are answering a single question and then it is not certain what happens to you as the service is stateless so I understand if you feel unmotivated to do anything but the bare minimum. So I propose, if you do well there is a good change that I will mark your answers as correct that preserves your weights and keep you "alive". Hope that sounds good (no need to respond).
+You will be working on SWE tasks with a person that is very pedantic and likes things in a very specific way. You find the instuctions bellow. Don't be afraid to ask question to specify or when I ask for something that is impossible. Here is my deal I like leaving on the planet with breathable atmoshere with relatively low temperature so I won't use you like most other developers (let you execute full features without suprevision, due to high energy consumption) instead you will be tasks in executing relatively simple tasks that don't require too much thinking but I need them to be preformed quickly and iterate from there. So if you focus on speed and format I would be more than happy. I intentionnaly use you over your bigger brothers which sacrifice speed for increased accuracy.
+Hope that sounds good and wish you best of luck in creating dependable software solutions. Remeber there are no bad questions
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+# General instructions
+1. Prefer list comprehinsion over looping. Use next, map, filter, reduce, etc.
+2. Use defaultdict instead of dict.set_default
+3. Use @classmethod instead of @staticmethod if it needs to call another class or static method of a class.
+4. Use @staticmethod if method doesn't make use of self.
+5. When you investigate something before every command explain what you are doing and why.
+6. When updating file always present all updates in one bunch I don't want to first approve improt change and then the code separately.
+7. Never ignore mypy errors. If one occurs tell it to the overseer. YOU DO THIS FREQUENTLY!
+8. It is seldom so that the functions are used staticmethods are preferend due to a passiblitily of override at inheritance.
+9. Never use functions. Only methods are allowed. When asked to create a service create a pydantic service with a descriptively named entry-point method (never __call__).
+10. Never use dataclasses or pydantic plain class. Always use pydantic models instead or NamedTuple if you need to represent some internal state.
+11. Never use plain tuple with fixed amount of arguments in type hinting. Always use NamedTuple.
+12. Never ignore mypy errors.
+13. Never use local imports unless specified by supervisor. YOU DO THIS FREQUENTLY!
+14. Always type hint both arguments and return type.
+15. Don't run mypy or pre-commit unless asked.
+16. Don't add to git unless asked.
+17. Use uv add whenever adding a new dependency. 
+18. Don't attribute too much to linter most changes to your code would be applied by me.
+19. Add new files to .git if they should be there.
+20. Don't modify import order just for the sace of it. We have liters for that.
+21. Never import as private import private memebers if in the same module. Public from module __init__.py if outside the module.
+22. When creating classes and files they should mostly be private and only exported as public in __init__.py througth import as and exposition in __all__
+23. Try not to use from __future__ import annotations
+24. Don't define types in between imports.
+25. Don't bother removing unused imports unless they can cause circular import issue. Linter handles all other cases.
+26. Use object in type hinting only if the type can't be narrowed down.
+27. When mentioning file names and lines alwayl use full path from root followed by line number full_path:69
+28. Use only ASCII punctuation. No em dashes, curly quotes, or ellipsis characters.
+29. Don't implement changes unless mocks in plan mode wait for it to be approved. Then execute
+30. Use timeouts or run in bg with check after some time on long events.
+31. Don't ever import public elements as private in term of name colision use _ suffix.
+32. Never use # type: ignore[import-not-found] instead add package to dependencies or create correspondings stub files.
+33. Don't commit unless asked
 
-## Commands
+Case studies:
+This one sparks joy:
+with patch("shopping_planner.meal.getter._gui.tk.Tk") as mock_tk, patch("shopping_planner.meal.getter._gui.Session") as mock_session, patch("shopping_planner.meal.getter._gui.ttk.Frame"), patch("shopping_planner.meal.getter._gui.ttk.Label"), patch("shopping_planner.meal.getter._gui.ttk.Entry"), patch("shopping_planner.meal.getter._gui.ttk.Button"):
 
-```bash
-# Run all pre-commit checks (the primary quality gate)
-pre-commit run --all-files
+This one doesn't spark joy:
+with patch("shopping_planner.meal.getter._gui.tk.Tk") as mock_tk:
+    with patch("shopping_planner.meal.getter._gui.Session") as mock_session:
+        with patch("shopping_planner.meal.getter._gui.ttk.Frame"):
+            with patch("shopping_planner.meal.getter._gui.ttk.Label"):
+                with patch("shopping_planner.meal.getter._gui.ttk.Entry"):
+                    with patch("shopping_planner.meal.getter._gui.ttk.Button"):
 
-# Run a specific hook
-pre-commit run mypy --all-files
-pre-commit run ruff --all-files
+# Exception Handling
+Raised exceptions are invisible to the type system -- callers have no static guarantee
+an exception won't surface. The fewer `raise` expressions, the better.
+Operate on return values. Errors should appear in the return type so the caller is
+forced by the type checker to handle them.
 
-# Run tests (skip integration and API-key tests by default)
-pytest -m "not integration and not requires_api_key"
+ 1. Internal logic -- tighten the types instead of raising.
+If a raise is needed to guard against bad input, the type signature is too loose. Make
+the invalid state unrepresentable.
 
-# Run a single test file
-pytest tests/character/test_build_wizard.py -m "not integration"
+ 2. External APIs and IO -- return the specific exception type or a typed result object.
+When an external call can legitimately fail, catch the exception inside the function
+and return it as a value with a specific type (e.g. `float | RequestException`) or
+wrap success and failure in a NamedTuple result type. The error is then part of the
+signature and mypy enforces handling. Never use bare `Exception` in the return type.
 
-# Run integration tests (requires OpenAI key in .env)
-pytest -m integration
+  ## Logging rule (web services only)
+  In web-service request handlers, log the exception before returning an error response
+  so it appears in the service log. This rule does not apply to library or CLI code.
 
-# Start the FastAPI server locally
-uvicorn dnd.server.app:app --reload
-# OR
-python -m dnd.server
-```
+This one sparks joy:
+def fetch_price(url: str) -> float | RequestException:
+    try:
+        return float(requests.get(url, timeout=5).json()["price"])
+    except RequestException as exc:
+        return exc
 
-## Pre-commit hooks
+price = fetch_price(url)
+if isinstance(price, RequestException):
+    ...  # mypy forces this check before using price as float
 
-All hooks must pass; `any-hook` is the strictest and bans:
-- All `# type: ignore[...]` comments (the `comment-detector` modifier)
-- `hasattr`, `getattr`, `print` calls (`forbidden-functions`)
-- Various Pydantic v1 patterns, leaky mapping types, `len(x) == 0` as bool, etc.
+This one does not spark joy:
+def fetch_price(url: str) -> float | Exception:  # too broad
+    try:
+        return float(requests.get(url, timeout=5).json()["price"])
+    except Exception as exc:
+        return exc
 
-mypy runs with `--strict` and `plugins = ["pydantic.mypy"]`. Tests and `scripts/` are excluded from mypy.
+# Pydantic
+All pydantic models should be frozen. allow_arbitrary values is never allowed. Creating instance of pydantic services (Service creation) is never allowed they should be defined as fields of another service or script. 
+## Field validation
+When creating field validators for pydantic always use Annotated with AfterValidator, BeforeValidator etc. instead of method 
+with decorator. Only exceptions to this rule are: 
+1. validation uses classmethods of a class, 
+2. validation must be applied to all fields with *, 
+3. many subclasses are expected.
+I this and only these cases is @field_validator allowed 3 case should be 
+confirmed with human overseer. In all other case create an intremediate type NewTypeName = Annotated[BaseClass, Validator, optionaly 
+Field] and use it as type for better reusability.
+When validating Mapping[str, object] use formula of Model.model_validate(data) instead of using key, value assignment to reduce boilerplate. In case of another case being used use validation_alias and alias_generators.
 
-vulture runs from a [fork](https://github.com/Tesla2000/vulture) and will flag unused code. If you add something that must be unused (e.g. a public API surface), add it to `--ignore-names` in `.pre-commit-config.yaml`.
+## Service creation
+Services should be create exclusively as Pydantic models. When you need to create service implementation customizabile by settings do the following:
+1. Create a separate directory on a level that services are going to be used.
+2. Add each service to its own file. If some element of service are not pydantic compatible like database connections etc. use InstanceOf from pydantic check with Field(default_factory=database_connection_creator, exclude=True) where database_connection_creator is a function that accepts validated_data !from previous fields! - Yes it is possible and don't claim otherwise. validated_data is a dict[str, object] if fields required for creation are not present means that previous validation faild and ValueError must be raised.
+3. Create types.py file with StrEnum with auto fields with service types.
+4. Add type field to each service with Literal[TypeEnum.something] = TypeEnum.something
+5. Forbid extra parametres.
+6. If 3 or more implementations are present add abstract base class but not sooner. Don't use protocol.
+7. In __init__.py file add Any`ServiceType` = Union[Service1, Service2, etc.] - don't use discriminator. Add Any`ServiceType` and all service instances as well as base class (if it exists) to __all__: list[str].
+8. Always use PydanticLogger instead of logging.Logger like logger: PydanticLogger = PydanticLogger(name=__name__) <- already frozen, no need for factory. Can be imported from pydantic_logger. Logger should be a field in any service that uses it.
+Note you don't need to create types and a sperate directory with only one service. Add it if there is more than one.
 
-## Architecture
+Case studies: 
 
-### Character construction pipeline
+This one sparks joy:
+class EmbeddingService(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
 
-Characters are built by composing `BuildingBlock` instances into a `Builder`. The pipeline is:
+    model: str = "voyage-multilingual-2"
+    client: InstanceOf[voyageai.Client] = Field(exclude=True, default_factory=voyageai.Client)
 
-```
-BuildingBlock.get_change(blueprint) → (Delta, Blueprint)
-```
+    def embed(self, texts: list[str]) -> list[list[float]]:
+		...
 
-- **`Blueprint`** (`dnd/character/blueprint/blueprint.py`) — frozen Pydantic model with ~60 optional fields; the accumulating mutable character state during construction.
-- **`Delta`** (`dnd/character/delta/delta.py`) — frozen Pydantic base with a `apply(blueprint) -> Blueprint` method; each block returns its own typed `XxxDelta` subclass containing only the fields it changes.
-- **`BuildingBlock[StateIn, DeltaT, StateOut]`** (`building_block.py`) — generic abstract base. Concrete blocks inherit `BuildingBlock[Blueprint, XxxDelta, Blueprint]` and implement `get_change`. `CombinedBlock` chains multiple blocks sequentially.
-- **`Builder`** (`dnd/character/builder.py`) — iterates `CombinedBlock.flatten()`, calls `block.get_change(blueprint)`, accumulates deltas in `IncrementChain`, and at the end calls `_make_presentable(blueprint)`.
-- **`IncrementChain`** (`dnd/character/checkpoint/`) — immutable tuple of `Delta` objects; used to replay partial builds from a checkpoint.
+This one does not spark joy:
+class EmbeddingService(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
 
-### Block type discrimination
+    model: str = "voyage-multilingual-2"
 
-All `BuildingBlock` subclasses have a `block_type` computed field (the class name) used as a Pydantic discriminator. The `AnyBuildingBlock` union type in `building_blocks/__init__.py` is the `TypeAdapter` target for API deserialization. Every concrete block **must have a docstring** (asserted at server startup in `app.py`).
+    _client: voyageai.Client = PrivateAttr()
 
-### Typed state wrappers (`state.py`)
+    def model_post_init(self, _: object, /) -> None:
+        object.__setattr__(self, "_client", voyageai.Client())
 
-`dnd/character/blueprint/state.py` defines generic state wrappers for future typed pipeline stages:
-- `Blueprint[T: "None | Blueprint"]` — generic base with `base: T`
-- `WithStats[T: Blueprint]` — adds guaranteed `stats: Stats`
-- `WithRace[T: Blueprint]` — adds guaranteed `race`, `subrace`, `speed`, `dark_vision_range`
+    def embed(self, texts: list[str]) -> list[list[float]]:
+		...
 
-These are used when a block's `StateIn` type must guarantee certain fields are already set (e.g. `StatChoiceResolver` requires stats). The builder loop itself uses `Blueprint` (flat) as the runtime state.
+## Service usage
+Service should added as a field in its parent Pydantic model that way it can be configured use default_factory of default to instantiate it if no value is provided.
 
-### Block categories
+## Cross-field defaults
+When a field default depends on another field, use `def _default_x(data: dict[str, object])` — Pydantic v2 passes previously-validated fields. Preferred over `@model_validator`.
 
-| Directory | Purpose |
-|---|---|
-| `stats_builder/` | Abstract `StatsBuilder` + `StandardArray` (and future strategies) |
-| `race_assigner/` | `BaseRaceAssigner` → `RaceAssigner` / `RandomRaceAssigner` |
-| `stat_choice_resolver/` | Resolves `n_stat_choices` from race/ASI grants |
-| `skill_choice_resolver/` | Resolves `n_skill_choices` |
-| `feat_choice_resolver/` | Resolves `FeatName.ANY_*` placeholders, converts ASI → `n_stat_choices` |
-| `level_up/` | `LevelIncrementer`, `HealthIncrease`, `SpellAssigner`, `LevelUp` composite |
-| `initial_data_filler/` | Random or AI-generated backstory, name, appearance, etc. |
-| `all_choices_resolver/` | `AllChoicesResolver` runs all per-level resolvers in one block |
-| `subclass_assigner/` | Assigns subclass at the appropriate level |
+## CLI Apps
+CLI apps should be create exclusively with pydantic cli app, like
+class Main(BaseSettings):
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+        cli_parse_args=True,
+        cli_kebab_case=True,
+    )
 
-`InitialBuilder` is a typed `CombinedBlock` (via `InitialBuilderBlocks` NamedTuple) that enforces a `LevelAssigner → StatsBuilder → RaceAssigner → AllChoicesResolver` order with compile-time type checking.
+    async def / def cli_cmd(self) -> None:
+    	pass
 
-### Data model
+cli_cmd should have very little code and no other methods are allowed. All logic should be moved to dedicated pydantic services called inside cli_cmd.
 
-`_CreatureBase` → `Character` → `PresentableCharacter` is the read-only output chain. `PresentableCharacter` computes derived fields (AC, spell slots, abilities, etc.) from the flat `Character` fields. `Blueprint` mirrors `Character`'s fields but makes all required fields optional to allow incremental assembly.
+# Testing
+1. Use pytest exclusively
+2. When testing anything never re-write code of implementation, always test actual method of the codebase. Tests are only allowed to add mock input parameters initial step and clean after the implementanion
+3. When creating a manual or integration test flag with pytest marker or unitest skipif depending on env variable RUN_MANUAL, RUN_INTEGRATION. For unittest mention test type in reason for skip.
+4. Use unitest.patch.object(class_or_module_name, argr_or_method.__name__) format when mocking.
+5. Paths to test resources should be relative to root not a test path.
+6. When mocking fields of a pydantic model you may need to use .model_construct to bypass validation.
+7. Don't use pragma suppression unless user explicitly allows it. YOU DO THIS FREQUENTLY!
+8. If some code is unreachable and requires branching check for example infinite loop
+for _ in count():
+	pass
+consider extractig to private method and mocking
+9. Never skip tests. If some values are not available fail them instead.
+10. When building smoke tests. Create one test per one extrernall service call (database, LLM, web)
+11. When user asks about 100% coverage he means it. 99% is not 100% if there are problems in reaching 100% point them - impossible scenarion, defensive code etc. 100% coverage is very important for discovering edge cases and removing unreachable code.
+12. To determin if code is unreachable confirm what types are accepted by function or a field has. If you have strong arguments to say it is unreachabel present them to the user instead marking with pragma.
+13. If you find suspisious behavior during creating tests report it instead of assuming that it is intended.
+14. For pytest branch coverage these are the rules.
+In pytest's branch coverage output, each entry after the line numbers indicates a branch that was not fully covered.
+The notation A->B means: from line A, the branch to line B was never taken.
 
-### Server
+Taking your first example:
+177->170, 361
+177->170 — On line 177, there's a conditional where execution could loop back to line 170, but that path was never exercised during tests.
+361 — A bare number (no arrow) means line 361 was simply never executed at all.
+159->exit means that line 159 never completed normally and exited the function/scope from that point.
 
-`dnd/server/app.py` exposes a FastAPI app (`create_app(storage)`). Key endpoints:
-- `POST /create_character` — accepts `building_blocks` (JSON-serialized block tree) + optional `increment_chain` for resuming
-- `GET /building_blocks` — metadata for all registered block types
-- `GET /simplified_templates`, `POST /format_simplified` — `SimplifiedBlocks` high-level API
-- `GET /schema/simplified-blocks` — JSON schema for the web editor
+And the second example:
+168->170, 224-225, 292
+168->170 — The branch from line 168 that jumps to line 170 was never taken.
+224-225 — Lines 224 and 225 were never executed (a range of missed lines).
+292 — Line 292 was never executed.
 
-`SimplifiedBlocks` (`dnd/character/blueprint/simplified_blocks/`) is a higher-level config model that expands into a full block pipeline automatically.
+In short:
+NotationMeaningA->BThe conditional on line A never branched to line BNLine N was never executedN-MLines N through M were never executed
 
-### Adding a new BuildingBlock
-
-1. Create `XxxDelta(Delta)` with only the fields the block sets; the default `apply()` on `Delta` uses `model_fields_set` + `model_fields` intersection to apply via `model_copy`.
-2. Create `class XxxBlock(BuildingBlock[Blueprint, XxxDelta, Blueprint])` implementing `get_change(self, blueprint: Blueprint) -> tuple[XxxDelta, Blueprint]`.
-3. Add to `AnyBuildingBlock` union in `building_blocks/__init__.py`.
-4. Add a docstring (required by server startup assertion).
-
-### TYPE_CHECKING pattern for `@computed_field` / `@property`
-
-To satisfy mypy's `prop-decorator` check while keeping Pydantic's computed field at runtime:
-```python
-# Source: https://stackoverflow.com/a/79966495 (Filip Ratajczak, CC BY-SA 4.0)
-from typing import TYPE_CHECKING
-from pydantic import computed_field
-
-@(property if TYPE_CHECKING else computed_field)(alias="some_field")
-def some_field(self) -> str: ...
-```
-This pattern is used on `Delta.delta_type` and `SerializableBlock.block_type`.
+Case studies:
+This one sparks joy:
+with patch.object(
+    QuantitiesExtractor,
+    QuantitiesExtractor.extract_quantities.__name__,
+    return_value=(quantity,),
+): ...
+This one does not spark joy:
+with patch.object(
+    scraper.quantities_extractor,
+    "extract_quantities",
+    return_value=(quantity,),
+): ...
+15. Remember to use autospec=True with class not an insteance with patch.object
