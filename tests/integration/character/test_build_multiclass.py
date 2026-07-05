@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 
-from collections.abc import Callable
 
 import pytest
 from dnd.character.blueprint.building_blocks import (
@@ -69,7 +68,8 @@ from dnd.character.blueprint.building_blocks.level_up.health_increase import (
     HealthIncreaseAverage,
 )
 from dnd.character.blueprint.building_blocks.level_up.level_incrementer import (
-    LevelIncrementer,
+    SorcererLevelIncrementer,
+    WizardLevelIncrementer,
 )
 from dnd.character.blueprint.building_blocks.level_up.level_up import (
     LevelUp,
@@ -78,14 +78,16 @@ from dnd.character.blueprint.building_blocks.level_up.level_up_multiple import (
     LevelUpMultiple,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    LLMSpellAssigner,
-)
-from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    RandomSpellAssigner,
+    SorcererLLMSpellAssigner,
+    SorcererRandomSpellAssigner,
+    WizardLLMSpellAssigner,
+    WizardRandomSpellAssigner,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base import (
-    SpellAssigner,
+    SorcererSpellAssigner,
+    WizardSpellAssigner,
 )
+from dnd.character.blueprint.state import HasSorcererLevel, HasWizardLevel
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
@@ -111,6 +113,10 @@ from dnd.choices.stats_creation.statistic import Statistic
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
+
+SpellAssigner = (
+    WizardSpellAssigner[HasWizardLevel] | SorcererSpellAssigner[HasSorcererLevel]
+)
 load_dotenv()
 
 
@@ -143,7 +149,9 @@ class TestBuildMulticlass:
         """Create standard level up block for wizard tests."""
         return LevelUp(
             blocks=(
-                LevelIncrementer(class_=class_),
+                WizardLevelIncrementer()
+                if class_ == Class.WIZARD
+                else SorcererLevelIncrementer(),
                 HealthIncreaseAverage(class_=class_),
                 spell_assigner,
                 all_choices_resolver,
@@ -158,7 +166,8 @@ class TestBuildMulticlass:
         initial_data_filler: InitialDataFiller,
         wiz_subclass_assigner: SubclassAssigner,
         sorc_subclass_assigner: SubclassAssigner,
-        spell_assigner_creator: Callable[[Class], SpellAssigner],
+        wizard_spell_assigner: SpellAssigner,
+        sorc_spell_assigner: SpellAssigner,
     ):
         """Build a wizard character with the specified magical item chooser.
 
@@ -173,12 +182,12 @@ class TestBuildMulticlass:
         level_up_wizard = cls._create_level_up(
             all_choices_resolver,
             class_=Class.WIZARD,
-            spell_assigner=spell_assigner_creator(Class.WIZARD),
+            spell_assigner=wizard_spell_assigner,
         )
         level_up_sorc = cls._create_level_up(
             all_choices_resolver,
             class_=Class.SORCERER,
-            spell_assigner=spell_assigner_creator(Class.SORCERER),
+            spell_assigner=sorc_spell_assigner,
         )
 
         builder = (
@@ -193,7 +202,6 @@ class TestBuildMulticlass:
                             subrace=cls.SUBRACE,
                         ),
                         all_choices_resolver,
-                        level_up_wizard,
                     )
                 )
             )
@@ -246,7 +254,8 @@ class TestBuildMulticlass:
                 class_=self.SORC_CLASS,
                 available_subclasses=self.sorc_subclasses,
             ),
-            lambda class_: RandomSpellAssigner(class_=class_),
+            WizardRandomSpellAssigner(),
+            SorcererRandomSpellAssigner(),
         ).character
 
         assert isinstance(wizard, Character)
@@ -306,8 +315,11 @@ class TestBuildMulticlass:
                 available_subclasses=self.sorc_subclasses,
                 llm=llm,
             ),
-            lambda class_: LLMSpellAssigner(
-                class_=class_,
+            WizardLLMSpellAssigner(
+                llm=spells_llm,
+                character_description=character_description,
+            ),
+            SorcererLLMSpellAssigner(
                 llm=spells_llm,
                 character_description=character_description,
             ),

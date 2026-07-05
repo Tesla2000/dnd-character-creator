@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dnd.character.blueprint.building_blocks import (
+from dnd.character.blueprint.building_blocks.building_block import (
     CombinedBlock,
 )
 from dnd.character.blueprint.building_blocks.level_up.level_up import (

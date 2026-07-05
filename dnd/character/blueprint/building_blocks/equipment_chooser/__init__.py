@@ -12,16 +12,17 @@ from dnd.character.blueprint.building_blocks.equipment_chooser.random import (
 from dnd.character.blueprint.building_blocks.get_discriminator import (
     get_discriminator,
 )
+from dnd.character.blueprint.state import HasEquipmentChoices
 from pydantic import Tag
 
 AnyEquipmentChooser = Annotated[
     Union[
         Annotated[
-            RandomEquipmentChooser,
+            RandomEquipmentChooser[HasEquipmentChoices],
             Tag(RandomEquipmentChooser.get_block_type()),
         ],
         Annotated[
-            AIEquipmentChooser,
+            AIEquipmentChooser[HasEquipmentChoices],
             Tag(AIEquipmentChooser.get_block_type()),
         ],
     ],

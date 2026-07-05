@@ -42,7 +42,10 @@ _logger = logging.getLogger(__name__)
 class Builder:
     def __init__(
         self,
-        building_blocks: tuple[BuildingBlock | CombinedBlock, ...] = (),
+        building_blocks: tuple[
+            BuildingBlock[BlueprintProtocol, Delta, BlueprintProtocol] | CombinedBlock,
+            ...,
+        ] = (),
         increment_storage: IncrementStorage | None = None,
         logger: Logger = _logger,
     ):
@@ -104,7 +107,11 @@ class Builder:
         finally:
             self._increment_storage.save_chain(chain_id, increment_chain)
 
-    def add(self, building_block: BuildingBlock | CombinedBlock) -> Self:
+    def add(
+        self,
+        building_block: BuildingBlock[BlueprintProtocol, Delta, BlueprintProtocol]
+        | CombinedBlock,
+    ) -> Self:
         return type(self)(
             self._building_blocks + (building_block,), self._increment_storage
         )

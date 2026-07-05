@@ -12,16 +12,30 @@ from dnd.character.blueprint.building_blocks.skill_choice_resolver.ai import (
 from dnd.character.blueprint.building_blocks.skill_choice_resolver.random import (
     RandomSkillChoiceResolver,
 )
+from dnd.character.blueprint.state import HasNSkillChoices
+from dnd.character.blueprint.state import HasSkillProficiencies
+from dnd.character.blueprint.state import HasSkillsToChooseFrom
 from pydantic import Tag
+from typing_protocol_intersection import ProtocolIntersection
 
 AnySkillChoiceResolver = Annotated[
     Union[
         Annotated[
-            RandomSkillChoiceResolver,
+            RandomSkillChoiceResolver[
+                ProtocolIntersection[
+                    ProtocolIntersection[HasNSkillChoices, HasSkillsToChooseFrom],
+                    HasSkillProficiencies,
+                ]
+            ],
             Tag(RandomSkillChoiceResolver.get_block_type()),
         ],
         Annotated[
-            AISkillChoiceResolver,
+            AISkillChoiceResolver[
+                ProtocolIntersection[
+                    ProtocolIntersection[HasNSkillChoices, HasSkillsToChooseFrom],
+                    HasSkillProficiencies,
+                ]
+            ],
             Tag(AISkillChoiceResolver.get_block_type()),
         ],
     ],

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 
-from collections.abc import Callable
 
 import pytest
 from dnd.character.blueprint.building_blocks import (
@@ -54,7 +53,7 @@ from dnd.character.blueprint.building_blocks.level_up.health_increase import (
     HealthIncreaseAverage,
 )
 from dnd.character.blueprint.building_blocks.level_up.level_incrementer import (
-    LevelIncrementer,
+    SorcererLevelIncrementer,
 )
 from dnd.character.blueprint.building_blocks.level_up.level_up import (
     LevelUp,
@@ -63,11 +62,12 @@ from dnd.character.blueprint.building_blocks.level_up.level_up_multiple import (
     LevelUpMultiple,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    RandomSpellAssigner,
+    SorcererRandomSpellAssigner,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base import (
-    SpellAssigner,
+    SorcererSpellAssigner,
 )
+from dnd.character.blueprint.state import HasSorcererLevel
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
@@ -87,6 +87,8 @@ from dnd.choices.class_creation.character_class import (
     SorcererSubclass,
 )
 from dnd.choices.stats_creation.statistic import Statistic
+
+SpellAssigner = SorcererSpellAssigner[HasSorcererLevel]
 
 
 @pytest.mark.integration
@@ -117,7 +119,7 @@ class TestBuildSorcerer:
     ) -> LevelUp:
         return LevelUp(
             blocks=(
-                LevelIncrementer(class_=class_),
+                SorcererLevelIncrementer(),
                 HealthIncreaseAverage(class_=class_),
                 spell_assigner,
                 all_choices_resolver,
@@ -131,12 +133,12 @@ class TestBuildSorcerer:
         all_choices_resolver: AllChoicesResolverBase,
         initial_data_filler: InitialDataFiller,
         subclass_assigner: SubclassAssigner,
-        spell_assigner_creator: Callable[[Class], SpellAssigner],
+        spell_assigner: SpellAssigner,
     ) -> object:
         level_up = cls._create_level_up(
             all_choices_resolver,
             class_=cls.CLASS,
-            spell_assigner=spell_assigner_creator(cls.CLASS),
+            spell_assigner=spell_assigner,
         )
 
         builder = (
@@ -151,7 +153,6 @@ class TestBuildSorcerer:
                             subrace=cls.SUBRACE,
                         ),
                         all_choices_resolver,
-                        level_up,
                     )
                 )
             )
@@ -190,7 +191,7 @@ class TestBuildSorcerer:
                 class_=self.CLASS,
                 available_subclasses=self.SUBCLASSES,
             ),
-            lambda class_: RandomSpellAssigner(class_=class_),
+            SorcererRandomSpellAssigner(),
         ).character
 
         assert isinstance(sorcerer, Character)
