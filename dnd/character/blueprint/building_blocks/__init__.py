@@ -316,44 +316,126 @@ from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver im
 from dnd.character.blueprint.building_blocks.weapon_adder import (
     WeaponAdder,
 )
+from dnd.character.blueprint.state import BlueprintProtocol
+from dnd.character.blueprint.state import HasClasses
+from dnd.character.blueprint.state import HasEquipmentChoices
+from dnd.character.blueprint.state import HasFeats
+from dnd.character.blueprint.state import HasLanguages
+from dnd.character.blueprint.state import HasLevel
+from dnd.character.blueprint.state import HasNSkillChoices
+from dnd.character.blueprint.state import HasNStatChoices
+from dnd.character.blueprint.state import HasOtherEquipment
+from dnd.character.blueprint.state import HasSkillProficiencies
+from dnd.character.blueprint.state import HasSkillsToChooseFrom
+from dnd.character.blueprint.state import HasSorcererLevel
+from dnd.character.blueprint.state import HasStats
+from dnd.character.blueprint.state import HasStatsCup
+from dnd.character.blueprint.state import HasSubclasses
+from dnd.character.blueprint.state import HasToolProficiencies
+from dnd.character.blueprint.state import HasWeapons
+from dnd.character.blueprint.state import HasWizardLevel
 from pydantic import Tag
+from typing_protocol_intersection import ProtocolIntersection
 
 AnyBuildingBlock = Annotated[
     Union[
         Annotated[AIAllChoicesResolver, Tag("AIAllChoicesResolver")],
         Annotated[AIAllNonStatChoicesResolver, Tag("AIAllNonStatChoicesResolver")],
         Annotated[AIBaseBuilderAssigner, Tag("AIBaseBuilderAssigner")],
-        Annotated[AIEquipmentChooser, Tag("AIEquipmentChooser")],
-        Annotated[AIFeatChoiceResolver, Tag("AIFeatChoiceResolver")],
-        Annotated[AILanguageChoiceResolver, Tag("AILanguageChoiceResolver")],
+        Annotated[AIEquipmentChooser[HasEquipmentChoices], Tag("AIEquipmentChooser")],
+        Annotated[
+            AIFeatChoiceResolver[
+                ProtocolIntersection[
+                    ProtocolIntersection[HasFeats, HasStats], HasClasses
+                ]
+            ],
+            Tag("AIFeatChoiceResolver"),
+        ],
+        Annotated[
+            AILanguageChoiceResolver[HasLanguages], Tag("AILanguageChoiceResolver")
+        ],
         Annotated[AIMagicalItemChooser, Tag("AIMagicalItemChooser")],
         Annotated[AIPartialBuilderAssigner, Tag("AIPartialBuilderAssigner")],
-        Annotated[AISkillChoiceResolver, Tag("AISkillChoiceResolver")],
-        Annotated[AIStatChoiceResolver, Tag("AIStatChoiceResolver")],
-        Annotated[AISubclassAssigner, Tag("AISubclassAssigner")],
         Annotated[
-            AIToolProficiencyChoiceResolver, Tag("AIToolProficiencyChoiceResolver")
+            AISkillChoiceResolver[
+                ProtocolIntersection[
+                    ProtocolIntersection[HasNSkillChoices, HasSkillsToChooseFrom],
+                    HasSkillProficiencies,
+                ]
+            ],
+            Tag("AISkillChoiceResolver"),
         ],
-        Annotated[ArtificerSubclassAssigner, Tag("ArtificerSubclassAssigner")],
-        Annotated[BarbarianSubclassAssigner, Tag("BarbarianSubclassAssigner")],
-        Annotated[BardSubclassAssigner, Tag("BardSubclassAssigner")],
-        Annotated[ClericSubclassAssigner, Tag("ClericSubclassAssigner")],
-        Annotated[DruidSubclassAssigner, Tag("DruidSubclassAssigner")],
-        Annotated[FighterSubclassAssigner, Tag("FighterSubclassAssigner")],
-        Annotated[MonkSubclassAssigner, Tag("MonkSubclassAssigner")],
-        Annotated[PaladinSubclassAssigner, Tag("PaladinSubclassAssigner")],
-        Annotated[RangerSubclassAssigner, Tag("RangerSubclassAssigner")],
-        Annotated[RogueSubclassAssigner, Tag("RogueSubclassAssigner")],
-        Annotated[SorcererSubclassAssigner, Tag("SorcererSubclassAssigner")],
-        Annotated[WarlockSubclassAssigner, Tag("WarlockSubclassAssigner")],
-        Annotated[WizardSubclassAssigner, Tag("WizardSubclassAssigner")],
-        Annotated[AgeAssigner, Tag("AgeAssigner")],
-        Annotated[AlignmentAssigner, Tag("AlignmentAssigner")],
+        Annotated[
+            AIStatChoiceResolver[ProtocolIntersection[HasStats, HasNStatChoices]],
+            Tag("AIStatChoiceResolver"),
+        ],
+        Annotated[
+            AISubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("AISubclassAssigner"),
+        ],
+        Annotated[
+            AIToolProficiencyChoiceResolver[HasToolProficiencies],
+            Tag("AIToolProficiencyChoiceResolver"),
+        ],
+        Annotated[
+            ArtificerSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("ArtificerSubclassAssigner"),
+        ],
+        Annotated[
+            BarbarianSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("BarbarianSubclassAssigner"),
+        ],
+        Annotated[
+            BardSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("BardSubclassAssigner"),
+        ],
+        Annotated[
+            ClericSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("ClericSubclassAssigner"),
+        ],
+        Annotated[
+            DruidSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("DruidSubclassAssigner"),
+        ],
+        Annotated[
+            FighterSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("FighterSubclassAssigner"),
+        ],
+        Annotated[
+            MonkSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("MonkSubclassAssigner"),
+        ],
+        Annotated[
+            PaladinSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("PaladinSubclassAssigner"),
+        ],
+        Annotated[
+            RangerSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("RangerSubclassAssigner"),
+        ],
+        Annotated[
+            RogueSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("RogueSubclassAssigner"),
+        ],
+        Annotated[
+            SorcererSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("SorcererSubclassAssigner"),
+        ],
+        Annotated[
+            WarlockSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("WarlockSubclassAssigner"),
+        ],
+        Annotated[
+            WizardSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("WizardSubclassAssigner"),
+        ],
+        Annotated[AgeAssigner[BlueprintProtocol], Tag("AgeAssigner")],
+        Annotated[AlignmentAssigner[BlueprintProtocol], Tag("AlignmentAssigner")],
         Annotated[AllChoicesResolver, Tag("AllChoicesResolver")],
-        Annotated[BackgroundAssigner, Tag("BackgroundAssigner")],
+        Annotated[BackgroundAssigner[BlueprintProtocol], Tag("BackgroundAssigner")],
         Annotated[CombinedBlock, Tag("CombinedBlock")],
-        Annotated[EquipmentAdder, Tag("EquipmentAdder")],
-        Annotated[FeatAdder, Tag("FeatAdder")],
+        Annotated[EquipmentAdder[HasOtherEquipment], Tag("EquipmentAdder")],
+        Annotated[FeatAdder[HasFeats], Tag("FeatAdder")],
         Annotated[FeatureAssigner, Tag("FeatureAssigner")],
         Annotated[HealthIncreaseAverage, Tag("HealthIncreaseAverage")],
         Annotated[HealthIncreaseRandom, Tag("HealthIncreaseRandom")],
@@ -362,74 +444,134 @@ AnyBuildingBlock = Annotated[
             HealthIncreaseRandomRerollOnes, Tag("HealthIncreaseRandomRerollOnes")
         ],
         Annotated[InitialBuilder, Tag("InitialBuilder")],
-        Annotated[WizardLLMSpellAssigner, Tag("WizardLLMSpellAssigner")],
-        Annotated[SorcererLLMSpellAssigner, Tag("SorcererLLMSpellAssigner")],
-        Annotated[LevelAssigner, Tag("LevelAssigner")],
-        Annotated[WizardLevelIncrementer, Tag("WizardLevelIncrementer")],
-        Annotated[SorcererLevelIncrementer, Tag("SorcererLevelIncrementer")],
+        Annotated[
+            WizardLLMSpellAssigner[HasWizardLevel], Tag("WizardLLMSpellAssigner")
+        ],
+        Annotated[
+            SorcererLLMSpellAssigner[HasSorcererLevel], Tag("SorcererLLMSpellAssigner")
+        ],
+        Annotated[LevelAssigner[BlueprintProtocol], Tag("LevelAssigner")],
+        Annotated[WizardLevelIncrementer[HasLevel], Tag("WizardLevelIncrementer")],
+        Annotated[SorcererLevelIncrementer[HasLevel], Tag("SorcererLevelIncrementer")],
         Annotated[LevelUp, Tag("LevelUp")],
         Annotated[LevelUpMultiple, Tag("LevelUpMultiple")],
-        Annotated[MaxFirstResolver, Tag("MaxFirstResolver")],
-        Annotated[MaxIfNotMaxedResolver, Tag("MaxIfNotMaxedResolver")],
-        Annotated[NameAssigner, Tag("NameAssigner")],
-        Annotated[NullBlock, Tag("NullBlock")],
-        Annotated[OptionalSubclassAssigner, Tag("OptionalSubclassAssigner")],
-        Annotated[PriorityStatChoiceResolver, Tag("PriorityStatChoiceResolver")],
-        Annotated[AarakocraRaceAssigner, Tag("AarakocraRaceAssigner")],
-        Annotated[AasimarRaceAssigner, Tag("AasimarRaceAssigner")],
-        Annotated[BugbearRaceAssigner, Tag("BugbearRaceAssigner")],
-        Annotated[CentaurRaceAssigner, Tag("CentaurRaceAssigner")],
-        Annotated[ChangelingRaceAssigner, Tag("ChangelingRaceAssigner")],
-        Annotated[DragonbornRaceAssigner, Tag("DragonbornRaceAssigner")],
-        Annotated[DwarfRaceAssigner, Tag("DwarfRaceAssigner")],
-        Annotated[ElfRaceAssigner, Tag("ElfRaceAssigner")],
-        Annotated[FirbolgRaceAssigner, Tag("FirbolgRaceAssigner")],
-        Annotated[GenasiAirRaceAssigner, Tag("GenasiAirRaceAssigner")],
-        Annotated[GenasiEarthRaceAssigner, Tag("GenasiEarthRaceAssigner")],
-        Annotated[GenasiFireRaceAssigner, Tag("GenasiFireRaceAssigner")],
-        Annotated[GenasiWaterRaceAssigner, Tag("GenasiWaterRaceAssigner")],
-        Annotated[GnomeRaceAssigner, Tag("GnomeRaceAssigner")],
-        Annotated[GoblinRaceAssigner, Tag("GoblinRaceAssigner")],
-        Annotated[GoliathRaceAssigner, Tag("GoliathRaceAssigner")],
-        Annotated[GrungRaceAssigner, Tag("GrungRaceAssigner")],
-        Annotated[HalfElfRaceAssigner, Tag("HalfElfRaceAssigner")],
-        Annotated[HalflingRaceAssigner, Tag("HalflingRaceAssigner")],
-        Annotated[HalfOrcRaceAssigner, Tag("HalfOrcRaceAssigner")],
-        Annotated[HobgoblinRaceAssigner, Tag("HobgoblinRaceAssigner")],
-        Annotated[HumanRaceAssigner, Tag("HumanRaceAssigner")],
-        Annotated[KalashtarRaceAssigner, Tag("KalashtarRaceAssigner")],
-        Annotated[KenkuRaceAssigner, Tag("KenkuRaceAssigner")],
-        Annotated[KoboldRaceAssigner, Tag("KoboldRaceAssigner")],
-        Annotated[LeoninRaceAssigner, Tag("LeoninRaceAssigner")],
-        Annotated[LizardfolkRaceAssigner, Tag("LizardfolkRaceAssigner")],
-        Annotated[MinotaurRaceAssigner, Tag("MinotaurRaceAssigner")],
-        Annotated[OrcRaceAssigner, Tag("OrcRaceAssigner")],
-        Annotated[SatyrRaceAssigner, Tag("SatyrRaceAssigner")],
-        Annotated[ShifterRaceAssigner, Tag("ShifterRaceAssigner")],
-        Annotated[TabaxiRaceAssigner, Tag("TabaxiRaceAssigner")],
-        Annotated[TieflingRaceAssigner, Tag("TieflingRaceAssigner")],
-        Annotated[TortleRaceAssigner, Tag("TortleRaceAssigner")],
-        Annotated[VerdanRaceAssigner, Tag("VerdanRaceAssigner")],
-        Annotated[WarforgedRaceAssigner, Tag("WarforgedRaceAssigner")],
-        Annotated[YuanTiPurebloodRaceAssigner, Tag("YuanTiPurebloodRaceAssigner")],
-        Annotated[RandomEquipmentChooser, Tag("RandomEquipmentChooser")],
-        Annotated[RandomFeatChoiceResolver, Tag("RandomFeatChoiceResolver")],
-        Annotated[RandomInitialDataFiller, Tag("RandomInitialDataFiller")],
-        Annotated[RandomLanguageChoiceResolver, Tag("RandomLanguageChoiceResolver")],
-        Annotated[RandomMagicalItemChooser, Tag("RandomMagicalItemChooser")],
-        Annotated[RandomRaceAssigner, Tag("RandomRaceAssigner")],
-        Annotated[RaceAssigner, Tag("RaceAssigner")],
-        Annotated[RandomSkillChoiceResolver, Tag("RandomSkillChoiceResolver")],
-        Annotated[WizardRandomSpellAssigner, Tag("WizardRandomSpellAssigner")],
-        Annotated[SorcererRandomSpellAssigner, Tag("SorcererRandomSpellAssigner")],
-        Annotated[RandomSubclassAssigner, Tag("RandomSubclassAssigner")],
         Annotated[
-            RandomToolProficiencyChoiceResolver,
+            MaxFirstResolver[
+                ProtocolIntersection[
+                    ProtocolIntersection[
+                        ProtocolIntersection[HasFeats, HasStats], HasClasses
+                    ],
+                    HasStatsCup,
+                ]
+            ],
+            Tag("MaxFirstResolver"),
+        ],
+        Annotated[
+            MaxIfNotMaxedResolver[
+                ProtocolIntersection[
+                    ProtocolIntersection[
+                        ProtocolIntersection[HasFeats, HasStats], HasClasses
+                    ],
+                    HasStatsCup,
+                ]
+            ],
+            Tag("MaxIfNotMaxedResolver"),
+        ],
+        Annotated[NameAssigner[BlueprintProtocol], Tag("NameAssigner")],
+        Annotated[NullBlock[BlueprintProtocol], Tag("NullBlock")],
+        Annotated[
+            OptionalSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("OptionalSubclassAssigner"),
+        ],
+        Annotated[
+            PriorityStatChoiceResolver[ProtocolIntersection[HasStats, HasNStatChoices]],
+            Tag("PriorityStatChoiceResolver"),
+        ],
+        Annotated[AarakocraRaceAssigner[HasStats], Tag("AarakocraRaceAssigner")],
+        Annotated[AasimarRaceAssigner[HasStats], Tag("AasimarRaceAssigner")],
+        Annotated[BugbearRaceAssigner[HasStats], Tag("BugbearRaceAssigner")],
+        Annotated[CentaurRaceAssigner[HasStats], Tag("CentaurRaceAssigner")],
+        Annotated[ChangelingRaceAssigner[HasStats], Tag("ChangelingRaceAssigner")],
+        Annotated[DragonbornRaceAssigner[HasStats], Tag("DragonbornRaceAssigner")],
+        Annotated[DwarfRaceAssigner[HasStats], Tag("DwarfRaceAssigner")],
+        Annotated[ElfRaceAssigner[HasStats], Tag("ElfRaceAssigner")],
+        Annotated[FirbolgRaceAssigner[HasStats], Tag("FirbolgRaceAssigner")],
+        Annotated[GenasiAirRaceAssigner[HasStats], Tag("GenasiAirRaceAssigner")],
+        Annotated[GenasiEarthRaceAssigner[HasStats], Tag("GenasiEarthRaceAssigner")],
+        Annotated[GenasiFireRaceAssigner[HasStats], Tag("GenasiFireRaceAssigner")],
+        Annotated[GenasiWaterRaceAssigner[HasStats], Tag("GenasiWaterRaceAssigner")],
+        Annotated[GnomeRaceAssigner[HasStats], Tag("GnomeRaceAssigner")],
+        Annotated[GoblinRaceAssigner[HasStats], Tag("GoblinRaceAssigner")],
+        Annotated[GoliathRaceAssigner[HasStats], Tag("GoliathRaceAssigner")],
+        Annotated[GrungRaceAssigner[HasStats], Tag("GrungRaceAssigner")],
+        Annotated[HalfElfRaceAssigner[HasStats], Tag("HalfElfRaceAssigner")],
+        Annotated[HalflingRaceAssigner[HasStats], Tag("HalflingRaceAssigner")],
+        Annotated[HalfOrcRaceAssigner[HasStats], Tag("HalfOrcRaceAssigner")],
+        Annotated[HobgoblinRaceAssigner[HasStats], Tag("HobgoblinRaceAssigner")],
+        Annotated[HumanRaceAssigner[HasStats], Tag("HumanRaceAssigner")],
+        Annotated[KalashtarRaceAssigner[HasStats], Tag("KalashtarRaceAssigner")],
+        Annotated[KenkuRaceAssigner[HasStats], Tag("KenkuRaceAssigner")],
+        Annotated[KoboldRaceAssigner[HasStats], Tag("KoboldRaceAssigner")],
+        Annotated[LeoninRaceAssigner[HasStats], Tag("LeoninRaceAssigner")],
+        Annotated[LizardfolkRaceAssigner[HasStats], Tag("LizardfolkRaceAssigner")],
+        Annotated[MinotaurRaceAssigner[HasStats], Tag("MinotaurRaceAssigner")],
+        Annotated[OrcRaceAssigner[HasStats], Tag("OrcRaceAssigner")],
+        Annotated[SatyrRaceAssigner[HasStats], Tag("SatyrRaceAssigner")],
+        Annotated[ShifterRaceAssigner[HasStats], Tag("ShifterRaceAssigner")],
+        Annotated[TabaxiRaceAssigner[HasStats], Tag("TabaxiRaceAssigner")],
+        Annotated[TieflingRaceAssigner[HasStats], Tag("TieflingRaceAssigner")],
+        Annotated[TortleRaceAssigner[HasStats], Tag("TortleRaceAssigner")],
+        Annotated[VerdanRaceAssigner[HasStats], Tag("VerdanRaceAssigner")],
+        Annotated[WarforgedRaceAssigner[HasStats], Tag("WarforgedRaceAssigner")],
+        Annotated[
+            YuanTiPurebloodRaceAssigner[HasStats], Tag("YuanTiPurebloodRaceAssigner")
+        ],
+        Annotated[
+            RandomEquipmentChooser[HasEquipmentChoices], Tag("RandomEquipmentChooser")
+        ],
+        Annotated[
+            RandomFeatChoiceResolver[
+                ProtocolIntersection[
+                    ProtocolIntersection[HasFeats, HasStats], HasClasses
+                ]
+            ],
+            Tag("RandomFeatChoiceResolver"),
+        ],
+        Annotated[RandomInitialDataFiller, Tag("RandomInitialDataFiller")],
+        Annotated[
+            RandomLanguageChoiceResolver[HasLanguages],
+            Tag("RandomLanguageChoiceResolver"),
+        ],
+        Annotated[RandomMagicalItemChooser, Tag("RandomMagicalItemChooser")],
+        Annotated[RandomRaceAssigner[HasStats], Tag("RandomRaceAssigner")],
+        Annotated[RaceAssigner[HasStats], Tag("RaceAssigner")],
+        Annotated[
+            RandomSkillChoiceResolver[
+                ProtocolIntersection[
+                    ProtocolIntersection[HasNSkillChoices, HasSkillsToChooseFrom],
+                    HasSkillProficiencies,
+                ]
+            ],
+            Tag("RandomSkillChoiceResolver"),
+        ],
+        Annotated[
+            WizardRandomSpellAssigner[HasWizardLevel], Tag("WizardRandomSpellAssigner")
+        ],
+        Annotated[
+            SorcererRandomSpellAssigner[HasSorcererLevel],
+            Tag("SorcererRandomSpellAssigner"),
+        ],
+        Annotated[
+            RandomSubclassAssigner[ProtocolIntersection[HasClasses, HasSubclasses]],
+            Tag("RandomSubclassAssigner"),
+        ],
+        Annotated[
+            RandomToolProficiencyChoiceResolver[HasToolProficiencies],
             Tag("RandomToolProficiencyChoiceResolver"),
         ],
-        Annotated[SexAssigner, Tag("SexAssigner")],
-        Annotated[StandardArray, Tag("StandardArray")],
-        Annotated[WeaponAdder, Tag("WeaponAdder")],
+        Annotated[SexAssigner[BlueprintProtocol], Tag("SexAssigner")],
+        Annotated[StandardArray[BlueprintProtocol], Tag("StandardArray")],
+        Annotated[WeaponAdder[HasWeapons], Tag("WeaponAdder")],
     ],
     get_discriminator(),
 ]

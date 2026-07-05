@@ -44,6 +44,7 @@ from dnd.other_profficiencies import MusicalInstrument
 from dnd.other_profficiencies import ToolProficiency
 from dnd.skill_proficiency import Skill
 from langchain_openai import ChatOpenAI
+from typing_protocol_intersection import ProtocolIntersection
 from pydantic import ConfigDict
 from pydantic import Field
 
@@ -73,7 +74,15 @@ class AIAllChoicesResolver(AllChoicesResolverBase, CombinedBlock):
     blocks: tuple[
         AnyStatChoiceResolver,
         AnyEquipmentChooser,
-        NullBlock | MaxIfNotMaxedResolver,
+        NullBlock[BlueprintProtocol]
+        | MaxIfNotMaxedResolver[
+            ProtocolIntersection[
+                ProtocolIntersection[
+                    ProtocolIntersection[HasFeats, HasStats], HasClasses
+                ],
+                HasStatsCup,
+            ]
+        ],
         AIAllNonStatChoicesResolver,
     ] = Field(
         description="Ordered building blocks: stat resolver, equipment chooser, optional feat resolver, and non-stat choices resolver",

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 
-from collections.abc import Callable
 
 import pytest
 from dnd.character.blueprint.building_blocks import (
@@ -54,7 +53,7 @@ from dnd.character.blueprint.building_blocks.level_up.health_increase import (
     HealthIncreaseAverage,
 )
 from dnd.character.blueprint.building_blocks.level_up.level_incrementer import (
-    LevelIncrementer,
+    WizardLevelIncrementer,
 )
 from dnd.character.blueprint.building_blocks.level_up.level_up import (
     LevelUp,
@@ -63,11 +62,12 @@ from dnd.character.blueprint.building_blocks.level_up.level_up_multiple import (
     LevelUpMultiple,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    RandomSpellAssigner,
+    WizardRandomSpellAssigner,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base import (
-    SpellAssigner,
+    WizardSpellAssigner,
 )
+from dnd.character.blueprint.state import HasWizardLevel
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
@@ -87,6 +87,8 @@ from dnd.choices.class_creation.character_class import (
     WizardSubclass,
 )
 from dnd.choices.stats_creation.statistic import Statistic
+
+SpellAssigner = WizardSpellAssigner[HasWizardLevel]
 
 
 @pytest.mark.integration
@@ -114,7 +116,7 @@ class TestBuildWizard:
     ) -> LevelUp:
         return LevelUp(
             blocks=(
-                LevelIncrementer(class_=class_),
+                WizardLevelIncrementer(),
                 HealthIncreaseAverage(class_=class_),
                 spell_assigner,
                 all_choices_resolver,
@@ -128,12 +130,12 @@ class TestBuildWizard:
         all_choices_resolver: AllChoicesResolverBase,
         initial_data_filler: InitialDataFiller,
         subclass_assigner: SubclassAssigner,
-        spell_assigner_creator: Callable[[Class], SpellAssigner],
+        spell_assigner: SpellAssigner,
     ) -> object:
         level_up = cls._create_level_up(
             all_choices_resolver,
             class_=cls.CLASS,
-            spell_assigner=spell_assigner_creator(cls.CLASS),
+            spell_assigner=spell_assigner,
         )
 
         builder = (
@@ -186,7 +188,7 @@ class TestBuildWizard:
                 class_=self.CLASS,
                 available_subclasses=self.SUBCLASSES,
             ),
-            lambda class_: RandomSpellAssigner(class_=class_),
+            WizardRandomSpellAssigner(),
         ).character
 
         assert isinstance(wizard, Character)

@@ -31,6 +31,10 @@ from dnd.character.blueprint.building_blocks.level_up.level_incrementer import (
     SorcererLevelIncrementer,
     WizardLevelIncrementer,
 )
+from dnd.character.blueprint.building_blocks.level_up.level_up import LevelUp
+from dnd.character.blueprint.building_blocks.race_assigner.random_race_assigner import (
+    RandomRaceAssigner,
+)
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
     base as spell_base,
 )
@@ -56,15 +60,14 @@ from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
 from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
     CanNotAssign,
 )
+from dnd.character.blueprint.building_blocks.subclass_assigner.optional import (
+    OptionalSubclassAssigner,
+)
 from dnd.character.blueprint.building_blocks.subclass_assigner.random import (
     RandomSubclassAssigner,
 )
 from dnd.character.blueprint.building_blocks.subclass_assigner.subclass_assigner import (
     WizardSubclassAssigner,
-)
-from dnd.character.blueprint.simplified_blocks.simplified_blocks import (
-    Classes,
-    SimplifiedBlocks,
 )
 from dnd.character.blueprint.state import Blueprint
 from dnd.character.builder import Builder
@@ -73,8 +76,11 @@ from dnd.choices.class_creation.character_class import Class, WizardSubclass
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
-from frozendict import frozendict
 from pydantic import ValidationError
+
+from dnd.character.blueprint.building_blocks.race_assigner.base_race_assigner import (
+    RaceSubracePair,
+)
 
 
 def _exhaust(gen: Generator) -> object:
@@ -217,17 +223,6 @@ class TestBaseRaceAssignerDoubleRace:
 
 
 @pytest.mark.unit
-class TestLevelUpNoRace:
-    def test_get_change_without_race_raises(self) -> None:
-        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
-        simplified = SimplifiedBlocks(classes=classes)
-        level_up = simplified.level_ups[0]
-        gen = level_up.get_change(Blueprint())
-        with pytest.raises(ValueError, match="Race must be chosen before leveling up"):
-            next(gen)
-
-
-@pytest.mark.unit
 class TestSorcererLevelIncrementer:
     def test_first_level_grants_proficiencies(self) -> None:
         state = Blueprint()
@@ -289,25 +284,6 @@ class TestSorcererSpellAssigner:
         state = _exhaust(SorcererLevelIncrementer().get_change(state))
         assigner = SorcererRandomSpellAssigner()
         result = _exhaust(assigner.get_change(state))
-        assert result is not None
-
-
-@pytest.mark.unit
-class TestLevelUpWithRace:
-    def test_get_change_with_race_passes_through(self) -> None:
-        classes = Classes(class_levels=frozendict({Class.WIZARD: 1}))
-        simplified = SimplifiedBlocks(classes=classes)
-        level_up = simplified.level_ups[0]
-        state = Blueprint()
-        state = _exhaust(LevelAssigner(level=1).get_change(state))
-        state = _exhaust(StandardArray(stats_priority=_PRIORITY).get_change(state))
-        state = _exhaust(
-            RaceAssigner(
-                race=Race.HUMAN,
-                subrace=SubraceName.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK,
-            ).get_change(state)
-        )
-        result = _exhaust(level_up.get_change(state))
         assert result is not None
 
 
@@ -406,3 +382,53 @@ class TestRandomMagicalItemChooserNoItems:
         chooser = RandomMagicalItemChooser(n_common=1)
         with pytest.raises(ValueError, match="No common magical items available"):
             _exhaust(chooser.get_change(Blueprint()))
+
+
+@pytest.mark.unit
+class TestLevelIncrementerClassProperty:
+    def test_wizard_class_property(self) -> None:
+        assert WizardLevelIncrementer().class_ == Class.WIZARD
+
+    def test_sorcerer_class_property(self) -> None:
+        assert SorcererLevelIncrementer().class_ == Class.SORCERER
+
+
+@pytest.mark.unit
+class TestLevelUpRequiresRace:
+    def test_raises_without_race(self) -> None:
+        level_up = LevelUp.model_construct(blocks=None)
+        with pytest.raises(ValueError, match="Race must be chosen before leveling up"):
+            next(level_up.get_change(Blueprint()))
+
+
+@pytest.mark.unit
+class TestRandomRaceAssigner:
+    def test_returns_valid_race_subrace_pair(self) -> None:
+        assigner = RandomRaceAssigner(seed=42)
+        pair = assigner._get_race_and_subrace()
+        assert isinstance(pair, RaceSubracePair)
+        assert isinstance(pair.race, Race)
+
+
+@pytest.mark.unit
+class TestSubclassAssignerLevelTooLow:
+    def test_raises_when_level_below_required(self) -> None:
+        state = Blueprint()
+        state = _exhaust(LevelAssigner(level=1).get_change(state))
+        state = _exhaust(WizardLevelIncrementer().get_change(state))
+        assigner = WizardSubclassAssigner(subclass=WizardSubclass.ABJURATION)
+        with pytest.raises(ValueError, match="below required level"):
+            next(assigner.get_change(state))
+
+
+@pytest.mark.unit
+class TestOptionalSubclassAssigner:
+    def test_handles_can_not_assign_gracefully(self) -> None:
+        state = Blueprint()
+        state = _exhaust(LevelAssigner(level=1).get_change(state))
+        state = _exhaust(WizardLevelIncrementer().get_change(state))
+        assigner = OptionalSubclassAssigner(
+            assigner=RandomSubclassAssigner(class_=Class.WIZARD)
+        )
+        result = _exhaust(assigner.get_change(state))
+        assert result is not None

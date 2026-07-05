@@ -47,7 +47,9 @@ class SerializableBlock(BaseModel):
 
     @classmethod
     def get_block_type(cls) -> str:
-        return cls.__name__
+        name = cls.__name__
+        bracket = name.find("[")
+        return name[:bracket] if bracket != -1 else name
 
 
 class BuildingBlock[T: BlueprintProtocol, DeltaT: Delta, Added: BlueprintProtocol](

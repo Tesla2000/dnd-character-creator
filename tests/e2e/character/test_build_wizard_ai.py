@@ -25,7 +25,7 @@ from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_if_not_max
     MaxIfNotMaxedResolver,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    LLMSpellAssigner,
+    WizardLLMSpellAssigner,
 )
 from dnd.character.blueprint.building_blocks.subclass_assigner import (
     AISubclassAssigner,
@@ -77,8 +77,7 @@ class TestBuildWizardAI(TestBuildWizard):
                     available_subclasses=self.SUBCLASSES,
                     llm=llm,
                 ),
-                lambda class_: LLMSpellAssigner(
-                    class_=class_,
+                WizardLLMSpellAssigner(
                     llm=spells_llm,
                     character_description=character_description,
                 ),

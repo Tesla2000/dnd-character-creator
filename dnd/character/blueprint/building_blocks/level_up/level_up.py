@@ -7,11 +7,12 @@ from typing import overload
 
 from typing_extensions import deprecated
 
-from dnd.character.blueprint.building_blocks import (
+from dnd.character.blueprint.building_blocks.building_block import (
     CombinedBlock,
 )
 from dnd.character.blueprint.state import Blueprint
 from dnd.character.blueprint.state import BlueprintProtocol
+from dnd.character.blueprint.state import HasLevel
 from dnd.character.blueprint.state import HasRace
 from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AnyChoiceResolver,
@@ -31,7 +32,9 @@ from pydantic import Field
 
 
 class LevelUpBlocks(NamedTuple):
-    level_increment: WizardLevelIncrementer | SorcererLevelIncrementer
+    level_increment: (
+        WizardLevelIncrementer[HasLevel] | SorcererLevelIncrementer[HasLevel]
+    )
     health_increase: AnyHealthIncrease
     spell_assigner: AnySpellAssigner
     all_choice_resolver: AnyChoiceResolver

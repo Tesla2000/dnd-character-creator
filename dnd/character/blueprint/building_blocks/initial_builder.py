@@ -17,11 +17,12 @@ from dnd.character.blueprint.building_blocks.race_assigner import (
 from dnd.character.blueprint.building_blocks.stats_builder import (
     AnyStatsBuilder,
 )
+from dnd.character.blueprint.state import BlueprintProtocol
 from pydantic import Field
 
 
 class InitialBuilderBlocks(NamedTuple):
-    level_assigner: LevelAssigner
+    level_assigner: LevelAssigner[BlueprintProtocol]
     stats_builder: AnyStatsBuilder
     race_assigner: AnyRaceAssigner
     all_choices_resolver: AnyChoiceResolver

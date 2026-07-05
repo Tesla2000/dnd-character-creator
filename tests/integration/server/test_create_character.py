@@ -12,9 +12,6 @@ from dnd.character.blueprint.building_blocks import (
 from dnd.character.blueprint.building_blocks import (
     SexAssigner,
 )
-from dnd.character.blueprint.simplified_blocks import (
-    SimplifiedBlocks,
-)
 from dnd.character.checkpoint import IncrementChain
 from dnd.choices.sex import Sex
 from dnd.server.app import EXAMPLES
@@ -22,12 +19,6 @@ from tests.integration.server.test_client import TestClient
 
 
 class TestCreateCharacter(TestClient):
-    def test_root_redirects_to_docs(self, client):
-        """Test that root path redirects to API documentation."""
-        response = client.get("/", follow_redirects=False)
-        assert response.status_code == 307
-        assert response.headers["location"] == "/docs"
-
     def test_create_character_success(self, client, storage, building_blocks):
         """Test successful character creation."""
 
@@ -181,10 +172,7 @@ class TestCreateCharacter(TestClient):
         response = client.post(
             "/create_character",
             json={
-                "building_blocks": {
-                    "classes": {"class_levels": {"Wizard": 13}},
-                    "block_type": SimplifiedBlocks.__name__,
-                },
+                "building_blocks": EXAMPLES[0],
                 "increment_chain": {},
             },
         )

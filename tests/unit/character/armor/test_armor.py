@@ -129,3 +129,22 @@ class TestArmorCalcAC:
             cost=1.0,
         )
         assert armor.calc_ac(char) == 13
+
+    def test_lizardfolk_natural_armor_floor(self) -> None:
+        char = Character(
+            **{
+                **_BASE_KWARGS,
+                "race": Race.LIZARDFOLK,
+                "subrace": SubraceName.LIZARDFOLK_LIZARDFOLK_VOLOSGUIDETOMONSTERS,
+            },
+            stats=_STATS_HIGH_DEX,
+        )
+        armor = Armor(
+            name=ArmorName.CLOTHES,
+            category=ArmorCategory.NONE,
+            disadvantage_on_stealth=False,
+            base_ac=10,
+            cost=1.0,
+        )
+        # Lizardfolk natural armor: max(base_ac + dex_mod, 13 + dex_mod) = max(13, 16) = 16
+        assert armor.calc_ac(char) == 16
