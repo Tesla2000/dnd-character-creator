@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from typing import Literal
-from typing import NamedTuple
 from typing import Never
 from typing import overload
 
@@ -31,14 +30,6 @@ from dnd.character.delta.delta import Delta
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
-from pydantic import Field
-
-
-class LevelUpBlocks(NamedTuple):
-    level_increment: WizardLevelIncrementer | SorcererLevelIncrementer
-    health_increase: AnyHealthIncrease
-    spell_assigner: AnySpellAssigner
-    all_choice_resolver: AnyChoiceResolver
 
 
 class LevelUp(BuildingBlock):
@@ -62,12 +53,18 @@ class LevelUp(BuildingBlock):
 
     type: Literal[BuildingBlockType.LEVEL_UP] = BuildingBlockType.LEVEL_UP
 
-    blocks: LevelUpBlocks = Field(
-        description="Level increment, health increase, spell assignment, and choice resolution",
-    )
+    level_increment: WizardLevelIncrementer | SorcererLevelIncrementer
+    health_increase: AnyHealthIncrease
+    spell_assigner: AnySpellAssigner
+    all_choice_resolver: AnyChoiceResolver
 
     def flatten(self) -> Generator[BuildingBlock]:
-        for block in self.blocks:
+        for block in (
+            self.level_increment,
+            self.health_increase,
+            self.spell_assigner,
+            self.all_choice_resolver,
+        ):
             yield from block.flatten()
 
     @overload

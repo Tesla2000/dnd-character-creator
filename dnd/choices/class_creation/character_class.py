@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 from typing import Union
+from typing import assert_never
 
 from frozendict import frozendict
 
@@ -216,7 +217,30 @@ AnySubclass = Union[
     WizardSubclass,
 ]
 
-# Subclass level requirements by class
-subclass_level = frozendict(
-    {class_: 2 if class_ in (Class.WIZARD,) else 3 for class_ in Class}
+
+def _subclass_level(class_: Class) -> int:
+    match class_:
+        case Class.WIZARD:
+            return 2
+        case (
+            Class.ARTIFICER
+            | Class.BARBARIAN
+            | Class.BARD
+            | Class.CLERIC
+            | Class.DRUID
+            | Class.FIGHTER
+            | Class.MONK
+            | Class.PALADIN
+            | Class.RANGER
+            | Class.ROGUE
+            | Class.SORCERER
+            | Class.WARLOCK
+        ):
+            return 3
+        case _ as never:
+            assert_never(never)
+
+
+subclass_level: frozendict[Class, int] = frozendict(
+    {class_: _subclass_level(class_) for class_ in Class}
 )

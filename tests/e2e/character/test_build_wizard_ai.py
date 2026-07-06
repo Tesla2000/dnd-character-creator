@@ -30,6 +30,7 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
 from dnd.character.blueprint.building_blocks.subclass_assigner import (
     AISubclassAssigner,
 )
+from dnd.character.builder import SuccessBuiltResult
 from dnd.character.character import Character
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
@@ -45,12 +46,12 @@ class TestBuildWizardAI(TestBuildWizard):
         spells_llm = ChatOpenAI(model="gpt-5.4-mini", temperature=0.3)
 
         all_choices_resolver = AIAllChoicesResolver(
-            blocks=(
-                PriorityStatChoiceResolver(priority=self.STATS_PRIORITY),
-                RandomEquipmentChooser(),
-                MaxIfNotMaxedResolver(priority=self.STATS_PRIORITY),
-                AIAllNonStatChoicesResolver(llm=llm),
-            )
+            stat_choice_resolver=PriorityStatChoiceResolver(
+                priority=self.STATS_PRIORITY
+            ),
+            equipment_chooser=RandomEquipmentChooser(),
+            feat_choice_resolver=MaxIfNotMaxedResolver(priority=self.STATS_PRIORITY),
+            all_non_stat_choices_resolver=AIAllNonStatChoicesResolver(llm=llm),
         )
 
         magical_item_chooser = AIMagicalItemChooser(
@@ -82,8 +83,9 @@ class TestBuildWizardAI(TestBuildWizard):
                     character_description=character_description,
                 ),
             )
+            assert isinstance(result, SuccessBuiltResult), result
             character = result.character
-            assert isinstance(character, Character), result.error
+            assert isinstance(character, Character)
             assert character.weapons
             assert character.other_equipment
             assert character.magical_items

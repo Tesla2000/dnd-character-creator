@@ -72,50 +72,44 @@ def example_building_blocks() -> tuple[BuildingBlock, ...]:
     )
     class_ = Class.WIZARD
     all_choices_resolver = AllChoicesResolver(
-        blocks=(
-            RandomLanguageChoiceResolver(),
-            RandomSkillChoiceResolver(),
-            MaxFirstResolver(
-                priority=stats_priority,
-                then=RandomFeatChoiceResolver(),
-            ),
-            RandomToolProficiencyChoiceResolver(),
-            PriorityStatChoiceResolver(priority=stats_priority),
-            RandomEquipmentChooser(),
+        language_choice_resolver=RandomLanguageChoiceResolver(),
+        skill_choice_resolver=RandomSkillChoiceResolver(),
+        feat_choice_resolver=MaxFirstResolver(
+            priority=stats_priority,
+            then=RandomFeatChoiceResolver(),
         ),
+        tool_proficiency_choice_resolver=RandomToolProficiencyChoiceResolver(),
+        stat_choice_resolver=PriorityStatChoiceResolver(priority=stats_priority),
+        equipment_chooser=RandomEquipmentChooser(),
     )
     spell_assigner: WizardRandomSpellAssigner = WizardRandomSpellAssigner()
     level_up = LevelUp(
-        blocks=(
-            WizardLevelIncrementer(),
-            HealthIncreaseAverage(class_=class_),
-            spell_assigner,
-            all_choices_resolver,
-        ),
+        level_increment=WizardLevelIncrementer(),
+        health_increase=HealthIncreaseAverage(class_=class_),
+        spell_assigner=spell_assigner,
+        all_choice_resolver=all_choices_resolver,
     )
     level = 16
     return (
         InitialBuilder(
-            blocks=(
-                LevelAssigner(level=level),
-                StandardArray(stats_priority=stats_priority),
-                HumanRaceAssigner(
-                    subrace=SubraceName.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,
+            level_assigner=LevelAssigner(level=level),
+            stats_builder=StandardArray(stats_priority=stats_priority),
+            race_assigner=HumanRaceAssigner(
+                subrace=SubraceName.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,
+            ),
+            all_choices_resolver=AllChoicesResolver(
+                language_choice_resolver=RandomLanguageChoiceResolver(),
+                skill_choice_resolver=RandomSkillChoiceResolver(),
+                feat_choice_resolver=MaxFirstResolver(
+                    priority=stats_priority,
+                    then=RandomFeatChoiceResolver(),
                 ),
-                AllChoicesResolver(
-                    blocks=(
-                        RandomLanguageChoiceResolver(),
-                        RandomSkillChoiceResolver(),
-                        MaxFirstResolver(
-                            priority=stats_priority,
-                            then=RandomFeatChoiceResolver(),
-                        ),
-                        RandomToolProficiencyChoiceResolver(),
-                        PriorityStatChoiceResolver(priority=stats_priority),
-                        RandomEquipmentChooser(),
-                    ),
+                tool_proficiency_choice_resolver=RandomToolProficiencyChoiceResolver(),
+                stat_choice_resolver=PriorityStatChoiceResolver(
+                    priority=stats_priority
                 ),
-            )
+                equipment_chooser=RandomEquipmentChooser(),
+            ),
         ),
         RandomInitialDataFiller(),
         LevelUpMultiple(blocks=tuple(level_up for _ in range(level))),

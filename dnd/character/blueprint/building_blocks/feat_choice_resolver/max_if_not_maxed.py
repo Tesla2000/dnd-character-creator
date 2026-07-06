@@ -4,8 +4,6 @@ from collections.abc import Generator
 from typing import Literal
 from typing import Never
 from typing import overload
-from typing import Protocol
-from typing import runtime_checkable
 
 from typing_extensions import deprecated
 from typing_protocol_intersection import ProtocolIntersection
@@ -17,21 +15,16 @@ from dnd.character.blueprint.building_blocks.feat_choice_resolver.base import (
     FeatChoiceResolver,
     FeatResolutionDelta,
     _FeatT,
+    _MaxFeatT,
 )
 from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
 from dnd.character.blueprint.state import BlueprintProtocol
 from dnd.character.blueprint.state import HasClasses
 from dnd.character.blueprint.state import HasNStatChoices
-from dnd.character.blueprint.state import HasStatsCup
 from dnd.character.class_levels import ClassLevels
 from dnd.character.delta.delta import Delta
 from dnd.character.feature.feats import FeatName
 from pydantic import Field
-
-
-@runtime_checkable
-class _MaxFeatT(_FeatT, HasStatsCup, Protocol):
-    pass
 
 
 class MaxIfNotMaxedResolver(FeatChoiceResolver[_MaxFeatT]):

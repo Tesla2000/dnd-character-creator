@@ -45,12 +45,12 @@ class TestBuildSorcererAI(TestBuildSorcerer):
         spells_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
 
         all_choices_resolver = AIAllChoicesResolver(
-            blocks=(
-                PriorityStatChoiceResolver(priority=self.STATS_PRIORITY),
-                RandomEquipmentChooser(),
-                MaxIfNotMaxedResolver(priority=self.STATS_PRIORITY),
-                AIAllNonStatChoicesResolver(llm=llm),
-            )
+            stat_choice_resolver=PriorityStatChoiceResolver(
+                priority=self.STATS_PRIORITY
+            ),
+            equipment_chooser=RandomEquipmentChooser(),
+            feat_choice_resolver=MaxIfNotMaxedResolver(priority=self.STATS_PRIORITY),
+            all_non_stat_choices_resolver=AIAllNonStatChoicesResolver(llm=llm),
         )
 
         magical_item_chooser = AIMagicalItemChooser(

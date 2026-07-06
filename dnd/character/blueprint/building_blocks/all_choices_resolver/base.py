@@ -32,7 +32,6 @@ from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver im
 )
 from dnd.character.blueprint.state import BlueprintProtocol
 from dnd.character.delta.delta import Delta
-from pydantic import Field
 
 
 class AllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
@@ -43,33 +42,36 @@ class AllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
     handles its specific choice type independently.
 
     Example:
-        >>> resolver = AllChoicesResolver(blocks=(
-        ...     RandomLanguageChoiceResolver(),
-        ...     RandomSkillChoiceResolver(),
-        ...     RandomFeatChoiceResolver(),
-        ...     RandomToolProficiencyChoiceResolver(),
-        ...     PriorityStatChoiceResolver(priority=stats_priority),
-        ...     RandomEquipmentChooser(),
-        ... ))
+        >>> resolver = AllChoicesResolver(
+        ...     language_choice_resolver=RandomLanguageChoiceResolver(),
+        ...     skill_choice_resolver=RandomSkillChoiceResolver(),
+        ...     feat_choice_resolver=RandomFeatChoiceResolver(),
+        ...     tool_proficiency_choice_resolver=RandomToolProficiencyChoiceResolver(),
+        ...     stat_choice_resolver=PriorityStatChoiceResolver(priority=stats_priority),
+        ...     equipment_chooser=RandomEquipmentChooser(),
+        ... )
     """
 
     type: Literal[BuildingBlockType.ALL_CHOICES_RESOLVER] = (
         BuildingBlockType.ALL_CHOICES_RESOLVER
     )
 
-    blocks: tuple[
-        AnyLanguageChoiceResolver,
-        AnySkillChoiceResolver,
-        AnyFeatChoiceResolver,
-        AnyToolProficiencyChoiceResolver,
-        AnyStatChoiceResolver,
-        AnyEquipmentChooser,
-    ] = Field(
-        description="Ordered sequence of choice resolvers: language, skill, feat, tool, stat, and equipment",
-    )
+    language_choice_resolver: AnyLanguageChoiceResolver
+    skill_choice_resolver: AnySkillChoiceResolver
+    feat_choice_resolver: AnyFeatChoiceResolver
+    tool_proficiency_choice_resolver: AnyToolProficiencyChoiceResolver
+    stat_choice_resolver: AnyStatChoiceResolver
+    equipment_chooser: AnyEquipmentChooser
 
     def flatten(self) -> Generator[BuildingBlock]:
-        for block in self.blocks:
+        for block in (
+            self.language_choice_resolver,
+            self.skill_choice_resolver,
+            self.feat_choice_resolver,
+            self.tool_proficiency_choice_resolver,
+            self.stat_choice_resolver,
+            self.equipment_chooser,
+        ):
             yield from block.flatten()
 
     def get_change(

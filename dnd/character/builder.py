@@ -24,12 +24,23 @@ from dnd.character.presentable_character import (
 )
 
 
-class BuiltResult(NamedTuple):
-    """Result of building a character with increment tracking."""
+class SuccessBuiltResult(NamedTuple):
+    """Result of a successful character build."""
 
     chain_id: uuid.UUID
-    character: PresentableCharacter | None = None
-    error: Exception | None = None
+    character: PresentableCharacter
+
+
+class FailureBuiltResult(NamedTuple):
+    """Result of a failed character build."""
+
+    chain_id: uuid.UUID
+    error: Exception
+
+
+BuiltResult = SuccessBuiltResult | FailureBuiltResult
+
+__all__ = ["SuccessBuiltResult", "FailureBuiltResult", "BuiltResult", "Builder"]
 
 
 _logger = logging.getLogger(__name__)
@@ -56,12 +67,9 @@ class Builder:
     def _init_character() -> Blueprint:
         return Blueprint()
 
-    def build(self, increment_chain: IncrementChain = IncrementChain()) -> BuiltResult:
-        """Build character with automatic increment tracking.
-
-        Returns:
-            BuildResult containing the character and chain_id for accessing increments
-        """
+    def build(
+        self, increment_chain: IncrementChain = IncrementChain()
+    ) -> SuccessBuiltResult | FailureBuiltResult:
         state: BlueprintProtocol = self._init_character()
         for delta in increment_chain.iter_deltas():
             state = delta.apply(state)
@@ -84,13 +92,13 @@ class Builder:
                         increment_chain = increment_chain.add_increment(delta)
                 except StopIteration as exc:
                     state = exc.value
-            return BuiltResult(
+            return SuccessBuiltResult(
                 character=self._make_presentable(state),
                 chain_id=chain_id,
             )
         except Exception as e:
             self._logger.error(traceback.format_exc())
-            return BuiltResult(
+            return FailureBuiltResult(
                 chain_id=chain_id,
                 error=e,
             )

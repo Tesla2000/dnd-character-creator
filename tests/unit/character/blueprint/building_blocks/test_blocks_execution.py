@@ -324,7 +324,12 @@ class TestCombinedBlockGetChange:
     def test_all_choices_resolver_get_change(self) -> None:
         resolver = AllChoicesResolver.model_construct(
             type=BuildingBlockType.ALL_CHOICES_RESOLVER,
-            blocks=(NullBlock(),) * 6,
+            language_choice_resolver=NullBlock(),
+            skill_choice_resolver=NullBlock(),
+            feat_choice_resolver=NullBlock(),
+            tool_proficiency_choice_resolver=NullBlock(),
+            stat_choice_resolver=NullBlock(),
+            equipment_chooser=NullBlock(),
         )
         result = _exhaust(resolver.get_change(Blueprint()))
         assert result is not None
@@ -332,7 +337,10 @@ class TestCombinedBlockGetChange:
     def test_initial_builder_get_change(self) -> None:
         builder = InitialBuilder.model_construct(
             type=BuildingBlockType.INITIAL_BUILDER,
-            blocks=(NullBlock(),) * 4,
+            level_assigner=NullBlock(),
+            stats_builder=NullBlock(),
+            race_assigner=NullBlock(),
+            all_choices_resolver=NullBlock(),
         )
         result = _exhaust(builder.get_change(Blueprint()))
         assert result is not None
@@ -348,7 +356,10 @@ class TestCombinedBlockGetChange:
     def test_level_up_get_change(self) -> None:
         level_up = LevelUp.model_construct(
             type=BuildingBlockType.LEVEL_UP,
-            blocks=(NullBlock(),) * 4,
+            level_increment=NullBlock(),
+            health_increase=NullBlock(),
+            spell_assigner=NullBlock(),
+            all_choice_resolver=NullBlock(),
         )
         result = _exhaust(level_up.get_change(_RacedBP()))
         assert result is not None

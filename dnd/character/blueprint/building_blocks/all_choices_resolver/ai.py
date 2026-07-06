@@ -76,17 +76,19 @@ class AIAllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
     type: Literal[BuildingBlockType.AI_ALL_CHOICES_RESOLVER] = (
         BuildingBlockType.AI_ALL_CHOICES_RESOLVER
     )
-    blocks: tuple[
-        AnyStatChoiceResolver,
-        AnyEquipmentChooser,
-        NullBlock | MaxIfNotMaxedResolver,
-        AIAllNonStatChoicesResolver,
-    ] = Field(
-        description="Ordered building blocks: stat resolver, equipment chooser, optional feat resolver, and non-stat choices resolver",
-    )
+
+    stat_choice_resolver: AnyStatChoiceResolver
+    equipment_chooser: AnyEquipmentChooser
+    feat_choice_resolver: NullBlock | MaxIfNotMaxedResolver
+    all_non_stat_choices_resolver: AIAllNonStatChoicesResolver
 
     def flatten(self) -> Generator[BuildingBlock]:
-        for block in self.blocks:
+        for block in (
+            self.stat_choice_resolver,
+            self.equipment_chooser,
+            self.feat_choice_resolver,
+            self.all_non_stat_choices_resolver,
+        ):
             yield from block.flatten()
 
     def get_change(

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Annotated
 
 from dnd.character._creature_base import _CreatureBase
@@ -28,17 +27,11 @@ from dnd.other_profficiencies import ToolProficiency
 from dnd.other_profficiencies import WeaponProficiency
 from dnd.skill_proficiency import Skill
 from dnd.character.class_levels import ClassLevels
-from frozendict import frozendict
 from pydantic import AfterValidator
+from pydantic_frozendict import PydanticFrozendict
 from pydantic import BeforeValidator
 from pydantic import Field
 from pydantic import PositiveInt
-
-
-def _conv_to_frozendict(value: object) -> object:
-    if not isinstance(value, Mapping):
-        return value
-    return frozendict(value)
 
 
 def _class_levels_to_dict(value: object) -> object:
@@ -69,9 +62,9 @@ def _feat_not_any(feat: FeatName) -> FeatName:
     return feat
 
 
-def _tool_proficiency_not_any(
-    tool: ToolProficiency | GamingSet | MusicalInstrument,
-) -> ToolProficiency | GamingSet | MusicalInstrument:
+def _tool_proficiency_not_any[T: (ToolProficiency, GamingSet, MusicalInstrument)](
+    tool: T,
+) -> T:
     if isinstance(tool, ToolProficiency) and tool == ToolProficiency.ANY_OF_YOUR_CHOICE:
         raise ValueError(
             "Character tool proficiency mustn't be any of your choice. Choose a tool"
@@ -131,10 +124,9 @@ class Character(_CreatureBase):
     level: ClassLevel
     age: PositiveInt
     classes: Annotated[
-        Mapping[Class, PositiveInt],
+        PydanticFrozendict[Class, PositiveInt],
         BeforeValidator(_class_levels_to_dict),
-        AfterValidator(_conv_to_frozendict),
-    ] = frozendict()
+    ] = PydanticFrozendict()
     race: Race
     subrace: SubraceName
     background: Background

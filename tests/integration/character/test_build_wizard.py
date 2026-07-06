@@ -79,7 +79,9 @@ from dnd.character.blueprint.building_blocks.subclass_assigner import (
 from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
     SubclassAssigner,
 )
-from dnd.character.builder import Builder, BuiltResult
+from dnd.character.builder import Builder
+from dnd.character.builder import BuiltResult
+from dnd.character.builder import SuccessBuiltResult
 from dnd.character.character import Character
 from dnd.character.checkpoint import MemoryStorage
 from dnd.character.race.race import Race
@@ -117,12 +119,10 @@ class TestBuildWizard:
         spell_assigner: SpellAssigner,
     ) -> LevelUp:
         return LevelUp(
-            blocks=(
-                WizardLevelIncrementer(),
-                HealthIncreaseAverage(class_=class_),
-                spell_assigner,
-                all_choices_resolver,
-            ),
+            level_increment=WizardLevelIncrementer(),
+            health_increase=HealthIncreaseAverage(class_=class_),
+            spell_assigner=spell_assigner,
+            all_choice_resolver=all_choices_resolver,
         )
 
     @classmethod
@@ -144,15 +144,13 @@ class TestBuildWizard:
             Builder(increment_storage=MemoryStorage())
             .add(
                 InitialBuilder(
-                    blocks=(
-                        LevelAssigner(level=cls.LEVEL),
-                        StandardArray(stats_priority=cls.STATS_PRIORITY),
-                        RaceAssigner(
-                            race=cls.RACE,
-                            subrace=cls.SUBRACE,
-                        ),
-                        all_choices_resolver,
-                    )
+                    level_assigner=LevelAssigner(level=cls.LEVEL),
+                    stats_builder=StandardArray(stats_priority=cls.STATS_PRIORITY),
+                    race_assigner=RaceAssigner(
+                        race=cls.RACE,
+                        subrace=cls.SUBRACE,
+                    ),
+                    all_choices_resolver=all_choices_resolver,
                 )
             )
             .add(initial_data_filler)
@@ -170,20 +168,20 @@ class TestBuildWizard:
             n_legendary=1,
             seed=42,
         )
-        wizard = self._build_wizard(
+        result = self._build_wizard(
             magical_item_chooser,
             AllChoicesResolver(
-                blocks=(
-                    RandomLanguageChoiceResolver(),
-                    RandomSkillChoiceResolver(),
-                    MaxFirstResolver(
-                        priority=self.STATS_PRIORITY,
-                        then=RandomFeatChoiceResolver(),
-                    ),
-                    RandomToolProficiencyChoiceResolver(),
-                    PriorityStatChoiceResolver(priority=self.STATS_PRIORITY),
-                    RandomEquipmentChooser(),
+                language_choice_resolver=RandomLanguageChoiceResolver(),
+                skill_choice_resolver=RandomSkillChoiceResolver(),
+                feat_choice_resolver=MaxFirstResolver(
+                    priority=self.STATS_PRIORITY,
+                    then=RandomFeatChoiceResolver(),
                 ),
+                tool_proficiency_choice_resolver=RandomToolProficiencyChoiceResolver(),
+                stat_choice_resolver=PriorityStatChoiceResolver(
+                    priority=self.STATS_PRIORITY
+                ),
+                equipment_chooser=RandomEquipmentChooser(),
             ),
             RandomInitialDataFiller(),
             RandomSubclassAssigner(
@@ -191,8 +189,9 @@ class TestBuildWizard:
                 available_subclasses=self.SUBCLASSES,
             ),
             WizardRandomSpellAssigner(),
-        ).character
-
+        )
+        assert isinstance(result, SuccessBuiltResult), result
+        wizard = result.character
         assert isinstance(wizard, Character)
         assert wizard.weapons
         assert wizard.other_equipment

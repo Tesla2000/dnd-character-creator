@@ -8,6 +8,8 @@ from dnd.character.blueprint.building_blocks import (
 from dnd.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
+from dnd.character.builder import FailureBuiltResult
+from dnd.character.builder import SuccessBuiltResult
 from dnd.character.checkpoint import IncrementChain
 from dnd.character.checkpoint import IncrementStorage
 from dnd.character.checkpoint import MemoryStorage
@@ -36,6 +38,7 @@ class TestRestartFromCheckpoint:
             autospec=True,
         ) as mock_add_increment:
             result = base_builder.build(truncated_chain)
+            assert isinstance(result, SuccessBuiltResult)
             assert isinstance(result.character, PresentableCharacter)
             assert mock_add_increment.call_count == n_truncated_moves
 
@@ -50,6 +53,7 @@ class TestRestartFromCheckpoint:
 
         invalid_builder = base_builder.add(ErrorBuildingBlock())
         result = invalid_builder.build()
+        assert isinstance(result, FailureBuiltResult)
         assert result.error.args[0] == error_message
         increment_chain = increment_storage.load_chain(result.chain_id)
         n_truncated_moves = 1
@@ -62,5 +66,6 @@ class TestRestartFromCheckpoint:
             autospec=True,
         ) as mock_add_increment:
             result = valid_builder.build(truncated_chain)
+            assert isinstance(result, SuccessBuiltResult)
             assert isinstance(result.character, PresentableCharacter)
             assert mock_add_increment.call_count == n_truncated_moves

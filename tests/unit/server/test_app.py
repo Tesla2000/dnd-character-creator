@@ -61,6 +61,21 @@ class TestServerApp:
         )
         assert response.status_code == 422
 
+    def test_create_character_build_failure_returns_error(
+        self, client: TestClient
+    ) -> None:
+        block = SexAssigner(sex=Sex.MALE)
+        response = client.post(
+            "/create_character",
+            json={
+                "building_blocks": [block.model_dump(mode="json")],
+                "increment_chain": IncrementChain().model_dump(mode="json"),
+            },
+        )
+        assert response.status_code == 422
+        data = response.json()
+        assert data["error"] is not None
+
     def test_create_character_stores_chain(
         self, client: TestClient, storage: MemoryStorage
     ) -> None:

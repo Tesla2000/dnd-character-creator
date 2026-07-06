@@ -5,6 +5,7 @@ from dnd.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
 from dnd.character.builder import Builder
+from dnd.character.builder import SuccessBuiltResult
 from dnd.character.checkpoint import IncrementChain
 from dnd.character.checkpoint import IncrementStorage
 from dnd.character.checkpoint import MemoryStorage
@@ -73,11 +74,18 @@ def create_app(storage: IncrementStorage) -> FastAPI:
         )
         result = builder.build(increment_chain)
         output_increment_chain = storage.load_chain(result.chain_id)
-        response.status_code = 422 if result.error else 200
+        if isinstance(result, SuccessBuiltResult):
+            response.status_code = 200
+            return _CreateCharacterResponse(
+                character=result.character,
+                increment_chain=output_increment_chain,
+                error=None,
+            )
+        response.status_code = 422
         return _CreateCharacterResponse(
-            character=result.character,
+            character=None,
             increment_chain=output_increment_chain,
-            error=str(result.error) if result.error else None,
+            error=str(result.error),
         )
 
     return app_
