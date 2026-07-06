@@ -67,6 +67,9 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     WizardSpellAssigner,
 )
+from dnd.character.blueprint.building_blocks.magical_item_chooser.base_chooser import (
+    MagicalItemChooserBase,
+)
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
@@ -76,7 +79,7 @@ from dnd.character.blueprint.building_blocks.subclass_assigner import (
 from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
     SubclassAssigner,
 )
-from dnd.character.builder import Builder
+from dnd.character.builder import Builder, BuiltResult
 from dnd.character.character import Character
 from dnd.character.checkpoint import MemoryStorage
 from dnd.character.race.race import Race
@@ -125,12 +128,12 @@ class TestBuildWizard:
     @classmethod
     def _build_wizard(
         cls,
-        magical_item_chooser: object,
+        magical_item_chooser: MagicalItemChooserBase,
         all_choices_resolver: AllChoicesResolverBase,
         initial_data_filler: InitialDataFiller,
         subclass_assigner: SubclassAssigner,
         spell_assigner: SpellAssigner,
-    ) -> object:
+    ) -> BuiltResult:
         level_up = cls._create_level_up(
             all_choices_resolver,
             class_=cls.CLASS,

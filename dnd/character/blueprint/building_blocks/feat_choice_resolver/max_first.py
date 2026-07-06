@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from typing import Literal
+from typing import Never
 from typing import overload
 from typing import Protocol
 from typing import runtime_checkable
@@ -85,9 +86,7 @@ class MaxFirstResolver(FeatChoiceResolver[_MaxFeatT]):
     @deprecated(
         "Pass a state satisfying HasFeats and HasStats for precise return typing"
     )
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]: ...
+    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
 
     def get_change[T: BlueprintProtocol](
         self, state: T

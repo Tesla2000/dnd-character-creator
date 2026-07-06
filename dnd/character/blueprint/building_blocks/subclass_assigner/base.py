@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from typing import Never
 from typing import cast
 from typing import overload
 from typing import Protocol
@@ -103,9 +104,7 @@ class SubclassAssigner(BuildingBlock):
     @deprecated(
         "Pass a state satisfying HasClasses and HasSubclasses for precise return typing"
     )
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]: ...
+    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
 
     def get_change[T: BlueprintProtocol](
         self, state: T

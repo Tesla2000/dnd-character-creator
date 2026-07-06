@@ -5,6 +5,7 @@ from __future__ import annotations
 import random
 from collections.abc import Generator
 from typing import Literal
+from typing import Never
 from typing import cast
 from typing import overload
 
@@ -71,9 +72,7 @@ class RandomSubclassAssigner(BuildingBlock):
     @deprecated(
         "Pass a state satisfying HasClasses and HasSubclasses for precise return typing"
     )
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]: ...
+    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
 
     def get_change[T: BlueprintProtocol](
         self, state: T

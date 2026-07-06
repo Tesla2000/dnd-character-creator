@@ -40,6 +40,16 @@ class TestServerApp:
         )
         assert response.status_code == 422
 
+    def test_create_character_invalid_block_type(self, client: TestClient) -> None:
+        response = client.post(
+            "/create_character",
+            json={
+                "building_blocks": [{"type": "NonExistentBlock"}],
+                "increment_chain": {},
+            },
+        )
+        assert response.status_code == 422
+
     def test_create_character_incomplete_build(self, client: TestClient) -> None:
         block = SexAssigner(sex=Sex.MALE)
         response = client.post(

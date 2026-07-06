@@ -4,6 +4,7 @@ from abc import ABC
 from abc import abstractmethod
 from collections.abc import Generator
 from typing import Literal
+from typing import Never
 from typing import cast
 from typing import ClassVar
 from typing import overload
@@ -183,9 +184,7 @@ class LevelIncrementer(BuildingBlock, ABC):
 
     @overload
     @deprecated("Pass a state satisfying HasLevel for precise return typing")
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]: ...
+    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
 
     def get_change[T: BlueprintProtocol](
         self, state: T

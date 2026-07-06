@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from typing import Never
 from typing import overload
 
 from typing_extensions import deprecated
@@ -105,9 +106,7 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
 
     @overload
     @deprecated("Pass a state satisfying HasLanguages for precise return typing")
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]: ...
+    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
 
     def get_change[T: BlueprintProtocol](
         self, state: T
