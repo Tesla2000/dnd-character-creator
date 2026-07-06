@@ -3,6 +3,7 @@ name: Build and Deploy Lambda
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 env:
   AWS_REGION: eu-central-1
@@ -26,11 +27,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::472765723468:role/dnd-deployer
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to public ECR (base image)
-        run: |
-          aws ecr-public get-login-password --region us-east-1 \
-            | docker login --username AWS --password-stdin public.ecr.aws
 
       - name: Login to Amazon ECR
         id: login-ecr
