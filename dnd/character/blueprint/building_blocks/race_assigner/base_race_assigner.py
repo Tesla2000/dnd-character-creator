@@ -145,9 +145,7 @@ class BaseRaceAssigner(BuildingBlock, ABC):
 
     @overload
     @deprecated("Pass a state satisfying HasStats for precise return typing")
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]: ...
+    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
 
     def get_change[T: BlueprintProtocol](
         self, state: T | HasRace

@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 from collections.abc import Generator
+from typing import Never
 from typing import cast
 from typing import overload
 from typing import Protocol
@@ -92,9 +93,7 @@ class SkillChoiceResolver(BuildingBlock, ABC):
     @deprecated(
         "Pass a state satisfying HasNSkillChoices, HasSkillsToChooseFrom and HasSkillProficiencies for precise return typing"
     )
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]: ...
+    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
 
     def get_change[T: BlueprintProtocol](
         self, state: T

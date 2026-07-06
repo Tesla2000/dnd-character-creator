@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from typing import Literal
+from typing import Never
 from typing import cast
 from typing import overload
 from typing import TYPE_CHECKING
@@ -61,9 +62,7 @@ class FeatAdder(BuildingBlock):
 
     @overload
     @deprecated("Pass a state satisfying HasFeats for precise return typing")
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]: ...
+    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
 
     def get_change[T: BlueprintProtocol](
         self, state: T

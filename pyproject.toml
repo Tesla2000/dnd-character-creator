@@ -37,6 +37,7 @@ exclude_lines = [
 [tool.mypy]
 plugins = ["pydantic.mypy", "typing_protocol_intersection.mypy_plugin"]
 exclude = ["tests/", "scripts/"]
+disable_error_code = ["overload-overlap"]
 
 
 [build-system]
