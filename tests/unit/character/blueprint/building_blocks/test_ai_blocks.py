@@ -1261,7 +1261,10 @@ class TestAIAllChoicesResolverGetChange:
     def test_get_change_with_null_blocks(self) -> None:
         resolver = AIAllChoicesResolver.model_construct(
             type=BuildingBlockType.AI_ALL_CHOICES_RESOLVER,
-            blocks=(NullBlock(), NullBlock(), NullBlock(), NullBlock()),
+            stat_choice_resolver=NullBlock(),
+            equipment_chooser=NullBlock(),
+            feat_choice_resolver=NullBlock(),
+            all_non_stat_choices_resolver=NullBlock(),
         )
         result = _exhaust(resolver.get_change(Blueprint()))
         assert result is not None

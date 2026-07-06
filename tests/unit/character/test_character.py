@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import pytest
-from frozendict import frozendict
 from pydantic import ValidationError
+from pydantic_frozendict import PydanticFrozendict
 
 from dnd.character.character import Character
-from dnd.character.character import _conv_to_frozendict
 from dnd.character.class_levels import ClassLevels
 from dnd.character.stats import Stats
 from dnd.choices.alignment import Alignment
@@ -119,13 +118,13 @@ class TestCharacterValidators:
 
     def test_classes_dict_input_converted_to_frozendict(self) -> None:
         char = Character(**_BASE_KWARGS, classes={Class.WIZARD: 1})
-        assert isinstance(char.classes, frozendict)
+        assert isinstance(char.classes, PydanticFrozendict)
         assert char.classes[Class.WIZARD] == 1
 
     def test_class_levels_input_converted(self) -> None:
         levels = ClassLevels()
         char = Character(**_BASE_KWARGS, classes=levels)
-        assert isinstance(char.classes, dict)
+        assert isinstance(char.classes, PydanticFrozendict)
 
     def test_valid_tool_proficiency_passes_validator(self) -> None:
         char = Character(
@@ -140,13 +139,3 @@ class TestCharacterValidators:
             armor_proficiencies=frozenset({ArmorProficiency.LIGHT_ARMOR}),
         )
         assert ArmorProficiency.LIGHT_ARMOR in char.armor_proficiencies
-
-
-@pytest.mark.unit
-class TestConvToFrozendict:
-    def test_non_mapping_returns_value_unchanged(self) -> None:
-        assert _conv_to_frozendict(42) == 42
-
-    def test_mapping_returns_frozendict(self) -> None:
-        result = _conv_to_frozendict({"key": "value"})
-        assert isinstance(result, frozendict)

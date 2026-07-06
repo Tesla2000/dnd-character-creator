@@ -17,6 +17,9 @@ from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_if_not_max
 from dnd.character.blueprint.building_blocks.equipment_chooser.random import (
     RandomEquipmentChooser,
 )
+from dnd.character.blueprint.building_blocks.level_up.health_increase.average import (
+    HealthIncreaseAverage,
+)
 from dnd.character.blueprint.building_blocks.level_up.health_increase.random import (
     HealthIncreaseRandom,
 )
@@ -71,6 +74,7 @@ from dnd.character.blueprint.building_blocks.subclass_assigner.subclass_assigner
 )
 from dnd.character.blueprint.state import Blueprint
 from dnd.character.builder import Builder
+from dnd.character.builder import FailureBuiltResult
 from dnd.character.stats import Stats
 from dnd.choices.class_creation.character_class import Class, WizardSubclass
 from dnd.choices.stats_creation.statistic import Statistic
@@ -279,6 +283,22 @@ class TestSorcererSpellAssigner:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize(
+    "class_, expected_die",
+    [
+        (Class.BARBARIAN, 12),
+        (Class.FIGHTER, 10),
+        (Class.BARD, 8),
+    ],
+)
+def test_class_hit_die_branches(class_: Class, expected_die: int) -> None:
+    block = HealthIncreaseAverage(class_=class_)
+    state = Blueprint()
+    result = _exhaust(block.get_change(state))
+    assert result.health_base == expected_die
+
+
+@pytest.mark.unit
 class TestHealthIncreaseRandom:
     def test_random_roll_on_subsequent_levels(self) -> None:
         block = HealthIncreaseRandom(class_=Class.WIZARD)
@@ -444,7 +464,7 @@ class TestBuilderExceptionHandling:
         block = NullBlock()
         with patch.object(NullBlock, "get_change", side_effect=ValueError("forced")):
             result = Builder().add(block).build()
-        assert result.error is not None
+        assert isinstance(result, FailureBuiltResult)
         assert isinstance(result.error, ValueError)
 
 

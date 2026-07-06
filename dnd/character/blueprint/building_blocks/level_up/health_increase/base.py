@@ -3,11 +3,13 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 from collections.abc import Generator
-from typing import ClassVar
+from enum import StrEnum
+from typing import TYPE_CHECKING
+from typing import Literal
 from typing import Never
+from typing import assert_never
 from typing import cast
 from typing import overload
-from typing import TYPE_CHECKING
 
 from typing_extensions import deprecated
 from typing_protocol_intersection import ProtocolIntersection
@@ -21,13 +23,16 @@ from dnd.character.delta.delta import Delta
 from dnd.choices.class_creation.character_class import Class
 from dnd.choices.equipment_creation.weapons import HitDieSize
 from pydantic import Field
-from typing import Literal
+
+
+class HealthDeltaType(StrEnum):
+    HEALTH_BASE = "HealthBaseDelta"
 
 
 class HealthBaseDelta(Delta):
     """Delta produced when HealthIncrease updates health_base."""
 
-    delta_type: Literal["HealthBaseDelta"] = "HealthBaseDelta"
+    delta_type: Literal[HealthDeltaType.HEALTH_BASE] = HealthDeltaType.HEALTH_BASE
     health_base: int
 
     def apply[T: BlueprintProtocol](
@@ -63,21 +68,27 @@ class HealthIncrease(BuildingBlock, ABC):
         description="The character class for which health is being increased"
     )
 
-    _class2hit_die: ClassVar[dict[Class, HitDieSize]] = {
-        Class.BARBARIAN: HitDieSize.TWELVE,
-        Class.BARD: HitDieSize.EIGHT,
-        Class.CLERIC: HitDieSize.EIGHT,
-        Class.DRUID: HitDieSize.EIGHT,
-        Class.FIGHTER: HitDieSize.TEN,
-        Class.MONK: HitDieSize.EIGHT,
-        Class.PALADIN: HitDieSize.TEN,
-        Class.RANGER: HitDieSize.TEN,
-        Class.ROGUE: HitDieSize.EIGHT,
-        Class.SORCERER: HitDieSize.SIX,
-        Class.WARLOCK: HitDieSize.EIGHT,
-        Class.WIZARD: HitDieSize.SIX,
-        Class.ARTIFICER: HitDieSize.EIGHT,
-    }
+    @classmethod
+    def _class_hit_die(cls, class_: Class) -> HitDieSize:
+        match class_:
+            case Class.BARBARIAN:
+                return HitDieSize.TWELVE
+            case Class.FIGHTER | Class.PALADIN | Class.RANGER:
+                return HitDieSize.TEN
+            case Class.SORCERER | Class.WIZARD:
+                return HitDieSize.SIX
+            case (
+                Class.BARD
+                | Class.CLERIC
+                | Class.DRUID
+                | Class.MONK
+                | Class.ROGUE
+                | Class.WARLOCK
+                | Class.ARTIFICER
+            ):
+                return HitDieSize.EIGHT
+            case _ as never:
+                assert_never(never)
 
     @abstractmethod
     def _get_hit_die_value(self, hit_die: HitDieSize) -> int: ...
@@ -98,7 +109,7 @@ class HealthIncrease(BuildingBlock, ABC):
             raise TypeError(
                 f"{type(self).__name__} requires HasClasses, got {type(state).__name__}"
             )
-        hit_die = self._class2hit_die[self.class_]
+        hit_die = self._class_hit_die(self.class_)
         current_health: int | None = (
             state.health_base if isinstance(state, HasHealthBase) else None
         )

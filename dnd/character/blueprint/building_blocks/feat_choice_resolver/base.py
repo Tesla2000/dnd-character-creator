@@ -20,6 +20,7 @@ from dnd.character.blueprint.state import HasClasses
 from dnd.character.blueprint.state import HasFeats
 from dnd.character.blueprint.state import HasNStatChoices
 from dnd.character.blueprint.state import HasStats
+from dnd.character.blueprint.state import HasStatsCup
 from dnd.character.class_levels import ClassLevels
 from dnd.character.delta.delta import Delta
 from dnd.character.feature.feats import FeatName
@@ -64,6 +65,11 @@ class FeatResolutionDelta(Delta):
 
 @runtime_checkable
 class _FeatT(HasFeats, HasStats, Protocol):
+    pass
+
+
+@runtime_checkable
+class _MaxFeatT(_FeatT, HasStatsCup, Protocol):
     pass
 
 

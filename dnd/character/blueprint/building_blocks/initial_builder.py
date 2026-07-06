@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from typing import Literal
-from typing import NamedTuple
 
 from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AnyChoiceResolver,
@@ -24,14 +23,6 @@ from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
 from dnd.character.delta.delta import Delta
-from pydantic import Field
-
-
-class InitialBuilderBlocks(NamedTuple):
-    level_assigner: LevelAssigner
-    stats_builder: AnyStatsBuilder
-    race_assigner: AnyRaceAssigner
-    all_choices_resolver: AnyChoiceResolver
 
 
 class InitialBuilder(BuildingBlock):
@@ -43,12 +34,18 @@ class InitialBuilder(BuildingBlock):
 
     type: Literal[BuildingBlockType.INITIAL_BUILDER] = BuildingBlockType.INITIAL_BUILDER
 
-    blocks: InitialBuilderBlocks = Field(
-        description="Building blocks for level, stats, race, and choices",
-    )
+    level_assigner: LevelAssigner
+    stats_builder: AnyStatsBuilder
+    race_assigner: AnyRaceAssigner
+    all_choices_resolver: AnyChoiceResolver
 
     def flatten(self) -> Generator[BuildingBlock]:
-        for block in self.blocks:
+        for block in (
+            self.level_assigner,
+            self.stats_builder,
+            self.race_assigner,
+            self.all_choices_resolver,
+        ):
             yield from block.flatten()
 
     def get_change(

@@ -10,7 +10,6 @@ from dnd.other_profficiencies import WeaponProficiency
 from dnd.skill_proficiency import Skill
 from pydantic import BaseModel
 from pydantic import Field
-from pydantic import model_validator
 
 
 class Feature(BaseModel):
@@ -30,19 +29,3 @@ class Feature(BaseModel):
         default_factory=list, description="Must remain empty if nothing is provided."
     )
     attribute_increase: StatisticAndAny | None = None
-
-    @model_validator(mode="before")
-    @classmethod
-    def _normalize(cls, data: object) -> object:
-        if not isinstance(data, dict):
-            return data
-        armor_raw = data.get("armor_proficiencies_gain")
-        armor_list = list(armor_raw) if isinstance(armor_raw, list) else []
-        data["weapon_proficiencies_gain"] = [
-            x for x in armor_list if x not in ArmorProficiency
-        ]
-        skill_gain = data.get("skill_proficiency_gain")
-        if skill_gain not in Skill and skill_gain in ToolProficiency:
-            data["tool_proficiency_gain"] = skill_gain
-            data["skill_proficiency_gain"] = None
-        return data
