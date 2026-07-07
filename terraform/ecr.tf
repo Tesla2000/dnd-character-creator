@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "app" {
-  name                 = "dnd-character-creator"
+  name                 = local.name
   image_tag_mutability = "MUTABLE"
   force_delete         = true
 

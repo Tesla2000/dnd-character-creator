@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "app" {
-  name          = "dnd-character-creator"
+  name          = local.name
   protocol_type = "HTTP"
 }
 

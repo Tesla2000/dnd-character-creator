@@ -33,3 +33,9 @@ variable "github_repo" {
   type        = string
   default     = "Tesla2000/dnd-character-creator"
 }
+
+variable "environment" {
+  description = "Deployment environment (production or development)"
+  type        = string
+  default     = "production"
+}

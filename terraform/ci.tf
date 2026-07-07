@@ -1,6 +1,7 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_openid_connect_provider" "github" {
+  count           = var.environment == "production" ? 1 : 0
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]  # pragma: allowlist secret
@@ -15,7 +16,7 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
+      identifiers = [var.environment == "production" ? aws_iam_openid_connect_provider.github[0].arn : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"]
     }
     condition {
       test     = "StringEquals"
@@ -25,12 +26,13 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repo}:ref:refs/heads/main"]
+      values   = ["repo:${var.github_repo}:ref:refs/heads/*"]
     }
   }
 }
 
 resource "aws_iam_role" "dnd_deployer" {
+  count              = var.environment == "production" ? 1 : 0
   name               = "dnd-deployer"
   assume_role_policy = data.aws_iam_policy_document.github_actions_assume_role.json
 }
@@ -55,7 +57,7 @@ data "aws_iam_policy_document" "dnd_deployer" {
       "ecr:BatchGetImage",
       "ecr:GetDownloadUrlForLayer",
     ]
-    resources = [aws_ecr_repository.app.arn]
+    resources = ["arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/dnd-character-creator*"]
   }
 
   statement {
@@ -71,7 +73,7 @@ data "aws_iam_policy_document" "dnd_deployer" {
       "ecr:TagResource",
       "ecr:UntagResource",
     ]
-    resources = [aws_ecr_repository.app.arn]
+    resources = ["arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/dnd-character-creator*"]
   }
 
   statement {
@@ -86,13 +88,13 @@ data "aws_iam_policy_document" "dnd_deployer" {
       "lambda:RemovePermission",
       "lambda:GetPolicy",
     ]
-    resources = [aws_lambda_function.app.arn]
+    resources = ["arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:dnd-character-creator*"]
   }
 
   statement {
-    sid = "IAMPassRole"
-    actions = ["iam:PassRole"]
-    resources = [aws_iam_role.dnd_lambda_exec.arn]
+    sid       = "IAMPassRole"
+    actions   = ["iam:PassRole"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dnd-character-creator*"]
   }
 
   statement {
@@ -119,8 +121,8 @@ data "aws_iam_policy_document" "dnd_deployer" {
   }
 
   statement {
-    sid = "APIGatewayManage"
-    actions = ["apigateway:*"]
+    sid       = "APIGatewayManage"
+    actions   = ["apigateway:*"]
     resources = ["arn:aws:apigateway:${var.aws_region}::*"]
   }
 
@@ -155,7 +157,8 @@ data "aws_iam_policy_document" "dnd_deployer" {
 }
 
 resource "aws_iam_role_policy" "dnd_deployer" {
+  count  = var.environment == "production" ? 1 : 0
   name   = "dnd-deployer-policy"
-  role   = aws_iam_role.dnd_deployer.id
+  role   = aws_iam_role.dnd_deployer[0].id
   policy = data.aws_iam_policy_document.dnd_deployer.json
 }
