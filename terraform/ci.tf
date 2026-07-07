@@ -110,6 +110,7 @@ data "aws_iam_policy_document" "deployer_production_policy" {
       "lambda:AddPermission",
       "lambda:RemovePermission",
       "lambda:GetPolicy",
+      "lambda:ListVersionsByFunction",
     ]
     resources = ["arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:dnd-character-creator"]
   }
@@ -134,6 +135,7 @@ data "aws_iam_policy_document" "deployer_production_policy" {
       "iam:DeleteRolePolicy",
       "iam:ListAttachedRolePolicies",
       "iam:ListRolePolicies",
+      "iam:ListInstanceProfilesForRole",
       "iam:CreateOpenIDConnectProvider",
       "iam:GetOpenIDConnectProvider",
       "iam:DeleteOpenIDConnectProvider",
@@ -156,11 +158,16 @@ data "aws_iam_policy_document" "deployer_production_policy" {
       "ssm:GetParameters",
       "ssm:PutParameter",
       "ssm:DeleteParameter",
-      "ssm:DescribeParameters",
       "ssm:AddTagsToResource",
       "ssm:ListTagsForResource",
     ]
     resources = ["arn:aws:ssm:${var.aws_region}:*:parameter/dnd/openai_api_key"]
+  }
+
+  statement {
+    sid       = "SSMDescribe"
+    actions   = ["ssm:DescribeParameters"]
+    resources = ["*"]
   }
 
   statement {
@@ -250,6 +257,7 @@ data "aws_iam_policy_document" "deployer_development_policy" {
       "iam:DeleteRolePolicy",
       "iam:ListAttachedRolePolicies",
       "iam:ListRolePolicies",
+      "iam:ListInstanceProfilesForRole",
     ]
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dnd-character-creator-development-exec"]
   }
