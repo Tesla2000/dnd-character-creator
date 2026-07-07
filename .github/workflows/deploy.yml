@@ -25,7 +25,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::472765723468:role/dnd-deployer
+          role-to-assume: arn:aws:iam::472765723468:role/dnd-deployer-production
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -49,7 +49,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: terraform
-        run: terraform init -input=false -reconfigure -backend-config="key=dnd/production/terraform.tfstate"
+        run: terraform init -input=false -backend-config="key=dnd/production/terraform.tfstate"
 
       - name: Terraform Apply
         working-directory: terraform

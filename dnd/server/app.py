@@ -21,6 +21,7 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import TypeAdapter
 from pydantic import ValidationError
+from starlette.responses import RedirectResponse
 from starlette.responses import Response
 
 
@@ -46,6 +47,10 @@ class _CreateCharacterRequestSchema(BaseModel):
 
 def create_app(storage: IncrementStorage) -> FastAPI:
     app_ = FastAPI()
+
+    @app_.get("/", include_in_schema=False)
+    def root() -> RedirectResponse:
+        return RedirectResponse(url="/docs")
 
     @app_.post(
         "/create_character",

@@ -15,3 +15,8 @@
 # Generated schema file (built at container build time)
 /dnd/server/static/simplified-blocks-schema.json
 /scripts/data/
+
+# Terraform
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
