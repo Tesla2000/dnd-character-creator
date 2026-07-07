@@ -9,7 +9,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 resource "aws_iam_role" "dnd_lambda_exec" {
-  name               = "dnd-lambda-exec"
+  name               = "${local.name}-exec"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "ssm_read" {
 }
 
 resource "aws_iam_role_policy" "ssm_read" {
-  name   = "dnd-ssm-read"
+  name   = "${local.name}-ssm-read"
   role   = aws_iam_role.dnd_lambda_exec.id
   policy = data.aws_iam_policy_document.ssm_read.json
 }

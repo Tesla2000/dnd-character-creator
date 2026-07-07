@@ -5,7 +5,7 @@
 #     --type SecureString \
 #     --overwrite
 resource "aws_ssm_parameter" "openai_api_key" {
-  name      = "/dnd/openai_api_key"
+  name      = var.environment == "production" ? "/dnd/openai_api_key" : "/dnd/${var.environment}/openai_api_key"
   type      = "SecureString"
   value     = "REPLACE_ME"
   overwrite = true

@@ -15,6 +15,8 @@ Deployment is fully automated via GitHub Actions. Every push to `main`:
 
 Manual deploys can be triggered from the GitHub Actions UI.
 
+A shared **development environment** can be deployed from any branch via the **Deploy Development Environment** workflow (manual trigger only). It is automatically destroyed when a branch is merged to `main`.
+
 ### First-time bootstrap
 
 Run once before CI can deploy. The recommended way is via **AWS CloudShell** — it runs in your browser, is already authenticated with your console session, and has the AWS CLI pre-installed. No local credentials needed.
@@ -51,10 +53,12 @@ aws s3api create-bucket \
 **Step 4 — Apply Terraform (in CloudShell)**
 
 ```shell
-cd terraform && terraform init && terraform apply -var="aws_profile="
+cd terraform && \
+  terraform init -backend-config="key=dnd/production/terraform.tfstate" && \
+  terraform apply -var="aws_profile=" -var="environment=production"
 ```
 
-If this fails with `EntityAlreadyExists`, some resources already exist in your account. Import each conflicting resource with `terraform import <resource> <id>` and re-run `terraform apply -var="aws_profile="` until it succeeds.
+If this fails with `EntityAlreadyExists`, some resources already exist in your account. Import each conflicting resource with `terraform import <resource> <id>` and re-run the apply command until it succeeds.
 
 CloudShell's credentials are used automatically — no profile needed. This provisions all infrastructure (ECR, Lambda, API Gateway, IAM) and grants the CI role the permissions it needs for future deploys.
 
@@ -78,8 +82,8 @@ Alternatively, run locally using a CLI profile. Create an IAM user named `dnd-ch
 
 ```shell
 aws configure --profile dnd-character-creator
-cd terraform && terraform init
-terraform apply -var="aws_profile=dnd-character-creator"
+cd terraform && terraform init -backend-config="key=dnd/production/terraform.tfstate"
+terraform apply -var="aws_profile=dnd-character-creator" -var="environment=production"
 ```
 
 ## Docker

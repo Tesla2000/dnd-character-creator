@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "app" {
-  function_name = "dnd-character-creator"
+  function_name = local.name
   role          = aws_iam_role.dnd_lambda_exec.arn
   package_type  = "Image"
   image_uri     = "${aws_ecr_repository.app.repository_url}:${var.image_tag}"
