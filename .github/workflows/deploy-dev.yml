@@ -22,7 +22,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::472765723468:role/dnd-deployer
+          role-to-assume: arn:aws:iam::472765723468:role/dnd-deployer-development
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
@@ -32,11 +32,11 @@ jobs:
 
       - name: Terraform Init
         working-directory: terraform
-        run: terraform init -input=false -reconfigure -backend-config="key=dnd/development/terraform.tfstate"
+        run: terraform init -input=false -backend-config="key=dnd/development/terraform.tfstate"
 
-      - name: Terraform Apply (provision ECR and infrastructure)
+      - name: Terraform Apply (ECR only)
         working-directory: terraform
-        run: terraform apply -auto-approve -input=false -var="environment=development" -var="image_tag=development-${{ github.sha }}"
+        run: terraform apply -auto-approve -input=false -var="environment=development" -var="image_tag=development-${{ github.sha }}" -target=aws_ecr_repository.app
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -50,6 +50,10 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Terraform Apply (full infrastructure)
+        working-directory: terraform
+        run: terraform apply -auto-approve -input=false -var="environment=development" -var="image_tag=development-${{ github.sha }}"
 
       - name: Print dev API URL
         working-directory: terraform
