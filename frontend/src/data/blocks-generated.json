@@ -1,0 +1,2861 @@
+[
+  {
+    "type": "ai_all_choices_resolver",
+    "type_name": "AI_ALL_CHOICES_RESOLVER",
+    "label": "Ai All Choices Resolver",
+    "class_name": "AIAllChoicesResolver",
+    "category": "AI",
+    "description": "AI-powered resolver that makes all character choices holistically.",
+    "is_ai": true,
+    "fields": {
+      "stat_choice_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "equipment_chooser": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "feat_choice_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "all_non_stat_choices_resolver": {
+        "type": "string",
+        "note": "serialized as: ForwardRef('AIAllNonStatChoicesResolver')",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_all_non_stat_choices_resolver",
+    "type_name": "AI_ALL_NON_STAT_CHOICES_RESOLVER",
+    "label": "Ai All Non Stat Choices Resolver",
+    "class_name": "AIAllNonStatChoicesResolver",
+    "category": "AI",
+    "description": "AI-powered resolver for non-stat character choices (languages, skills, feats, tools).",
+    "is_ai": true,
+    "fields": {
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_base_builder_assigner",
+    "type_name": "AI_BASE_BUILDER_ASSIGNER",
+    "label": "Ai Base Builder Assigner",
+    "class_name": "AIBaseBuilderAssigner",
+    "category": "AI",
+    "description": "Uses AI to assign all basic character parameters based on a description.",
+    "is_ai": true,
+    "fields": {
+      "description": {
+        "description": "Natural language description of the character to generate",
+        "type": "string",
+        "required": true
+      },
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_equipment_chooser",
+    "type_name": "AI_EQUIPMENT_CHOOSER",
+    "label": "Ai Equipment Chooser",
+    "class_name": "AIEquipmentChooser",
+    "category": "AI",
+    "description": "AI-powered equipment chooser that selects equipment based on character context.",
+    "is_ai": true,
+    "fields": {
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_feat_choice_resolver",
+    "type_name": "AI_FEAT_CHOICE_RESOLVER",
+    "label": "Ai Feat Choice Resolver",
+    "class_name": "AIFeatChoiceResolver",
+    "category": "AI",
+    "description": "AI-powered resolver for FeatName.ANY_OF_YOUR_CHOICE placeholders.",
+    "is_ai": true,
+    "fields": {
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_language_choice_resolver",
+    "type_name": "AI_LANGUAGE_CHOICE_RESOLVER",
+    "label": "Ai Language Choice Resolver",
+    "class_name": "AILanguageChoiceResolver",
+    "category": "AI",
+    "description": "AI-powered resolver for Language.ANY_OF_YOUR_CHOICE placeholders.",
+    "is_ai": true,
+    "fields": {
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_magical_item_chooser",
+    "type_name": "AI_MAGICAL_ITEM_CHOOSER",
+    "label": "Ai Magical Item Chooser",
+    "class_name": "AIMagicalItemChooser",
+    "category": "AI",
+    "description": "AI-powered magical item chooser that makes all selections holistically.",
+    "is_ai": true,
+    "fields": {
+      "n_common": {
+        "description": "Number of common magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_uncommon": {
+        "description": "Number of uncommon magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_rare": {
+        "description": "Number of rare magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_very_rare": {
+        "description": "Number of very rare magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_legendary": {
+        "description": "Number of legendary magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_artifact": {
+        "description": "Number of artifact magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_unique": {
+        "description": "Number of unique magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_mistery": {
+        "description": "Number of mystery magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_partial_builder_assigner",
+    "type_name": "AI_PARTIAL_BUILDER_ASSIGNER",
+    "label": "Ai Partial Builder Assigner",
+    "class_name": "AIPartialBuilderAssigner",
+    "category": "AI",
+    "description": "Uses AI to fill only unset basic character parameters.",
+    "is_ai": true,
+    "fields": {
+      "description": {
+        "description": "Natural language description of the character to generate",
+        "type": "string",
+        "required": true
+      },
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_skill_choice_resolver",
+    "type_name": "AI_SKILL_CHOICE_RESOLVER",
+    "label": "Ai Skill Choice Resolver",
+    "class_name": "AISkillChoiceResolver",
+    "category": "AI",
+    "description": "AI-powered skill choice resolver that selects skills based on character context.",
+    "is_ai": true,
+    "fields": {
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_stat_choice_resolver",
+    "type_name": "AI_STAT_CHOICE_RESOLVER",
+    "label": "Ai Stat Choice Resolver",
+    "class_name": "AIStatChoiceResolver",
+    "category": "AI",
+    "description": "AI-powered stat choice resolver that selects stat increases based on character context.",
+    "is_ai": true,
+    "fields": {
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_subclass_assigner",
+    "type_name": "AI_SUBCLASS_ASSIGNER",
+    "label": "Ai Subclass Assigner",
+    "class_name": "AISubclassAssigner",
+    "category": "AI",
+    "description": "AI-powered subclass assigner that selects subclasses based on character context.",
+    "is_ai": true,
+    "fields": {
+      "class_": {
+        "description": "The character class for which to assign a subclass",
+        "type": "string",
+        "enum": [
+          "Barbarian",
+          "Bard",
+          "Cleric",
+          "Druid",
+          "Fighter",
+          "Monk",
+          "Paladin",
+          "Ranger",
+          "Rogue",
+          "Sorcerer",
+          "Warlock",
+          "Wizard",
+          "Artificer"
+        ],
+        "required": true
+      },
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ai_tool_proficiency_choice_resolver",
+    "type_name": "AI_TOOL_PROFICIENCY_CHOICE_RESOLVER",
+    "label": "Ai Tool Proficiency Choice Resolver",
+    "class_name": "AIToolProficiencyChoiceResolver",
+    "category": "AI",
+    "description": "AI-powered resolver for tool proficiency ANY_OF_YOUR_CHOICE placeholders.",
+    "is_ai": true,
+    "fields": {
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "formatter": {
+        "description": "Blueprint formatter for creating AI prompts",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.blueprint_formatter.BlueprintFormatter'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "artificer_subclass_assigner",
+    "type_name": "ARTIFICER_SUBCLASS_ASSIGNER",
+    "label": "Artificer Subclass Assigner",
+    "class_name": "ArtificerSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Artificer subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Artificer"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Artificer subclass selection",
+        "type": "string",
+        "enum": [
+          "Alchemist",
+          "Armorer",
+          "Artillerist",
+          "Battle Smith"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "barbarian_subclass_assigner",
+    "type_name": "BARBARIAN_SUBCLASS_ASSIGNER",
+    "label": "Barbarian Subclass Assigner",
+    "class_name": "BarbarianSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Barbarian subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Barbarian"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Barbarian subclass selection",
+        "type": "string",
+        "enum": [
+          "Path of the Ancestral Guardian",
+          "Path of the Battlerager",
+          "Path of the Beast",
+          "Path of the Berserker",
+          "Path of the Giant",
+          "Path of the Storm Herald",
+          "Path of the Totem Warrior",
+          "Path of Wild Magic",
+          "Path of the Zealot"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "bard_subclass_assigner",
+    "type_name": "BARD_SUBCLASS_ASSIGNER",
+    "label": "Bard Subclass Assigner",
+    "class_name": "BardSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Bard subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Bard"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Bard subclass selection",
+        "type": "string",
+        "enum": [
+          "College of Creation",
+          "College of Eloquence",
+          "College of Glamour",
+          "College of Lore",
+          "College of Spirits",
+          "College of Swords",
+          "College of Valor",
+          "College of Whispers"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "cleric_subclass_assigner",
+    "type_name": "CLERIC_SUBCLASS_ASSIGNER",
+    "label": "Cleric Subclass Assigner",
+    "class_name": "ClericSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Cleric subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Cleric"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Cleric subclass selection",
+        "type": "string",
+        "enum": [
+          "Arcana Domain",
+          "Death Domain",
+          "Forge Domain",
+          "Grave Domain",
+          "Knowledge Domain",
+          "Life Domain",
+          "Light Domain",
+          "Nature Domain",
+          "Order Domain",
+          "Peace Domain",
+          "Tempest Domain",
+          "Trickery Domain",
+          "Twilight Domain",
+          "War Domain"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "druid_subclass_assigner",
+    "type_name": "DRUID_SUBCLASS_ASSIGNER",
+    "label": "Druid Subclass Assigner",
+    "class_name": "DruidSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Druid subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Druid"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Druid subclass selection",
+        "type": "string",
+        "enum": [
+          "Circle of Dreams",
+          "Circle of the Land",
+          "Circle of the Moon",
+          "Circle of the Shepherd",
+          "Circle of Spores",
+          "Circle of Stars",
+          "Circle of Wildfire"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "fighter_subclass_assigner",
+    "type_name": "FIGHTER_SUBCLASS_ASSIGNER",
+    "label": "Fighter Subclass Assigner",
+    "class_name": "FighterSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Fighter subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Fighter"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Fighter subclass selection",
+        "type": "string",
+        "enum": [
+          "Arcane Archer",
+          "Banneret",
+          "Battle Master",
+          "Cavalier",
+          "Champion",
+          "Echo Knight",
+          "Eldritch Knight",
+          "Psi Warrior",
+          "Rune Knight",
+          "Samurai"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "monk_subclass_assigner",
+    "type_name": "MONK_SUBCLASS_ASSIGNER",
+    "label": "Monk Subclass Assigner",
+    "class_name": "MonkSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Monk subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Monk"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Monk subclass selection",
+        "type": "string",
+        "enum": [
+          "Way of Mercy",
+          "Way of the Ascendant Dragon",
+          "Way of the Astral Self",
+          "Way of the Drunken Master",
+          "Way of the Four Elements",
+          "Way of the Kensei",
+          "Way of the Long Death",
+          "Way of the Open Hand",
+          "Way of Shadow",
+          "Way of the Sun Soul"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "paladin_subclass_assigner",
+    "type_name": "PALADIN_SUBCLASS_ASSIGNER",
+    "label": "Paladin Subclass Assigner",
+    "class_name": "PaladinSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Paladin subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Paladin"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Paladin subclass selection",
+        "type": "string",
+        "enum": [
+          "Oath of the Ancients",
+          "Oath of Conquest",
+          "Oath of the Crown",
+          "Oath of Devotion",
+          "Oath of Glory",
+          "Oath of Redemption",
+          "Oath of Vengeance",
+          "Oath of the Watchers",
+          "Oathbreaker"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "ranger_subclass_assigner",
+    "type_name": "RANGER_SUBCLASS_ASSIGNER",
+    "label": "Ranger Subclass Assigner",
+    "class_name": "RangerSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Ranger subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Ranger"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Ranger subclass selection",
+        "type": "string",
+        "enum": [
+          "Beast Master Conclave",
+          "Drakewarden",
+          "Fey Wanderer",
+          "Gloom Stalker Conclave",
+          "Horizon Walker Conclave",
+          "Hunter Conclave",
+          "Monster Slayer Conclave",
+          "Swarmkeeper"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "rogue_subclass_assigner",
+    "type_name": "ROGUE_SUBCLASS_ASSIGNER",
+    "label": "Rogue Subclass Assigner",
+    "class_name": "RogueSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Rogue subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Rogue"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Rogue subclass selection",
+        "type": "string",
+        "enum": [
+          "Arcane Trickster",
+          "Assassin",
+          "Inquisitive",
+          "Mastermind",
+          "Phantom",
+          "Scout",
+          "Soulknife",
+          "Swashbuckler",
+          "Thief"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "sorcerer_subclass_assigner",
+    "type_name": "SORCERER_SUBCLASS_ASSIGNER",
+    "label": "Sorcerer Subclass Assigner",
+    "class_name": "SorcererSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Sorcerer subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Sorcerer"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Sorcerer subclass selection",
+        "type": "string",
+        "enum": [
+          "Aberrant Mind",
+          "Clockwork Soul",
+          "Draconic Bloodline",
+          "Divine Soul",
+          "Lunar Sorcery",
+          "Shadow Magic",
+          "Storm Sorcery",
+          "Wild Magic"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "warlock_subclass_assigner",
+    "type_name": "WARLOCK_SUBCLASS_ASSIGNER",
+    "label": "Warlock Subclass Assigner",
+    "class_name": "WarlockSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Warlock subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Warlock"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Warlock subclass selection",
+        "type": "string",
+        "enum": [
+          "Archfey",
+          "Celestial",
+          "Fathomless",
+          "Fiend",
+          "The Genie",
+          "Great Old One",
+          "Hexblade",
+          "Undead",
+          "Undying"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "wizard_subclass_assigner",
+    "type_name": "WIZARD_SUBCLASS_ASSIGNER",
+    "label": "Wizard Subclass Assigner",
+    "class_name": "WizardSubclassAssigner",
+    "category": "Subclass",
+    "description": "Assigns a specific Wizard subclass to the character.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "type": "string",
+        "enum": [
+          "Wizard"
+        ],
+        "required": false
+      },
+      "subclass": {
+        "description": "Wizard subclass selection",
+        "type": "string",
+        "enum": [
+          "School of Abjuration",
+          "School of Bladesinging",
+          "School of Chronurgy",
+          "School of Conjuration",
+          "School of Divination",
+          "School of Enchantment",
+          "School of Evocation",
+          "School of Graviturgy",
+          "School of Illusion",
+          "School of Necromancy",
+          "Order of Scribes",
+          "School of Transmutation",
+          "School of War Magic"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "age_assigner",
+    "type_name": "AGE_ASSIGNER",
+    "label": "Age Assigner",
+    "class_name": "AgeAssigner",
+    "category": "Identity",
+    "description": "Assigns an age to the character.",
+    "is_ai": false,
+    "fields": {
+      "age": {
+        "description": "Character's age in years",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "alignment_assigner",
+    "type_name": "ALIGNMENT_ASSIGNER",
+    "label": "Alignment Assigner",
+    "class_name": "AlignmentAssigner",
+    "category": "Identity",
+    "description": "Assigns an alignment to the character.",
+    "is_ai": false,
+    "fields": {
+      "alignment": {
+        "description": "Character's moral and ethical alignment",
+        "type": "string",
+        "enum": [
+          "lawful_good",
+          "true_lawful",
+          "lawful_neutral",
+          "lawful_evil",
+          "true_good",
+          "neutral_good",
+          "neutral_evil",
+          "true_neutral",
+          "neutral_neutral",
+          "true_evil",
+          "chaotic_good",
+          "true_chaotic",
+          "chaotic_neutral",
+          "chaotic_evil"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "all_choices_resolver",
+    "type_name": "ALL_CHOICES_RESOLVER",
+    "label": "All Choices Resolver",
+    "class_name": "AllChoicesResolver",
+    "category": "Choices",
+    "description": "Resolves all character choices by chaining individual resolvers sequentially.",
+    "is_ai": false,
+    "fields": {
+      "language_choice_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "skill_choice_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "feat_choice_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "tool_proficiency_choice_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "stat_choice_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "equipment_chooser": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "background_assigner",
+    "type_name": "BACKGROUND_ASSIGNER",
+    "label": "Background Assigner",
+    "class_name": "BackgroundAssigner",
+    "category": "Identity",
+    "description": "Assigns a background to the character.",
+    "is_ai": false,
+    "fields": {
+      "background": {
+        "description": "Character's background story and origin",
+        "type": "string",
+        "enum": [
+          "Acolyte",
+          "Anthropologist",
+          "Archaeologist",
+          "Athlete",
+          "Charlatan",
+          "City Watch",
+          "Clan Crafter",
+          "Cloistered Scholar",
+          "Courtier",
+          "Criminal",
+          "Entertainer",
+          "Faceless",
+          "Faction Agent",
+          "Far Traveler",
+          "Feylost",
+          "Fisher",
+          "Folk Hero",
+          "Giant Foundling",
+          "Gladiator",
+          "Guild Artisan",
+          "Guild Merchant",
+          "Haunted One",
+          "Hermit",
+          "House Agent",
+          "Inheritor",
+          "Investigator",
+          "Knight",
+          "Knight of the Order",
+          "Marine",
+          "Mercenary Veteran",
+          "Noble",
+          "Outlander",
+          "Pirate",
+          "Rewarded",
+          "Ruined",
+          "Rune Carver",
+          "Sage",
+          "Sailor",
+          "Shipwright",
+          "Smuggler",
+          "Soldier",
+          "Spy",
+          "Urban Bounty Hunter",
+          "Urchin",
+          "Uthgardt Tribe Member",
+          "Waterdhavian Noble",
+          "Witchlight Hand"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "equipment_adder",
+    "type_name": "EQUIPMENT_ADDER",
+    "label": "Equipment Adder",
+    "class_name": "EquipmentAdder",
+    "category": "Equipment",
+    "description": "Adds an item to the character's other equipment list.",
+    "is_ai": false,
+    "fields": {
+      "item": {
+        "description": "Equipment item to add to character's inventory",
+        "type": "string",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "feat_adder",
+    "type_name": "FEAT_ADDER",
+    "label": "Feat Adder",
+    "class_name": "FeatAdder",
+    "category": "Feats",
+    "description": "Adds a feat to the character's feat list.",
+    "is_ai": false,
+    "fields": {
+      "feat": {
+        "description": "Feat to add to character's feat list",
+        "type": "string",
+        "enum": [
+          "Aberrant Dragonmark",
+          "Actor",
+          "Alert",
+          "Artificer Initiate",
+          "Athlete",
+          "Cartomancer",
+          "Charger",
+          "Chef",
+          "Crossbow Expert",
+          "Crusher",
+          "Defensive Duelist",
+          "Dual Wielder",
+          "Dungeon Delver",
+          "Durable",
+          "Eldritch Adept",
+          "Elemental Adept",
+          "Ember of the Fire Giant",
+          "Fey Touched",
+          "Fighting Initiate",
+          "Fury of the Frost Giant",
+          "Gift of the Chromatic Dragon",
+          "Gift of the Gem Dragon",
+          "Gift of the Metallic Dragon",
+          "Grappler",
+          "Great Weapon Master",
+          "Guile of the Cloud Giant",
+          "Gunner",
+          "Healer",
+          "Heavily Armored",
+          "Heavy Armor Master",
+          "Inspiring Leader",
+          "Keen Mind",
+          "Keenness of the Stone Giant",
+          "Lightly Armored",
+          "Linguist",
+          "Lucky",
+          "Mage Slayer",
+          "Magic Initiate",
+          "Martial Adept",
+          "Medium Armor Master",
+          "Metamagic Adept",
+          "Mobile",
+          "Moderately Armored",
+          "Mounted Combatant",
+          "Observant",
+          "Piercer",
+          "Poisoner",
+          "Polearm Master",
+          "Resilient",
+          "Ritual Caster",
+          "Rune Shaper",
+          "Savage Attacker",
+          "Sentinel",
+          "Shadow Touched",
+          "Sharpshooter",
+          "Shield Master",
+          "Skill Expert",
+          "Skilled",
+          "Skulker",
+          "Slasher",
+          "Soul of the Storm Giant",
+          "Spell Sniper",
+          "Strike of the Giants",
+          "Tavern Brawler",
+          "Telekinetic",
+          "Telepathic",
+          "Tough",
+          "Vigor of the Hill Giant",
+          "War Caster",
+          "Weapon Master",
+          "Ability Score Improvement",
+          "Any feat of your choice",
+          "Any except ability score improvement"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "feature_assigner",
+    "type_name": "FEATURE_ASSIGNER",
+    "label": "Feature Assigner",
+    "class_name": "FeatureAssigner",
+    "category": "Feats",
+    "description": "Building block that assigns a feature to a character blueprint.",
+    "is_ai": false,
+    "fields": {
+      "feature": {
+        "description": "Character feature to assign (ability, trait, or stat boost)",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.feature.feature.Feature'>",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "health_increase_average",
+    "type_name": "HEALTH_INCREASE_AVERAGE",
+    "label": "Health Increase Average",
+    "class_name": "HealthIncreaseAverage",
+    "category": "Level-Up",
+    "description": "Fixed health increase strategy.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "description": "The character class for which health is being increased",
+        "type": "string",
+        "enum": [
+          "Barbarian",
+          "Bard",
+          "Cleric",
+          "Druid",
+          "Fighter",
+          "Monk",
+          "Paladin",
+          "Ranger",
+          "Rogue",
+          "Sorcerer",
+          "Warlock",
+          "Wizard",
+          "Artificer"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "health_increase_random",
+    "type_name": "HEALTH_INCREASE_RANDOM",
+    "label": "Health Increase Random",
+    "class_name": "HealthIncreaseRandom",
+    "category": "Level-Up",
+    "description": "Random health increase strategy.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "description": "The character class for which health is being increased",
+        "type": "string",
+        "enum": [
+          "Barbarian",
+          "Bard",
+          "Cleric",
+          "Druid",
+          "Fighter",
+          "Monk",
+          "Paladin",
+          "Ranger",
+          "Rogue",
+          "Sorcerer",
+          "Warlock",
+          "Wizard",
+          "Artificer"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "health_increase_random_min_two",
+    "type_name": "HEALTH_INCREASE_RANDOM_MIN_TWO",
+    "label": "Health Increase Random Min Two",
+    "class_name": "HealthIncreaseRandomMinTwo",
+    "category": "Level-Up",
+    "description": "Random health increase strategy with minimum value of 2.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "description": "The character class for which health is being increased",
+        "type": "string",
+        "enum": [
+          "Barbarian",
+          "Bard",
+          "Cleric",
+          "Druid",
+          "Fighter",
+          "Monk",
+          "Paladin",
+          "Ranger",
+          "Rogue",
+          "Sorcerer",
+          "Warlock",
+          "Wizard",
+          "Artificer"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "health_increase_random_reroll_ones",
+    "type_name": "HEALTH_INCREASE_RANDOM_REROLL_ONES",
+    "label": "Health Increase Random Reroll Ones",
+    "class_name": "HealthIncreaseRandomRerollOnes",
+    "category": "Level-Up",
+    "description": "Random health increase strategy with reroll on 1.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "description": "The character class for which health is being increased",
+        "type": "string",
+        "enum": [
+          "Barbarian",
+          "Bard",
+          "Cleric",
+          "Druid",
+          "Fighter",
+          "Monk",
+          "Paladin",
+          "Ranger",
+          "Rogue",
+          "Sorcerer",
+          "Warlock",
+          "Wizard",
+          "Artificer"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "initial_builder",
+    "type_name": "INITIAL_BUILDER",
+    "label": "Initial Builder",
+    "class_name": "InitialBuilder",
+    "category": "Builders",
+    "description": "Building block that performs initial character generation.",
+    "is_ai": false,
+    "fields": {
+      "level_assigner": {
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.building_blocks.level_assigner.LevelAssigner'>",
+        "required": true
+      },
+      "stats_builder": {
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.building_blocks.stats_builder.standard_array.Sta",
+        "required": true
+      },
+      "race_assigner": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "all_choices_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "level_assigner",
+    "type_name": "LEVEL_ASSIGNER",
+    "label": "Level Assigner",
+    "class_name": "LevelAssigner",
+    "category": "Identity",
+    "description": "Assigns a level to the character.",
+    "is_ai": false,
+    "fields": {
+      "level": {
+        "description": "The character's total level (1\u201320)",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "wizard_level_incrementer",
+    "type_name": "WIZARD_LEVEL_INCREMENTER",
+    "label": "Wizard Level Incrementer",
+    "class_name": "WizardLevelIncrementer",
+    "category": "Level-Up",
+    "description": "Increments wizard class level; grants proficiencies at level 1 and ASI at 4/8/12/16/19.",
+    "is_ai": false,
+    "fields": {}
+  },
+  {
+    "type": "sorcerer_level_incrementer",
+    "type_name": "SORCERER_LEVEL_INCREMENTER",
+    "label": "Sorcerer Level Incrementer",
+    "class_name": "SorcererLevelIncrementer",
+    "category": "Level-Up",
+    "description": "Increments sorcerer class level; grants proficiencies at level 1 and ASI at 4/8/12/16/19.",
+    "is_ai": false,
+    "fields": {}
+  },
+  {
+    "type": "level_up",
+    "type_name": "LEVEL_UP",
+    "label": "Level Up",
+    "class_name": "LevelUp",
+    "category": "Level-Up",
+    "description": "Adds one level to a specific class.",
+    "is_ai": false,
+    "fields": {
+      "level_increment": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "health_increase": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "spell_assigner": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      },
+      "all_choice_resolver": {
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "level_up_multiple",
+    "type_name": "LEVEL_UP_MULTIPLE",
+    "label": "Level Up Multiple",
+    "class_name": "LevelUpMultiple",
+    "category": "Level-Up",
+    "description": "Container for multiple level up operations.",
+    "is_ai": false,
+    "fields": {
+      "blocks": {
+        "description": "Tuple of LevelUp blocks to apply sequentially",
+        "type": "array",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "max_first_resolver",
+    "type_name": "MAX_FIRST_RESOLVER",
+    "label": "Max First Resolver",
+    "class_name": "MaxFirstResolver",
+    "category": "Feats",
+    "description": "Prioritizes maxing the highest priority stat before choosing other feats.",
+    "is_ai": false,
+    "fields": {
+      "priority": {
+        "description": "Ability score priority order for determining which stat to max",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ]
+        },
+        "required": true
+      },
+      "then": {
+        "description": "Fallback resolver to use when highest priority stat is already maxed",
+        "type": "string",
+        "note": "serialized as: <class 'dnd.character.blueprint.building_blocks.feat_choice_resolver.random.Rand",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "max_if_not_maxed_resolver",
+    "type_name": "MAX_IF_NOT_MAXED_RESOLVER",
+    "label": "Max If Not Maxed Resolver",
+    "class_name": "MaxIfNotMaxedResolver",
+    "category": "Feats",
+    "description": "Chooses Ability Score Improvement only if the highest priority stat is not maxed.",
+    "is_ai": false,
+    "fields": {
+      "priority": {
+        "description": "Ability score priority order for determining which stat to check",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ]
+        },
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "name_assigner",
+    "type_name": "NAME_ASSIGNER",
+    "label": "Name Assigner",
+    "class_name": "NameAssigner",
+    "category": "Identity",
+    "description": "Assigns a name to the character.",
+    "is_ai": false,
+    "fields": {
+      "name": {
+        "description": "Character's full name",
+        "type": "string",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "null_block",
+    "type_name": "NULL_BLOCK",
+    "label": "Null Block",
+    "class_name": "NullBlock",
+    "category": "Utility",
+    "description": "A building block that applies no changes to the blueprint.",
+    "is_ai": false,
+    "fields": {}
+  },
+  {
+    "type": "optional_subclass_assigner",
+    "type_name": "OPTIONAL_SUBCLASS_ASSIGNER",
+    "label": "Optional Subclass Assigner",
+    "class_name": "OptionalSubclassAssigner",
+    "category": "Subclass",
+    "description": "Optionally assigns a subclass, gracefully handling cases where assignment is not possible.",
+    "is_ai": false,
+    "fields": {
+      "assigner": {
+        "description": "The subclass assigner strategy to use (random or AI)",
+        "type": "object",
+        "note": "complex nested type",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "priority_stat_choice_resolver",
+    "type_name": "PRIORITY_STAT_CHOICE_RESOLVER",
+    "label": "Priority Stat Choice Resolver",
+    "class_name": "PriorityStatChoiceResolver",
+    "category": "Stats",
+    "description": "Resolves stat choices based on a priority order.",
+    "is_ai": false,
+    "fields": {
+      "priority": {
+        "description": "Ability scores ranked by priority for stat increase allocation",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ]
+        },
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "aarakocra_race_assigner",
+    "type_name": "AARAKOCRA_RACE_ASSIGNER",
+    "label": "Aarakocra Race Assigner",
+    "class_name": "AarakocraRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Aarakocra race and the specified Aarakocra subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Aarakocra subrace selection",
+        "type": "string",
+        "enum": [
+          "Aarakocra (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "aasimar_race_assigner",
+    "type_name": "AASIMAR_RACE_ASSIGNER",
+    "label": "Aasimar Race Assigner",
+    "class_name": "AasimarRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Aasimar race and the specified Aasimar subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Aasimar subrace selection",
+        "type": "string",
+        "enum": [
+          "Fallen Aasimar (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Protector Aasimar (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Scourge Aasimar (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Fallen Aasimar (VolosGuidetoMonsters)",
+          "Protector Aasimar (VolosGuidetoMonsters)",
+          "Scourge Aasimar (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "bugbear_race_assigner",
+    "type_name": "BUGBEAR_RACE_ASSIGNER",
+    "label": "Bugbear Race Assigner",
+    "class_name": "BugbearRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Bugbear race and the specified Bugbear subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Bugbear subrace selection",
+        "type": "string",
+        "enum": [
+          "Bugbear (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Bugbear (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "centaur_race_assigner",
+    "type_name": "CENTAUR_RACE_ASSIGNER",
+    "label": "Centaur Race Assigner",
+    "class_name": "CentaurRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Centaur race and the specified Centaur subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Centaur subrace selection",
+        "type": "string",
+        "enum": [
+          "Gruul Centaur (GuildmastersGuidetoRavnica)",
+          "Selesnya Centaur (GuildmastersGuidetoRavnica)",
+          "Centaurs (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Lagonna (MythicOdysseysofTheros)",
+          "Pheres (MythicOdysseysofTheros)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "changeling_race_assigner",
+    "type_name": "CHANGELING_RACE_ASSIGNER",
+    "label": "Changeling Race Assigner",
+    "class_name": "ChangelingRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Changeling race and the specified Changeling subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Changeling subrace selection",
+        "type": "string",
+        "enum": [
+          "Changeling (EberronRisingfromtheLastWar)",
+          "Changeling (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Changeling (UnearthedArcana)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "dragonborn_race_assigner",
+    "type_name": "DRAGONBORN_RACE_ASSIGNER",
+    "label": "Dragonborn Race Assigner",
+    "class_name": "DragonbornRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Dragonborn race and the specified Dragonborn subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Dragonborn subrace selection",
+        "type": "string",
+        "enum": [
+          "Draconblood (ExplorersGuidetoWildemount)",
+          "Ravenite (ExplorersGuidetoWildemount)",
+          "Chromatic (FizbansTreasuryofDragons)",
+          "Gem (FizbansTreasuryofDragons)",
+          "Metallic (FizbansTreasuryofDragons)",
+          "Dragonborn (PlayersHandbook)",
+          "Chromatic (UnearthedArcana)",
+          "Gem (UnearthedArcana)",
+          "Metallic (UnearthedArcana)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "dwarf_race_assigner",
+    "type_name": "DWARF_RACE_ASSIGNER",
+    "label": "Dwarf Race Assigner",
+    "class_name": "DwarfRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Dwarf race and the specified Dwarf subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Dwarf subrace selection",
+        "type": "string",
+        "enum": [
+          "Hill Dwarf (PlayersHandbook)",
+          "Mountain Dwarf (PlayersHandbook)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "elf_race_assigner",
+    "type_name": "ELF_RACE_ASSIGNER",
+    "label": "Elf Race Assigner",
+    "class_name": "ElfRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Elf race and the specified Elf subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Elf subrace selection",
+        "type": "string",
+        "enum": [
+          "Mark of Shadow (EberronRisingfromtheLastWar)",
+          "Pallid Elf (ExplorersGuidetoWildemount)",
+          "Bishtahar Elf (PlaneShiftKaladesh)",
+          "Tirahar Elf (PlaneShiftKaladesh)",
+          "Vahadar Elf (PlaneShiftKaladesh)",
+          "Juraga (PlaneShiftZendikar)",
+          "Mul Daya (PlaneShiftZendikar)",
+          "Tajuru (PlaneShiftZendikar)",
+          "Dark Elf (PlayersHandbook)",
+          "High Elf (PlayersHandbook)",
+          "Wood Elf (PlayersHandbook)",
+          "Astral Elf (SpelljammerAdventuresinSpace)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "firbolg_race_assigner",
+    "type_name": "FIRBOLG_RACE_ASSIGNER",
+    "label": "Firbolg Race Assigner",
+    "class_name": "FirbolgRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Firbolg race and the specified Firbolg subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Firbolg subrace selection",
+        "type": "string",
+        "enum": [
+          "Firbolg (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Firbolg (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "genasi_air_race_assigner",
+    "type_name": "GENASI_AIR_RACE_ASSIGNER",
+    "label": "Genasi Air Race Assigner",
+    "class_name": "GenasiAirRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Air Genasi race and the specified Air Genasi subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Air Genasi subrace selection",
+        "type": "string",
+        "enum": [
+          "Air Genasi (ElementalEvilPlayersCompanion)",
+          "Air Genasi (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "genasi_earth_race_assigner",
+    "type_name": "GENASI_EARTH_RACE_ASSIGNER",
+    "label": "Genasi Earth Race Assigner",
+    "class_name": "GenasiEarthRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Earth Genasi race and the specified Earth Genasi subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Earth Genasi subrace selection",
+        "type": "string",
+        "enum": [
+          "Earth Genasi (ElementalEvilPlayersCompanion)",
+          "Earth Genasi (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "genasi_fire_race_assigner",
+    "type_name": "GENASI_FIRE_RACE_ASSIGNER",
+    "label": "Genasi Fire Race Assigner",
+    "class_name": "GenasiFireRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Fire Genasi race and the specified Fire Genasi subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Fire Genasi subrace selection",
+        "type": "string",
+        "enum": [
+          "Fire Genasi (ElementalEvilPlayersCompanion)",
+          "Fire Genasi (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "genasi_water_race_assigner",
+    "type_name": "GENASI_WATER_RACE_ASSIGNER",
+    "label": "Genasi Water Race Assigner",
+    "class_name": "GenasiWaterRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Water Genasi race and the specified Water Genasi subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Water Genasi subrace selection",
+        "type": "string",
+        "enum": [
+          "Water Genasi (ElementalEvilPlayersCompanion)",
+          "Water Genasi (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "gnome_race_assigner",
+    "type_name": "GNOME_RACE_ASSIGNER",
+    "label": "Gnome Race Assigner",
+    "class_name": "GnomeRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Gnome race and the specified Gnome subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Gnome subrace selection",
+        "type": "string",
+        "enum": [
+          "Mark of Scribing (EberronRisingfromtheLastWar)",
+          "Forest Gnome (PlayersHandbook)",
+          "Rock Gnome (PlayersHandbook)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "goblin_race_assigner",
+    "type_name": "GOBLIN_RACE_ASSIGNER",
+    "label": "Goblin Race Assigner",
+    "class_name": "GoblinRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Goblin race and the specified Goblin subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Goblin subrace selection",
+        "type": "string",
+        "enum": [
+          "Dankwood Goblin (AdventureswithMukDankwood)",
+          "Goblin (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Goblin (PlaneShiftIxalan)",
+          "Goblin (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "goliath_race_assigner",
+    "type_name": "GOLIATH_RACE_ASSIGNER",
+    "label": "Goliath Race Assigner",
+    "class_name": "GoliathRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Goliath race and the specified Goliath subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Goliath subrace selection",
+        "type": "string",
+        "enum": [
+          "Goliath (ElementalEvilPlayersGuide)",
+          "Goliath (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "grung_race_assigner",
+    "type_name": "GRUNG_RACE_ASSIGNER",
+    "label": "Grung Race Assigner",
+    "class_name": "GrungRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Grung race and the specified Grung subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Grung subrace selection",
+        "type": "string",
+        "enum": [
+          "Grung (PlayersHandbook)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "half_elf_race_assigner",
+    "type_name": "HALF_ELF_RACE_ASSIGNER",
+    "label": "Half Elf Race Assigner",
+    "class_name": "HalfElfRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Half-Elf race and the specified Half-Elf subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Half-Elf subrace selection",
+        "type": "string",
+        "enum": [
+          "Aquatic Elf Heritage (PlayersHandbook)",
+          "Dark Elf Heritage (PlayersHandbook)",
+          "High Elf Heritage (PlayersHandbook)",
+          "Wood Elf Heritage (PlayersHandbook)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "halfling_race_assigner",
+    "type_name": "HALFLING_RACE_ASSIGNER",
+    "label": "Halfling Race Assigner",
+    "class_name": "HalflingRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Halfling race and the specified Halfling subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Halfling subrace selection",
+        "type": "string",
+        "enum": [
+          "Mark of Healing (EberronRisingfromtheLastWar)",
+          "Mark of Hospitality (EberronRisingfromtheLastWar)",
+          "Lotusden Halfling (ExplorersGuidetoWildemount)",
+          "Lightfoot (PlayersHandbook)",
+          "Stout (PlayersHandbook)",
+          "Ghostwise (SwordCoastAdventurersGuide)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "half_orc_race_assigner",
+    "type_name": "HALF_ORC_RACE_ASSIGNER",
+    "label": "Half Orc Race Assigner",
+    "class_name": "HalfOrcRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Half-Orc race and the specified Half-Orc subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Half-Orc subrace selection",
+        "type": "string",
+        "enum": [
+          "Half orc Mark of Finding (EberronRisingfromtheLastWar)",
+          "Half-Orc (PlayersHandbook)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "hobgoblin_race_assigner",
+    "type_name": "HOBGOBLIN_RACE_ASSIGNER",
+    "label": "Hobgoblin Race Assigner",
+    "class_name": "HobgoblinRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Hobgoblin race and the specified Hobgoblin subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Hobgoblin subrace selection",
+        "type": "string",
+        "enum": [
+          "Hobgoblin (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Hobgoblin (UnearthedArcana)",
+          "Hobgoblin (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "human_race_assigner",
+    "type_name": "HUMAN_RACE_ASSIGNER",
+    "label": "Human Race Assigner",
+    "class_name": "HumanRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Human race and the specified Human subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Human subrace selection",
+        "type": "string",
+        "enum": [
+          "Mark of Finding (EberronRisingfromtheLastWar)",
+          "Mark of Handling (EberronRisingfromtheLastWar)",
+          "Mark of Making (EberronRisingfromtheLastWar)",
+          "Mark of Passage (EberronRisingfromtheLastWar)",
+          "Mark of Sentinel (EberronRisingfromtheLastWar)",
+          "Keldon (PlaneShiftDominaria)",
+          "Gavony (PlaneShiftInnistrad)",
+          "Kessig (PlaneShiftInnistrad)",
+          "Nephalia (PlaneShiftInnistrad)",
+          "Stensia (PlaneShiftInnistrad)",
+          "Standard Human (PlayersHandbook)",
+          "Variant Human (PlayersHandbook)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "kalashtar_race_assigner",
+    "type_name": "KALASHTAR_RACE_ASSIGNER",
+    "label": "Kalashtar Race Assigner",
+    "class_name": "KalashtarRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Kalashtar race and the specified Kalashtar subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Kalashtar subrace selection",
+        "type": "string",
+        "enum": [
+          "Kalashtar (EberronRisingfromtheLastWar)",
+          "Kalashtar (UnearthedArcana)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "kenku_race_assigner",
+    "type_name": "KENKU_RACE_ASSIGNER",
+    "label": "Kenku Race Assigner",
+    "class_name": "KenkuRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Kenku race and the specified Kenku subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Kenku subrace selection",
+        "type": "string",
+        "enum": [
+          "Kenku (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "kobold_race_assigner",
+    "type_name": "KOBOLD_RACE_ASSIGNER",
+    "label": "Kobold Race Assigner",
+    "class_name": "KoboldRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Kobold race and the specified Kobold subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Kobold subrace selection",
+        "type": "string",
+        "enum": [
+          "Kobold (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Kobold (UnearthedArcana)",
+          "Kobold (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "leonin_race_assigner",
+    "type_name": "LEONIN_RACE_ASSIGNER",
+    "label": "Leonin Race Assigner",
+    "class_name": "LeoninRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Leonin race and the specified Leonin subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Leonin subrace selection",
+        "type": "string",
+        "enum": [
+          "Leonin (LeoninFeatures)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "lizardfolk_race_assigner",
+    "type_name": "LIZARDFOLK_RACE_ASSIGNER",
+    "label": "Lizardfolk Race Assigner",
+    "class_name": "LizardfolkRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Lizardfolk race and the specified Lizardfolk subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Lizardfolk subrace selection",
+        "type": "string",
+        "enum": [
+          "Lizardfolk (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Lizardfolk (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "minotaur_race_assigner",
+    "type_name": "MINOTAUR_RACE_ASSIGNER",
+    "label": "Minotaur Race Assigner",
+    "class_name": "MinotaurRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Minotaur race and the specified Minotaur subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Minotaur subrace selection",
+        "type": "string",
+        "enum": [
+          "Minotaur (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "orc_race_assigner",
+    "type_name": "ORC_RACE_ASSIGNER",
+    "label": "Orc Race Assigner",
+    "class_name": "OrcRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Orc race and the specified Orc subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Orc subrace selection",
+        "type": "string",
+        "enum": [
+          "Orc (EberronRisingfromtheLastWar)",
+          "Orc (ExplorersGuidetoWildemount)",
+          "Orc (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Orc (PlaneShiftIxalan)",
+          "Orc (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "race_assigner",
+    "type_name": "RACE_ASSIGNER",
+    "label": "Race Assigner",
+    "class_name": "RaceAssigner",
+    "category": "Race",
+    "description": "Assigns any race and subrace combination to the character.",
+    "is_ai": false,
+    "fields": {
+      "race": {
+        "description": "The race to assign",
+        "type": "string",
+        "enum": [
+          "Human",
+          "Elf",
+          "Dwarf",
+          "Halfling",
+          "Half-Elf",
+          "Half-Orc",
+          "Tiefling",
+          "Dragonborn",
+          "Gnome",
+          "Aasimar",
+          "Genasi-Air",
+          "Genasi-Water",
+          "Genasi-Fire",
+          "Genasi-Earth",
+          "Goliath",
+          "Firbolg",
+          "Tabaxi",
+          "Lizardfolk",
+          "Kenku",
+          "Tortle",
+          "Aarakocra",
+          "Bugbear",
+          "Goblin",
+          "Hobgoblin",
+          "Kobold",
+          "Orc",
+          "Yuan-ti",
+          "Warforged",
+          "Changeling",
+          "Kalashtar",
+          "Shifter",
+          "Minotaur",
+          "Centaur",
+          "Satyr",
+          "Leonin",
+          "Verdan",
+          "Grung"
+        ],
+        "required": true
+      },
+      "subrace": {
+        "description": "The subrace to assign",
+        "type": "string",
+        "enum": [
+          "Aarakocra (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Fallen Aasimar (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Protector Aasimar (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Scourge Aasimar (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Fallen Aasimar (VolosGuidetoMonsters)",
+          "Protector Aasimar (VolosGuidetoMonsters)",
+          "Scourge Aasimar (VolosGuidetoMonsters)",
+          "Bugbear (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Bugbear (VolosGuidetoMonsters)",
+          "Gruul Centaur (GuildmastersGuidetoRavnica)",
+          "Selesnya Centaur (GuildmastersGuidetoRavnica)",
+          "Centaurs (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Lagonna (MythicOdysseysofTheros)",
+          "Pheres (MythicOdysseysofTheros)",
+          "Changeling (EberronRisingfromtheLastWar)",
+          "Changeling (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Changeling (UnearthedArcana)",
+          "Draconblood (ExplorersGuidetoWildemount)",
+          "Ravenite (ExplorersGuidetoWildemount)",
+          "Chromatic (FizbansTreasuryofDragons)",
+          "Gem (FizbansTreasuryofDragons)",
+          "Metallic (FizbansTreasuryofDragons)",
+          "Dragonborn (PlayersHandbook)",
+          "Chromatic (UnearthedArcana)",
+          "Gem (UnearthedArcana)",
+          "Metallic (UnearthedArcana)",
+          "Hill Dwarf (PlayersHandbook)",
+          "Mountain Dwarf (PlayersHandbook)",
+          "Mark of Shadow (EberronRisingfromtheLastWar)",
+          "Pallid Elf (ExplorersGuidetoWildemount)",
+          "Bishtahar Elf (PlaneShiftKaladesh)",
+          "Tirahar Elf (PlaneShiftKaladesh)",
+          "Vahadar Elf (PlaneShiftKaladesh)",
+          "Juraga (PlaneShiftZendikar)",
+          "Mul Daya (PlaneShiftZendikar)",
+          "Tajuru (PlaneShiftZendikar)",
+          "Dark Elf (PlayersHandbook)",
+          "High Elf (PlayersHandbook)",
+          "Wood Elf (PlayersHandbook)",
+          "Astral Elf (SpelljammerAdventuresinSpace)",
+          "Firbolg (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Firbolg (VolosGuidetoMonsters)",
+          "Air Genasi (ElementalEvilPlayersCompanion)",
+          "Air Genasi (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Earth Genasi (ElementalEvilPlayersCompanion)",
+          "Earth Genasi (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Fire Genasi (ElementalEvilPlayersCompanion)",
+          "Fire Genasi (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Water Genasi (ElementalEvilPlayersCompanion)",
+          "Water Genasi (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Mark of Scribing (EberronRisingfromtheLastWar)",
+          "Forest Gnome (PlayersHandbook)",
+          "Rock Gnome (PlayersHandbook)",
+          "Dankwood Goblin (AdventureswithMukDankwood)",
+          "Goblin (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Goblin (PlaneShiftIxalan)",
+          "Goblin (VolosGuidetoMonsters)",
+          "Goliath (ElementalEvilPlayersGuide)",
+          "Goliath (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Grung (PlayersHandbook)",
+          "Aquatic Elf Heritage (PlayersHandbook)",
+          "Dark Elf Heritage (PlayersHandbook)",
+          "High Elf Heritage (PlayersHandbook)",
+          "Wood Elf Heritage (PlayersHandbook)",
+          "Half orc Mark of Finding (EberronRisingfromtheLastWar)",
+          "Half-Orc (PlayersHandbook)",
+          "Mark of Healing (EberronRisingfromtheLastWar)",
+          "Mark of Hospitality (EberronRisingfromtheLastWar)",
+          "Lotusden Halfling (ExplorersGuidetoWildemount)",
+          "Lightfoot (PlayersHandbook)",
+          "Stout (PlayersHandbook)",
+          "Ghostwise (SwordCoastAdventurersGuide)",
+          "Hobgoblin (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Hobgoblin (UnearthedArcana)",
+          "Hobgoblin (VolosGuidetoMonsters)",
+          "Mark of Finding (EberronRisingfromtheLastWar)",
+          "Mark of Handling (EberronRisingfromtheLastWar)",
+          "Mark of Making (EberronRisingfromtheLastWar)",
+          "Mark of Passage (EberronRisingfromtheLastWar)",
+          "Mark of Sentinel (EberronRisingfromtheLastWar)",
+          "Keldon (PlaneShiftDominaria)",
+          "Gavony (PlaneShiftInnistrad)",
+          "Kessig (PlaneShiftInnistrad)",
+          "Nephalia (PlaneShiftInnistrad)",
+          "Stensia (PlaneShiftInnistrad)",
+          "Standard Human (PlayersHandbook)",
+          "Variant Human (PlayersHandbook)",
+          "Kenku (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Kalashtar (EberronRisingfromtheLastWar)",
+          "Kalashtar (UnearthedArcana)",
+          "Kobold (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Kobold (UnearthedArcana)",
+          "Kobold (VolosGuidetoMonsters)",
+          "Leonin (LeoninFeatures)",
+          "Lizardfolk (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Lizardfolk (VolosGuidetoMonsters)",
+          "Minotaur (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Orc (EberronRisingfromtheLastWar)",
+          "Orc (ExplorersGuidetoWildemount)",
+          "Orc (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Orc (PlaneShiftIxalan)",
+          "Orc (VolosGuidetoMonsters)",
+          "Yuan-ti (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Yuan-ti Pureblood (VolosGuidetoMonsters)",
+          "Satyr (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Satyr (MythicOdysseysofTheros)",
+          "Beasthide (EberronRisingfromtheLastWar)",
+          "Longtooth (EberronRisingfromtheLastWar)",
+          "Swiftstride (EberronRisingfromtheLastWar)",
+          "Wildhunt (EberronRisingfromtheLastWar)",
+          "Beasthide (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Longtooth (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Swiftstride (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Wildhunt (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Cliffwalk (UnearthedArcana)",
+          "Razorclaw (UnearthedArcana)",
+          "Tabaxi (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Tabaxi (VolosGuidetoMonsters)",
+          "Bloodline of Baalzebul (MordenkainensTomeofFoes)",
+          "Bloodline of Dispater (MordenkainensTomeofFoes)",
+          "Bloodline of Fierna (MordenkainensTomeofFoes)",
+          "Bloodline of Glasya (MordenkainensTomeofFoes)",
+          "Bloodline of Levistus (MordenkainensTomeofFoes)",
+          "Bloodline of Mammon (MordenkainensTomeofFoes)",
+          "Bloodline of Mephistopheles (MordenkainensTomeofFoes)",
+          "Bloodline of Zariel (MordenkainensTomeofFoes)",
+          "Bloodline of Asmodeus (PlayersHandbook)",
+          "Devil's Tongue(SwordCoastAdventurersGuide)",
+          "Feral (SwordCoastAdventurersGuide)",
+          "Hellfire (SwordCoastAdventurersGuide)",
+          "Winged (SwordCoastAdventurersGuide)",
+          "Abyssal Tiefling (UnearthedArcana)",
+          "Tortle (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Verdan (PlayersHandbook)",
+          "Warforged (EberronRisingfromtheLastWar)",
+          "Envoy (UnearthedArcana)",
+          "Juggernaut (UnearthedArcana)",
+          "Skirmisher (UnearthedArcana)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "random_race_assigner",
+    "type_name": "RANDOM_RACE_ASSIGNER",
+    "label": "Random Race Assigner",
+    "class_name": "RandomRaceAssigner",
+    "category": "Race",
+    "description": "Building block that randomly assigns a race and subrace to a character.",
+    "is_ai": false,
+    "fields": {
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "satyr_race_assigner",
+    "type_name": "SATYR_RACE_ASSIGNER",
+    "label": "Satyr Race Assigner",
+    "class_name": "SatyrRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Satyr race and the specified Satyr subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Satyr subrace selection",
+        "type": "string",
+        "enum": [
+          "Satyr (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Satyr (MythicOdysseysofTheros)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "shifter_race_assigner",
+    "type_name": "SHIFTER_RACE_ASSIGNER",
+    "label": "Shifter Race Assigner",
+    "class_name": "ShifterRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Shifter race and the specified Shifter subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Shifter subrace selection",
+        "type": "string",
+        "enum": [
+          "Beasthide (EberronRisingfromtheLastWar)",
+          "Longtooth (EberronRisingfromtheLastWar)",
+          "Swiftstride (EberronRisingfromtheLastWar)",
+          "Wildhunt (EberronRisingfromtheLastWar)",
+          "Beasthide (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Longtooth (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Swiftstride (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Wildhunt (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Cliffwalk (UnearthedArcana)",
+          "Razorclaw (UnearthedArcana)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "tabaxi_race_assigner",
+    "type_name": "TABAXI_RACE_ASSIGNER",
+    "label": "Tabaxi Race Assigner",
+    "class_name": "TabaxiRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Tabaxi race and the specified Tabaxi subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Tabaxi subrace selection",
+        "type": "string",
+        "enum": [
+          "Tabaxi (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Tabaxi (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "tiefling_race_assigner",
+    "type_name": "TIEFLING_RACE_ASSIGNER",
+    "label": "Tiefling Race Assigner",
+    "class_name": "TieflingRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Tiefling race and the specified Tiefling subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Tiefling subrace selection",
+        "type": "string",
+        "enum": [
+          "Bloodline of Baalzebul (MordenkainensTomeofFoes)",
+          "Bloodline of Dispater (MordenkainensTomeofFoes)",
+          "Bloodline of Fierna (MordenkainensTomeofFoes)",
+          "Bloodline of Glasya (MordenkainensTomeofFoes)",
+          "Bloodline of Levistus (MordenkainensTomeofFoes)",
+          "Bloodline of Mammon (MordenkainensTomeofFoes)",
+          "Bloodline of Mephistopheles (MordenkainensTomeofFoes)",
+          "Bloodline of Zariel (MordenkainensTomeofFoes)",
+          "Bloodline of Asmodeus (PlayersHandbook)",
+          "Devil's Tongue(SwordCoastAdventurersGuide)",
+          "Feral (SwordCoastAdventurersGuide)",
+          "Hellfire (SwordCoastAdventurersGuide)",
+          "Winged (SwordCoastAdventurersGuide)",
+          "Abyssal Tiefling (UnearthedArcana)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "tortle_race_assigner",
+    "type_name": "TORTLE_RACE_ASSIGNER",
+    "label": "Tortle Race Assigner",
+    "class_name": "TortleRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Tortle race and the specified Tortle subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Tortle subrace selection",
+        "type": "string",
+        "enum": [
+          "Tortle (MordenkainenPresentsMonstersoftheMultiverse)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "verdan_race_assigner",
+    "type_name": "VERDAN_RACE_ASSIGNER",
+    "label": "Verdan Race Assigner",
+    "class_name": "VerdanRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Verdan race and the specified Verdan subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Verdan subrace selection",
+        "type": "string",
+        "enum": [
+          "Verdan (PlayersHandbook)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "warforged_race_assigner",
+    "type_name": "WARFORGED_RACE_ASSIGNER",
+    "label": "Warforged Race Assigner",
+    "class_name": "WarforgedRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Warforged race and the specified Warforged subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Warforged subrace selection",
+        "type": "string",
+        "enum": [
+          "Warforged (EberronRisingfromtheLastWar)",
+          "Envoy (UnearthedArcana)",
+          "Juggernaut (UnearthedArcana)",
+          "Skirmisher (UnearthedArcana)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "yuan_ti_pureblood_race_assigner",
+    "type_name": "YUAN_TI_PUREBLOOD_RACE_ASSIGNER",
+    "label": "Yuan Ti Pureblood Race Assigner",
+    "class_name": "YuanTiPurebloodRaceAssigner",
+    "category": "Race",
+    "description": "Assigns Yuan-Ti Pureblood race and the specified Yuan-Ti subrace to the character.",
+    "is_ai": false,
+    "fields": {
+      "subrace": {
+        "description": "Yuan-Ti Pureblood subrace selection",
+        "type": "string",
+        "enum": [
+          "Yuan-ti (MordenkainenPresentsMonstersoftheMultiverse)",
+          "Yuan-ti Pureblood (VolosGuidetoMonsters)"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "random_equipment_chooser",
+    "type_name": "RANDOM_EQUIPMENT_CHOOSER",
+    "label": "Random Equipment Chooser",
+    "class_name": "RandomEquipmentChooser",
+    "category": "Equipment",
+    "description": "Randomly selects equipment from available choices.",
+    "is_ai": false,
+    "fields": {}
+  },
+  {
+    "type": "random_feat_choice_resolver",
+    "type_name": "RANDOM_FEAT_CHOICE_RESOLVER",
+    "label": "Random Feat Choice Resolver",
+    "class_name": "RandomFeatChoiceResolver",
+    "category": "Feats",
+    "description": "Randomly selects feats for ANY_OF_YOUR_CHOICE placeholders.",
+    "is_ai": false,
+    "fields": {
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "random_initial_data_filler",
+    "type_name": "RANDOM_INITIAL_DATA_FILLER",
+    "label": "Random Initial Data Filler",
+    "class_name": "RandomInitialDataFiller",
+    "category": "Builders",
+    "description": "Fills missing required Character fields with random mock data.",
+    "is_ai": false,
+    "fields": {
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "random_language_choice_resolver",
+    "type_name": "RANDOM_LANGUAGE_CHOICE_RESOLVER",
+    "label": "Random Language Choice Resolver",
+    "class_name": "RandomLanguageChoiceResolver",
+    "category": "Languages",
+    "description": "Randomly selects languages for ANY_OF_YOUR_CHOICE placeholders.",
+    "is_ai": false,
+    "fields": {
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "random_magical_item_chooser",
+    "type_name": "RANDOM_MAGICAL_ITEM_CHOOSER",
+    "label": "Random Magical Item Chooser",
+    "class_name": "RandomMagicalItemChooser",
+    "category": "Equipment",
+    "description": "Randomly selects magical items by rarity level.",
+    "is_ai": false,
+    "fields": {
+      "n_common": {
+        "description": "Number of common magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_uncommon": {
+        "description": "Number of uncommon magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_rare": {
+        "description": "Number of rare magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_very_rare": {
+        "description": "Number of very rare magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_legendary": {
+        "description": "Number of legendary magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_artifact": {
+        "description": "Number of artifact magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_unique": {
+        "description": "Number of unique magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "n_mistery": {
+        "description": "Number of mystery magical items to select",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "random_skill_choice_resolver",
+    "type_name": "RANDOM_SKILL_CHOICE_RESOLVER",
+    "label": "Random Skill Choice Resolver",
+    "class_name": "RandomSkillChoiceResolver",
+    "category": "Skills",
+    "description": "Randomly selects skills from available options.",
+    "is_ai": false,
+    "fields": {
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "wizard_llm_spell_assigner",
+    "type_name": "WIZARD_LLM_SPELL_ASSIGNER",
+    "label": "Wizard Llm Spell Assigner",
+    "class_name": "WizardLLMSpellAssigner",
+    "category": "Spells",
+    "description": "Uses LLM to select thematically appropriate wizard spells.",
+    "is_ai": true,
+    "fields": {
+      "class_": {
+        "description": "Character class this assigner handles",
+        "type": "string",
+        "enum": [
+          "Wizard"
+        ],
+        "required": false
+      },
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "character_description": {
+        "description": "Additional character context for AI spell selection",
+        "type": "string",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "sorcerer_llm_spell_assigner",
+    "type_name": "SORCERER_LLM_SPELL_ASSIGNER",
+    "label": "Sorcerer Llm Spell Assigner",
+    "class_name": "SorcererLLMSpellAssigner",
+    "category": "Spells",
+    "description": "Uses LLM to select thematically appropriate sorcerer spells.",
+    "is_ai": true,
+    "fields": {
+      "class_": {
+        "description": "Character class this assigner handles",
+        "type": "string",
+        "enum": [
+          "Sorcerer"
+        ],
+        "required": false
+      },
+      "llm": {
+        "description": "Language model for making AI-powered decisions",
+        "type": "string",
+        "note": "serialized as: <class 'structured_output_creator._raising_service._RaisingService'>",
+        "required": true
+      },
+      "character_description": {
+        "description": "Additional character context for AI spell selection",
+        "type": "string",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "wizard_random_spell_assigner",
+    "type_name": "WIZARD_RANDOM_SPELL_ASSIGNER",
+    "label": "Wizard Random Spell Assigner",
+    "class_name": "WizardRandomSpellAssigner",
+    "category": "Spells",
+    "description": "Randomly selects wizard spells from the wizard spell list.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "description": "Character class this assigner handles",
+        "type": "string",
+        "enum": [
+          "Wizard"
+        ],
+        "required": false
+      },
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "sorcerer_random_spell_assigner",
+    "type_name": "SORCERER_RANDOM_SPELL_ASSIGNER",
+    "label": "Sorcerer Random Spell Assigner",
+    "class_name": "SorcererRandomSpellAssigner",
+    "category": "Spells",
+    "description": "Randomly selects sorcerer spells from the sorcerer spell list.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "description": "Character class this assigner handles",
+        "type": "string",
+        "enum": [
+          "Sorcerer"
+        ],
+        "required": false
+      },
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "random_subclass_assigner",
+    "type_name": "RANDOM_SUBCLASS_ASSIGNER",
+    "label": "Random Subclass Assigner",
+    "class_name": "RandomSubclassAssigner",
+    "category": "Subclass",
+    "description": "Randomly selects a subclass from the valid subclasses for the given class.",
+    "is_ai": false,
+    "fields": {
+      "class_": {
+        "description": "The character class for which to assign a subclass",
+        "type": "string",
+        "enum": [
+          "Barbarian",
+          "Bard",
+          "Cleric",
+          "Druid",
+          "Fighter",
+          "Monk",
+          "Paladin",
+          "Ranger",
+          "Rogue",
+          "Sorcerer",
+          "Warlock",
+          "Wizard",
+          "Artificer"
+        ],
+        "required": true
+      },
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "random_tool_proficiency_choice_resolver",
+    "type_name": "RANDOM_TOOL_PROFICIENCY_CHOICE_RESOLVER",
+    "label": "Random Tool Proficiency Choice Resolver",
+    "class_name": "RandomToolProficiencyChoiceResolver",
+    "category": "Tool Proficiencies",
+    "description": "Randomly selects tool proficiencies for ANY_OF_YOUR_CHOICE placeholders.",
+    "is_ai": false,
+    "fields": {
+      "seed": {
+        "description": "Optional seed for reproducible random selection",
+        "type": "integer",
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "sex_assigner",
+    "type_name": "SEX_ASSIGNER",
+    "label": "Sex Assigner",
+    "class_name": "SexAssigner",
+    "category": "Identity",
+    "description": "Assigns a sex to the character.",
+    "is_ai": false,
+    "fields": {
+      "sex": {
+        "description": "Character's biological sex",
+        "type": "string",
+        "enum": [
+          "male",
+          "female"
+        ],
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "standard_array",
+    "type_name": "STANDARD_ARRAY",
+    "label": "Standard Array",
+    "class_name": "StandardArray",
+    "category": "Stats",
+    "description": "Assigns ability scores using the standard array method (15, 14, 13, 12, 10, 8).",
+    "is_ai": false,
+    "fields": {
+      "stats_priority": {
+        "description": "Ability scores ranked by priority for stat assignment",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ]
+        },
+        "required": true
+      }
+    }
+  },
+  {
+    "type": "weapon_adder",
+    "type_name": "WEAPON_ADDER",
+    "label": "Weapon Adder",
+    "class_name": "WeaponAdder",
+    "category": "Equipment",
+    "description": "Adds a weapon to the character's weapons list.",
+    "is_ai": false,
+    "fields": {
+      "weapon": {
+        "description": "Weapon to add to character's inventory",
+        "type": "string",
+        "enum": [
+          "Club",
+          "Dagger",
+          "Greatclub",
+          "Handaxe",
+          "Javelin",
+          "Light hammer",
+          "Mace",
+          "Quarterstaff",
+          "Sickle",
+          "Spear",
+          "Crossbow, light",
+          "Dart",
+          "Shortbow",
+          "Sling",
+          "Battleaxe",
+          "Flail",
+          "Glaive",
+          "Greataxe",
+          "Greatsword",
+          "Halberd",
+          "Lance",
+          "Longsword",
+          "Maul",
+          "Morningstar",
+          "Pike",
+          "Rapier",
+          "Scimitar",
+          "Shortsword",
+          "Trident",
+          "War pick",
+          "Warhammer",
+          "Whip",
+          "Blowgun",
+          "Crossbow, hand",
+          "Crossbow, heavy",
+          "Longbow",
+          "Net"
+        ],
+        "required": true
+      }
+    }
+  }
+]
