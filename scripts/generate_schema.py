@@ -8,9 +8,6 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from dnd.character.checkpoint import (  # noqa: E402
-    MemoryStorage,
-)
 from dnd.server.app import create_app  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
@@ -18,7 +15,7 @@ from starlette.testclient import TestClient  # noqa: E402
 def generate_schema():
     """Generate schema and save to static directory."""
     # Create app to access the schema generation function
-    app = create_app(MemoryStorage())
+    app = create_app()
 
     # Call the schema endpoint to get the schema
     client = TestClient(app)

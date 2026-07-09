@@ -1,51 +1,11 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from collections.abc import Generator
-from typing import Never
-from typing import cast
-from typing import overload
-from typing import TYPE_CHECKING
-
-from typing_extensions import deprecated
-from typing_protocol_intersection import ProtocolIntersection
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import Blueprint
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.blueprint.state import HasLanguages
-from dnd.character.delta.delta import Delta
+from dnd.character.blueprint.state import _BPT
 from dnd.choices.language import Language
 from pydantic import ConfigDict
-from typing import Literal
-
-
-class LanguagesDelta(Delta):
-    """Delta produced when LanguageChoiceResolver resolves language choices."""
-
-    delta_type: Literal["LanguagesDelta"] = "LanguagesDelta"
-    languages: tuple[Language, ...]
-
-    def apply[T: BlueprintProtocol](
-        self, state: T
-    ) -> ProtocolIntersection[T, HasLanguages]:
-
-        if TYPE_CHECKING:
-
-            class BlueprintWithLanguages(Blueprint):
-                languages: tuple[Language, ...]
-
-        else:
-
-            class BlueprintWithLanguages(type(state)):
-                languages: tuple[Language, ...]
-
-        return cast(
-            ProtocolIntersection[T, HasLanguages],
-            BlueprintWithLanguages.model_validate(
-                {**dict(state), "languages": self.languages}
-            ),
-        )
 
 
 class LanguageChoiceResolver(BuildingBlock):
@@ -59,26 +19,11 @@ class LanguageChoiceResolver(BuildingBlock):
 
     @abstractmethod
     def _select_from_available(
-        self, available: list[Language], state: HasLanguages
+        self, available: list[Language], languages: tuple[Language, ...]
     ) -> Language: ...
 
-    @overload
-    def get_change[T: HasLanguages](
-        self, state: T
-    ) -> Generator[LanguagesDelta, None, ProtocolIntersection[T, HasLanguages]]: ...
-
-    @overload
-    @deprecated("Pass a state satisfying HasLanguages for precise return typing")
-    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
-
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]:
-        if not isinstance(state, HasLanguages):
-            raise TypeError(
-                f"{type(self).__name__} requires HasLanguages, got {type(state).__name__}"
-            )
-        resolved = list(state.languages)
+    def apply(self, blueprint: _BPT) -> _BPT:
+        resolved = list(blueprint.languages)
         for i, lang in enumerate(resolved):
             if lang == Language.ANY_OF_YOUR_CHOICE:
                 available: list[Language] = [
@@ -86,7 +31,7 @@ class LanguageChoiceResolver(BuildingBlock):
                     for option in Language
                     if option != Language.ANY_OF_YOUR_CHOICE
                 ]
-                resolved[i] = self._select_from_available(available, state)
-        delta = LanguagesDelta(languages=tuple(resolved))
-        yield delta
-        return delta.apply(state)
+                resolved[i] = self._select_from_available(
+                    available, blueprint.languages
+                )
+        return blueprint.model_copy(update={"languages": tuple(resolved)})

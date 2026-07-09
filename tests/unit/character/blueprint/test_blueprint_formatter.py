@@ -16,6 +16,7 @@ from dnd.character.race.subraces import SubraceName
 from dnd.character.spells.spell_slots import Cantrip, FirstLevel
 from dnd.character.spells.spells import Spells
 from dnd.character.stats import Stats
+from dnd.character.blueprint.character_data import CharacterData
 from dnd.choices.alignment import Alignment
 from dnd.choices.background_creatrion.background import Background
 from dnd.choices.equipment_creation.weapons import WeaponName
@@ -34,22 +35,26 @@ _DEFAULT_STATS = Stats(
     charisma=10,
 )
 
+_DEFAULT_CHARACTER_DATA = CharacterData(
+    name="Elara",
+    sex=Sex.FEMALE,
+    age=25,
+    background=Background.SAGE,
+    alignment=Alignment.CHAOTIC_GOOD,
+    backstory="A brilliant wizard seeking ancient knowledge.",
+)
+
 
 class _FormatterState(Blueprint):
     """Blueprint subclass with all fields needed by BlueprintFormatter."""
 
     classes: ClassLevels = Field(default_factory=_WizardLevels2)
-    name: str = "Elara"
-    sex: Sex = Sex.FEMALE
-    age: int = 25
     race: Race = Race.HUMAN
     subrace: SubraceName = SubraceName.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK
     speed: int = 30
     dark_vision_range: int = 0
     stats: Stats = Field(default=_DEFAULT_STATS)
-    background: Background = Background.SAGE
-    alignment: Alignment = Alignment.CHAOTIC_GOOD
-    backstory: str = "A brilliant wizard seeking ancient knowledge."
+    character_data: CharacterData = Field(default=_DEFAULT_CHARACTER_DATA)
 
 
 @pytest.fixture(scope="module")
@@ -68,7 +73,7 @@ class TestBlueprintFormatter:
     def test_format_includes_name(self, built_character: _FormatterState) -> None:
         formatter = BlueprintFormatter()
         output = formatter.format(built_character)
-        assert built_character.name in output
+        assert built_character.character_data.name in output
 
     def test_format_includes_classes(self, built_character: _FormatterState) -> None:
         formatter = BlueprintFormatter()

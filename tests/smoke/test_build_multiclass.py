@@ -87,6 +87,9 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base impo
     SorcererSpellAssigner,
     WizardSpellAssigner,
 )
+from dnd.character.blueprint.building_blocks.magical_item_chooser.base_chooser import (
+    MagicalItemChooserBase,
+)
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
@@ -99,10 +102,9 @@ from dnd.character.blueprint.building_blocks.subclass_assigner import (
 from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
     SubclassAssigner,
 )
-from dnd.character.builder import Builder
-from dnd.character.builder import SuccessBuiltResult
+from dnd.character.blueprint.state import Blueprint
 from dnd.character.character import Character
-from dnd.character.checkpoint import MemoryStorage
+from dnd.character.presentable_character import PresentableCharacter
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
 from dnd.choices.class_creation.character_class import Class
@@ -157,14 +159,14 @@ class TestBuildMulticlass:
     @classmethod
     def _build_multiclass(
         cls,
-        magical_item_chooser,
+        magical_item_chooser: MagicalItemChooserBase,
         all_choices_resolver: AllChoicesResolverBase,
         initial_data_filler: InitialDataFiller,
         wiz_subclass_assigner: SubclassAssigner,
         sorc_subclass_assigner: SubclassAssigner,
         wizard_spell_assigner: SpellAssigner,
         sorc_spell_assigner: SpellAssigner,
-    ):
+    ) -> PresentableCharacter:
         """Build a wizard character with the specified magical item chooser.
 
         Args:
@@ -186,37 +188,27 @@ class TestBuildMulticlass:
             spell_assigner=sorc_spell_assigner,
         )
 
-        builder = (
-            Builder(increment_storage=MemoryStorage())
-            .add(
-                InitialBuilder(
-                    level_assigner=LevelAssigner(level=cls.LEVEL),
-                    stats_builder=StandardArray(stats_priority=cls.STATS_PRIORITY),
-                    race_assigner=RaceAssigner(
-                        race=cls.RACE,
-                        subrace=cls.SUBRACE,
-                    ),
-                    all_choices_resolver=all_choices_resolver,
-                )
-            )
-            .add(initial_data_filler)
-            .add(
-                LevelUpMultiple(
-                    blocks=tuple(
-                        level_up_wizard for _ in range(cls.LEVEL - cls.SORC_LEVEL - 1)
-                    )
-                )
-            )
-            .add(
-                LevelUpMultiple(
-                    blocks=tuple(level_up_sorc for _ in range(cls.SORC_LEVEL))
-                )
-            )
-            .add(wiz_subclass_assigner)
-            .add(sorc_subclass_assigner)
-            .add(magical_item_chooser)
-        )
-        return builder.build()
+        blueprint = Blueprint()
+        blueprint = InitialBuilder(
+            level_assigner=LevelAssigner(level=cls.LEVEL),
+            stats_builder=StandardArray(stats_priority=cls.STATS_PRIORITY),
+            race_assigner=RaceAssigner(
+                race=cls.RACE,
+                subrace=cls.SUBRACE,
+            ),
+            all_choices_resolver=all_choices_resolver,
+        ).apply(blueprint)
+        blueprint = initial_data_filler.apply(blueprint)
+        blueprint = LevelUpMultiple(
+            blocks=tuple(level_up_wizard for _ in range(cls.LEVEL - cls.SORC_LEVEL - 1))
+        ).apply(blueprint)
+        blueprint = LevelUpMultiple(
+            blocks=tuple(level_up_sorc for _ in range(cls.SORC_LEVEL))
+        ).apply(blueprint)
+        blueprint = wiz_subclass_assigner.apply(blueprint)
+        blueprint = sorc_subclass_assigner.apply(blueprint)
+        blueprint = magical_item_chooser.apply(blueprint)
+        return PresentableCharacter.from_blueprint(blueprint)
 
     def test_build_multiclass(self):
         """Test wizard build with random magical item selection."""
@@ -251,8 +243,7 @@ class TestBuildMulticlass:
             WizardRandomSpellAssigner(),
             SorcererRandomSpellAssigner(),
         )
-        assert isinstance(result, SuccessBuiltResult), result
-        wizard = result.character
+        wizard = result
         assert isinstance(wizard, Character)
         assert wizard.weapons
         assert wizard.other_equipment
@@ -320,7 +311,7 @@ class TestBuildMulticlass:
                 llm=spells_llm,
                 character_description=character_description,
             ),
-        ).character
+        )
 
         assert isinstance(wizard, Character)
         assert wizard.weapons

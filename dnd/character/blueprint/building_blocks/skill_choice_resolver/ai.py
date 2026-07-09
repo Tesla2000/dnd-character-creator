@@ -6,8 +6,8 @@ from __future__ import annotations
 from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.skill_choice_resolver.base import (
     SkillChoiceResolver,
-    _SkillT,
 )
+from dnd.character.blueprint.state import Blueprint
 from dnd.skill_proficiency import Skill
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -38,7 +38,6 @@ class AISkillChoiceResolver(SkillChoiceResolver):
         >>> resolver = AISkillChoiceResolver(
         ...     llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
         ... )
-        >>> builder = Builder().add(resolver)
     """
 
     type: Literal[BuildingBlockType.AI_SKILL_CHOICE_RESOLVER] = (
@@ -55,7 +54,7 @@ class AISkillChoiceResolver(SkillChoiceResolver):
         description="Blueprint formatter for creating AI prompts",
     )
 
-    def _build_prompt(self, state: _SkillT) -> str:
+    def _build_prompt(self, state: Blueprint) -> str:
         n = state.n_skill_choices
         available_skills = state.skills_to_choose_from
 
@@ -91,7 +90,7 @@ class AISkillChoiceResolver(SkillChoiceResolver):
 
         return "\n".join(parts)
 
-    def _select_skills(self, state: _SkillT) -> frozenset[Skill]:
+    def _select_skills(self, state: Blueprint) -> frozenset[Skill]:
         prompt = self._build_prompt(state)
 
         selection = self.llm.create_structured_output(prompt, SkillSelection)

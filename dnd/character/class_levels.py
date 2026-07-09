@@ -5,27 +5,42 @@ from collections.abc import Iterator
 from dnd.choices.class_creation.character_class import Class
 from pydantic import BaseModel
 from pydantic import ConfigDict
-from pydantic import PositiveInt
+from pydantic import NonNegativeInt
 
 
 class ClassLevels(BaseModel):
-    """Accumulating class level state during construction.
-
-    Starts empty; class levels are added by deltas via dynamic subclass
-    creation (mirroring how Blueprint grows via HasRace, HasStats, etc.).
-    Use isinstance(state, HasWizardLevel) on the blueprint state to check
-    if a class has been leveled up.
-    """
+    """Flat class-level state. Each field holds the level in that class (0 = not taken)."""
 
     model_config = ConfigDict(frozen=True)
+
+    wizard: NonNegativeInt = 0
+    sorcerer: NonNegativeInt = 0
+    fighter: NonNegativeInt = 0
+    barbarian: NonNegativeInt = 0
+    rogue: NonNegativeInt = 0
+    cleric: NonNegativeInt = 0
+    druid: NonNegativeInt = 0
+    paladin: NonNegativeInt = 0
+    ranger: NonNegativeInt = 0
+    monk: NonNegativeInt = 0
+    bard: NonNegativeInt = 0
+    warlock: NonNegativeInt = 0
+    artificer: NonNegativeInt = 0
 
     def total_level(self) -> int:
         return sum(self.model_dump().values())
 
     def get_level(self, class_: Class) -> int:
-        return dict(self.all_levels()).get(class_, 0)
+        return int(self.model_dump().get(class_.name.lower(), 0))
 
-    def all_levels(self) -> Iterator[tuple[Class, PositiveInt]]:
-        _field_to_class: dict[str, Class] = {c.name.lower(): c for c in Class}
-        for field_name, value in self.model_dump().items():
-            yield _field_to_class[field_name], value
+    def all_levels(self) -> Iterator[tuple[Class, int]]:
+        for class_ in Class:
+            level = self.get_level(class_)
+            if level > 0:
+                yield class_, level
+
+    def __contains__(self, class_: object) -> bool:
+        return isinstance(class_, Class) and self.get_level(class_) > 0
+
+    def __getitem__(self, class_: Class) -> int:
+        return self.get_level(class_)

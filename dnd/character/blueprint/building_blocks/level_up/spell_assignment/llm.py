@@ -6,15 +6,7 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base impo
     SorcererSpellAssigner,
     WizardSpellAssigner,
 )
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.blueprint.state import HasAlignment
-from dnd.character.blueprint.state import HasBackground
-from dnd.character.blueprint.state import HasInitialData
-from dnd.character.blueprint.state import HasLevel
-from dnd.character.blueprint.state import HasName
-from dnd.character.blueprint.state import HasRace
-from dnd.character.blueprint.state import HasSorcererLevel
-from dnd.character.blueprint.state import HasWizardLevel
+from dnd.character.blueprint.state import Blueprint
 from dnd.character.spells import Spell
 from dnd.choices.class_creation.character_class import Class
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -33,17 +25,16 @@ def _build_llm_prompt(
     spell_level: int,
     count: int,
     available_spells: list[Spell],
-    state: BlueprintProtocol,
+    state: Blueprint,
 ) -> str:
     spell_level_name = "cantrips" if spell_level == 0 else f"level {spell_level} spells"
-    name = state.name if isinstance(state, HasName) else "Unknown"
-    level = state.level if isinstance(state, HasLevel) else 1
-    race = state.race if isinstance(state, HasRace) else None
-    background = state.background if isinstance(state, HasBackground) else None
-    backstory = (
-        state.backstory if isinstance(state, HasInitialData) else "Generic adventurer"
-    )
-    alignment = state.alignment if isinstance(state, HasAlignment) else None
+    cd = state.character_data
+    name = (cd.name if cd else None) or "Unknown"
+    level = state.level or 1
+    race = state.race
+    background = cd.background if cd else None
+    backstory = (cd.backstory if cd else None) or "Generic adventurer"
+    alignment = cd.alignment if cd else None
     return (
         f"You are selecting {count} {spell_level_name} for a D&D 5e character.\n\n"
         "Character Details:\n"
@@ -74,7 +65,7 @@ def _llm_select(
     spell_level: int,
     count: int,
     available_spells: list[Spell],
-    state: BlueprintProtocol,
+    state: Blueprint,
 ) -> tuple[Spell, ...]:
     context = _build_llm_prompt(
         class_name, character_description, spell_level, count, available_spells, state
@@ -130,7 +121,7 @@ class WizardLLMSpellAssigner(WizardSpellAssigner):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        state: HasWizardLevel,
+        state: Blueprint,
     ) -> tuple[Spell, ...]:
         return _llm_select(
             self.llm,
@@ -180,7 +171,7 @@ class SorcererLLMSpellAssigner(SorcererSpellAssigner):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        state: HasSorcererLevel,
+        state: Blueprint,
     ) -> tuple[Spell, ...]:
         return _llm_select(
             self.llm,

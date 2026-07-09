@@ -1,24 +1,22 @@
 from __future__ import annotations
 
-from typing import ClassVar
-from collections.abc import Iterator
-from typing import Protocol
-from typing import runtime_checkable
+from typing import ClassVar, Any
+from typing import Generic
+from typing import Literal
+from typing import TypeAlias
+from typing import TypeVar
+from typing import cast
 
 from dnd.character.armor.names import ArmorName
 from dnd.character.magical_item.item import MagicalItem
-from dnd.character.character import ClassLevel
+from dnd.character.character import Level
 from dnd.character.feature.feats import FeatName
-from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
 from dnd.character.spells.spells import Spells
 from dnd.character.stats import Stats
-from dnd.choices.alignment import Alignment
-from dnd.choices.background_creatrion.background import Background
 from dnd.choices.class_creation.character_class import AnySubclass
 from dnd.choices.equipment_creation.weapons import WeaponName
 from dnd.choices.language import Language
-from dnd.choices.sex import Sex
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import ArmorProficiency
 from dnd.other_profficiencies import GamingSet
@@ -30,20 +28,81 @@ from dnd.character.class_levels import ClassLevels
 from pydantic import Field
 from pydantic import NonNegativeInt, BaseModel, ConfigDict
 from pydantic import PositiveInt
+from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnySorcererLevel
+from dnd.character.blueprint.sentinels import AnyStatChoices
+from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import ClassPreSubclassLevel
+from dnd.character.blueprint.sentinels import FirstSubclassPreLevel
+from dnd.character.blueprint.sentinels import MaybeCharacterData
+from dnd.character.blueprint.sentinels import MaybeHealth
+from dnd.character.blueprint.sentinels import MaybeRace
+from dnd.character.blueprint.sentinels import MaybeStats
+from dnd.character.blueprint.sentinels import SecondSubclassPreLevel
+from dnd.character.blueprint.sentinels import SorcererPreSubclassLevel
+from dnd.character.blueprint.sentinels import ThirdSubclassPreLevel
+from dnd.character.blueprint.sentinels import WizardPreSubclassLevel
+from dnd.character.blueprint.sentinels import _ARK
+from dnd.character.blueprint.sentinels import _BAK
+from dnd.character.blueprint.sentinels import _BDK
+from dnd.character.blueprint.sentinels import _CDK
+from dnd.character.blueprint.sentinels import _CLK
+from dnd.character.blueprint.sentinels import _DRK
+from dnd.character.blueprint.sentinels import _FGK
+from dnd.character.blueprint.sentinels import _HeK
+from dnd.character.blueprint.sentinels import _MOK
+from dnd.character.blueprint.sentinels import _PAK
+from dnd.character.blueprint.sentinels import _RAK
+from dnd.character.blueprint.sentinels import _RK
+from dnd.character.blueprint.sentinels import _ROK
+from dnd.character.blueprint.sentinels import _SOK
+from dnd.character.blueprint.sentinels import _SkCK
+from dnd.character.blueprint.sentinels import _StCK
+from dnd.character.blueprint.sentinels import _StK
+from dnd.character.blueprint.sentinels import _WAK
+from dnd.character.blueprint.sentinels import _WZK
 
 type Equipment = WeaponName | ArmorName | str
 
 
-class Blueprint(BaseModel):
-    """Accumulating character state during construction.
-
-    Only carries fields with non-None defaults. Fields that start as None
-    (race, stats, level, etc.) are added dynamically by deltas so that
-    isinstance(state, HasXxx) guards work correctly — @runtime_checkable
-    Protocol checks only verify attribute existence, not value.
+class Blueprint(
+    BaseModel,
+    Generic[
+        _RK,
+        _StK,
+        _HeK,
+        _StCK,
+        _SkCK,
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ],
+):
+    """Flat character state. Type params encode what's been set:
+    _RK=Race means race is set; _HeK=PositiveInt means health is set;
+    _WZK=WizardSubclassLevel[...] means wizard subclass is assigned; etc.
+    Building blocks transform Blueprint[InKey] -> Blueprint[OutKey].
     """
 
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
+
+    race: _RK = Field(default=cast(_RK, None))
+    subrace: SubraceName | None = None
+    speed: PositiveInt | None = None
+    dark_vision_range: NonNegativeInt | None = None
+    stats: _StK = Field(default=cast(_StK, None))
+    health_base: _HeK = Field(default=cast(_HeK, None))
 
     classes: ClassLevels = Field(default_factory=ClassLevels)
     stats_cup: Stats = Field(
@@ -86,237 +145,58 @@ class Blueprint(BaseModel):
     magical_items: tuple[MagicalItem, ...] = ()
     saving_throw_proficiencies: tuple[Statistic, ...] = ()
     other_active_abilities: tuple[str, ...] = ()
-    n_stat_choices: NonNegativeInt = 0
-    n_skill_choices: NonNegativeInt = 0
+    n_stat_choices: _StCK = Field(default=cast(_StCK, 0))
+    n_skill_choices: _SkCK = Field(default=cast(_SkCK, 0))
     skills_to_choose_from: frozenset[Skill] = Field(default_factory=frozenset)
     equipment_choices: tuple[tuple[Equipment, ...], ...] = ()
-
-
-@runtime_checkable
-class BlueprintProtocol(Protocol):
-    def __iter__(self) -> Iterator[tuple[str, object]]: ...
-
-
-@runtime_checkable
-class HasLevel(BlueprintProtocol, Protocol):
-    level: ClassLevel
-
-
-@runtime_checkable
-class HasStats(BlueprintProtocol, Protocol):
-    stats: Stats
-
-
-@runtime_checkable
-class HasName(BlueprintProtocol, Protocol):
-    name: str
-
-
-@runtime_checkable
-class HasAge(BlueprintProtocol, Protocol):
-    age: PositiveInt
-
-
-@runtime_checkable
-class HasSex(BlueprintProtocol, Protocol):
-    sex: Sex
-
-
-@runtime_checkable
-class HasNStatChoices(BlueprintProtocol, Protocol):
-    n_stat_choices: int
-
-
-@runtime_checkable
-class HasNSkillChoices(BlueprintProtocol, Protocol):
-    n_skill_choices: int
-
-
-@runtime_checkable
-class HasWeapons(BlueprintProtocol, Protocol):
-    weapons: tuple[WeaponName, ...]
-
-
-@runtime_checkable
-class HasArmors(BlueprintProtocol, Protocol):
-    armors: tuple[ArmorName, ...]
-
-
-@runtime_checkable
-class HasOtherEquipment(BlueprintProtocol, Protocol):
-    other_equipment: tuple[str, ...]
-
-
-@runtime_checkable
-class HasEquipmentChoices(BlueprintProtocol, Protocol):
-    equipment_choices: tuple[tuple[Equipment, ...], ...]
-
-
-@runtime_checkable
-class HasFeats(BlueprintProtocol, Protocol):
-    feats: tuple[FeatName, ...]
-
-
-@runtime_checkable
-class HasAlignment(BlueprintProtocol, Protocol):
-    alignment: Alignment
-
-
-@runtime_checkable
-class HasBackground(BlueprintProtocol, Protocol):
-    background: Background
-
-
-@runtime_checkable
-class HasRace(BlueprintProtocol, Protocol):
-    race: Race
-    subrace: SubraceName
-    speed: PositiveInt
-    dark_vision_range: NonNegativeInt
-
-
-@runtime_checkable
-class HasLanguages(BlueprintProtocol, Protocol):
-    languages: tuple[Language, ...]
-
-
-@runtime_checkable
-class HasSkillProficiencies(BlueprintProtocol, Protocol):
-    skill_proficiencies: tuple[Skill, ...]
-
-
-@runtime_checkable
-class HasSkillsToChooseFrom(BlueprintProtocol, Protocol):
-    skills_to_choose_from: frozenset[Skill]
-
-
-@runtime_checkable
-class HasToolProficiencies(BlueprintProtocol, Protocol):
-    tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...]
-
-
-@runtime_checkable
-class HasClasses(BlueprintProtocol, Protocol):
-    classes: ClassLevels
-
-
-@runtime_checkable
-class HasHealthBase(BlueprintProtocol, Protocol):
-    health_base: int
-
-
-@runtime_checkable
-class HasSubclasses(BlueprintProtocol, Protocol):
-    subclasses: tuple[AnySubclass, ...]
-
-
-@runtime_checkable
-class HasSpells(BlueprintProtocol, Protocol):
-    spells: Spells
-
-
-@runtime_checkable
-class HasStatsCup(BlueprintProtocol, Protocol):
-    stats_cup: Stats
-
-
-@runtime_checkable
-class HasEquipmentResolved(
-    HasWeapons, HasArmors, HasOtherEquipment, HasEquipmentChoices, Protocol
-):
-    """State after equipment choices have been resolved."""
-
-
-@runtime_checkable
-class HasOtherAbilities(BlueprintProtocol, Protocol):
-    other_active_abilities: tuple[str, ...]
-
-
-@runtime_checkable
-class HasMagicalItems(BlueprintProtocol, Protocol):
-    magical_items: tuple[MagicalItem, ...]
-
-
-@runtime_checkable
-class HasWizardLevel(HasClasses, Protocol):
-    def get_wizard_level(self) -> PositiveInt: ...
-
-
-@runtime_checkable
-class HasSorcererLevel(HasClasses, Protocol):
-    def get_sorcerer_level(self) -> PositiveInt: ...
-
-
-@runtime_checkable
-class HasBackstory(BlueprintProtocol, Protocol):
-    backstory: str
-
-
-@runtime_checkable
-class HasHeight(BlueprintProtocol, Protocol):
-    height: PositiveInt
-
-
-@runtime_checkable
-class HasWeight(BlueprintProtocol, Protocol):
-    weight: PositiveInt
-
-
-@runtime_checkable
-class HasEyeColor(BlueprintProtocol, Protocol):
-    eye_color: str
-
-
-@runtime_checkable
-class HasSkinColor(BlueprintProtocol, Protocol):
-    skin_color: str
-
-
-@runtime_checkable
-class HasHairstyle(BlueprintProtocol, Protocol):
-    hairstyle: str
-
-
-@runtime_checkable
-class HasAppearance(BlueprintProtocol, Protocol):
-    appearance: str
-
-
-@runtime_checkable
-class HasCharacterTraits(BlueprintProtocol, Protocol):
-    character_traits: str
-
-
-@runtime_checkable
-class HasIdeals(BlueprintProtocol, Protocol):
-    ideals: str
-
-
-@runtime_checkable
-class HasBonds(BlueprintProtocol, Protocol):
-    bonds: str
-
-
-@runtime_checkable
-class HasWeaknesses(BlueprintProtocol, Protocol):
-    weaknesses: str
-
-
-@runtime_checkable
-class HasInitialData(BlueprintProtocol, Protocol):
-    name: str
-    sex: Sex
-    age: PositiveInt
-    background: Background
-    alignment: Alignment
-    backstory: str
-    height: PositiveInt
-    weight: PositiveInt
-    eye_color: str
-    skin_color: str
-    hairstyle: str
-    appearance: str
-    character_traits: str
-    ideals: str
-    bonds: str
-    weaknesses: str
+    level: Level | None = None
+    character_data: _CDK = Field(default=cast(_CDK, None))
+
+
+_Z = Literal[SecondSubclassPreLevel.ZEROTH]
+_SZ = Literal[FirstSubclassPreLevel.ZEROTH]
+_TZ = Literal[ThirdSubclassPreLevel.ZEROTH]
+
+EmptyBlueprint: TypeAlias = Blueprint[
+    None,
+    None,
+    None,
+    Literal[0],
+    Literal[0],
+    WizardPreSubclassLevel[_Z, None],
+    SorcererPreSubclassLevel[_SZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    None,
+]
+type AnyBluprint = Blueprint[
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+    Any,
+]
+_BPT = TypeVar("_BPT", bound=AnyBluprint)

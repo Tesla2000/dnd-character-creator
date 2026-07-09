@@ -2,25 +2,12 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from collections.abc import Generator
 from typing import ClassVar
-from typing import Never
-from typing import cast
-from typing import overload
 from typing import Protocol
-from typing import TYPE_CHECKING
-
-from typing_extensions import deprecated
-from typing_protocol_intersection import ProtocolIntersection
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.state import Blueprint
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.blueprint.state import HasSorcererLevel
-from dnd.character.blueprint.state import HasSpells
-from dnd.character.blueprint.state import HasWizardLevel
-from dnd.character.delta.delta import Delta
-from typing import Literal
+from dnd.character.blueprint.state import _BPT
 from dnd.character.spells import Cantrip
 from dnd.character.spells import EighthLevel
 from dnd.character.spells import FifthLevel
@@ -37,32 +24,6 @@ from dnd.character.spells.max_spell_levels import CasterType
 from dnd.character.spells.max_spell_levels import MAX_SPELL_LEVELS
 from dnd.character.spells.spells import Spells
 from dnd.choices.class_creation.character_class import Class
-
-
-class SpellsDelta(Delta):
-    """Delta produced when SpellAssigner assigns spells."""
-
-    delta_type: Literal["SpellsDelta"] = "SpellsDelta"
-    spells: Spells
-
-    def apply[T: BlueprintProtocol](
-        self, state: T
-    ) -> ProtocolIntersection[T, HasSpells]:
-
-        if TYPE_CHECKING:
-
-            class BlueprintWithSpells(Blueprint):
-                spells: Spells
-
-        else:
-
-            class BlueprintWithSpells(type(state)):
-                spells: Spells
-
-        return cast(
-            ProtocolIntersection[T, HasSpells],
-            BlueprintWithSpells.model_validate({**dict(state), "spells": self.spells}),
-        )
 
 
 _SPELL_LEVEL_TO_CLASS: list[type[Spell]] = [
@@ -124,11 +85,7 @@ def _apply_spells(
 
 
 class WizardSpellAssigner(BuildingBlock, ABC):
-    """Abstract base for wizard spell assignment strategies.
-
-    T must satisfy HasWizardLevel — guaranteed by the type constraint so
-    _get_spells_to_learn can call state.get_wizard_level() without a guard.
-    """
+    """Abstract base for wizard spell assignment strategies."""
 
     _caster_type: ClassVar[CasterType] = CasterType.FULL
 
@@ -138,14 +95,14 @@ class WizardSpellAssigner(BuildingBlock, ABC):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        state: HasWizardLevel,
+        state: _BPT,
     ) -> tuple[Spell, ...]: ...
 
-    def _get_spells_to_learn(self, state: HasWizardLevel) -> dict[int, int]:
-        level = state.get_wizard_level()
+    def _get_spells_to_learn(self, state: _BPT) -> dict[int, int]:
+        level = state.classes.get_level(Class.WIZARD)
         if level == 1:
             return {0: 3, 1: 6}
-        effective = state.get_wizard_level()
+        effective = level
         max_spell_level = MAX_SPELL_LEVELS[self._caster_type][min(effective, 20) - 1]
         n_cantrips_increase_levels = (4, 10)
         return {
@@ -153,30 +110,16 @@ class WizardSpellAssigner(BuildingBlock, ABC):
             0: int(level in n_cantrips_increase_levels),
         }
 
-    @overload
-    def get_change[T: HasWizardLevel](
-        self, state: T
-    ) -> Generator[SpellsDelta, None, ProtocolIntersection[T, HasSpells]]: ...
+    def apply(self, blueprint: _BPT) -> _BPT:
+        if blueprint.classes.get_level(Class.WIZARD) == 0:
+            return blueprint
 
-    @overload
-    @deprecated("Pass a state satisfying HasWizardLevel for precise return typing")
-    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
-
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]:
-        if not isinstance(state, HasWizardLevel):
-            raise TypeError(
-                f"{type(self).__name__} requires HasWizardLevel, got {type(state).__name__}"
-            )
-        wizard_state: HasWizardLevel = state
+        wizard_state = blueprint
         spells_to_learn = self._get_spells_to_learn(wizard_state)
-        initial = state.spells if isinstance(state, HasSpells) else Spells()
+        initial = blueprint.spells
 
         if not spells_to_learn:
-            delta = SpellsDelta(spells=initial)
-            yield delta
-            return delta.apply(state)
+            return blueprint
 
         assigner = self
 
@@ -189,17 +132,11 @@ class WizardSpellAssigner(BuildingBlock, ABC):
                 )
 
         spells = _apply_spells(initial, spells_to_learn, Class.WIZARD, _Selector())
-        delta = SpellsDelta(spells=spells)
-        yield delta
-        return delta.apply(state)
+        return blueprint.model_copy(update={"spells": spells})
 
 
 class SorcererSpellAssigner(BuildingBlock, ABC):
-    """Abstract base for sorcerer spell assignment strategies.
-
-    T must satisfy HasSorcererLevel — guaranteed by the type constraint so
-    _get_spells_to_learn can call state.get_sorcerer_level() without a guard.
-    """
+    """Abstract base for sorcerer spell assignment strategies."""
 
     _caster_type: ClassVar[CasterType] = CasterType.FULL
 
@@ -209,14 +146,14 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        state: HasSorcererLevel,
+        state: _BPT,
     ) -> tuple[Spell, ...]: ...
 
-    def _get_spells_to_learn(self, state: HasSorcererLevel) -> dict[int, int]:
-        level = state.get_sorcerer_level()
+    def _get_spells_to_learn(self, state: _BPT) -> dict[int, int]:
+        level = state.classes.get_level(Class.SORCERER)
         if level == 1:
             return {0: 4, 1: 2}
-        effective = state.get_sorcerer_level()
+        effective = level
         max_spell_level = MAX_SPELL_LEVELS[self._caster_type][min(effective, 20) - 1]
         n_cantrips_increase_levels = (4, 10)
         return {
@@ -224,30 +161,16 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
             0: int(level in n_cantrips_increase_levels),
         }
 
-    @overload
-    def get_change[T: HasSorcererLevel](
-        self, state: T
-    ) -> Generator[SpellsDelta, None, ProtocolIntersection[T, HasSpells]]: ...
+    def apply(self, blueprint: _BPT) -> _BPT:
+        if blueprint.classes.get_level(Class.SORCERER) == 0:
+            return blueprint
 
-    @overload
-    @deprecated("Pass a state satisfying HasSorcererLevel for precise return typing")
-    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
-
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]:
-        if not isinstance(state, HasSorcererLevel):
-            raise TypeError(
-                f"{type(self).__name__} requires HasSorcererLevel, got {type(state).__name__}"
-            )
-        sorcerer_state: HasSorcererLevel = state
+        sorcerer_state = blueprint
         spells_to_learn = self._get_spells_to_learn(sorcerer_state)
-        initial = state.spells if isinstance(state, HasSpells) else Spells()
+        initial = blueprint.spells
 
         if not spells_to_learn:
-            delta = SpellsDelta(spells=initial)
-            yield delta
-            return delta.apply(state)
+            return blueprint
 
         assigner = self
 
@@ -260,6 +183,4 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
                 )
 
         spells = _apply_spells(initial, spells_to_learn, Class.SORCERER, _Selector())
-        delta = SpellsDelta(spells=spells)
-        yield delta
-        return delta.apply(state)
+        return blueprint.model_copy(update={"spells": spells})

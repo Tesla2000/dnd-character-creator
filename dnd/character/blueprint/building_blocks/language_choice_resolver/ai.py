@@ -2,25 +2,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Generator
-from typing import Never
-from typing import overload
-
-from typing_extensions import deprecated
-
 from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.delta.delta import Delta
 from dnd.character.blueprint.building_blocks.language_choice_resolver.base import (
     LanguageChoiceResolver,
-    LanguagesDelta,
 )
-from dnd.character.blueprint.state import HasLanguages
+from dnd.character.blueprint.state import Blueprint
 from dnd.choices.language import Language
 from pydantic import BaseModel
 from pydantic import Field
 from structured_output_creator import OpenAIService, RaisingService
-from typing_protocol_intersection import ProtocolIntersection
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
@@ -60,12 +50,12 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
     )
 
     def _select_from_available(
-        self, available: list[Language], state: HasLanguages
+        self, available: list[Language], languages: tuple[Language, ...]
     ) -> Language:
-        """Not used — this class overrides get_change directly."""
-        raise NotImplementedError("AILanguageChoiceResolver overrides get_change")
+        """Not used — this class overrides apply directly."""
+        raise NotImplementedError("AILanguageChoiceResolver overrides apply")
 
-    def _build_prompt(self, state: HasLanguages) -> str:
+    def _build_prompt(self, blueprint: Blueprint) -> str:
         system_prompt = (
             "You are resolving Language.ANY_OF_YOUR_CHOICE placeholders "
             "for a D&D 5e character.\n"
@@ -74,12 +64,12 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
         )
 
         character_description = self.formatter.format(
-            state, system_prompt=system_prompt
+            blueprint, system_prompt=system_prompt
         )
 
         instructions = ["\n## Placeholders to Resolve\n"]
 
-        count = list(state.languages).count(Language.ANY_OF_YOUR_CHOICE)
+        count = list(blueprint.languages).count(Language.ANY_OF_YOUR_CHOICE)
         if count == 0:
             return ""
 
@@ -100,45 +90,24 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
 
         return character_description + "\n".join(instructions)
 
-    @overload
-    def get_change[T: HasLanguages](
-        self, state: T
-    ) -> Generator[LanguagesDelta, None, ProtocolIntersection[T, HasLanguages]]: ...
+    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+        if Language.ANY_OF_YOUR_CHOICE not in blueprint.languages:
+            return blueprint
 
-    @overload
-    @deprecated("Pass a state satisfying HasLanguages for precise return typing")
-    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
-
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]:
-        if not isinstance(state, HasLanguages):
-            raise TypeError(
-                f"{type(self).__name__} requires HasLanguages, got {type(state).__name__}"
-            )
-        if Language.ANY_OF_YOUR_CHOICE not in state.languages:
-            delta = LanguagesDelta(languages=frozenset(state.languages))
-            yield delta
-            return delta.apply(state)
-
-        prompt = self._build_prompt(state)
+        prompt = self._build_prompt(blueprint)
         if not prompt:
-            delta = LanguagesDelta(languages=frozenset(state.languages))
-            yield delta
-            return delta.apply(state)
+            return blueprint
 
         selection = self.llm.create_structured_output(prompt, LanguageSelection)
 
-        count = list(state.languages).count(Language.ANY_OF_YOUR_CHOICE)
+        count = list(blueprint.languages).count(Language.ANY_OF_YOUR_CHOICE)
         if len(selection.languages) != count:
             raise ValueError(
                 f"AI returned {len(selection.languages)} languages but expected {count}"
             )
 
-        new_languages = set(state.languages)
+        new_languages = set(blueprint.languages)
         new_languages.discard(Language.ANY_OF_YOUR_CHOICE)
         new_languages.update(selection.languages)
 
-        delta = LanguagesDelta(languages=frozenset(new_languages))
-        yield delta
-        return delta.apply(state)
+        return blueprint.model_copy(update={"languages": tuple(new_languages)})

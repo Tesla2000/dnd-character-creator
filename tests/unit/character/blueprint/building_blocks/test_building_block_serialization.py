@@ -23,16 +23,14 @@ from dnd.character.blueprint.building_blocks import (
     RandomMagicalItemChooser,
 )
 from dnd.character.blueprint.building_blocks import (
-    SexAssigner,
-)
-from dnd.character.blueprint.building_blocks import (
     TieflingRaceAssigner,
 )
 from dnd.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
+from dnd.character.blueprint.building_blocks.weapon_adder import WeaponAdder
 from dnd.character.race.subraces import SubraceName
-from dnd.choices.sex import Sex
+from dnd.choices.equipment_creation.weapons import WeaponName
 from pydantic import TypeAdapter
 from pydantic import ValidationError
 
@@ -43,30 +41,30 @@ class TestBuildingBlockSerialization:
 
     def test_serialize_simple_block(self):
         """Test serializing a simple building block using model_dump."""
-        block = SexAssigner(sex=Sex.MALE)
+        block = WeaponAdder(weapon=WeaponName.DAGGER)
         serialized = block.model_dump()
 
-        assert serialized["type"] == BuildingBlockType.SEX_ASSIGNER
-        assert serialized["sex"] == Sex.MALE
+        assert serialized["type"] == BuildingBlockType.WEAPON_ADDER
+        assert serialized["weapon"] == WeaponName.DAGGER
 
     def test_deserialize_simple_block(self):
         """Test deserializing a simple building block using model_validate."""
-        data = {"type": BuildingBlockType.SEX_ASSIGNER, "sex": Sex.MALE}
+        data = {"type": BuildingBlockType.WEAPON_ADDER, "weapon": WeaponName.DAGGER}
         block = TypeAdapter(AnyBuildingBlock).validate_python(data)
 
-        assert isinstance(block, SexAssigner)
-        assert block.sex == Sex.MALE
-        assert block.type == BuildingBlockType.SEX_ASSIGNER
+        assert isinstance(block, WeaponAdder)
+        assert block.weapon == WeaponName.DAGGER
+        assert block.type == BuildingBlockType.WEAPON_ADDER
 
     def test_roundtrip_simple_block(self):
         """Test serialize-deserialize roundtrip for simple block."""
-        original = SexAssigner(sex=Sex.FEMALE)
+        original = WeaponAdder(weapon=WeaponName.LONGSWORD)
         serialized = original.model_dump()
 
         deserialized = TypeAdapter(AnyBuildingBlock).validate_python(serialized)
 
-        assert isinstance(deserialized, SexAssigner)
-        assert deserialized.sex == original.sex
+        assert isinstance(deserialized, WeaponAdder)
+        assert deserialized.weapon == original.weapon
         assert deserialized == original
 
     def test_serialize_complex_block(self):
@@ -92,7 +90,7 @@ class TestBuildingBlockSerialization:
 
     def test_serialize_block_sequence(self):
         """Test serializing a sequence containing multiple blocks."""
-        block1 = SexAssigner(sex=Sex.MALE)
+        block1 = WeaponAdder(weapon=WeaponName.DAGGER)
         block2 = HumanRaceAssigner(
             subrace=SubraceName.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK
         )
@@ -102,7 +100,7 @@ class TestBuildingBlockSerialization:
         )
 
         assert len(serialized) == 2
-        assert serialized[0]["type"] == BuildingBlockType.SEX_ASSIGNER
+        assert serialized[0]["type"] == BuildingBlockType.WEAPON_ADDER
         assert serialized[1]["type"] == BuildingBlockType.HUMAN_RACE_ASSIGNER
 
     def test_serialize_and_deserialize_base_block_json(self, building_blocks):
@@ -114,7 +112,7 @@ class TestBuildingBlockSerialization:
     def test_deserialize_block_sequence(self):
         """Test deserializing a sequence of blocks."""
         data = [
-            {"type": BuildingBlockType.SEX_ASSIGNER, "sex": Sex.FEMALE},
+            {"type": BuildingBlockType.WEAPON_ADDER, "weapon": WeaponName.DAGGER},
             {
                 "type": BuildingBlockType.ELF_RACE_ASSIGNER,
                 "subrace": SubraceName.ELF_WOOD_ELF_PLAYERSHANDBOOK,
@@ -124,14 +122,14 @@ class TestBuildingBlockSerialization:
         blocks = TypeAdapter(tuple[AnyBuildingBlock, ...]).validate_python(data)
 
         assert len(blocks) == 2
-        assert isinstance(blocks[0], SexAssigner)
+        assert isinstance(blocks[0], WeaponAdder)
         assert isinstance(blocks[1], ElfRaceAssigner)
-        assert blocks[0].sex == Sex.FEMALE
+        assert blocks[0].weapon == WeaponName.DAGGER
         assert blocks[1].subrace == SubraceName.ELF_WOOD_ELF_PLAYERSHANDBOOK
 
     def test_roundtrip_block_sequence(self):
         """Test serialize-deserialize roundtrip for a block sequence."""
-        block1 = SexAssigner(sex=Sex.MALE)
+        block1 = WeaponAdder(weapon=WeaponName.DAGGER)
         block2 = TieflingRaceAssigner(
             subrace=SubraceName.TIEFLING_BLOODLINE_OF_ASMODEUS_PLAYERSHANDBOOK
         )
@@ -159,21 +157,21 @@ class TestBuildingBlockSerialization:
 
     def test_roundtrip_incomplete_data(self):
         """Test validation fails when required block data is missing."""
-        block1 = SexAssigner(sex=Sex.MALE)
+        block1 = WeaponAdder(weapon=WeaponName.DAGGER)
         block2 = TieflingRaceAssigner(
             subrace=SubraceName.TIEFLING_BLOODLINE_OF_ASMODEUS_PLAYERSHANDBOOK
         )
         original = (block1, block2)
 
         serialized = TypeAdapter(tuple[AnyBuildingBlock, ...]).dump_python(original)
-        serialized[0].pop("sex")
+        serialized[0].pop("weapon")
         with pytest.raises(ValidationError):
             TypeAdapter(tuple[AnyBuildingBlock, ...]).validate_python(serialized)
 
     def test_block_type_auto_set(self):
         """Test that block_type is automatically set on creation."""
-        block = SexAssigner(sex=Sex.MALE)
-        assert block.type == BuildingBlockType.SEX_ASSIGNER
+        block = WeaponAdder(weapon=WeaponName.DAGGER)
+        assert block.type == BuildingBlockType.WEAPON_ADDER
 
         race_block = GnomeRaceAssigner(
             subrace=SubraceName.GNOME_FOREST_GNOME_PLAYERSHANDBOOK

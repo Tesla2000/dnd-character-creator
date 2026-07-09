@@ -5,6 +5,8 @@
       "Edit(./.pre-commit-config.yaml)",
       "Write(./pyproject.toml)",
       "Edit(./pyproject.toml)",
+      "Write(./mypy.ini)",
+      "Edit(./mypy.ini))",
       "Read(./.env)",
       "Bash(cat .env)"
     ]

@@ -6,7 +6,7 @@ from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.magical_item_chooser.base_chooser import (
     MagicalItemChooserBase,
 )
-from dnd.character.blueprint.state import BlueprintProtocol
+from dnd.character.blueprint.state import Blueprint
 from dnd.character.magical_item.item import MagicalItem
 from dnd.character.magical_item.items import MAGICAL_ITEMS
 from dnd.character.magical_item.level import Level
@@ -42,7 +42,6 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
         ...     n_uncommon=2,
         ...     n_rare=1,
         ... )
-        >>> builder = Builder().add(chooser)
     """
 
     type: Literal[BuildingBlockType.AI_MAGICAL_ITEM_CHOOSER] = (
@@ -61,7 +60,7 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
         description="Blueprint formatter for creating AI prompts",
     )
 
-    def _build_prompt(self, state: BlueprintProtocol) -> str:
+    def _build_prompt(self, state: Blueprint) -> str:
         system_prompt = (
             "You are selecting magical items for a D&D 5e character in a "
             "single, holistic decision.\n"
@@ -129,7 +128,7 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
 
         return character_description + "\n".join(instructions)
 
-    def _select_items(self, state: BlueprintProtocol) -> tuple[MagicalItem, ...]:
+    def _select_items(self, state: Blueprint) -> tuple[MagicalItem, ...]:
         total_requested = (
             self.n_common
             + self.n_uncommon

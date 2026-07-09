@@ -4,38 +4,37 @@ import json
 from collections import defaultdict
 from collections.abc import Mapping
 from itertools import filterfalse
-from typing import Self
 from typing import TYPE_CHECKING
+from typing import Literal
 
 from dnd.character.ability import Ability
 from dnd.character.armor.armors import ARMORS
 from dnd.character.armor.names import ArmorName
-from dnd.character.character import Character
+from dnd.character.blueprint.character_data import CharacterData
+from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnySorcererLevel
+from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.state import Blueprint
+from dnd.character.character import Level
 from dnd.character.feature.feats import feat_name_to_feat
 from dnd.character.feature.feats import FeatName
 from dnd.character.race.race import Race
 from dnd.character.spells import SPELLCASTING_ABILITY_MAP
+from dnd.character.stats import Stats
 from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import Class
-from dnd.choices.class_creation.character_class import (
-    FighterSubclass,
-)
-from dnd.choices.class_creation.character_class import (
-    RogueSubclass,
-)
-from dnd.choices.class_creation.character_class import (
-    subclass_level,
-)
-from dnd.choices.class_creation.character_class import (
-    SUBCLASSES,
-)
+from dnd.choices.class_creation.character_class import FighterSubclass
+from dnd.choices.class_creation.character_class import RogueSubclass
+from dnd.choices.class_creation.character_class import SUBCLASSES
+
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.config import resource_paths
 from dnd.skill_proficiency import Skill
 from dnd.skill_proficiency import skill2ability
 from pydantic import ConfigDict
-from pydantic import model_validator
 from pydantic import NonNegativeInt
+from pydantic import PositiveInt
+from typing import ClassVar
 
 if TYPE_CHECKING:
     _cf = property
@@ -43,23 +42,31 @@ else:
     from pydantic import computed_field as _cf
 
 
-class PresentableCharacter(Character):
-    model_config = ConfigDict(frozen=True)
-
-    @model_validator(mode="after")
-    def _validate_subclass(self) -> Self:
-        for class_, level in self.classes.items():
-            if level >= subclass_level[class_]:
-                subclasses_of_class = set(SUBCLASSES[class_]).intersection(
-                    self.subclasses
-                )
-                if not subclasses_of_class:
-                    raise ValueError(f"No subclasses of class {class_}")
-                if len(subclasses_of_class) > 1:
-                    raise ValueError(
-                        f"More than one subclass of {class_} {subclasses_of_class=}"
-                    )
-        return self
+class PresentableCharacter(
+    Blueprint[
+        Race,
+        Stats,
+        PositiveInt,
+        Literal[0],
+        Literal[0],
+        AnyWizardLevel,
+        AnySorcererLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        AnyClassLevel,
+        CharacterData,
+    ]
+):
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
+    level: Level
 
     @_cf
     def abilities(self) -> dict[Skill, int]:
@@ -108,26 +115,25 @@ class PresentableCharacter(Character):
 
     @_cf
     def spellcasting_ability(self) -> Statistic | None:
-        spellcasting_classes = list(
-            filter(
-                lambda class_: (
-                    class_ in SPELLCASTING_ABILITY_MAP
-                    or (
-                        class_ is Class.FIGHTER
-                        and FighterSubclass.ELDRITCH_KNIGHT in self.subclasses
-                    )
-                    or (
-                        class_ is Class.ROGUE
-                        and RogueSubclass.ARCANE_TRICKSTER in self.subclasses
-                    )
-                ),
-                self.classes,
+        spellcasting_classes = [
+            class_
+            for class_, _ in self.classes.all_levels()
+            if (
+                class_ in SPELLCASTING_ABILITY_MAP
+                or (
+                    class_ is Class.FIGHTER
+                    and FighterSubclass.ELDRITCH_KNIGHT in self.subclasses
+                )
+                or (
+                    class_ is Class.ROGUE
+                    and RogueSubclass.ARCANE_TRICKSTER in self.subclasses
+                )
             )
-        )
+        ]
         if not spellcasting_classes:
             return None
         return SPELLCASTING_ABILITY_MAP.get(
-            max(spellcasting_classes, key=self.classes.__getitem__),
+            max(spellcasting_classes, key=self.classes.get_level),
             Statistic.INTELLIGENCE,
         )
 
@@ -171,7 +177,7 @@ class PresentableCharacter(Character):
                 .read_text()
             )
             actions[ability.action_type].append(ability)
-        for class_, class_level in self.classes.items():
+        for class_, class_level in self.classes.all_levels():
             for (
                 main_class_ability_path
             ) in resource_paths.main_class_abilities_root.joinpath(class_).iterdir():
@@ -208,10 +214,10 @@ class PresentableCharacter(Character):
     def _add_action(
         self,
         actions: dict[ActionType, list[Ability]],
-        data: Mapping[str, object],  # ignore
+        data: Mapping[str, object],
         class_level: int,
     ) -> None:
-        ability = Ability(**data)
+        ability = Ability.model_validate(data)
         if not self._is_ability_accessible(ability, class_level):
             return
         actions[ability.action_type].append(ability)
@@ -225,10 +231,7 @@ class PresentableCharacter(Character):
         return self.stats.get_modifier(statistic)
 
     @staticmethod
-    def _is_ability_accessible(
-        ability: Ability,
-        class_level: int,
-    ) -> bool:
+    def _is_ability_accessible(ability: Ability, class_level: int) -> bool:
         return bool(
             ability and ability.combat_related and ability.required_level <= class_level
         )

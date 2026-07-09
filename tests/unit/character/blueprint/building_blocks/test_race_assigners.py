@@ -44,8 +44,10 @@ from dnd.character.blueprint.building_blocks.race_assigner.race_assigner import 
     WarforgedRaceAssigner,
     YuanTiPurebloodRaceAssigner,
 )
+from dnd.character.blueprint.state import Blueprint
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
+from dnd.character.stats import Stats
 
 
 @pytest.mark.unit
@@ -218,3 +220,22 @@ def test_race_assigner(
     assert a._get_race_and_subrace() == RaceSubracePair(
         race=expected_race, subrace=subrace
     )
+
+
+def test_race_assigner_apply() -> None:
+    assigner = HumanRaceAssigner(
+        subrace=SubraceName.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK
+    )
+    stats = Stats(
+        strength=10,
+        dexterity=10,
+        constitution=10,
+        intelligence=10,
+        wisdom=10,
+        charisma=10,
+    )
+    blueprint = Blueprint(stats=stats)
+    result = assigner.apply(blueprint)
+    assert result.race == Race.HUMAN
+    assert result.subrace == SubraceName.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK
+    assert result.stats is not None

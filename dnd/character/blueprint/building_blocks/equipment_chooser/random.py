@@ -6,7 +6,7 @@ from dnd.character.armor.names import ArmorName
 from dnd.character.blueprint.building_blocks.equipment_chooser.base import (
     EquipmentChooser,
 )
-from dnd.character.blueprint.state import HasEquipmentChoices
+from dnd.character.blueprint.state import Blueprint
 from dnd.choices.equipment_creation.weapons import WeaponName
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -31,7 +31,7 @@ class RandomEquipmentChooser(EquipmentChooser):
     )
 
     def _pick_equipment(
-        self, state: HasEquipmentChoices
+        self, state: Blueprint
     ) -> tuple[list[WeaponName], list[ArmorName], list[str]]:
         weapons: list[WeaponName] = []
         armors: list[ArmorName] = []
