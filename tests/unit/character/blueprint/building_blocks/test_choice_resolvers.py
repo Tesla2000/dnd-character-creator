@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Generator
-
 import pytest
 
 from dnd.character.blueprint.building_blocks.feat_adder import FeatAdder
@@ -22,9 +20,6 @@ from dnd.character.blueprint.building_blocks.stats_builder.standard_array import
     StandardArray,
 )
 from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
-from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.base import (
-    ToolProficienciesDelta,
-)
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.random import (
     RandomToolProficiencyChoiceResolver,
 )
@@ -34,14 +29,6 @@ from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import GamingSet, MusicalInstrument, ToolProficiency
 from pydantic import create_model
-
-
-def _exhaust(gen: Generator[object, object, object]) -> object:
-    try:
-        while True:
-            next(gen)
-    except StopIteration as exc:
-        return exc.value
 
 
 _PRIORITY: StatsPriority = (
@@ -57,55 +44,42 @@ _PRIORITY: StatsPriority = (
 @pytest.mark.unit
 class TestToolProficiencyChoiceResolverBranches:
     def test_gaming_set_placeholder_resolved(self) -> None:
-        delta = ToolProficienciesDelta(
-            tool_proficiencies=(GamingSet.ANY_OF_YOUR_CHOICE,)
-        )
-        state = delta.apply(Blueprint())
+        state = Blueprint(tool_proficiencies=(GamingSet.ANY_OF_YOUR_CHOICE,))
         resolver = RandomToolProficiencyChoiceResolver()
-        result = _exhaust(resolver.get_change(state))
+        result = resolver.apply(state)
         assert GamingSet.ANY_OF_YOUR_CHOICE not in result.tool_proficiencies
         assert any(isinstance(t, GamingSet) for t in result.tool_proficiencies)
 
     def test_musical_instrument_placeholder_resolved(self) -> None:
-        delta = ToolProficienciesDelta(
-            tool_proficiencies=(MusicalInstrument.ANY_OF_YOUR_CHOICE,)
-        )
-        state = delta.apply(Blueprint())
+        state = Blueprint(tool_proficiencies=(MusicalInstrument.ANY_OF_YOUR_CHOICE,))
         resolver = RandomToolProficiencyChoiceResolver()
-        result = _exhaust(resolver.get_change(state))
+        result = resolver.apply(state)
         assert MusicalInstrument.ANY_OF_YOUR_CHOICE not in result.tool_proficiencies
         assert any(isinstance(t, MusicalInstrument) for t in result.tool_proficiencies)
 
     def test_non_placeholder_tool_proficiency_preserved(self) -> None:
-        delta = ToolProficienciesDelta(
-            tool_proficiencies=(ToolProficiency.HERBALISM_KIT,)
-        )
-        state = delta.apply(Blueprint())
+        state = Blueprint(tool_proficiencies=(ToolProficiency.HERBALISM_KIT,))
         resolver = RandomToolProficiencyChoiceResolver()
-        result = _exhaust(resolver.get_change(state))
+        result = resolver.apply(state)
         assert ToolProficiency.HERBALISM_KIT in result.tool_proficiencies
 
     def test_tool_proficiency_placeholder_resolved(self) -> None:
-        delta = ToolProficienciesDelta(
-            tool_proficiencies=(ToolProficiency.ANY_OF_YOUR_CHOICE,)
-        )
-        state = delta.apply(Blueprint())
+        state = Blueprint(tool_proficiencies=(ToolProficiency.ANY_OF_YOUR_CHOICE,))
         resolver = RandomToolProficiencyChoiceResolver(seed=42)
-        result = _exhaust(resolver.get_change(state))
+        result = resolver.apply(state)
         assert ToolProficiency.ANY_OF_YOUR_CHOICE not in result.tool_proficiencies
         assert any(isinstance(t, ToolProficiency) for t in result.tool_proficiencies)
 
     def test_mixed_tools_all_resolved(self) -> None:
-        delta = ToolProficienciesDelta(
+        state = Blueprint(
             tool_proficiencies=(
                 GamingSet.ANY_OF_YOUR_CHOICE,
                 MusicalInstrument.ANY_OF_YOUR_CHOICE,
                 ToolProficiency.HERBALISM_KIT,
             )
         )
-        state = delta.apply(Blueprint())
         resolver = RandomToolProficiencyChoiceResolver(seed=42)
-        result = _exhaust(resolver.get_change(state))
+        result = resolver.apply(state)
         assert GamingSet.ANY_OF_YOUR_CHOICE not in result.tool_proficiencies
         assert MusicalInstrument.ANY_OF_YOUR_CHOICE not in result.tool_proficiencies
         assert ToolProficiency.HERBALISM_KIT in result.tool_proficiencies
@@ -115,26 +89,24 @@ class TestToolProficiencyChoiceResolverBranches:
 class TestFeatChoiceResolverBranches:
     def test_concrete_feat_returned_directly(self) -> None:
         state = Blueprint(feats=(FeatName.TOUGH,))
-        state = _exhaust(LevelAssigner(level=2).get_change(state))
-        state = _exhaust(StandardArray(stats_priority=_PRIORITY).get_change(state))
-        state = _exhaust(WizardLevelIncrementer().get_change(state))
-        state = _exhaust(WizardLevelIncrementer().get_change(state))
+        state = LevelAssigner(level=2).apply(state)
+        state = StandardArray(stats_priority=_PRIORITY).apply(state)
+        state = WizardLevelIncrementer().apply(state)
+        state = WizardLevelIncrementer().apply(state)
         resolver = RandomFeatChoiceResolver(seed=0)
-        result = _exhaust(resolver.get_change(state))
+        result = resolver.apply(state)
         assert FeatName.TOUGH in result.feats
 
     def test_level_1_excludes_ability_score_improvement(self) -> None:
         state = Blueprint()
-        state = _exhaust(LevelAssigner(level=1).get_change(state))
-        state = _exhaust(StandardArray(stats_priority=_PRIORITY).get_change(state))
-        state = _exhaust(WizardLevelIncrementer().get_change(state))
-        state = _exhaust(
-            FeatAdder(feat=FeatName.ANY_EXCEPT_ABILITY_SCORE_IMPROVEMENT).get_change(
-                state
-            )
+        state = LevelAssigner(level=1).apply(state)
+        state = StandardArray(stats_priority=_PRIORITY).apply(state)
+        state = WizardLevelIncrementer().apply(state)
+        state = FeatAdder(feat=FeatName.ANY_EXCEPT_ABILITY_SCORE_IMPROVEMENT).apply(
+            state
         )
         resolver = RandomFeatChoiceResolver(seed=0)
-        result = _exhaust(resolver.get_change(state))
+        result = resolver.apply(state)
         assert FeatName.ABILITY_SCORE_IMPROVEMENT not in result.feats
 
 
@@ -150,14 +122,14 @@ class TestMaxIfNotMaxedResolverASI:
             charisma=20,
         )
         state = Blueprint(stats_cup=high_cup)
-        state = _exhaust(LevelAssigner(level=4).get_change(state))
-        state = _exhaust(StandardArray(stats_priority=_PRIORITY).get_change(state))
-        state = _exhaust(WizardLevelIncrementer().get_change(state))
-        state = _exhaust(WizardLevelIncrementer().get_change(state))
-        state = _exhaust(WizardLevelIncrementer().get_change(state))
-        state = _exhaust(WizardLevelIncrementer().get_change(state))
+        state = LevelAssigner(level=4).apply(state)
+        state = StandardArray(stats_priority=_PRIORITY).apply(state)
+        state = WizardLevelIncrementer().apply(state)
+        state = WizardLevelIncrementer().apply(state)
+        state = WizardLevelIncrementer().apply(state)
+        state = WizardLevelIncrementer().apply(state)
         resolver = MaxIfNotMaxedResolver(priority=_PRIORITY)
-        result = _exhaust(resolver.get_change(state))
+        result = resolver.apply(state)
         assert result is not None
 
 

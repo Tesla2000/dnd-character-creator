@@ -2,27 +2,17 @@
 
 from __future__ import annotations
 
-from collections.abc import Generator
-from typing import Never
-from typing import overload
-
-from typing_extensions import deprecated
-
 from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.delta.delta import Delta
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.base import (
     ToolProficiencyChoiceResolver,
-    ToolProficienciesDelta,
 )
-from dnd.character.blueprint.state import HasToolProficiencies
+from dnd.character.blueprint.state import Blueprint
 from dnd.other_profficiencies import GamingSet
 from dnd.other_profficiencies import MusicalInstrument
 from dnd.other_profficiencies import ToolProficiency
 from pydantic import BaseModel
 from pydantic import Field
 from structured_output_creator import OpenAIService, RaisingService
-from typing_protocol_intersection import ProtocolIntersection
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
@@ -38,171 +28,76 @@ class ToolProficiencySelection(BaseModel):
 
 
 class AIToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
-    """AI-powered resolver for tool proficiency ANY_OF_YOUR_CHOICE placeholders.
-
-    Uses an LLM to make intelligent tool selections based on
-    character context (race, class, background, etc.).
-
-    Example:
-        >>> resolver = AIToolProficiencyChoiceResolver(
-        ...     llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
-        ... )
-    """
+    """AI-powered resolver for tool proficiency ANY_OF_YOUR_CHOICE placeholders."""
 
     type: Literal[BuildingBlockType.AI_TOOL_PROFICIENCY_CHOICE_RESOLVER] = (
         BuildingBlockType.AI_TOOL_PROFICIENCY_CHOICE_RESOLVER
     )
 
     llm: RaisingService = Field(
-        default_factory=lambda: RaisingService(service=OpenAIService()),
-        description="Language model for making AI-powered decisions",
+        default_factory=lambda: RaisingService(service=OpenAIService())
     )
-
-    formatter: BlueprintFormatter = Field(
-        default_factory=BlueprintFormatter,
-        description="Blueprint formatter for creating AI prompts",
-    )
+    formatter: BlueprintFormatter = Field(default_factory=BlueprintFormatter)
 
     def _select_tool_proficiency(
-        self, available: list[ToolProficiency], state: HasToolProficiencies
+        self,
+        available: list[ToolProficiency],
+        tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> ToolProficiency:
-        """Not used — this class overrides get_change directly."""
-        raise NotImplementedError(
-            "AIToolProficiencyChoiceResolver overrides get_change"
-        )
+        raise NotImplementedError("AIToolProficiencyChoiceResolver overrides apply")
 
     def _select_gaming_set(
-        self, available: list[GamingSet], state: HasToolProficiencies
+        self,
+        available: list[GamingSet],
+        tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> GamingSet:
-        """Not used — this class overrides get_change directly."""
-        raise NotImplementedError(
-            "AIToolProficiencyChoiceResolver overrides get_change"
-        )
+        raise NotImplementedError("AIToolProficiencyChoiceResolver overrides apply")
 
     def _select_musical_instrument(
-        self, available: list[MusicalInstrument], state: HasToolProficiencies
+        self,
+        available: list[MusicalInstrument],
+        tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> MusicalInstrument:
-        """Not used — this class overrides get_change directly."""
-        raise NotImplementedError(
-            "AIToolProficiencyChoiceResolver overrides get_change"
-        )
+        raise NotImplementedError("AIToolProficiencyChoiceResolver overrides apply")
 
-    def _build_prompt(self, state: HasToolProficiencies) -> str:
-        system_prompt = (
-            "You are resolving tool proficiency ANY_OF_YOUR_CHOICE "
-            "placeholders for a D&D 5e character.\n"
-            "Replace each placeholder with the most appropriate tool, "
-            "gaming set, or musical instrument based on the character's "
-            "race, class, background, and concept.\n"
-        )
-
+    def _build_prompt(self, blueprint: Blueprint) -> str:
+        system_prompt = "You are resolving tool proficiency ANY_OF_YOUR_CHOICE placeholders for a D&D 5e character.\n"
         character_description = self.formatter.format(
-            state, system_prompt=system_prompt
+            blueprint, system_prompt=system_prompt
         )
-
-        instructions = ["\n## Placeholders to Resolve\n"]
-
+        not_choice = {
+            ToolProficiency.ANY_OF_YOUR_CHOICE,
+            GamingSet.ANY_OF_YOUR_CHOICE,
+            MusicalInstrument.ANY_OF_YOUR_CHOICE,
+        }
         tool_placeholders = sum(
-            1
-            for t in state.tool_proficiencies
-            if (
-                (
-                    isinstance(t, ToolProficiency)
-                    and t == ToolProficiency.ANY_OF_YOUR_CHOICE
-                )
-                or (isinstance(t, GamingSet) and t == GamingSet.ANY_OF_YOUR_CHOICE)
-                or (
-                    isinstance(t, MusicalInstrument)
-                    and t == MusicalInstrument.ANY_OF_YOUR_CHOICE
-                )
-            )
+            1 for t in blueprint.tool_proficiencies if t in not_choice
         )
-
         if tool_placeholders == 0:
             return ""
-
-        instructions.append(
-            f"Tool Proficiencies: {tool_placeholders} ANY_OF_YOUR_CHOICE "
-            "placeholder(s) to replace"
-        )
-        instructions.append(
-            "  Available tool types: ToolProficiency, GamingSet, MusicalInstrument"
-        )
-        instructions.append(
-            "\n## Selection Instructions\n"
-            "Return the complete tool proficiency set with placeholders "
-            "replaced by specific choices.\n"
-            "Choose tools that best fit the character's class, "
-            "background, and concept.\n"
-            "Avoid duplicates unless the character already has them."
+        return (
+            character_description
+            + f"\n## Tool Proficiencies to Choose ({tool_placeholders})"
         )
 
-        return character_description + "\n".join(instructions)
-
-    @overload
-    def get_change[T: HasToolProficiencies](
-        self, state: T
-    ) -> Generator[
-        ToolProficienciesDelta, None, ProtocolIntersection[T, HasToolProficiencies]
-    ]: ...
-
-    @overload
-    @deprecated(
-        "Pass a state satisfying HasToolProficiencies for precise return typing"
-    )
-    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
-
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]:
-        if not isinstance(state, HasToolProficiencies):
-            raise TypeError(
-                f"{type(self).__name__} requires HasToolProficiencies, got {type(state).__name__}"
-            )
-        has_placeholder = any(
-            (isinstance(t, ToolProficiency) and t == ToolProficiency.ANY_OF_YOUR_CHOICE)
-            or (isinstance(t, GamingSet) and t == GamingSet.ANY_OF_YOUR_CHOICE)
-            or (
-                isinstance(t, MusicalInstrument)
-                and t == MusicalInstrument.ANY_OF_YOUR_CHOICE
-            )
-            for t in state.tool_proficiencies
-        )
+    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+        not_choice = {
+            ToolProficiency.ANY_OF_YOUR_CHOICE,
+            GamingSet.ANY_OF_YOUR_CHOICE,
+            MusicalInstrument.ANY_OF_YOUR_CHOICE,
+        }
+        has_placeholder = any(t in not_choice for t in blueprint.tool_proficiencies)
 
         if not has_placeholder:
-            delta = ToolProficienciesDelta(
-                tool_proficiencies=tuple(state.tool_proficiencies)
-            )
-            yield delta
-            return delta.apply(state)
+            return blueprint
 
-        prompt = self._build_prompt(state)
+        prompt = self._build_prompt(blueprint)
         if not prompt:
-            delta = ToolProficienciesDelta(
-                tool_proficiencies=tuple(state.tool_proficiencies)
-            )
-            yield delta
-            return delta.apply(state)
+            return blueprint
 
         selection = self.llm.create_structured_output(prompt, ToolProficiencySelection)
-
         new_tools: set[ToolProficiency | GamingSet | MusicalInstrument] = {
-            t
-            for t in state.tool_proficiencies
-            if not (
-                (
-                    isinstance(t, ToolProficiency)
-                    and t == ToolProficiency.ANY_OF_YOUR_CHOICE
-                )
-                or (isinstance(t, GamingSet) and t == GamingSet.ANY_OF_YOUR_CHOICE)
-                or (
-                    isinstance(t, MusicalInstrument)
-                    and t == MusicalInstrument.ANY_OF_YOUR_CHOICE
-                )
-            )
+            t for t in blueprint.tool_proficiencies if t not in not_choice
         }
         new_tools.update(selection.tool_proficiencies)
-
-        delta = ToolProficienciesDelta(tool_proficiencies=tuple(new_tools))
-        yield delta
-        return delta.apply(state)
+        return blueprint.model_copy(update={"tool_proficiencies": tuple(new_tools)})

@@ -5,7 +5,6 @@ import random
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.base import (
     ToolProficiencyChoiceResolver,
 )
-from dnd.character.blueprint.state import HasToolProficiencies
 from dnd.other_profficiencies import GamingSet
 from dnd.other_profficiencies import MusicalInstrument
 from dnd.other_profficiencies import ToolProficiency
@@ -41,19 +40,25 @@ class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
     )
 
     def _select_tool_proficiency(
-        self, available: list[ToolProficiency], state: HasToolProficiencies
+        self,
+        available: list[ToolProficiency],
+        tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> ToolProficiency:
         random.seed(self.seed)
         return random.choice(available)
 
     def _select_gaming_set(
-        self, available: list[GamingSet], state: HasToolProficiencies
+        self,
+        available: list[GamingSet],
+        tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> GamingSet:
         random.seed(self.seed)
         return random.choice(available)
 
     def _select_musical_instrument(
-        self, available: list[MusicalInstrument], state: HasToolProficiencies
+        self,
+        available: list[MusicalInstrument],
+        tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> MusicalInstrument:
         random.seed(self.seed)
         return random.choice(available)

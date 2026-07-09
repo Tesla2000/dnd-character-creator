@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Generator
 from typing import Literal
-from typing import Never
-from typing import overload
-
-from typing_extensions import deprecated
-from typing_protocol_intersection import ProtocolIntersection
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -15,57 +9,27 @@ from dnd.character.blueprint.building_blocks.building_block_type import (
 from dnd.character.blueprint.building_blocks.subclass_assigner.ai import (
     AISubclassAssigner,
 )
-from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
-    CanNotAssign,
-    SubclassDelta,
-    _SubclassT,
-)
+from dnd.character.blueprint.building_blocks.subclass_assigner.base import CanNotAssign
 from dnd.character.blueprint.building_blocks.subclass_assigner.random import (
     RandomSubclassAssigner,
 )
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.blueprint.state import HasSubclasses
-from dnd.character.delta.delta import Delta
+from dnd.character.blueprint.state import Blueprint
 from pydantic import Field
 
 
 class OptionalSubclassAssigner(BuildingBlock):
-    """Optionally assigns a subclass, gracefully handling cases where assignment is not possible.
-
-    Wraps another subclass assigner and silently succeeds if the assignment would fail
-    (e.g., character not high enough level for subclass selection).
-    """
+    """Optionally assigns a subclass, silently skipping if assignment is not possible."""
 
     type: Literal[BuildingBlockType.OPTIONAL_SUBCLASS_ASSIGNER] = (
         BuildingBlockType.OPTIONAL_SUBCLASS_ASSIGNER
     )
 
     assigner: RandomSubclassAssigner | AISubclassAssigner = Field(
-        description="The subclass assigner strategy to use (random or AI)"
+        description="The subclass assigner strategy to use"
     )
 
-    @overload
-    def get_change[T: _SubclassT](
-        self, state: T
-    ) -> Generator[SubclassDelta, None, ProtocolIntersection[T, HasSubclasses]]: ...
-
-    @overload
-    @deprecated(
-        "Pass a state satisfying HasClasses and HasSubclasses for precise return typing"
-    )
-    def get_change[T: BlueprintProtocol](self, state: T) -> Never: ...
-
-    def get_change[T: BlueprintProtocol](
-        self, state: T
-    ) -> Generator[Delta, None, BlueprintProtocol]:
-        if not isinstance(state, _SubclassT):
-            raise TypeError(
-                f"{type(self).__name__} requires HasClasses and HasSubclasses, got {type(state).__name__}"
-            )
+    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
         try:
-            result = yield from self.assigner.get_change(state)
-            return result
+            return self.assigner.apply(blueprint)
         except CanNotAssign:
-            delta = SubclassDelta(subclasses=state.subclasses)
-            yield delta
-            return delta.apply(state)
+            return blueprint

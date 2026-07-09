@@ -5,7 +5,6 @@ import random
 from dnd.character.blueprint.building_blocks.language_choice_resolver.base import (
     LanguageChoiceResolver,
 )
-from dnd.character.blueprint.state import HasLanguages
 from dnd.choices.language import Language
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -39,7 +38,7 @@ class RandomLanguageChoiceResolver(LanguageChoiceResolver):
     )
 
     def _select_from_available(
-        self, available: list[Language], state: HasLanguages
+        self, available: list[Language], languages: tuple[Language, ...]
     ) -> Language:
         random.seed(self.seed)
         return random.choice(available)

@@ -16,7 +16,12 @@
 /dnd/server/static/simplified-blocks-schema.json
 /scripts/data/
 
+# Frontend dependencies
+node_modules/
+frontend/node_modules/
+
 # Terraform
 terraform/.terraform/
 terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
+/scraped_data/classes-and-subclasses/

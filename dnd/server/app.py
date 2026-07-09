@@ -1,14 +1,17 @@
+import logging
+import traceback
+from typing import TYPE_CHECKING
+
 from dnd.character.blueprint.building_blocks import (
     AnyBuildingBlock,
 )
 from dnd.character.blueprint.building_blocks.building_block import (
     BuildingBlock,
 )
-from dnd.character.builder import Builder
-from dnd.character.builder import SuccessBuiltResult
-from dnd.character.checkpoint import IncrementChain
-from dnd.character.checkpoint import IncrementStorage
-from dnd.character.checkpoint import MemoryStorage
+from dnd.character.blueprint.building_blocks.character_converter import (
+    CharacterConverter,
+)
+from dnd.character.blueprint.state import EmptyBlueprint
 from dnd.character.presentable_character import (
     PresentableCharacter,
 )
@@ -24,14 +27,15 @@ from pydantic import ValidationError
 from starlette.responses import RedirectResponse
 from starlette.responses import Response
 
+_logger = logging.getLogger(__name__)
+
 
 class _CreateCharacterResponse(BaseModel):
     character: PresentableCharacter | None = None
-    increment_chain: IncrementChain
     error: str | None = None
 
 
-_building_blocks_creator: TypeAdapter[tuple[BuildingBlock, ...]] = TypeAdapter(
+_building_blocks_creator: TypeAdapter[tuple[AnyBuildingBlock, ...]] = TypeAdapter(
     tuple[AnyBuildingBlock, ...]
 )
 
@@ -42,10 +46,9 @@ EXAMPLES = (
 
 class _CreateCharacterRequestSchema(BaseModel):
     building_blocks: list[dict[str, object]] = Field(examples=list(EXAMPLES))
-    increment_chain: dict[str, object] = Field(examples=[IncrementChain()])
 
 
-def create_app(storage: IncrementStorage) -> FastAPI:
+def create_app() -> FastAPI:
     app_ = FastAPI()
 
     @app_.get("/", include_in_schema=False)
@@ -59,41 +62,27 @@ def create_app(storage: IncrementStorage) -> FastAPI:
     def create_character(
         request: _CreateCharacterRequestSchema, response: Response
     ) -> _CreateCharacterResponse:
-        errors = []
-        building_blocks: tuple[BuildingBlock, ...]
+        if TYPE_CHECKING:
+            return _CreateCharacterResponse()
         try:
             building_blocks = _building_blocks_creator.validate_python(
                 request.building_blocks
             )
         except ValidationError as e:
-            errors.append(e)
+            raise HTTPException(status_code=422, detail=str(e)) from e
         try:
-            increment_chain = IncrementChain.model_validate(request.increment_chain)
-        except ValidationError as e:
-            errors.append(e)
-        if errors:
-            raise HTTPException(status_code=422, detail="\n\n".join(map(str, errors)))
-        builder = Builder(
-            building_blocks=building_blocks,
-            increment_storage=storage,
-        )
-        result = builder.build(increment_chain)
-        output_increment_chain = storage.load_chain(result.chain_id)
-        if isinstance(result, SuccessBuiltResult):
+            blueprint = EmptyBlueprint()
+            for block in building_blocks:
+                blueprint = block.apply(blueprint)
+            character = CharacterConverter().apply(blueprint)
             response.status_code = 200
-            return _CreateCharacterResponse(
-                character=result.character,
-                increment_chain=output_increment_chain,
-                error=None,
-            )
-        response.status_code = 422
-        return _CreateCharacterResponse(
-            character=None,
-            increment_chain=output_increment_chain,
-            error=str(result.error),
-        )
+            return _CreateCharacterResponse(character=character, error=None)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            response.status_code = 422
+            return _CreateCharacterResponse(character=None, error=str(e))
 
     return app_
 
 
-app = create_app(MemoryStorage())
+app = create_app()

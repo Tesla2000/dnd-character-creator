@@ -115,13 +115,13 @@ NotAnyArmorProficiency = Annotated[
     ArmorProficiency, AfterValidator(_armor_proficiency_not_any)
 ]
 
-ClassLevel = Annotated[int, Field(ge=1, le=20)]
+Level = Annotated[int, Field(ge=1, le=20)]
 
 
 class Character(_CreatureBase):
     sex: Sex
     backstory: str
-    level: ClassLevel
+    level: Level
     age: PositiveInt
     classes: Annotated[
         PydanticFrozendict[Class, PositiveInt],

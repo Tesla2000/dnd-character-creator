@@ -4,8 +4,8 @@ import random
 
 from dnd.character.blueprint.building_blocks.feat_choice_resolver.base import (
     FeatChoiceResolver,
-    _FeatT,
 )
+from dnd.character.blueprint.state import Blueprint
 from dnd.character.feature.feats import FeatName
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -15,7 +15,7 @@ from pydantic import ConfigDict
 from pydantic import Field
 
 
-class RandomFeatChoiceResolver(FeatChoiceResolver[_FeatT]):
+class RandomFeatChoiceResolver(FeatChoiceResolver):
     """Randomly selects feats for ANY_OF_YOUR_CHOICE placeholders.
 
     Provides deterministic randomness when seed is set, useful for
@@ -39,7 +39,7 @@ class RandomFeatChoiceResolver(FeatChoiceResolver[_FeatT]):
     )
 
     def _select_from_available(
-        self, available: list[FeatName], state: _FeatT
+        self, available: list[FeatName], state: Blueprint
     ) -> FeatName:
         random.seed(self.seed)
         return random.choice(available)

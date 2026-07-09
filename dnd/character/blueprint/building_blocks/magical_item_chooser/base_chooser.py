@@ -4,12 +4,10 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from collections.abc import Generator
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.blueprint.state import HasMagicalItems
-from dnd.character.delta.magical_items_delta import MagicalItemsDelta
+from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.state import _BPT
 from dnd.character.magical_item.item import MagicalItem
 from pydantic import ConfigDict
 from pydantic import Field
@@ -51,13 +49,10 @@ class MagicalItemChooserBase(BuildingBlock, ABC):
     )
 
     @abstractmethod
-    def _select_items(self, state: BlueprintProtocol) -> tuple[MagicalItem, ...]: ...
+    def _select_items(self, blueprint: _BPT) -> tuple[MagicalItem, ...]: ...
 
-    def get_change(
-        self, state: BlueprintProtocol
-    ) -> Generator[MagicalItemsDelta, None, HasMagicalItems]:
-        selected_items = self._select_items(state)
-        existing = state.magical_items if isinstance(state, HasMagicalItems) else ()
-        delta = MagicalItemsDelta(magical_items=existing + selected_items)
-        yield delta
-        return delta.apply(state)
+    def apply(self, blueprint: _BPT) -> _BPT:
+        selected_items = self._select_items(blueprint)
+        return blueprint.model_copy(
+            update={"magical_items": blueprint.magical_items + selected_items}
+        )

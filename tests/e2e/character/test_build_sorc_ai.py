@@ -79,7 +79,7 @@ class TestBuildSorcererAI(TestBuildSorcerer):
                 llm=spells_llm,
                 character_description=character_description,
             ),
-        ).character
+        )
 
         assert isinstance(sorcerer, Character)
         assert sorcerer.weapons

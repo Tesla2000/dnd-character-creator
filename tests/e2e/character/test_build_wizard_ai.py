@@ -30,7 +30,6 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
 from dnd.character.blueprint.building_blocks.subclass_assigner import (
     AISubclassAssigner,
 )
-from dnd.character.builder import SuccessBuiltResult
 from dnd.character.character import Character
 from dotenv import load_dotenv
 from structured_output_creator import OpenAIService, RaisingService
@@ -85,8 +84,7 @@ class TestBuildWizardAI(TestBuildWizard):
                     character_description=character_description,
                 ),
             )
-            assert isinstance(result, SuccessBuiltResult), result
-            character = result.character
+            character = result
             assert isinstance(character, Character)
             assert character.weapons
             assert character.other_equipment

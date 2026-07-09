@@ -1,31 +1,12 @@
 from __future__ import annotations
 
 import random
-from collections.abc import Generator
-
 
 from dnd.character.blueprint.building_blocks.initial_data_filler.base_filler import (
     InitialDataFiller,
 )
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.blueprint.state import HasAge
-from dnd.character.blueprint.state import HasAlignment
-from dnd.character.blueprint.state import HasAppearance
-from dnd.character.blueprint.state import HasBackground
-from dnd.character.blueprint.state import HasBackstory
-from dnd.character.blueprint.state import HasBonds
-from dnd.character.blueprint.state import HasCharacterTraits
-from dnd.character.blueprint.state import HasEyeColor
-from dnd.character.blueprint.state import HasHairstyle
-from dnd.character.blueprint.state import HasHeight
-from dnd.character.blueprint.state import HasIdeals
-from dnd.character.blueprint.state import HasInitialData
-from dnd.character.blueprint.state import HasName
-from dnd.character.blueprint.state import HasSex
-from dnd.character.blueprint.state import HasSkinColor
-from dnd.character.blueprint.state import HasWeaknesses
-from dnd.character.blueprint.state import HasWeight
-from dnd.character.delta.initial_data_delta import InitialDataDelta
+from dnd.character.blueprint.character_data import CharacterData
+from dnd.character.blueprint.state import Blueprint
 from dnd.choices.alignment import Alignment
 from dnd.choices.background_creatrion.background import Background
 from dnd.choices.sex import Sex
@@ -168,57 +149,31 @@ class RandomInitialDataFiller(InitialDataFiller):
         "I have a secret that could ruin me if discovered.",
     )
 
-    def get_change(
-        self, state: BlueprintProtocol
-    ) -> Generator[InitialDataDelta, None, HasInitialData]:
-        """Fill missing required fields with random mock data."""
+    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
         random.seed(self.seed)
-
-        delta = InitialDataDelta(
-            sex=state.sex if isinstance(state, HasSex) else random.choice(tuple(Sex)),
-            backstory=state.backstory
-            if isinstance(state, HasBackstory)
-            else random.choice(self._BACKSTORIES),
-            age=state.age if isinstance(state, HasAge) else random.randint(18, 80),
-            name=state.name
-            if isinstance(state, HasName)
-            else random.choice(self._NAMES),
-            background=state.background
-            if isinstance(state, HasBackground)
-            else random.choice(tuple(Background)),
-            alignment=state.alignment
-            if isinstance(state, HasAlignment)
-            else random.choice(tuple(Alignment)),
-            height=state.height
-            if isinstance(state, HasHeight)
-            else random.randint(150, 210),
-            weight=state.weight
-            if isinstance(state, HasWeight)
-            else random.randint(50, 120),
-            eye_color=state.eye_color
-            if isinstance(state, HasEyeColor)
-            else random.choice(self._EYE_COLORS),
-            skin_color=state.skin_color
-            if isinstance(state, HasSkinColor)
-            else random.choice(self._SKIN_COLORS),
-            hairstyle=state.hairstyle
-            if isinstance(state, HasHairstyle)
-            else random.choice(self._HAIRSTYLES),
-            appearance=state.appearance
-            if isinstance(state, HasAppearance)
-            else random.choice(self._APPEARANCES),
-            character_traits=state.character_traits
-            if isinstance(state, HasCharacterTraits)
-            else random.choice(self._CHARACTER_TRAITS),
-            ideals=state.ideals
-            if isinstance(state, HasIdeals)
-            else random.choice(self._IDEALS),
-            bonds=state.bonds
-            if isinstance(state, HasBonds)
-            else random.choice(self._BONDS),
-            weaknesses=state.weaknesses
-            if isinstance(state, HasWeaknesses)
-            else random.choice(self._WEAKNESSES),
+        cd = blueprint.character_data or CharacterData()
+        return blueprint.model_copy(
+            update={
+                "character_data": cd.model_copy(
+                    update={
+                        "name": cd.name or random.choice(self._NAMES),
+                        "sex": cd.sex or random.choice(tuple(Sex)),
+                        "backstory": cd.backstory or random.choice(self._BACKSTORIES),
+                        "age": cd.age or random.randint(18, 80),
+                        "background": cd.background or random.choice(tuple(Background)),
+                        "alignment": cd.alignment or random.choice(tuple(Alignment)),
+                        "height": cd.height or random.randint(150, 210),
+                        "weight": cd.weight or random.randint(50, 120),
+                        "eye_color": cd.eye_color or random.choice(self._EYE_COLORS),
+                        "skin_color": cd.skin_color or random.choice(self._SKIN_COLORS),
+                        "hairstyle": cd.hairstyle or random.choice(self._HAIRSTYLES),
+                        "appearance": cd.appearance or random.choice(self._APPEARANCES),
+                        "character_traits": cd.character_traits
+                        or random.choice(self._CHARACTER_TRAITS),
+                        "ideals": cd.ideals or random.choice(self._IDEALS),
+                        "bonds": cd.bonds or random.choice(self._BONDS),
+                        "weaknesses": cd.weaknesses or random.choice(self._WEAKNESSES),
+                    }
+                ),
+            }
         )
-        yield delta
-        return delta.apply(state)

@@ -22,6 +22,5 @@ class AllChoicesResolverBase(BaseModel):
     (AllChoicesResolver) and holistic AI resolvers
     (AIAllChoicesResolver).
 
-    Subclasses implement _get_change() to define resolution logic.
-    The apply() method is inherited from BuildingBlock.
+    Subclasses implement apply() via BuildingBlock.
     """

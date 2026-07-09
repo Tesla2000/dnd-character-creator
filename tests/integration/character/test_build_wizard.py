@@ -79,11 +79,9 @@ from dnd.character.blueprint.building_blocks.subclass_assigner import (
 from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
     SubclassAssigner,
 )
-from dnd.character.builder import Builder
-from dnd.character.builder import BuiltResult
-from dnd.character.builder import SuccessBuiltResult
+from dnd.character.blueprint.state import Blueprint
 from dnd.character.character import Character
-from dnd.character.checkpoint import MemoryStorage
+from dnd.character.presentable_character import PresentableCharacter
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
 from dnd.choices.class_creation.character_class import Class
@@ -133,32 +131,29 @@ class TestBuildWizard:
         initial_data_filler: InitialDataFiller,
         subclass_assigner: SubclassAssigner,
         spell_assigner: SpellAssigner,
-    ) -> BuiltResult:
+    ) -> PresentableCharacter:
         level_up = cls._create_level_up(
             all_choices_resolver,
             class_=cls.CLASS,
             spell_assigner=spell_assigner,
         )
-
-        builder = (
-            Builder(increment_storage=MemoryStorage())
-            .add(
-                InitialBuilder(
-                    level_assigner=LevelAssigner(level=cls.LEVEL),
-                    stats_builder=StandardArray(stats_priority=cls.STATS_PRIORITY),
-                    race_assigner=RaceAssigner(
-                        race=cls.RACE,
-                        subrace=cls.SUBRACE,
-                    ),
-                    all_choices_resolver=all_choices_resolver,
-                )
-            )
-            .add(initial_data_filler)
-            .add(LevelUpMultiple(blocks=tuple(level_up for _ in range(cls.LEVEL - 1))))
-            .add(subclass_assigner)
-            .add(magical_item_chooser)
-        )
-        return builder.build()
+        blueprint = Blueprint()
+        blueprint = InitialBuilder(
+            level_assigner=LevelAssigner(level=cls.LEVEL),
+            stats_builder=StandardArray(stats_priority=cls.STATS_PRIORITY),
+            race_assigner=RaceAssigner(
+                race=cls.RACE,
+                subrace=cls.SUBRACE,
+            ),
+            all_choices_resolver=all_choices_resolver,
+        ).apply(blueprint)
+        blueprint = initial_data_filler.apply(blueprint)
+        blueprint = LevelUpMultiple(
+            blocks=tuple(level_up for _ in range(cls.LEVEL - 1))
+        ).apply(blueprint)
+        blueprint = subclass_assigner.apply(blueprint)
+        blueprint = magical_item_chooser.apply(blueprint)
+        return PresentableCharacter.from_blueprint(blueprint)
 
     def test_build_wizard(self) -> None:
         magical_item_chooser = RandomMagicalItemChooser(
@@ -168,7 +163,7 @@ class TestBuildWizard:
             n_legendary=1,
             seed=42,
         )
-        result = self._build_wizard(
+        wizard = self._build_wizard(
             magical_item_chooser,
             AllChoicesResolver(
                 language_choice_resolver=RandomLanguageChoiceResolver(),
@@ -190,8 +185,6 @@ class TestBuildWizard:
             ),
             WizardRandomSpellAssigner(),
         )
-        assert isinstance(result, SuccessBuiltResult), result
-        wizard = result.character
         assert isinstance(wizard, Character)
         assert wizard.weapons
         assert wizard.other_equipment

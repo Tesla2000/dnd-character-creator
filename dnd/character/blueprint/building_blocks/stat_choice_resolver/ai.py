@@ -5,8 +5,8 @@ from __future__ import annotations
 from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.stat_choice_resolver.base import (
     StatChoiceResolver,
-    _StatT,
 )
+from dnd.character.blueprint.state import Blueprint
 from dnd.choices.stats_creation.statistic import Statistic
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -36,7 +36,6 @@ class AIStatChoiceResolver(StatChoiceResolver):
         >>> resolver = AIStatChoiceResolver(
         ...     llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
         ... )
-        >>> builder = Builder().add(resolver)
     """
 
     type: Literal[BuildingBlockType.AI_STAT_CHOICE_RESOLVER] = (
@@ -53,7 +52,7 @@ class AIStatChoiceResolver(StatChoiceResolver):
         description="Blueprint formatter for creating AI prompts",
     )
 
-    def _build_prompt(self, state: _StatT) -> str:
+    def _build_prompt(self, state: Blueprint) -> str:
         n = state.n_stat_choices
 
         system_prompt = (
@@ -81,7 +80,7 @@ class AIStatChoiceResolver(StatChoiceResolver):
 
         return character_description + "\n".join(instructions)
 
-    def select_stats_to_increase(self, state: _StatT) -> dict[Statistic, int]:
+    def select_stats_to_increase(self, state: Blueprint) -> dict[Statistic, int]:
         prompt = self._build_prompt(state)
 
         selection = self.llm.create_structured_output(prompt, StatIncreaseSelection)

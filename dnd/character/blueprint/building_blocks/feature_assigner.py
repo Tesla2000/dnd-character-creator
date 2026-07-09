@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 from typing import Literal
-from collections.abc import Generator
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import BlueprintProtocol
-from dnd.character.blueprint.state import HasOtherAbilities
-from dnd.character.delta.feature_delta import FeatureDelta
+from dnd.character.blueprint.state import _BPT
 from dnd.character.feature.feature import Feature
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
@@ -30,12 +27,5 @@ class FeatureAssigner(BuildingBlock):
         description="Character feature to assign (ability, trait, or stat boost)"
     )
 
-    def get_change(
-        self, state: BlueprintProtocol
-    ) -> Generator[FeatureDelta, None, HasOtherAbilities]:
-        existing = (
-            state.other_active_abilities if isinstance(state, HasOtherAbilities) else ()
-        )
-        delta = FeatureDelta(other_active_abilities=existing)
-        yield delta
-        return delta.apply(state)
+    def apply(self, blueprint: _BPT) -> _BPT:
+        return blueprint

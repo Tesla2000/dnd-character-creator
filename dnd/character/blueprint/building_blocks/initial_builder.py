@@ -1,36 +1,22 @@
 from __future__ import annotations
 
-from collections.abc import Generator
 from typing import Literal
 
 from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AnyChoiceResolver,
 )
-from dnd.character.blueprint.building_blocks.building_block import (
-    BuildingBlock,
-)
-from dnd.character.blueprint.building_blocks.level_assigner import (
-    LevelAssigner,
-)
-from dnd.character.blueprint.building_blocks.race_assigner import (
-    AnyRaceAssigner,
-)
-from dnd.character.blueprint.building_blocks.stats_builder import (
-    AnyStatsBuilder,
-)
-from dnd.character.blueprint.state import BlueprintProtocol
+from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
+from dnd.character.blueprint.building_blocks.level_assigner import LevelAssigner
+from dnd.character.blueprint.building_blocks.race_assigner import AnyRaceAssigner
+from dnd.character.blueprint.building_blocks.stats_builder import AnyStatsBuilder
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
-from dnd.character.delta.delta import Delta
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 
 
 class InitialBuilder(BuildingBlock):
-    """Building block that performs initial character generation.
-
-    Combines level assignment, ability score building, race selection,
-    and choice resolution into a single orchestrated process.
-    """
+    """Combines level assignment, stats, race, and choice resolution."""
 
     type: Literal[BuildingBlockType.INITIAL_BUILDER] = BuildingBlockType.INITIAL_BUILDER
 
@@ -39,19 +25,8 @@ class InitialBuilder(BuildingBlock):
     race_assigner: AnyRaceAssigner
     all_choices_resolver: AnyChoiceResolver
 
-    def flatten(self) -> Generator[BuildingBlock]:
-        for block in (
-            self.level_assigner,
-            self.stats_builder,
-            self.race_assigner,
-            self.all_choices_resolver,
-        ):
-            yield from block.flatten()
-
-    def get_change(
-        self, state: BlueprintProtocol
-    ) -> Generator[Delta, None, BlueprintProtocol]:
-        current: BlueprintProtocol = state
-        for block in self.flatten():
-            current = yield from block.get_change(current)
-        return current
+    def apply(self, blueprint: _WideBlueprint) -> _WideBlueprint:
+        r1 = self.level_assigner.apply(blueprint)
+        r2 = self.stats_builder.apply(r1)
+        r3 = self.race_assigner.apply(r2)
+        return self.all_choices_resolver.apply(r3)
