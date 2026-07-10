@@ -6,7 +6,9 @@
       "Write(./pyproject.toml)",
       "Edit(./pyproject.toml)",
       "Write(./mypy.ini)",
-      "Edit(./mypy.ini))",
+      "Edit(./mypy.ini)",
+      "Write(./.coveragerc)",
+      "Edit(./.coveragerc)",
       "Read(./.env)",
       "Bash(cat .env)"
     ]

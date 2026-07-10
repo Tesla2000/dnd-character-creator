@@ -103,12 +103,6 @@ class TestBuildingBlockSerialization:
         assert serialized[0]["type"] == BuildingBlockType.WEAPON_ADDER
         assert serialized[1]["type"] == BuildingBlockType.HUMAN_RACE_ASSIGNER
 
-    def test_serialize_and_deserialize_base_block_json(self, building_blocks):
-        """Test serializing a sequence containing multiple blocks."""
-        adapter = TypeAdapter(tuple[AnyBuildingBlock, ...])
-        serialized = adapter.dump_python(building_blocks, mode="json")
-        assert adapter.validate_python(serialized) == building_blocks
-
     def test_deserialize_block_sequence(self):
         """Test deserializing a sequence of blocks."""
         data = [

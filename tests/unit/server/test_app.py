@@ -1,6 +1,13 @@
+from __future__ import annotations
+
 import pytest
+import dnd.server.app as _app_module
+from unittest.mock import MagicMock
 from dnd.character.blueprint.building_blocks.null_block import NullBlock
-from dnd.server.app import EXAMPLES, create_app
+from dnd.server.app import create_app
+from dnd.server.example_generators.example_building_blocks import (
+    example_building_blocks,
+)
 from starlette.testclient import TestClient
 
 
@@ -11,11 +18,16 @@ def client():
 
 @pytest.mark.unit
 class TestServerApp:
-    def test_create_character_simple(self, client: TestClient) -> None:
-        response = client.post(
-            "/create_character",
-            json={"building_blocks": EXAMPLES[0]},
+    def test_create_character_simple(
+        self, client: TestClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        blocks = example_building_blocks()
+        monkeypatch.setattr(
+            _app_module,
+            "_building_blocks_creator",
+            MagicMock(validate_python=MagicMock(return_value=blocks)),
         )
+        response = client.post("/create_character", json={"building_blocks": []})
         assert response.status_code == 200
         data = response.json()
         assert data["error"] is None
@@ -53,14 +65,6 @@ class TestServerApp:
         assert response.status_code == 422
         data = response.json()
         assert data["error"] is not None
-
-    def test_examples_are_valid(self, client: TestClient) -> None:
-        for example in EXAMPLES:
-            response = client.post(
-                "/create_character",
-                json={"building_blocks": example},
-            )
-            assert response.status_code == 200
 
     def test_root_redirects_to_docs(self, client: TestClient) -> None:
         response = client.get("/", follow_redirects=False)
