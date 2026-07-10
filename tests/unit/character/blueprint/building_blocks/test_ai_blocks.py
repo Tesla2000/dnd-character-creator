@@ -241,7 +241,7 @@ class TestAIAllNonStatChoicesResolver:
         block = AIAllNonStatChoicesResolver.model_construct(
             llm=mock_llm, formatter=BlueprintFormatter()
         )
-        result = block.apply(Blueprint())
+        result = block.apply(Blueprint(stats=_DEFAULT_STATS))
         assert result is not None
         mock_llm.create_structured_output.assert_not_called()
 
@@ -254,7 +254,9 @@ class TestAIAllNonStatChoicesResolver:
         block = AIAllNonStatChoicesResolver.model_construct(
             llm=mock_llm, formatter=BlueprintFormatter()
         )
-        state = Blueprint(languages=(Language.ANY_OF_YOUR_CHOICE,))
+        state = Blueprint(
+            stats=_DEFAULT_STATS, languages=(Language.ANY_OF_YOUR_CHOICE,)
+        )
         result = block.apply(state)
         assert result is not None
         mock_llm.create_structured_output.assert_called_once()
@@ -491,7 +493,9 @@ class TestAIAllNonStatChoicesResolverExtraBranches:
         block = AIAllNonStatChoicesResolver.model_construct(
             llm=mock_llm, formatter=BlueprintFormatter()
         )
-        state = Blueprint(skill_proficiencies=(Skill.ANY_OF_YOUR_CHOICE,))
+        state = Blueprint(
+            stats=_DEFAULT_STATS, skill_proficiencies=(Skill.ANY_OF_YOUR_CHOICE,)
+        )
         result = block.apply(state)
         assert result is not None
         mock_llm.create_structured_output.assert_called_once()
@@ -505,7 +509,7 @@ class TestAIAllNonStatChoicesResolverExtraBranches:
         block = AIAllNonStatChoicesResolver.model_construct(
             llm=mock_llm, formatter=BlueprintFormatter()
         )
-        state = Blueprint(feats=(FeatName.ANY_OF_YOUR_CHOICE,))
+        state = Blueprint(stats=_DEFAULT_STATS, feats=(FeatName.ANY_OF_YOUR_CHOICE,))
         result = block.apply(state)
         assert result is not None
         mock_llm.create_structured_output.assert_called_once()
@@ -519,7 +523,10 @@ class TestAIAllNonStatChoicesResolverExtraBranches:
         block = AIAllNonStatChoicesResolver.model_construct(
             llm=mock_llm, formatter=BlueprintFormatter()
         )
-        state = Blueprint(tool_proficiencies=(ToolProficiency.ANY_OF_YOUR_CHOICE,))
+        state = Blueprint(
+            stats=_DEFAULT_STATS,
+            tool_proficiencies=(ToolProficiency.ANY_OF_YOUR_CHOICE,),
+        )
         result = block.apply(state)
         assert result is not None
         mock_llm.create_structured_output.assert_called_once()
@@ -1040,7 +1047,9 @@ class TestAIAllNonStatChoicesResolverBuildPrompt:
             llm=mock_llm, formatter=BlueprintFormatter()
         )
         state = Blueprint(
-            feats=(FeatName.ANY_OF_YOUR_CHOICE,), classes=_Level1ClassLevels()
+            stats=_DEFAULT_STATS,
+            feats=(FeatName.ANY_OF_YOUR_CHOICE,),
+            classes=_Level1ClassLevels(),
         )
         result = block.apply(state)
         assert result is not None
@@ -1054,7 +1063,11 @@ class TestAIAllNonStatChoicesResolverBuildPrompt:
         block = AIAllNonStatChoicesResolver.model_construct(
             llm=mock_llm, formatter=BlueprintFormatter()
         )
-        state = Blueprint(n_stat_choices=2, languages=(Language.ANY_OF_YOUR_CHOICE,))
+        state = Blueprint(
+            stats=_DEFAULT_STATS,
+            n_stat_choices=2,
+            languages=(Language.ANY_OF_YOUR_CHOICE,),
+        )
         result = block.apply(state)
         assert result is not None
 
@@ -1065,7 +1078,7 @@ class TestAIAllNonStatChoicesResolverBuildPrompt:
         block = AIAllNonStatChoicesResolver.model_construct(
             llm=mock_llm, formatter=BlueprintFormatter()
         )
-        result = block.apply(Blueprint(n_skill_choices=2))
+        result = block.apply(Blueprint(stats=_DEFAULT_STATS, n_skill_choices=2))
         assert result is not None
 
     def test_build_prompt_all_zero_returns_empty(self) -> None:

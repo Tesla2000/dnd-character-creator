@@ -15,10 +15,6 @@ from dnd.character.blueprint.building_blocks.equipment_adder import EquipmentAdd
 from dnd.character.blueprint.building_blocks.feat_adder import FeatAdder
 from dnd.character.blueprint.building_blocks.feature_assigner import FeatureAssigner
 from dnd.character.blueprint.building_blocks.initial_builder import InitialBuilder
-from dnd.character.blueprint.building_blocks.level_up.level_up import LevelUp
-from dnd.character.blueprint.building_blocks.level_up.level_up_multiple import (
-    LevelUpMultiple,
-)
 from dnd.character.blueprint.building_blocks.magical_item_chooser.random import (
     RandomMagicalItemChooser,
 )
@@ -28,8 +24,6 @@ from dnd.character.blueprint.building_blocks.weapon_adder import WeaponAdder
 from dnd.character.blueprint.state import Blueprint
 from dnd.character.feature.feature import Feature
 from dnd.character.feature.feats import FeatName
-from dnd.character.race.race import Race
-from dnd.character.race.subraces import SubraceName
 from dnd.choices.equipment_creation.weapons import WeaponName
 from dnd.choices.stats_creation.statistic import Statistic
 
@@ -42,15 +36,6 @@ _PRIORITY: StatsPriority = (
     Statistic.WISDOM,
     Statistic.CHARISMA,
 )
-
-
-class _RacedBP(Blueprint):
-    """Blueprint with race, subrace, speed, and dark_vision_range for LevelUp tests."""
-
-    race: Race = Race.HUMAN
-    subrace: SubraceName = SubraceName.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK
-    speed: int = 30
-    dark_vision_range: int = 0
 
 
 @pytest.mark.unit
@@ -141,23 +126,4 @@ class TestCombinedBlockApply:
             all_choices_resolver=NullBlock(),
         )
         result = builder.apply(Blueprint())
-        assert result is not None
-
-    def test_level_up_multiple_apply(self) -> None:
-        level_up_multiple = LevelUpMultiple.model_construct(
-            type=BuildingBlockType.LEVEL_UP_MULTIPLE,
-            blocks=(NullBlock(),),
-        )
-        result = level_up_multiple.apply(Blueprint())
-        assert result is not None
-
-    def test_level_up_apply(self) -> None:
-        level_up = LevelUp.model_construct(
-            type=BuildingBlockType.LEVEL_UP,
-            level_increment=NullBlock(),
-            health_increase=NullBlock(),
-            spell_assigner=NullBlock(),
-            all_choice_resolver=NullBlock(),
-        )
-        result = level_up.apply(_RacedBP())
         assert result is not None

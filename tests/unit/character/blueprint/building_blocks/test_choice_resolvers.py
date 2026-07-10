@@ -10,9 +10,6 @@ from dnd.character.blueprint.building_blocks.feat_choice_resolver.random import 
     RandomFeatChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.level_assigner import LevelAssigner
-from dnd.character.blueprint.building_blocks.level_up.level_incrementer import (
-    WizardLevelIncrementer,
-)
 from dnd.character.blueprint.building_blocks.stat_choice_resolver.priority import (
     PriorityStatChoiceResolver,
 )
@@ -23,6 +20,7 @@ from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.random import (
     RandomToolProficiencyChoiceResolver,
 )
+from dnd.character.class_levels import ClassLevels
 from dnd.character.blueprint.state import Blueprint
 from dnd.character.feature.feats import FeatName
 from dnd.character.stats import Stats
@@ -91,8 +89,7 @@ class TestFeatChoiceResolverBranches:
         state = Blueprint(feats=(FeatName.TOUGH,))
         state = LevelAssigner(level=2).apply(state)
         state = StandardArray(stats_priority=_PRIORITY).apply(state)
-        state = WizardLevelIncrementer().apply(state)
-        state = WizardLevelIncrementer().apply(state)
+        state = state.model_copy(update={"classes": ClassLevels(wizard=2)})
         resolver = RandomFeatChoiceResolver(seed=0)
         result = resolver.apply(state)
         assert FeatName.TOUGH in result.feats
@@ -101,7 +98,7 @@ class TestFeatChoiceResolverBranches:
         state = Blueprint()
         state = LevelAssigner(level=1).apply(state)
         state = StandardArray(stats_priority=_PRIORITY).apply(state)
-        state = WizardLevelIncrementer().apply(state)
+        state = state.model_copy(update={"classes": ClassLevels(wizard=1)})
         state = FeatAdder(feat=FeatName.ANY_EXCEPT_ABILITY_SCORE_IMPROVEMENT).apply(
             state
         )
@@ -124,10 +121,7 @@ class TestMaxIfNotMaxedResolverASI:
         state = Blueprint(stats_cup=high_cup)
         state = LevelAssigner(level=4).apply(state)
         state = StandardArray(stats_priority=_PRIORITY).apply(state)
-        state = WizardLevelIncrementer().apply(state)
-        state = WizardLevelIncrementer().apply(state)
-        state = WizardLevelIncrementer().apply(state)
-        state = WizardLevelIncrementer().apply(state)
+        state = state.model_copy(update={"classes": ClassLevels(wizard=4)})
         resolver = MaxIfNotMaxedResolver(priority=_PRIORITY)
         result = resolver.apply(state)
         assert result is not None

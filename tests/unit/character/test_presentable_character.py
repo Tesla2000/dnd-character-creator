@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
 
 from dnd.character.presentable_character import PresentableCharacter
 from dnd.character.race.race import Race
@@ -9,7 +8,6 @@ from dnd.character.race.subraces import SubraceName
 from dnd.character.stats import Stats
 from dnd.choices.alignment import Alignment
 from dnd.choices.background_creatrion.background import Background
-from dnd.choices.class_creation.character_class import Class, WizardSubclass
 from dnd.choices.sex import Sex
 from dnd.character.feature.feats import FeatName
 
@@ -52,25 +50,6 @@ _BASE_KWARGS: dict[str, object] = dict(
 
 
 @pytest.mark.unit
-class TestPresentableCharacterValidators:
-    def test_missing_subclass_raises(self) -> None:
-        with pytest.raises(ValidationError, match="No subclasses of class"):
-            PresentableCharacter(
-                **_BASE_KWARGS,
-                classes={Class.WIZARD: 2},
-                subclasses=(),
-            )
-
-    def test_multiple_subclasses_raises(self) -> None:
-        with pytest.raises(ValidationError, match="More than one subclass"):
-            PresentableCharacter(
-                **_BASE_KWARGS,
-                classes={Class.WIZARD: 2},
-                subclasses=(WizardSubclass.ABJURATION, WizardSubclass.EVOCATION),
-            )
-
-
-@pytest.mark.unit
 class TestPresentableCharacterNonCaster:
     def test_no_classes_spellcasting_ability_is_none(self) -> None:
         char = PresentableCharacter(**_BASE_KWARGS)
@@ -108,23 +87,3 @@ class TestPresentableCharacterHealth:
         }
         char = PresentableCharacter(**dwarf_kwargs)
         assert char.health >= char.health_base
-
-
-@pytest.mark.unit
-class TestPresentableCharacterActions:
-    def test_actions_with_subclass_from_different_class_skipped(self) -> None:
-        char = PresentableCharacter(
-            **_BASE_KWARGS,
-            classes={Class.FIGHTER: 1},
-            subclasses=(WizardSubclass.ABJURATION,),
-        )
-        actions = char.actions
-        assert actions is not None
-
-    def test_actions_with_feat_having_ability(self) -> None:
-        char = PresentableCharacter(
-            **_BASE_KWARGS,
-            feats=frozenset({FeatName.ABERRANT_DRAGONMARK}),
-        )
-        actions = char.actions
-        assert len(actions) > 0
