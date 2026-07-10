@@ -26,6 +26,7 @@ from dnd.character.blueprint.sentinels import (
     _ARK,
     _CDK,
 )
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.blueprint.state import Blueprint
 from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic
@@ -42,7 +43,9 @@ class StatChoiceResolver(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def select_stats_to_increase(self, state: Blueprint) -> dict[Statistic, int]: ...
+    def select_stats_to_increase(
+        self, state: _WideBlueprint
+    ) -> dict[Statistic, int]: ...
 
     def apply(
         self,

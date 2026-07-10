@@ -5,8 +5,8 @@ import random
 from dnd.character.blueprint.building_blocks.initial_data_filler.base_filler import (
     InitialDataFiller,
 )
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.blueprint.character_data import CharacterData
-from dnd.character.blueprint.state import Blueprint
 from dnd.choices.alignment import Alignment
 from dnd.choices.background_creatrion.background import Background
 from dnd.choices.sex import Sex
@@ -14,7 +14,6 @@ from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
-from pydantic import ConfigDict
 from pydantic import Field
 
 
@@ -32,8 +31,6 @@ class RandomInitialDataFiller(InitialDataFiller):
     type: Literal[BuildingBlockType.RANDOM_INITIAL_DATA_FILLER] = (
         BuildingBlockType.RANDOM_INITIAL_DATA_FILLER
     )
-
-    model_config = ConfigDict(frozen=True)
 
     seed: int | None = Field(
         default=None,
@@ -149,31 +146,27 @@ class RandomInitialDataFiller(InitialDataFiller):
         "I have a secret that could ruin me if discovered.",
     )
 
-    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+    def _compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData:
         random.seed(self.seed)
         cd = blueprint.character_data or CharacterData()
-        return blueprint.model_copy(
+        return cd.model_copy(
             update={
-                "character_data": cd.model_copy(
-                    update={
-                        "name": cd.name or random.choice(self._NAMES),
-                        "sex": cd.sex or random.choice(tuple(Sex)),
-                        "backstory": cd.backstory or random.choice(self._BACKSTORIES),
-                        "age": cd.age or random.randint(18, 80),
-                        "background": cd.background or random.choice(tuple(Background)),
-                        "alignment": cd.alignment or random.choice(tuple(Alignment)),
-                        "height": cd.height or random.randint(150, 210),
-                        "weight": cd.weight or random.randint(50, 120),
-                        "eye_color": cd.eye_color or random.choice(self._EYE_COLORS),
-                        "skin_color": cd.skin_color or random.choice(self._SKIN_COLORS),
-                        "hairstyle": cd.hairstyle or random.choice(self._HAIRSTYLES),
-                        "appearance": cd.appearance or random.choice(self._APPEARANCES),
-                        "character_traits": cd.character_traits
-                        or random.choice(self._CHARACTER_TRAITS),
-                        "ideals": cd.ideals or random.choice(self._IDEALS),
-                        "bonds": cd.bonds or random.choice(self._BONDS),
-                        "weaknesses": cd.weaknesses or random.choice(self._WEAKNESSES),
-                    }
-                ),
+                "name": cd.name or random.choice(self._NAMES),
+                "sex": cd.sex or random.choice(tuple(Sex)),
+                "backstory": cd.backstory or random.choice(self._BACKSTORIES),
+                "age": cd.age or random.randint(18, 80),
+                "background": cd.background or random.choice(tuple(Background)),
+                "alignment": cd.alignment or random.choice(tuple(Alignment)),
+                "height": cd.height or random.randint(150, 210),
+                "weight": cd.weight or random.randint(50, 120),
+                "eye_color": cd.eye_color or random.choice(self._EYE_COLORS),
+                "skin_color": cd.skin_color or random.choice(self._SKIN_COLORS),
+                "hairstyle": cd.hairstyle or random.choice(self._HAIRSTYLES),
+                "appearance": cd.appearance or random.choice(self._APPEARANCES),
+                "character_traits": cd.character_traits
+                or random.choice(self._CHARACTER_TRAITS),
+                "ideals": cd.ideals or random.choice(self._IDEALS),
+                "bonds": cd.bonds or random.choice(self._BONDS),
+                "weaknesses": cd.weaknesses or random.choice(self._WEAKNESSES),
             }
         )

@@ -6,7 +6,6 @@ from typing import ClassVar
 from typing import Protocol
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import Blueprint
 from dnd.character.blueprint.state import _BPT
 from dnd.character.spells import Cantrip
 from dnd.character.spells import EighthLevel

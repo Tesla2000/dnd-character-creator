@@ -6,7 +6,8 @@ from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.language_choice_resolver.base import (
     LanguageChoiceResolver,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
+from dnd.character.blueprint.state import _BPT
 from dnd.choices.language import Language
 from pydantic import BaseModel
 from pydantic import Field
@@ -55,7 +56,7 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
         """Not used — this class overrides apply directly."""
         raise NotImplementedError("AILanguageChoiceResolver overrides apply")
 
-    def _build_prompt(self, blueprint: Blueprint) -> str:
+    def _build_prompt(self, blueprint: _WideBlueprint) -> str:
         system_prompt = (
             "You are resolving Language.ANY_OF_YOUR_CHOICE placeholders "
             "for a D&D 5e character.\n"
@@ -90,7 +91,7 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
 
         return character_description + "\n".join(instructions)
 
-    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+    def apply(self, blueprint: _BPT) -> _BPT:
         if Language.ANY_OF_YOUR_CHOICE not in blueprint.languages:
             return blueprint
 

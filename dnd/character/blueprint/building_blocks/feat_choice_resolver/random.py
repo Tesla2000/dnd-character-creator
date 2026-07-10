@@ -5,8 +5,8 @@ import random
 from dnd.character.blueprint.building_blocks.feat_choice_resolver.base import (
     FeatChoiceResolver,
 )
-from dnd.character.blueprint.state import Blueprint
 from dnd.character.feature.feats import FeatName
+from dnd.character.stats import Stats
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
@@ -39,7 +39,7 @@ class RandomFeatChoiceResolver(FeatChoiceResolver):
     )
 
     def _select_from_available(
-        self, available: list[FeatName], state: Blueprint
+        self, available: list[FeatName], stats: Stats, stats_cup: Stats
     ) -> FeatName:
         random.seed(self.seed)
         return random.choice(available)

@@ -44,6 +44,9 @@ class FirstSubclassPostLevel(IntEnum):
     TWENTIETH = 20
 
 
+Level = FirstSubclassPostLevel
+
+
 class SecondSubclassPreLevel(IntEnum):
     """Levels 0–1 for classes whose subclass arrives at level 2 (e.g. Wizard)."""
 
@@ -273,7 +276,94 @@ _ARK = TypeVar(
 )
 _CDK = TypeVar("_CDK", bound=CharacterData | None)
 
+# Covariant TypeVars for Blueprint class definition (frozen model = read-only fields).
+_RK_co = TypeVar("_RK_co", bound=Race | None, covariant=True)
+_StK_co = TypeVar("_StK_co", bound=Stats | None, covariant=True)
+_HeK_co = TypeVar("_HeK_co", bound=PositiveInt | None, covariant=True)
+_StCK_co = TypeVar("_StCK_co", bound=Literal[0] | PositiveInt, covariant=True)
+_SkCK_co = TypeVar("_SkCK_co", bound=Literal[0] | PositiveInt, covariant=True)
+_WZK_co = TypeVar(
+    "_WZK_co",
+    bound=WizardPreSubclassLevel[SecondSubclassPreLevel, None]
+    | WizardSubclassLevel[SecondSubclassPostLevel, WizardSubclass],
+    covariant=True,
+)
+_SOK_co = TypeVar(
+    "_SOK_co",
+    bound=SorcererPreSubclassLevel[FirstSubclassPreLevel, None]
+    | SorcererSubclassLevel[FirstSubclassPostLevel, SorcererSubclass],
+    covariant=True,
+)
+_FGK_co = TypeVar(
+    "_FGK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_BAK_co = TypeVar(
+    "_BAK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_ROK_co = TypeVar(
+    "_ROK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_CLK_co = TypeVar(
+    "_CLK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_DRK_co = TypeVar(
+    "_DRK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_PAK_co = TypeVar(
+    "_PAK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_RAK_co = TypeVar(
+    "_RAK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_MOK_co = TypeVar(
+    "_MOK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_BDK_co = TypeVar(
+    "_BDK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_WAK_co = TypeVar(
+    "_WAK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_ARK_co = TypeVar(
+    "_ARK_co",
+    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
+    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
+    covariant=True,
+)
+_CDK_co = TypeVar("_CDK_co", bound=CharacterData | None, covariant=True)
+
 __all__ = [
+    "Level",
     "FirstSubclassPreLevel",
     "FirstSubclassPostLevel",
     "SecondSubclassPreLevel",
@@ -305,6 +395,25 @@ __all__ = [
     "_WAK",
     "_ARK",
     "_CDK",
+    "_RK_co",
+    "_StK_co",
+    "_HeK_co",
+    "_StCK_co",
+    "_SkCK_co",
+    "_WZK_co",
+    "_SOK_co",
+    "_FGK_co",
+    "_BAK_co",
+    "_ROK_co",
+    "_CLK_co",
+    "_DRK_co",
+    "_PAK_co",
+    "_RAK_co",
+    "_MOK_co",
+    "_BDK_co",
+    "_WAK_co",
+    "_ARK_co",
+    "_CDK_co",
     "WizardSubclass",
     "SorcererSubclass",
     "MaybeRace",

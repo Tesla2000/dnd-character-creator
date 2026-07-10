@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
+from typing import Any
 
 from dnd.choices.class_creation.character_class import Class
 from pydantic import BaseModel
@@ -13,7 +14,7 @@ class ClassLevels(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    wizard: NonNegativeInt = 0
+    wizard: Any = 0
     sorcerer: NonNegativeInt = 0
     fighter: NonNegativeInt = 0
     barbarian: NonNegativeInt = 0

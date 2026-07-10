@@ -26,6 +26,7 @@ from dnd.character.blueprint.building_blocks.null_block import NullBlock
 from dnd.character.blueprint.building_blocks.stat_choice_resolver import (
     AnyStatChoiceResolver,
 )
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.blueprint.state import Blueprint
 from dnd.character.feature.feats import FeatName
 from dnd.choices.language import Language
@@ -38,7 +39,6 @@ from pydantic import Field
 from structured_output_creator import OpenAIService, RaisingService
 from dnd.character.blueprint.sentinels import (
     _RK,
-    _StK,
     _HeK,
     _StCK,
     _SkCK,
@@ -57,6 +57,7 @@ from dnd.character.blueprint.sentinels import (
     _ARK,
     _CDK,
 )
+from dnd.character.stats import Stats
 
 
 class AIAllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
@@ -75,7 +76,7 @@ class AIAllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
         self,
         blueprint: Blueprint[
             _RK,
-            _StK,
+            Stats,
             _HeK,
             _StCK,
             _SkCK,
@@ -96,7 +97,7 @@ class AIAllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
         ],
     ) -> Blueprint[
         _RK,
-        _StK,
+        Stats,
         _HeK,
         Literal[0],
         Literal[0],
@@ -136,7 +137,7 @@ class AIAllNonStatChoicesResolver(BuildingBlock):
 
     def _build_prompt(
         self,
-        blueprint: Blueprint,
+        blueprint: _WideBlueprint,
         n_languages_to_choose: int,
         n_skill_profs_to_choose: int,
         n_feats_to_choose: int,
@@ -217,7 +218,7 @@ class AIAllNonStatChoicesResolver(BuildingBlock):
         self,
         blueprint: Blueprint[
             _RK,
-            _StK,
+            Stats,
             _HeK,
             _StCK,
             _SkCK,
@@ -238,7 +239,7 @@ class AIAllNonStatChoicesResolver(BuildingBlock):
         ],
     ) -> Blueprint[
         _RK,
-        _StK,
+        Stats,
         _HeK,
         _StCK,
         Literal[0],
@@ -284,7 +285,7 @@ class AIAllNonStatChoicesResolver(BuildingBlock):
         ):
             return Blueprint[
                 _RK,
-                _StK,
+                Stats,
                 _HeK,
                 _StCK,
                 Literal[0],
@@ -342,7 +343,7 @@ class AIAllNonStatChoicesResolver(BuildingBlock):
 
         return Blueprint[
             _RK,
-            _StK,
+            Stats,
             _HeK,
             _StCK,
             Literal[0],

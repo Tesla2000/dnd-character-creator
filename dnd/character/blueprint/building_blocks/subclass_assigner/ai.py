@@ -7,7 +7,8 @@ from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
     _check_can_assign,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
+from dnd.character.blueprint.state import _BPT
 from dnd.choices.class_creation.character_class import AnySubclass
 from dnd.choices.class_creation.character_class import Class
 from dnd.choices.class_creation.character_class import SUBCLASSES
@@ -36,7 +37,7 @@ class AISubclassAssigner(BuildingBlock):
     )
     formatter: BlueprintFormatter = Field(default_factory=BlueprintFormatter)
 
-    def _build_prompt(self, blueprint: Blueprint) -> str:
+    def _build_prompt(self, blueprint: _WideBlueprint) -> str:
         system_prompt = (
             f"You are selecting a subclass for a D&D 5e {self.class_.value}.\n"
             "Choose the subclass that best fits the character's background, stats, and concept.\n"
@@ -51,7 +52,7 @@ class AISubclassAssigner(BuildingBlock):
             + f"\n## Available {self.class_.value} Subclasses\n{options}"
         )
 
-    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+    def apply(self, blueprint: _BPT) -> _BPT:
         _check_can_assign(self.class_, blueprint.classes)
         subclass_enum = SUBCLASSES[self.class_]
         for existing in blueprint.subclasses:

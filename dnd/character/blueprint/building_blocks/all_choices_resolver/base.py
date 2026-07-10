@@ -29,7 +29,6 @@ from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver im
 )
 from dnd.character.blueprint.sentinels import (
     _RK,
-    _StK,
     _HeK,
     _StCK,
     _SkCK,
@@ -49,6 +48,7 @@ from dnd.character.blueprint.sentinels import (
     _CDK,
 )
 from dnd.character.blueprint.state import Blueprint
+from dnd.character.stats import Stats
 
 
 class AllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
@@ -69,7 +69,7 @@ class AllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
         self,
         blueprint: Blueprint[
             _RK,
-            _StK,
+            Stats,
             _HeK,
             _StCK,
             _SkCK,
@@ -90,7 +90,7 @@ class AllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
         ],
     ) -> Blueprint[
         _RK,
-        _StK,
+        Stats,
         _HeK,
         Literal[0],
         Literal[0],

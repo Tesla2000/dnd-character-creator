@@ -4,7 +4,7 @@ from dnd.character.blueprint.building_blocks.stat_choice_resolver.base import (
     StatChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.choices.stats_creation.statistic import Statistic
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -48,13 +48,15 @@ class PriorityStatChoiceResolver(StatChoiceResolver):
         description="Ability scores ranked by priority for stat increase allocation"
     )
 
-    def select_stats_to_increase(self, state: Blueprint) -> dict[Statistic, int]:
+    def select_stats_to_increase(self, state: _WideBlueprint) -> dict[Statistic, int]:
         """Select stats to increase based on priority order."""
+        assert state.stats is not None
+        stats = state.stats
         increases = {stat: 0 for stat in self.priority}
         stats_cup = state.stats_cup
 
         def _get_current_value(stat: Statistic) -> int:
-            return state.stats.get_stat(stat) + increases[stat]
+            return stats.get_stat(stat) + increases[stat]
 
         def _get_stat_cap(stat: Statistic) -> int:
             return stats_cup.get_stat(stat)

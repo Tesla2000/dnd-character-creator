@@ -7,7 +7,7 @@ import random
 from dnd.character.blueprint.building_blocks.magical_item_chooser.base_chooser import (
     MagicalItemChooserBase,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.magical_item.item import MagicalItem
 from dnd.character.magical_item.items import MAGICAL_ITEMS
 from dnd.character.magical_item.level import Level
@@ -44,7 +44,7 @@ class RandomMagicalItemChooser(MagicalItemChooserBase):
         description="Optional seed for reproducible random selection",
     )
 
-    def _select_items(self, state: Blueprint) -> tuple[MagicalItem, ...]:
+    def _select_items(self, state: _WideBlueprint) -> tuple[MagicalItem, ...]:
         level_counts = {
             Level.COMMON: self.n_common,
             Level.UNCOMMON: self.n_uncommon,

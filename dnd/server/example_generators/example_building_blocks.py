@@ -1,5 +1,6 @@
 from dnd.character.blueprint.building_blocks import (
-    LevelAssigner, AnyBuildingBlock,
+    LevelAssigner,
+    AnyBuildingBlock,
 )
 from dnd.character.blueprint.building_blocks import (
     PriorityStatChoiceResolver,
@@ -25,7 +26,6 @@ from dnd.character.blueprint.building_blocks import (
 from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AllChoicesResolver,
 )
-from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.equipment_chooser import (
     RandomEquipmentChooser,
 )

@@ -6,7 +6,7 @@ import random
 from dnd.character.blueprint.building_blocks.skill_choice_resolver.base import (
     SkillChoiceResolver,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.skill_proficiency import Skill
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -39,7 +39,7 @@ class RandomSkillChoiceResolver(SkillChoiceResolver):
         description="Optional seed for reproducible random selection",
     )
 
-    def _select_skills(self, state: Blueprint) -> frozenset[Skill]:
+    def _select_skills(self, state: _WideBlueprint) -> frozenset[Skill]:
         random.seed(self.seed)
         n = state.n_skill_choices
         available_skills = state.skills_to_choose_from
