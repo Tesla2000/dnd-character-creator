@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Literal
+from typing import TypeAlias
 
 from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AnyChoiceResolver,
@@ -12,7 +13,44 @@ from dnd.character.blueprint.building_blocks.stats_builder import AnyStatsBuilde
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
-from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
+from dnd.character.blueprint.sentinels import (
+    ClassPreSubclassLevel,
+    SorcererPreSubclassLevel,
+    ThirdSubclassPreLevel,
+    FirstSubclassPreLevel,
+    SecondSubclassPreLevel,
+    WizardPreSubclassLevel,
+)
+from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.state import EmptyBlueprint
+from dnd.character.race.race import Race
+from dnd.character.stats import Stats
+
+_Z = Literal[SecondSubclassPreLevel.ZEROTH]
+_SZ = Literal[FirstSubclassPreLevel.ZEROTH]
+_TZ = Literal[ThirdSubclassPreLevel.ZEROTH]
+
+InitializedBlueprint: TypeAlias = Blueprint[
+    Race,
+    Stats,
+    None,
+    Literal[0],
+    Literal[0],
+    WizardPreSubclassLevel[_Z, None],
+    SorcererPreSubclassLevel[_SZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    ClassPreSubclassLevel[_TZ, None],
+    None,
+]
 
 
 class InitialBuilder(BuildingBlock):
@@ -25,7 +63,7 @@ class InitialBuilder(BuildingBlock):
     race_assigner: AnyRaceAssigner
     all_choices_resolver: AnyChoiceResolver
 
-    def apply(self, blueprint: _WideBlueprint) -> _WideBlueprint:
+    def apply(self, blueprint: EmptyBlueprint) -> InitializedBlueprint:
         r1 = self.level_assigner.apply(blueprint)
         r2 = self.stats_builder.apply(r1)
         r3 = self.race_assigner.apply(r2)

@@ -4,7 +4,28 @@ from abc import ABC
 from abc import abstractmethod
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.sentinels import (
+    _ARK,
+    _BAK,
+    _BDK,
+    _CDK,
+    _CLK,
+    _DRK,
+    _FGK,
+    _HeK,
+    _MOK,
+    _PAK,
+    _RAK,
+    _RK,
+    _ROK,
+    _SkCK,
+    _SOK,
+    _StCK,
+    _WAK,
+    _WZK,
+)
+from dnd.character.blueprint.state import Blueprint
+from dnd.character.stats import Stats
 from dnd.character.feature.feats import FeatName
 from pydantic import ConfigDict
 
@@ -25,17 +46,63 @@ class FeatChoiceResolver(BuildingBlock, ABC):
 
     @abstractmethod
     def _select_from_available(
-        self, available: list[FeatName], state: _BPT
+        self, available: list[FeatName], stats: Stats, stats_cup: Stats
     ) -> FeatName | None: ...
 
-    def apply(self, blueprint: _BPT) -> _BPT:
+    def apply(
+        self,
+        blueprint: Blueprint[
+            _RK,
+            Stats,
+            _HeK,
+            _StCK,
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        _RK,
+        Stats,
+        _HeK,
+        _StCK,
+        _SkCK,
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
         existing_classes = blueprint.classes
         ability_score_improvement_allowed = existing_classes.total_level() != 1
 
         resolved = set()
         for feat in blueprint.feats:
             result = self._resolve_feat(
-                feat, blueprint, ability_score_improvement_allowed
+                feat,
+                blueprint.stats,
+                blueprint.stats_cup,
+                ability_score_improvement_allowed,
             )
             resolved.add(result if result is not None else feat)
 
@@ -52,7 +119,11 @@ class FeatChoiceResolver(BuildingBlock, ABC):
         )
 
     def _resolve_feat(
-        self, feat: FeatName, state: _BPT, ability_score_improvement_allowed: bool
+        self,
+        feat: FeatName,
+        stats: Stats,
+        stats_cup: Stats,
+        ability_score_improvement_allowed: bool,
     ) -> FeatName | None:
         if feat not in FeatName.not_choosables():
             return feat
@@ -60,4 +131,4 @@ class FeatChoiceResolver(BuildingBlock, ABC):
         if not ability_score_improvement_allowed:
             excluded.append(FeatName.ABILITY_SCORE_IMPROVEMENT)
         available = [f for f in FeatName if f not in excluded]
-        return self._select_from_available(available, state)
+        return self._select_from_available(available, stats, stats_cup)

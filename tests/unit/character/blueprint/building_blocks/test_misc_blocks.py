@@ -67,7 +67,6 @@ from dnd.character.blueprint.building_blocks.subclass_assigner.subclass_assigner
     WizardSubclassAssigner,
 )
 from dnd.character.blueprint.state import Blueprint
-from dnd.character.presentable_character import PresentableCharacter
 from dnd.character.stats import Stats
 from dnd.choices.class_creation.character_class import Class, WizardSubclass
 from dnd.choices.stats_creation.statistic import Statistic

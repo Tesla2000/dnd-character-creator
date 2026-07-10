@@ -10,7 +10,7 @@ from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
     _check_can_assign,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.state import _BPT
 from dnd.choices.class_creation.character_class import AnySubclass
 from dnd.choices.class_creation.character_class import Class
 from dnd.choices.class_creation.character_class import SUBCLASSES
@@ -35,7 +35,7 @@ class RandomSubclassAssigner(BuildingBlock):
     )
     seed: int | None = Field(default=None)
 
-    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+    def apply(self, blueprint: _BPT) -> _BPT:
         _check_can_assign(self.class_, blueprint.classes)
         subclass_enum = SUBCLASSES[self.class_]
         for existing in blueprint.subclasses:

@@ -6,7 +6,6 @@ from abc import ABC
 from abc import abstractmethod
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import Blueprint
 from dnd.character.blueprint.state import _BPT
 from dnd.character.magical_item.item import MagicalItem
 from pydantic import ConfigDict

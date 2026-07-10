@@ -1,15 +1,38 @@
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
-from typing import Any
-
-from dnd.character.blueprint.state import Blueprint
 from pydantic import BaseModel
 from pydantic import ConfigDict
 
+from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnySorcererLevel
+from dnd.character.blueprint.sentinels import AnyStatChoices
+from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import MaybeCharacterData
+from dnd.character.blueprint.sentinels import MaybeHealth
+from dnd.character.blueprint.sentinels import MaybeRace
+from dnd.character.blueprint.sentinels import MaybeStats
+from dnd.character.blueprint.state import Blueprint
+
 _WideBlueprint = Blueprint[
-    Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any  # ignore
+    MaybeRace,
+    MaybeStats,
+    MaybeHealth,
+    AnyStatChoices,
+    AnyStatChoices,
+    AnyWizardLevel,
+    AnySorcererLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    MaybeCharacterData,
 ]
 
 

@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-import json
 from enum import StrEnum
 from typing import Self
-
-from dnd.character.feature.feature import Feature
-from dnd.config import resource_paths
 
 
 class FeatName(StrEnum):
@@ -86,11 +82,3 @@ class FeatName(StrEnum):
     @classmethod
     def not_choosables(cls) -> tuple[Self, ...]:
         return cls.ANY_OF_YOUR_CHOICE, cls.ANY_EXCEPT_ABILITY_SCORE_IMPROVEMENT
-
-
-def feat_name_to_feat(feat: FeatName) -> Feature:
-    return Feature(
-        **json.loads(
-            resource_paths.feats_root.joinpath(f"{feat.value}.json").read_text()
-        )
-    )

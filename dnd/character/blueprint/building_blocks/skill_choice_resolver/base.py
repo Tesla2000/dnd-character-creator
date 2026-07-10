@@ -26,6 +26,7 @@ from dnd.character.blueprint.sentinels import (
     _ARK,
     _CDK,
 )
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.blueprint.state import Blueprint
 from dnd.skill_proficiency import Skill
 from pydantic import ConfigDict
@@ -42,7 +43,7 @@ class SkillChoiceResolver(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def _select_skills(self, state: Blueprint) -> frozenset[Skill]: ...
+    def _select_skills(self, state: _WideBlueprint) -> frozenset[Skill]: ...
 
     def apply(
         self,

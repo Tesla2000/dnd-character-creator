@@ -7,7 +7,7 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base impo
     SorcererSpellAssigner,
     WizardSpellAssigner,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.spells import Spell
 from dnd.choices.class_creation.character_class import Class
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -53,7 +53,7 @@ class WizardRandomSpellAssigner(WizardSpellAssigner):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        _state: Blueprint,
+        _state: _WideBlueprint,
     ) -> tuple[Spell, ...]:
         return _random_select(self.seed, count, available_spells)
 
@@ -87,6 +87,6 @@ class SorcererRandomSpellAssigner(SorcererSpellAssigner):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        _state: Blueprint,
+        _state: _WideBlueprint,
     ) -> tuple[Spell, ...]:
         return _random_select(self.seed, count, available_spells)

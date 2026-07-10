@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import ClassVar, Any
+from typing import ClassVar
 from typing import Generic
 from typing import Literal
 from typing import TypeAlias
@@ -9,7 +9,7 @@ from typing import cast
 
 from dnd.character.armor.names import ArmorName
 from dnd.character.magical_item.item import MagicalItem
-from dnd.character.character import Level
+from dnd.character.blueprint.sentinels import Level
 from dnd.character.feature.feats import FeatName
 from dnd.character.race.subraces import SubraceName
 from dnd.character.spells.spells import Spells
@@ -28,39 +28,39 @@ from dnd.character.class_levels import ClassLevels
 from pydantic import Field
 from pydantic import NonNegativeInt, BaseModel, ConfigDict
 from pydantic import PositiveInt
-from dnd.character.blueprint.sentinels import AnyClassLevel
-from dnd.character.blueprint.sentinels import AnySorcererLevel
-from dnd.character.blueprint.sentinels import AnyStatChoices
-from dnd.character.blueprint.sentinels import AnyWizardLevel
 from dnd.character.blueprint.sentinels import ClassPreSubclassLevel
 from dnd.character.blueprint.sentinels import FirstSubclassPreLevel
-from dnd.character.blueprint.sentinels import MaybeCharacterData
-from dnd.character.blueprint.sentinels import MaybeHealth
-from dnd.character.blueprint.sentinels import MaybeRace
-from dnd.character.blueprint.sentinels import MaybeStats
 from dnd.character.blueprint.sentinels import SecondSubclassPreLevel
 from dnd.character.blueprint.sentinels import SorcererPreSubclassLevel
 from dnd.character.blueprint.sentinels import ThirdSubclassPreLevel
 from dnd.character.blueprint.sentinels import WizardPreSubclassLevel
-from dnd.character.blueprint.sentinels import _ARK
-from dnd.character.blueprint.sentinels import _BAK
-from dnd.character.blueprint.sentinels import _BDK
-from dnd.character.blueprint.sentinels import _CDK
-from dnd.character.blueprint.sentinels import _CLK
-from dnd.character.blueprint.sentinels import _DRK
-from dnd.character.blueprint.sentinels import _FGK
-from dnd.character.blueprint.sentinels import _HeK
-from dnd.character.blueprint.sentinels import _MOK
-from dnd.character.blueprint.sentinels import _PAK
-from dnd.character.blueprint.sentinels import _RAK
-from dnd.character.blueprint.sentinels import _RK
-from dnd.character.blueprint.sentinels import _ROK
-from dnd.character.blueprint.sentinels import _SOK
-from dnd.character.blueprint.sentinels import _SkCK
-from dnd.character.blueprint.sentinels import _StCK
-from dnd.character.blueprint.sentinels import _StK
-from dnd.character.blueprint.sentinels import _WAK
-from dnd.character.blueprint.sentinels import _WZK
+from dnd.character.blueprint.sentinels import _ARK_co
+from dnd.character.blueprint.sentinels import _BAK_co
+from dnd.character.blueprint.sentinels import _BDK_co
+from dnd.character.blueprint.sentinels import _CDK_co
+from dnd.character.blueprint.sentinels import _CLK_co
+from dnd.character.blueprint.sentinels import _DRK_co
+from dnd.character.blueprint.sentinels import _FGK_co
+from dnd.character.blueprint.sentinels import _HeK_co
+from dnd.character.blueprint.sentinels import _MOK_co
+from dnd.character.blueprint.sentinels import _PAK_co
+from dnd.character.blueprint.sentinels import _RAK_co
+from dnd.character.blueprint.sentinels import _RK_co
+from dnd.character.blueprint.sentinels import _ROK_co
+from dnd.character.blueprint.sentinels import _SOK_co
+from dnd.character.blueprint.sentinels import _SkCK_co
+from dnd.character.blueprint.sentinels import _StCK_co
+from dnd.character.blueprint.sentinels import _StK_co
+from dnd.character.blueprint.sentinels import _WAK_co
+from dnd.character.blueprint.sentinels import _WZK_co
+from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnySorcererLevel
+from dnd.character.blueprint.sentinels import AnyStatChoices
+from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import MaybeCharacterData
+from dnd.character.blueprint.sentinels import MaybeHealth
+from dnd.character.blueprint.sentinels import MaybeRace
+from dnd.character.blueprint.sentinels import MaybeStats
 
 type Equipment = WeaponName | ArmorName | str
 
@@ -68,25 +68,25 @@ type Equipment = WeaponName | ArmorName | str
 class Blueprint(
     BaseModel,
     Generic[
-        _RK,
-        _StK,
-        _HeK,
-        _StCK,
-        _SkCK,
-        _WZK,
-        _SOK,
-        _FGK,
-        _BAK,
-        _ROK,
-        _CLK,
-        _DRK,
-        _PAK,
-        _RAK,
-        _MOK,
-        _BDK,
-        _WAK,
-        _ARK,
-        _CDK,
+        _RK_co,
+        _StK_co,
+        _HeK_co,
+        _StCK_co,
+        _SkCK_co,
+        _WZK_co,
+        _SOK_co,
+        _FGK_co,
+        _BAK_co,
+        _ROK_co,
+        _CLK_co,
+        _DRK_co,
+        _PAK_co,
+        _RAK_co,
+        _MOK_co,
+        _BDK_co,
+        _WAK_co,
+        _ARK_co,
+        _CDK_co,
     ],
 ):
     """Flat character state. Type params encode what's been set:
@@ -97,12 +97,12 @@ class Blueprint(
 
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
 
-    race: _RK = Field(default=cast(_RK, None))
+    race: _RK_co = Field(default=cast(_RK_co, None))
     subrace: SubraceName | None = None
     speed: PositiveInt | None = None
     dark_vision_range: NonNegativeInt | None = None
-    stats: _StK = Field(default=cast(_StK, None))
-    health_base: _HeK = Field(default=cast(_HeK, None))
+    stats: _StK_co = Field(default=cast(_StK_co, None))
+    health_base: _HeK_co = Field(default=cast(_HeK_co, None))
 
     classes: ClassLevels = Field(default_factory=ClassLevels)
     stats_cup: Stats = Field(
@@ -145,12 +145,12 @@ class Blueprint(
     magical_items: tuple[MagicalItem, ...] = ()
     saving_throw_proficiencies: tuple[Statistic, ...] = ()
     other_active_abilities: tuple[str, ...] = ()
-    n_stat_choices: _StCK = Field(default=cast(_StCK, 0))
-    n_skill_choices: _SkCK = Field(default=cast(_SkCK, 0))
+    n_stat_choices: _StCK_co = Field(default=cast(_StCK_co, 0))
+    n_skill_choices: _SkCK_co = Field(default=cast(_SkCK_co, 0))
     skills_to_choose_from: frozenset[Skill] = Field(default_factory=frozenset)
     equipment_choices: tuple[tuple[Equipment, ...], ...] = ()
     level: Level | None = None
-    character_data: _CDK = Field(default=cast(_CDK, None))
+    character_data: _CDK_co = Field(default=cast(_CDK_co, None))
 
 
 _Z = Literal[SecondSubclassPreLevel.ZEROTH]
@@ -179,24 +179,24 @@ EmptyBlueprint: TypeAlias = Blueprint[
     None,
 ]
 type AnyBluprint = Blueprint[
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
-    Any,
+    MaybeRace,
+    MaybeStats,
+    MaybeHealth,
+    AnyStatChoices,
+    AnyStatChoices,
+    AnyWizardLevel,
+    AnySorcererLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    AnyClassLevel,
+    MaybeCharacterData,
 ]
 _BPT = TypeVar("_BPT", bound=AnyBluprint)

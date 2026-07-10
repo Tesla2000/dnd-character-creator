@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Literal
 
-from dnd.character.blueprint.state import Blueprint
 from dnd.character.blueprint.state import _BPT
 from dnd.character.spells.spells import Spells
 from pydantic import BaseModel

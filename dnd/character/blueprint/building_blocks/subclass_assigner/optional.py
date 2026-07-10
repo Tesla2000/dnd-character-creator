@@ -13,7 +13,7 @@ from dnd.character.blueprint.building_blocks.subclass_assigner.base import CanNo
 from dnd.character.blueprint.building_blocks.subclass_assigner.random import (
     RandomSubclassAssigner,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.state import _BPT
 from pydantic import Field
 
 
@@ -28,7 +28,7 @@ class OptionalSubclassAssigner(BuildingBlock):
         description="The subclass assigner strategy to use"
     )
 
-    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+    def apply(self, blueprint: _BPT) -> _BPT:
         try:
             return self.assigner.apply(blueprint)
         except CanNotAssign:

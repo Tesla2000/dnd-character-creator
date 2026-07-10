@@ -7,7 +7,7 @@ from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.equipment_chooser.base import (
     EquipmentChooser,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.choices.equipment_creation.weapons import WeaponName
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -55,7 +55,7 @@ class AIEquipmentChooser(EquipmentChooser):
             return f"{item.value} (Armor)"
         return f"{item} (Equipment)"
 
-    def _build_prompt(self, state: Blueprint) -> str:
+    def _build_prompt(self, state: _WideBlueprint) -> str:
         parts = [
             "You are selecting equipment for a D&D 5e character.",
             "Choose the most thematically appropriate and mechanically sound equipment "
@@ -91,7 +91,7 @@ class AIEquipmentChooser(EquipmentChooser):
         return "\n".join(parts)
 
     def _pick_equipment(
-        self, state: Blueprint
+        self, state: _WideBlueprint
     ) -> tuple[list[WeaponName], list[ArmorName], list[str]]:
         if not state.equipment_choices:
             return [], [], []

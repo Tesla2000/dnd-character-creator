@@ -6,7 +6,8 @@ from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.base import (
     ToolProficiencyChoiceResolver,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
+from dnd.character.blueprint.state import _BPT
 from dnd.other_profficiencies import GamingSet
 from dnd.other_profficiencies import MusicalInstrument
 from dnd.other_profficiencies import ToolProficiency
@@ -60,7 +61,7 @@ class AIToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
     ) -> MusicalInstrument:
         raise NotImplementedError("AIToolProficiencyChoiceResolver overrides apply")
 
-    def _build_prompt(self, blueprint: Blueprint) -> str:
+    def _build_prompt(self, blueprint: _WideBlueprint) -> str:
         system_prompt = "You are resolving tool proficiency ANY_OF_YOUR_CHOICE placeholders for a D&D 5e character.\n"
         character_description = self.formatter.format(
             blueprint, system_prompt=system_prompt
@@ -80,7 +81,7 @@ class AIToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
             + f"\n## Tool Proficiencies to Choose ({tool_placeholders})"
         )
 
-    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+    def apply(self, blueprint: _BPT) -> _BPT:
         not_choice = {
             ToolProficiency.ANY_OF_YOUR_CHOICE,
             GamingSet.ANY_OF_YOUR_CHOICE,

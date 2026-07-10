@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
+from dnd.character.blueprint.state import _BPT
 from dnd.character.feature.feats import FeatName
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -33,7 +34,7 @@ class AIFeatChoiceResolver(BuildingBlock):
     )
     formatter: BlueprintFormatter = Field(default_factory=BlueprintFormatter)
 
-    def _build_prompt(self, blueprint: Blueprint) -> str:
+    def _build_prompt(self, blueprint: _WideBlueprint) -> str:
         system_prompt = (
             "You are resolving FeatName.ANY_OF_YOUR_CHOICE placeholders for a D&D 5e character.\n"
             "Replace each placeholder with the most appropriate feat based on the character's concept.\n"
@@ -61,7 +62,7 @@ class AIFeatChoiceResolver(BuildingBlock):
             + f"\n## Feats to Choose ({count})\nAvailable: {', '.join(available_feats)}{asi_note}"
         )
 
-    def apply[_BPT: Blueprint](self, blueprint: _BPT) -> _BPT:
+    def apply(self, blueprint: _BPT) -> _BPT:
         if not any(map(blueprint.feats.__contains__, FeatName.not_choosables())):
             return blueprint.model_copy(
                 update={

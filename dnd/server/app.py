@@ -5,9 +5,6 @@ from typing import TYPE_CHECKING
 from dnd.character.blueprint.building_blocks import (
     AnyBuildingBlock,
 )
-from dnd.character.blueprint.building_blocks.building_block import (
-    BuildingBlock,
-)
 from dnd.character.blueprint.building_blocks.character_converter import (
     CharacterConverter,
 )

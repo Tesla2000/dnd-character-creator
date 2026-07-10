@@ -6,7 +6,7 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base impo
     SorcererSpellAssigner,
     WizardSpellAssigner,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.spells import Spell
 from dnd.choices.class_creation.character_class import Class
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -25,7 +25,7 @@ def _build_llm_prompt(
     spell_level: int,
     count: int,
     available_spells: list[Spell],
-    state: Blueprint,
+    state: _WideBlueprint,
 ) -> str:
     spell_level_name = "cantrips" if spell_level == 0 else f"level {spell_level} spells"
     cd = state.character_data
@@ -65,7 +65,7 @@ def _llm_select(
     spell_level: int,
     count: int,
     available_spells: list[Spell],
-    state: Blueprint,
+    state: _WideBlueprint,
 ) -> tuple[Spell, ...]:
     context = _build_llm_prompt(
         class_name, character_description, spell_level, count, available_spells, state
@@ -121,7 +121,7 @@ class WizardLLMSpellAssigner(WizardSpellAssigner):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        state: Blueprint,
+        state: _WideBlueprint,
     ) -> tuple[Spell, ...]:
         return _llm_select(
             self.llm,
@@ -171,7 +171,7 @@ class SorcererLLMSpellAssigner(SorcererSpellAssigner):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        state: Blueprint,
+        state: _WideBlueprint,
     ) -> tuple[Spell, ...]:
         return _llm_select(
             self.llm,

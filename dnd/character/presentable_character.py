@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-import json
-from collections import defaultdict
-from collections.abc import Mapping
-from itertools import filterfalse
 from typing import TYPE_CHECKING
 from typing import Literal
 
-from dnd.character.ability import Ability
 from dnd.character.armor.armors import ARMORS
 from dnd.character.armor.names import ArmorName
 from dnd.character.blueprint.character_data import CharacterData
@@ -15,20 +10,16 @@ from dnd.character.blueprint.sentinels import AnyClassLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyWizardLevel
 from dnd.character.blueprint.state import Blueprint
-from dnd.character.character import Level
-from dnd.character.feature.feats import feat_name_to_feat
+from dnd.character.blueprint.sentinels import Level
 from dnd.character.feature.feats import FeatName
 from dnd.character.race.race import Race
 from dnd.character.spells import SPELLCASTING_ABILITY_MAP
 from dnd.character.stats import Stats
-from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import Class
 from dnd.choices.class_creation.character_class import FighterSubclass
 from dnd.choices.class_creation.character_class import RogueSubclass
-from dnd.choices.class_creation.character_class import SUBCLASSES
 
 from dnd.choices.stats_creation.statistic import Statistic
-from dnd.config import resource_paths
 from dnd.skill_proficiency import Skill
 from dnd.skill_proficiency import skill2ability
 from pydantic import ConfigDict
@@ -163,45 +154,6 @@ class PresentableCharacter(
         return self.level + max(0, self._get_spellcasting_modifier())
 
     @_cf
-    def actions(self) -> dict[ActionType, list[Ability]]:
-        actions: dict[ActionType, list[Ability]] = defaultdict(list)
-        for feat in filterfalse(FeatName.ABILITY_SCORE_IMPROVEMENT.__eq__, self.feats):
-            ability = feat_name_to_feat(feat).ability
-            if ability:
-                actions[ability.action_type].append(ability)
-        for ability_name in self.other_active_abilities:
-            ability_name = ability_name.split(":")[0]
-            ability = Ability.model_validate_json(
-                resource_paths.race_abilities_root.joinpath(self.race.value)
-                .joinpath(f"{ability_name}.json")
-                .read_text()
-            )
-            actions[ability.action_type].append(ability)
-        for class_, class_level in self.classes.all_levels():
-            for (
-                main_class_ability_path
-            ) in resource_paths.main_class_abilities_root.joinpath(class_).iterdir():
-                self._add_action(
-                    actions,
-                    json.loads(main_class_ability_path.read_text()),
-                    class_level,
-                )
-            for subclass_name in self.subclasses:
-                if subclass_name not in SUBCLASSES[class_]:
-                    continue
-                for sub_class_ability_path in (
-                    resource_paths.sub_class_abilities_root.joinpath(class_)
-                    .joinpath(subclass_name)
-                    .iterdir()
-                ):
-                    self._add_action(
-                        actions,
-                        json.loads(sub_class_ability_path.read_text()),
-                        class_level,
-                    )
-        return actions
-
-    @_cf
     def health(self) -> int:
         constitution_modifier = self._get_modifier(Statistic.CONSTITUTION)
         health_increase_per_level = constitution_modifier
@@ -211,17 +163,6 @@ class PresentableCharacter(
             health_increase_per_level += 1
         return self.health_base + self.level * health_increase_per_level
 
-    def _add_action(
-        self,
-        actions: dict[ActionType, list[Ability]],
-        data: Mapping[str, object],
-        class_level: int,
-    ) -> None:
-        ability = Ability.model_validate(data)
-        if not self._is_ability_accessible(ability, class_level):
-            return
-        actions[ability.action_type].append(ability)
-
     def _get_spellcasting_modifier(self) -> int:
         if self.spellcasting_ability is None:
             return 0
@@ -229,9 +170,3 @@ class PresentableCharacter(
 
     def _get_modifier(self, statistic: Statistic) -> int:
         return self.stats.get_modifier(statistic)
-
-    @staticmethod
-    def _is_ability_accessible(ability: Ability, class_level: int) -> bool:
-        return bool(
-            ability and ability.combat_related and ability.required_level <= class_level
-        )

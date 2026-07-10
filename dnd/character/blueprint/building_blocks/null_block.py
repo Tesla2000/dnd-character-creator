@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import Literal
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
+from dnd.character.blueprint.state import _BPT
 
 
 class NullBlock(BuildingBlock):
@@ -18,5 +18,5 @@ class NullBlock(BuildingBlock):
 
     type: Literal[BuildingBlockType.NULL_BLOCK] = BuildingBlockType.NULL_BLOCK
 
-    def apply(self, blueprint: _WideBlueprint) -> _WideBlueprint:
+    def apply(self, blueprint: _BPT) -> _BPT:
         return blueprint

@@ -6,7 +6,7 @@ from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.stat_choice_resolver.base import (
     StatChoiceResolver,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.choices.stats_creation.statistic import Statistic
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -52,7 +52,7 @@ class AIStatChoiceResolver(StatChoiceResolver):
         description="Blueprint formatter for creating AI prompts",
     )
 
-    def _build_prompt(self, state: Blueprint) -> str:
+    def _build_prompt(self, state: _WideBlueprint) -> str:
         n = state.n_stat_choices
 
         system_prompt = (
@@ -80,7 +80,7 @@ class AIStatChoiceResolver(StatChoiceResolver):
 
         return character_description + "\n".join(instructions)
 
-    def select_stats_to_increase(self, state: Blueprint) -> dict[Statistic, int]:
+    def select_stats_to_increase(self, state: _WideBlueprint) -> dict[Statistic, int]:
         prompt = self._build_prompt(state)
 
         selection = self.llm.create_structured_output(prompt, StatIncreaseSelection)
