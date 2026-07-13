@@ -8,7 +8,9 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
 from dnd.character.blueprint.sentinels import WizardSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import WizardSubclass
 
 
@@ -32,6 +34,18 @@ class WizardLevel6Divination(
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"wizard": 6}),
-                # TODO: add Divination level-6 subclass feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.PASSIVE,
+                        name="Expert Divination",
+                        description=(
+                            "When you cast a divination spell of 2nd level or higher using "
+                            "a spell slot, you regain one expended spell slot. The recovered "
+                            "slot must be of lower level than the spell and can be no higher "
+                            "than 5th level."
+                        ),
+                    ),
+                ),
             }
         )

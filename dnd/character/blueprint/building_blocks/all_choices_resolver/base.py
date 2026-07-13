@@ -47,7 +47,8 @@ from dnd.character.blueprint.sentinels import (
     _ARK,
     _CDK,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.basic_presentable import PresentableBasicBlueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.stats import Stats
 
 
@@ -88,7 +89,7 @@ class AllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
             _ARK,
             _CDK,
         ],
-    ) -> Blueprint[
+    ) -> PresentableBasicBlueprint[
         _RK,
         Stats,
         _HeK,
@@ -114,4 +115,5 @@ class AllChoicesResolver(AllChoicesResolverBase, BuildingBlock):
         r3 = self.feat_choice_resolver.apply(r2)
         r4 = self.tool_proficiency_choice_resolver.apply(r3)
         r5 = self.stat_choice_resolver.apply(r4)
-        return self.equipment_chooser.apply(r5)
+        result = self.equipment_chooser.apply(r5)
+        return PresentableBasicBlueprint.model_validate(dict(result))

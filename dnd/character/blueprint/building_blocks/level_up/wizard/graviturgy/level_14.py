@@ -8,7 +8,9 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
 from dnd.character.blueprint.sentinels import WizardSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import WizardSubclass
 
 
@@ -34,6 +36,20 @@ class WizardLevel14Graviturgy(
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"wizard": 14}),
-                # TODO: add Graviturgy level-14 subclass feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.PASSIVE,
+                        name="Event Horizon",
+                        description=(
+                            "As a reaction when a creature within 60 feet starts its turn, "
+                            "emit a field of gravitic attraction until the start of your next "
+                            "turn. Creatures starting their turn within 30 feet must make a "
+                            "Strength save or have their speed reduced to 0. Creatures spend "
+                            "2 feet of movement per foot moved away from you. "
+                            "Recharge: long rest."
+                        ),
+                    ),
+                ),
             }
         )

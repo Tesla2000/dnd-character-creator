@@ -188,6 +188,8 @@ type MaybeRace = Race | None
 type MaybeStats = Stats | None
 type MaybeHealth = PositiveInt | None
 type AnyStatChoices = Literal[0] | PositiveInt
+type AnyMetamagicChoices = Literal[0] | PositiveInt
+type AnySignatureSpellChoices = Literal[0] | PositiveInt
 type AnyWizardLevel = (
     WizardPreSubclassLevel[SecondSubclassPreLevel, None]
     | WizardSubclassLevel[SecondSubclassPostLevel, WizardSubclass]
@@ -209,6 +211,8 @@ _StK = TypeVar("_StK", bound=Stats | None)
 _HeK = TypeVar("_HeK", bound=PositiveInt | None)
 _StCK = TypeVar("_StCK", bound=Literal[0] | PositiveInt)
 _SkCK = TypeVar("_SkCK", bound=Literal[0] | PositiveInt)
+_McK = TypeVar("_McK", bound=Literal[0] | PositiveInt)
+_SigK = TypeVar("_SigK", bound=Literal[0] | PositiveInt)
 _WZK = TypeVar(
     "_WZK",
     bound=WizardPreSubclassLevel[SecondSubclassPreLevel, None]
@@ -282,6 +286,8 @@ _StK_co = TypeVar("_StK_co", bound=Stats | None, covariant=True)
 _HeK_co = TypeVar("_HeK_co", bound=PositiveInt | None, covariant=True)
 _StCK_co = TypeVar("_StCK_co", bound=Literal[0] | PositiveInt, covariant=True)
 _SkCK_co = TypeVar("_SkCK_co", bound=Literal[0] | PositiveInt, covariant=True)
+_McK_co = TypeVar("_McK_co", bound=Literal[0] | PositiveInt, covariant=True)
+_SigK_co = TypeVar("_SigK_co", bound=Literal[0] | PositiveInt, covariant=True)
 _WZK_co = TypeVar(
     "_WZK_co",
     bound=WizardPreSubclassLevel[SecondSubclassPreLevel, None]
@@ -381,6 +387,8 @@ __all__ = [
     "_HeK",
     "_StCK",
     "_SkCK",
+    "_McK",
+    "_SigK",
     "_WZK",
     "_SOK",
     "_FGK",
@@ -400,6 +408,8 @@ __all__ = [
     "_HeK_co",
     "_StCK_co",
     "_SkCK_co",
+    "_McK_co",
+    "_SigK_co",
     "_WZK_co",
     "_SOK_co",
     "_FGK_co",
@@ -420,6 +430,8 @@ __all__ = [
     "MaybeStats",
     "MaybeHealth",
     "AnyStatChoices",
+    "AnyMetamagicChoices",
+    "AnySignatureSpellChoices",
     "AnyWizardLevel",
     "AnySorcererLevel",
     "AnyClassLevel",

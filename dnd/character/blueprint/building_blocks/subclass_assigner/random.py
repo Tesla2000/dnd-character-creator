@@ -10,7 +10,7 @@ from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
     _check_can_assign,
 )
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.choices.class_creation.character_class import AnySubclass
 from dnd.choices.class_creation.character_class import Class
 from dnd.choices.class_creation.character_class import SUBCLASSES

@@ -48,7 +48,7 @@ class WizardRandomSpellAssigner(WizardSpellAssigner):
         description="Optional seed for reproducible random selection",
     )
 
-    def _select_spells(
+    def select_spells(
         self,
         spell_level: int,
         count: int,
@@ -82,7 +82,7 @@ class SorcererRandomSpellAssigner(SorcererSpellAssigner):
         description="Optional seed for reproducible random selection",
     )
 
-    def _select_spells(
+    def select_spells(
         self,
         spell_level: int,
         count: int,

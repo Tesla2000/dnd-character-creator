@@ -39,7 +39,7 @@ class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
         description="Optional seed for reproducible random selection",
     )
 
-    def _select_tool_proficiency(
+    def select_tool_proficiency(
         self,
         available: list[ToolProficiency],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
@@ -47,7 +47,7 @@ class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
         random.seed(self.seed)
         return random.choice(available)
 
-    def _select_gaming_set(
+    def select_gaming_set(
         self,
         available: list[GamingSet],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
@@ -55,7 +55,7 @@ class RandomToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
         random.seed(self.seed)
         return random.choice(available)
 
-    def _select_musical_instrument(
+    def select_musical_instrument(
         self,
         available: list[MusicalInstrument],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],

@@ -4,11 +4,13 @@ from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
 from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
-    WizardPreSubclassLevelBase,
+    WizardUpgradeLevelBase,
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPreLevel
 from dnd.character.blueprint.sentinels import WizardPreSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.equipment_creation.weapons import WeaponName
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import WeaponProficiency
@@ -16,7 +18,7 @@ from dnd.skill_proficiency import Skill
 
 
 class WizardLevel1(
-    WizardPreSubclassLevelBase[
+    WizardUpgradeLevelBase[
         WizardPreSubclassLevel[Literal[SecondSubclassPreLevel.ZEROTH], None],
         WizardPreSubclassLevel[Literal[SecondSubclassPreLevel.FIRST], None],
     ]
@@ -59,5 +61,18 @@ class WizardLevel1(
                     ("scholar's pack", "explorer's pack"),
                 ),
                 "other_equipment": blueprint.other_equipment + ("spellbook",),
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.FREE_ACTION,
+                        name="Arcane Recovery",
+                        description=(
+                            "Once per day when you finish a short rest, you can choose "
+                            "expended spell slots to recover. The slots can have a combined "
+                            "level equal to or less than half your wizard level (rounded up), "
+                            "and none can be 6th level or higher."
+                        ),
+                    ),
+                ),
             }
         )

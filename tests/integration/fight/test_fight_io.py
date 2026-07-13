@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
+import scripts.fight as fight_script
 from dnd.character._creature_base import _CreatureBase
 from dnd.character.stats import Stats
 from dnd.fight._attack import _Attack
@@ -65,7 +66,7 @@ class TestLoadCreature:
         (creatures_dir / "goblin.json").write_text(
             json.dumps({**_CREATURE_DATA, "name": "goblin", "initiative": 5})
         )
-        with patch("dnd.fight.__main__._CREATURE_DIR", creatures_dir):
+        with patch.object(fight_script, "_CREATURE_DIR", creatures_dir):
             result = _load_creature("goblin")
         assert isinstance(result, _Creature)
         assert result.name == "goblin"
@@ -73,7 +74,7 @@ class TestLoadCreature:
     def test_raises_on_missing_file(self, tmp_path: Path) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
-        with patch("dnd.fight.__main__._CREATURE_DIR", creatures_dir):
+        with patch.object(fight_script, "_CREATURE_DIR", creatures_dir):
             with pytest.raises(ValueError, match="Unknown creature type"):
                 _load_creature("goblin")
 
@@ -92,7 +93,7 @@ class TestLoadCharacter:
         characters_dir = tmp_path / "characters"
         characters_dir.mkdir()
         (characters_dir / "hero.json").write_text(json.dumps(_BASE_DATA))
-        with patch("dnd.fight.__main__._CHARACTER_DIR", characters_dir):
+        with patch.object(fight_script, "_CHARACTER_DIR", characters_dir):
             result = _load_character("hero")
         assert isinstance(result, _CreatureBase)
         assert result.name == "test"
@@ -100,7 +101,7 @@ class TestLoadCharacter:
     def test_raises_on_missing_file(self, tmp_path: Path) -> None:
         characters_dir = tmp_path / "characters"
         characters_dir.mkdir()
-        with patch("dnd.fight.__main__._CHARACTER_DIR", characters_dir):
+        with patch.object(fight_script, "_CHARACTER_DIR", characters_dir):
             with pytest.raises(ValueError, match="Unknown character"):
                 _load_character("hero")
 
@@ -123,8 +124,8 @@ class TestRunFight:
             json.dumps({**_BASE_DATA, "name": "hero"})
         )
         with (
-            patch("dnd.fight.__main__._CREATURE_DIR", creatures_dir),
-            patch("dnd.fight.__main__._CHARACTER_DIR", characters_dir),
+            patch.object(fight_script, "_CREATURE_DIR", creatures_dir),
+            patch.object(fight_script, "_CHARACTER_DIR", characters_dir),
         ):
             cli = _FightCli.model_construct(
                 encounter=[
@@ -139,7 +140,7 @@ class TestRunFight:
         with (
             patch("builtins.input", side_effect=["", "", "", ""]),
             patch("builtins.print") as mock_print,
-            patch("dnd.fight.__main__.cycle", side_effect=lambda it: islice(it, 2)),
+            patch.object(fight_script, "cycle", side_effect=lambda it: islice(it, 2)),
         ):
             cli.cli_cmd()
         printed_args = [str(call) for call in mock_print.call_args_list]
@@ -158,7 +159,7 @@ class TestRunFight:
             "attacks": [attack.model_dump()],
         }
         (creatures_dir / "wolf.json").write_text(json.dumps(creature_data))
-        with patch("dnd.fight.__main__._CREATURE_DIR", creatures_dir):
+        with patch.object(fight_script, "_CREATURE_DIR", creatures_dir):
             cli = _FightCli.model_construct(
                 encounter=[
                     _EncounterEntry.model_validate(
@@ -174,7 +175,7 @@ class TestRunFight:
         with (
             patch("builtins.input", side_effect=["", ""]) as mock_input,
             patch("sys.stdout.write", side_effect=written.append),
-            patch("dnd.fight.__main__.cycle", side_effect=lambda it: islice(it, 1)),
+            patch.object(fight_script, "cycle", side_effect=lambda it: islice(it, 1)),
             patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
         ):
             cli.cli_cmd()
@@ -195,7 +196,7 @@ class TestRunFight:
             "attacks": [attack.model_dump()],
         }
         (creatures_dir / "wolf.json").write_text(json.dumps(creature_data))
-        with patch("dnd.fight.__main__._CREATURE_DIR", creatures_dir):
+        with patch.object(fight_script, "_CREATURE_DIR", creatures_dir):
             cli = _FightCli.model_construct(
                 encounter=[
                     _EncounterEntry.model_validate(
@@ -210,7 +211,7 @@ class TestRunFight:
         with (
             patch("builtins.input", side_effect=["", "", "", "", "", ""]) as mock_input,
             patch("builtins.print"),
-            patch("dnd.fight.__main__.cycle", side_effect=lambda it: islice(it, 3)),
+            patch.object(fight_script, "cycle", side_effect=lambda it: islice(it, 3)),
             patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
         ):
             cli.cli_cmd()

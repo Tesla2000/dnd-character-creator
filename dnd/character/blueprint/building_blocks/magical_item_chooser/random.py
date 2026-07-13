@@ -44,7 +44,7 @@ class RandomMagicalItemChooser(MagicalItemChooserBase):
         description="Optional seed for reproducible random selection",
     )
 
-    def _select_items(self, state: _WideBlueprint) -> tuple[MagicalItem, ...]:
+    def select_items(self, state: _WideBlueprint) -> tuple[MagicalItem, ...]:
         level_counts = {
             Level.COMMON: self.n_common,
             Level.UNCOMMON: self.n_uncommon,

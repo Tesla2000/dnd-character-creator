@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
+from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.character.feature.feats import FeatName
 from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (

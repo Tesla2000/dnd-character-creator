@@ -4,19 +4,19 @@ from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
 from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
-    WizardSharedLevelBase,
+    WizardLevel20UpgradeLevelBase,
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 
 
 class WizardLevel20(
-    WizardSharedLevelBase[
+    WizardLevel20UpgradeLevelBase[
         Literal[SecondSubclassPostLevel.NINETEENTH],
         Literal[SecondSubclassPostLevel.TWENTIETH],
     ]
 ):
-    """Increments wizard to level 20."""
+    """Increments wizard to level 20 and transitions to WizardLevel20Blueprint."""
 
     type: Literal[BuildingBlockType.WIZARD_LEVEL_20] = BuildingBlockType.WIZARD_LEVEL_20
 

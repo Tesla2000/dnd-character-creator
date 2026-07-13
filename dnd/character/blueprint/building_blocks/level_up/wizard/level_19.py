@@ -5,14 +5,14 @@ from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
 from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
-    WizardSharedLevelBase,
+    WizardPostLevel18SharedLevelBase,
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 
 
 class WizardLevel19(
-    WizardSharedLevelBase[
+    WizardPostLevel18SharedLevelBase[
         Literal[SecondSubclassPostLevel.EIGHTEENTH],
         Literal[SecondSubclassPostLevel.NINETEENTH],
     ]

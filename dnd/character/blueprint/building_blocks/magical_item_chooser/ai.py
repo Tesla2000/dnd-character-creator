@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
+from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.magical_item_chooser.base_chooser import (
     MagicalItemChooserBase,
 )
@@ -128,7 +128,7 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
 
         return character_description + "\n".join(instructions)
 
-    def _select_items(self, state: _WideBlueprint) -> tuple[MagicalItem, ...]:
+    def select_items(self, state: _WideBlueprint) -> tuple[MagicalItem, ...]:
         total_requested = (
             self.n_common
             + self.n_uncommon

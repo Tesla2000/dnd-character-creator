@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
+from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.base import (
     ToolProficiencyChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.other_profficiencies import GamingSet
 from dnd.other_profficiencies import MusicalInstrument
 from dnd.other_profficiencies import ToolProficiency
@@ -40,21 +40,21 @@ class AIToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
     )
     formatter: BlueprintFormatter = Field(default_factory=BlueprintFormatter)
 
-    def _select_tool_proficiency(
+    def select_tool_proficiency(
         self,
         available: list[ToolProficiency],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> ToolProficiency:
         raise NotImplementedError("AIToolProficiencyChoiceResolver overrides apply")
 
-    def _select_gaming_set(
+    def select_gaming_set(
         self,
         available: list[GamingSet],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> GamingSet:
         raise NotImplementedError("AIToolProficiencyChoiceResolver overrides apply")
 
-    def _select_musical_instrument(
+    def select_musical_instrument(
         self,
         available: list[MusicalInstrument],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],

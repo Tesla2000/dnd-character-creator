@@ -8,7 +8,9 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
 from dnd.character.blueprint.sentinels import WizardSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import WizardSubclass
 
 
@@ -34,6 +36,17 @@ class WizardLevel14Transmutation(
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"wizard": 14}),
-                # TODO: add Transmutation level-14 subclass feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.ACTION,
+                        name="Master Transmuter",
+                        description=(
+                            "Consume your transmuter's stone to cast one of: major image, "
+                            "passwall, move earth, or polymorph (on a willing target as a "
+                            "true polymorph effect), without expending a spell slot."
+                        ),
+                    ),
+                ),
             }
         )

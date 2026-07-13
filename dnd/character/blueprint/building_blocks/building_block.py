@@ -11,7 +11,7 @@ from dnd.character.blueprint.sentinels import MaybeCharacterData
 from dnd.character.blueprint.sentinels import MaybeHealth
 from dnd.character.blueprint.sentinels import MaybeRace
 from dnd.character.blueprint.sentinels import MaybeStats
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 
 _WideBlueprint = Blueprint[
     MaybeRace,

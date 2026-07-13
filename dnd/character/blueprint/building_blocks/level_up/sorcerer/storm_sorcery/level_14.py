@@ -8,7 +8,9 @@ from dnd.character.blueprint.building_blocks.level_up.sorcerer.base import (
 )
 from dnd.character.blueprint.sentinels import FirstSubclassPostLevel
 from dnd.character.blueprint.sentinels import SorcererSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import SorcererSubclass
 
 
@@ -34,6 +36,18 @@ class SorcererLevel14StormSorcery(
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"sorcerer": 14}),
-                # TODO: add Storm Sorcery level-14 origin feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.REACTION,
+                        name="Storm's Fury",
+                        description=(
+                            "When struck by a melee attack, deal lightning damage equal to "
+                            "your sorcerer level to the attacker. The attacker must succeed "
+                            "on a Strength saving throw against your spell save DC or be "
+                            "pushed up to 20 feet away and knocked prone."
+                        ),
+                    ),
+                ),
             }
         )

@@ -21,8 +21,8 @@ from dnd.character.blueprint.sentinels import (
     SecondSubclassPreLevel,
     WizardPreSubclassLevel,
 )
-from dnd.character.blueprint.state import Blueprint
-from dnd.character.blueprint.state import EmptyBlueprint
+from dnd.character.blueprint.states.state import Blueprint
+from dnd.character.blueprint.states.state import EmptyBlueprint
 from dnd.character.race.race import Race
 from dnd.character.stats import Stats
 

@@ -27,7 +27,7 @@ from dnd.character.blueprint.sentinels import (
     _CDK,
 )
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.skill_proficiency import Skill
 from pydantic import ConfigDict
 

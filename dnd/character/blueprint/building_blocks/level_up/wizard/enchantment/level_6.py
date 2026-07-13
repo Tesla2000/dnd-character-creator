@@ -8,7 +8,9 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
 from dnd.character.blueprint.sentinels import WizardSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import WizardSubclass
 
 
@@ -32,6 +34,18 @@ class WizardLevel6Enchantment(
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"wizard": 6}),
-                # TODO: add Enchantment level-6 subclass feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.REACTION,
+                        name="Instinctive Charm",
+                        description=(
+                            "When a creature within 30 feet attacks you, force it to make a "
+                            "Wisdom save vs your spell save DC. On failure, it must attack "
+                            "another creature of your choice, or if none is available, it "
+                            "doesn't attack. On success, it's immune for 24 hours."
+                        ),
+                    ),
+                ),
             }
         )

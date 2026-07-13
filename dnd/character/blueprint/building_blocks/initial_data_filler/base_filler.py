@@ -26,7 +26,7 @@ from dnd.character.blueprint.sentinels import (
     _WAK,
     _WZK,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from pydantic import ConfigDict
 
 
@@ -34,7 +34,7 @@ class InitialDataFiller(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def _compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData: ...
+    def compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData: ...
 
     def apply(
         self,
@@ -101,6 +101,5 @@ class InitialDataFiller(BuildingBlock, ABC):
             _ARK,
             CharacterData,
         ].model_validate(
-            dict(blueprint)
-            | {"character_data": self._compute_character_data(blueprint)}
+            dict(blueprint) | {"character_data": self.compute_character_data(blueprint)}
         )

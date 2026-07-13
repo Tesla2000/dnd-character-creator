@@ -18,7 +18,7 @@ from dnd.character.blueprint.sentinels import _SkCK
 from dnd.character.blueprint.sentinels import _StCK
 from dnd.character.blueprint.sentinels import _WAK
 from dnd.character.blueprint.sentinels import _WZK
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.race.race import Race
 from dnd.character.stats import Stats
 from dnd.choices.class_creation.character_class import Class

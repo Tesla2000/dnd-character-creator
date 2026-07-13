@@ -116,7 +116,7 @@ class WizardLLMSpellAssigner(WizardSpellAssigner):
         description="Additional character context for AI spell selection",
     )
 
-    def _select_spells(
+    def select_spells(
         self,
         spell_level: int,
         count: int,
@@ -166,7 +166,7 @@ class SorcererLLMSpellAssigner(SorcererSpellAssigner):
         description="Additional character context for AI spell selection",
     )
 
-    def _select_spells(
+    def select_spells(
         self,
         spell_level: int,
         count: int,

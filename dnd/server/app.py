@@ -8,7 +8,7 @@ from dnd.character.blueprint.building_blocks import (
 from dnd.character.blueprint.building_blocks.character_converter import (
     CharacterConverter,
 )
-from dnd.character.blueprint.state import EmptyBlueprint
+from dnd.character.blueprint.states.state import EmptyBlueprint
 from dnd.character.presentable_character import (
     PresentableCharacter,
 )

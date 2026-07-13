@@ -23,7 +23,7 @@ from dnd.character.blueprint.sentinels import (
     _WZK,
     _SkCK,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.feature.feats import FeatName
 from dnd.character.race.race import Race
 from dnd.character.race.subrace_stats.subrace_to_stats import _get_subrace_stats

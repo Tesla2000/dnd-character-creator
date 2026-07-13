@@ -21,7 +21,7 @@ from dnd.character.blueprint.building_blocks.magical_item_chooser.random import 
 from dnd.character.blueprint.building_blocks.null_block import NullBlock
 from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
 from dnd.character.blueprint.building_blocks.weapon_adder import WeaponAdder
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.feature.feature import Feature
 from dnd.character.feature.feats import FeatName
 from dnd.choices.equipment_creation.weapons import WeaponName

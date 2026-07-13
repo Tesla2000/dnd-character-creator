@@ -19,7 +19,7 @@ from dnd.character.blueprint.sentinels import _SkCK
 from dnd.character.blueprint.sentinels import _StCK
 from dnd.character.blueprint.sentinels import _WAK
 from dnd.character.blueprint.sentinels import _WZK
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.magical_item.item import MagicalItem
 from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic

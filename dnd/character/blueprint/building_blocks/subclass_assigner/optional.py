@@ -13,7 +13,7 @@ from dnd.character.blueprint.building_blocks.subclass_assigner.base import CanNo
 from dnd.character.blueprint.building_blocks.subclass_assigner.random import (
     RandomSubclassAssigner,
 )
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from pydantic import Field
 
 

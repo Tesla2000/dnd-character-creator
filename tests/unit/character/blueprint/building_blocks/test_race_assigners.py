@@ -44,7 +44,7 @@ from dnd.character.blueprint.building_blocks.race_assigner.race_assigner import 
     WarforgedRaceAssigner,
     YuanTiPurebloodRaceAssigner,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
 from dnd.character.stats import Stats

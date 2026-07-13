@@ -25,6 +25,7 @@ from dnd.other_profficiencies import ToolProficiency
 from dnd.other_profficiencies import WeaponProficiency
 from dnd.skill_proficiency import Skill
 from dnd.character.class_levels import ClassLevels
+from dnd.choices.abilities.action import AnyAction
 from pydantic import Field
 from pydantic import NonNegativeInt, BaseModel, ConfigDict
 from pydantic import PositiveInt
@@ -145,6 +146,7 @@ class Blueprint(
     magical_items: tuple[MagicalItem, ...] = ()
     saving_throw_proficiencies: tuple[Statistic, ...] = ()
     other_active_abilities: tuple[str, ...] = ()
+    actions: tuple[AnyAction, ...] = Field(default=())
     n_stat_choices: _StCK_co = Field(default=cast(_StCK_co, 0))
     n_skill_choices: _SkCK_co = Field(default=cast(_SkCK_co, 0))
     skills_to_choose_from: frozenset[Skill] = Field(default_factory=frozenset)

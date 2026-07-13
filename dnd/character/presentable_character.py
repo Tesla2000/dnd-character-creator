@@ -9,7 +9,7 @@ from dnd.character.blueprint.character_data import CharacterData
 from dnd.character.blueprint.sentinels import AnyClassLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyWizardLevel
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.blueprint.sentinels import Level
 from dnd.character.feature.feats import FeatName
 from dnd.character.race.race import Race
@@ -56,7 +56,7 @@ class PresentableCharacter(
         CharacterData,
     ]
 ):
-    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
     level: Level
 
     @_cf
