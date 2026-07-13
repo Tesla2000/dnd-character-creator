@@ -203,6 +203,13 @@ type AnyClassLevel = (
     | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass]
 )
 type MaybeCharacterData = CharacterData | None
+type AnyNonZeroWizardLevel = (
+    WizardPreSubclassLevel[Literal[SecondSubclassPreLevel.FIRST], None]
+    | WizardSubclassLevel[SecondSubclassPostLevel, WizardSubclass]
+)
+type AnyNonZeroSorcererLevel = SorcererSubclassLevel[
+    FirstSubclassPostLevel, SorcererSubclass
+]
 
 
 # Pass-through TypeVars for all Blueprint dimensions.
@@ -218,10 +225,19 @@ _WZK = TypeVar(
     bound=WizardPreSubclassLevel[SecondSubclassPreLevel, None]
     | WizardSubclassLevel[SecondSubclassPostLevel, WizardSubclass],
 )
+_WZK_NZ = TypeVar(
+    "_WZK_NZ",
+    bound=WizardPreSubclassLevel[Literal[SecondSubclassPreLevel.FIRST], None]
+    | WizardSubclassLevel[SecondSubclassPostLevel, WizardSubclass],
+)
 _SOK = TypeVar(
     "_SOK",
     bound=SorcererPreSubclassLevel[FirstSubclassPreLevel, None]
     | SorcererSubclassLevel[FirstSubclassPostLevel, SorcererSubclass],
+)
+_SOK_NZ = TypeVar(
+    "_SOK_NZ",
+    bound=SorcererSubclassLevel[FirstSubclassPostLevel, SorcererSubclass],
 )
 _FGK = TypeVar(
     "_FGK",
@@ -390,7 +406,9 @@ __all__ = [
     "_McK",
     "_SigK",
     "_WZK",
+    "_WZK_NZ",
     "_SOK",
+    "_SOK_NZ",
     "_FGK",
     "_BAK",
     "_ROK",
@@ -433,7 +451,9 @@ __all__ = [
     "AnyMetamagicChoices",
     "AnySignatureSpellChoices",
     "AnyWizardLevel",
+    "AnyNonZeroWizardLevel",
     "AnySorcererLevel",
+    "AnyNonZeroSorcererLevel",
     "AnyClassLevel",
     "MaybeCharacterData",
 ]

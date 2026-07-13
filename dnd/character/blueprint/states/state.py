@@ -7,7 +7,6 @@ from typing import cast
 
 from dnd.character.armor.names import ArmorName
 from dnd.character.magical_item.item import MagicalItem
-from dnd.character.blueprint.sentinels import Level
 from dnd.character.feature.feats import FeatName
 from dnd.character.race.subraces import SubraceName
 from dnd.character.spells.spells import Spells
@@ -149,7 +148,6 @@ class Blueprint(
     n_skill_choices: _SkCK_co = Field(default=cast(_SkCK_co, 0))
     skills_to_choose_from: frozenset[Skill] = Field(default_factory=frozenset)
     equipment_choices: tuple[tuple[Equipment, ...], ...] = ()
-    level: Level | None = None
     character_data: _CDK_co = Field(default=cast(_CDK_co, None))
 
 

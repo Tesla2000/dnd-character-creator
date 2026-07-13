@@ -3,8 +3,34 @@ from abc import abstractmethod
 from typing import ClassVar
 from typing import Protocol
 
-from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.states.state import _BPT
+from dnd.character.blueprint.building_blocks.building_block import (
+    BuildingBlock,
+    _WideBlueprint,
+)
+from dnd.character.blueprint.sentinels import (
+    _ARK,
+    _BAK,
+    _BDK,
+    _CDK,
+    _CLK,
+    _DRK,
+    _FGK,
+    _HeK,
+    _MOK,
+    _PAK,
+    _RAK,
+    _ROK,
+    _RK,
+    _SkCK,
+    _SOK,
+    _SOK_NZ,
+    _StCK,
+    _StK,
+    _WAK,
+    _WZK,
+    _WZK_NZ,
+)
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.spells import Cantrip
 from dnd.character.spells import EighthLevel
 from dnd.character.spells import FifthLevel
@@ -21,7 +47,6 @@ from dnd.character.spells.max_spell_levels import CasterType
 from dnd.character.spells.max_spell_levels import MAX_SPELL_LEVELS
 from dnd.character.spells.spells import Spells
 from dnd.choices.class_creation.character_class import Class
-
 
 _SPELL_LEVEL_TO_CLASS: list[type[Spell]] = [
     Cantrip,
@@ -92,10 +117,10 @@ class WizardSpellAssigner(BuildingBlock, ABC):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        state: _BPT,
+        state: _WideBlueprint,
     ) -> tuple[Spell, ...]: ...
 
-    def _get_spells_to_learn(self, state: _BPT) -> dict[int, int]:
+    def _get_spells_to_learn(self, state: _WideBlueprint) -> dict[int, int]:
         level = state.classes.get_level(Class.WIZARD)
         if level == 1:
             return {0: 3, 1: 6}
@@ -107,18 +132,56 @@ class WizardSpellAssigner(BuildingBlock, ABC):
             0: int(level in n_cantrips_increase_levels),
         }
 
-    def apply(self, blueprint: _BPT) -> _BPT:
-        if blueprint.classes.get_level(Class.WIZARD) == 0:
-            return blueprint
-
-        wizard_state = blueprint
-        spells_to_learn = self._get_spells_to_learn(wizard_state)
-        initial = blueprint.spells
-
+    def apply(
+        self,
+        blueprint: Blueprint[
+            _RK,
+            _StK,
+            _HeK,
+            _StCK,
+            _SkCK,
+            _WZK_NZ,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        _RK,
+        _StK,
+        _HeK,
+        _StCK,
+        _SkCK,
+        _WZK_NZ,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        spells_to_learn = self._get_spells_to_learn(blueprint)
         if not spells_to_learn:
             return blueprint
 
         assigner = self
+        wizard_state = blueprint
 
         class _Selector:
             def select(
@@ -128,7 +191,9 @@ class WizardSpellAssigner(BuildingBlock, ABC):
                     spell_level, count, available, wizard_state
                 )
 
-        spells = _apply_spells(initial, spells_to_learn, Class.WIZARD, _Selector())
+        spells = _apply_spells(
+            blueprint.spells, spells_to_learn, Class.WIZARD, _Selector()
+        )
         return blueprint.model_copy(update={"spells": spells})
 
 
@@ -143,10 +208,10 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
         spell_level: int,
         count: int,
         available_spells: list[Spell],
-        state: _BPT,
+        state: _WideBlueprint,
     ) -> tuple[Spell, ...]: ...
 
-    def _get_spells_to_learn(self, state: _BPT) -> dict[int, int]:
+    def _get_spells_to_learn(self, state: _WideBlueprint) -> dict[int, int]:
         level = state.classes.get_level(Class.SORCERER)
         if level == 1:
             return {0: 4, 1: 2}
@@ -158,14 +223,52 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
             0: int(level in n_cantrips_increase_levels),
         }
 
-    def apply(self, blueprint: _BPT) -> _BPT:
-        if blueprint.classes.get_level(Class.SORCERER) == 0:
-            return blueprint
-
+    def apply(
+        self,
+        blueprint: Blueprint[
+            _RK,
+            _StK,
+            _HeK,
+            _StCK,
+            _SkCK,
+            _WZK,
+            _SOK_NZ,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        _RK,
+        _StK,
+        _HeK,
+        _StCK,
+        _SkCK,
+        _WZK,
+        _SOK_NZ,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
         sorcerer_state = blueprint
         spells_to_learn = self._get_spells_to_learn(sorcerer_state)
-        initial = blueprint.spells
-
         if not spells_to_learn:
             return blueprint
 
@@ -179,5 +282,7 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
                     spell_level, count, available, sorcerer_state
                 )
 
-        spells = _apply_spells(initial, spells_to_learn, Class.SORCERER, _Selector())
+        spells = _apply_spells(
+            blueprint.spells, spells_to_learn, Class.SORCERER, _Selector()
+        )
         return blueprint.model_copy(update={"spells": spells})

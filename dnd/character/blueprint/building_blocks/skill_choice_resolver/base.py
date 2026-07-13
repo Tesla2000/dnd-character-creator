@@ -1,31 +1,9 @@
 from abc import ABC
 from abc import abstractmethod
-from typing import Literal
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.sentinels import (
-    _RK,
-    _StK,
-    _HeK,
-    _StCK,
-    _SkCK,
-    _WZK,
-    _SOK,
-    _FGK,
-    _BAK,
-    _ROK,
-    _CLK,
-    _DRK,
-    _PAK,
-    _RAK,
-    _MOK,
-    _BDK,
-    _WAK,
-    _ARK,
-    _CDK,
-)
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
-from dnd.character.blueprint.states.state import Blueprint
+from dnd.character.blueprint.states.state import _BPT
 from dnd.skill_proficiency import Skill
 from pydantic import ConfigDict
 
@@ -43,78 +21,14 @@ class SkillChoiceResolver(BuildingBlock, ABC):
     @abstractmethod
     def _select_skills(self, state: _WideBlueprint) -> frozenset[Skill]: ...
 
-    def apply(
-        self,
-        blueprint: Blueprint[
-            _RK,
-            _StK,
-            _HeK,
-            _StCK,
-            _SkCK,
-            _WZK,
-            _SOK,
-            _FGK,
-            _BAK,
-            _ROK,
-            _CLK,
-            _DRK,
-            _PAK,
-            _RAK,
-            _MOK,
-            _BDK,
-            _WAK,
-            _ARK,
-            _CDK,
-        ],
-    ) -> Blueprint[
-        _RK,
-        _StK,
-        _HeK,
-        _StCK,
-        Literal[0],
-        _WZK,
-        _SOK,
-        _FGK,
-        _BAK,
-        _ROK,
-        _CLK,
-        _DRK,
-        _PAK,
-        _RAK,
-        _MOK,
-        _BDK,
-        _WAK,
-        _ARK,
-        _CDK,
-    ]:
+    def apply(self, blueprint: _BPT) -> _BPT:
         if blueprint.n_skill_choices == 0:
             selected: frozenset[Skill] = frozenset()
         else:
             selected = self._select_skills(blueprint)
 
-        return Blueprint[
-            _RK,
-            _StK,
-            _HeK,
-            _StCK,
-            Literal[0],
-            _WZK,
-            _SOK,
-            _FGK,
-            _BAK,
-            _ROK,
-            _CLK,
-            _DRK,
-            _PAK,
-            _RAK,
-            _MOK,
-            _BDK,
-            _WAK,
-            _ARK,
-            _CDK,
-        ].model_validate(
-            dict(blueprint)
-            | {
+        return blueprint.model_copy(
+            update={
                 "skill_proficiencies": blueprint.skill_proficiencies + tuple(selected),
                 "n_skill_choices": 0,
                 "skills_to_choose_from": frozenset(),

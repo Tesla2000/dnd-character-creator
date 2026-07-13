@@ -11,6 +11,16 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.random im
 )
 from pydantic import Field
 
+AnyWizardSpellAssigner = Annotated[
+    Union[WizardRandomSpellAssigner, WizardLLMSpellAssigner],
+    Field(discriminator="type"),
+]
+
+AnySorcererSpellAssigner = Annotated[
+    Union[SorcererRandomSpellAssigner, SorcererLLMSpellAssigner],
+    Field(discriminator="type"),
+]
+
 AnySpellAssigner = Annotated[
     Union[
         WizardRandomSpellAssigner,
@@ -26,5 +36,7 @@ __all__ = [
     "SorcererRandomSpellAssigner",
     "WizardLLMSpellAssigner",
     "SorcererLLMSpellAssigner",
+    "AnyWizardSpellAssigner",
+    "AnySorcererSpellAssigner",
     "AnySpellAssigner",
 ]

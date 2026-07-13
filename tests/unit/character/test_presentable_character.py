@@ -1,5 +1,6 @@
 import pytest
 
+from dnd.character.class_levels import ClassLevels
 from dnd.character.presentable_character import PresentableCharacter
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
@@ -27,7 +28,6 @@ _BASE_KWARGS: dict[str, object] = dict(
     other_active_abilities=(),
     sex=Sex.FEMALE,
     backstory="A test character.",
-    level=2,
     age=25,
     race=Race.HUMAN,
     subrace=SubraceName.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK,
@@ -66,19 +66,22 @@ class TestPresentableCharacterNonCaster:
         assert char.n_prepared_spells == char.level
 
 
+_LEVELED_KWARGS: dict[str, object] = {**_BASE_KWARGS, "classes": ClassLevels(fighter=2)}
+
+
 @pytest.mark.unit
 class TestPresentableCharacterHealth:
     def test_health_with_tough_feat(self) -> None:
         char = PresentableCharacter(
-            **_BASE_KWARGS,
+            **_LEVELED_KWARGS,
             feats=frozenset({FeatName.TOUGH}),
         )
-        base_char = PresentableCharacter(**_BASE_KWARGS)
+        base_char = PresentableCharacter(**_LEVELED_KWARGS)
         assert char.health > base_char.health
 
     def test_health_with_dwarf_race(self) -> None:
         dwarf_kwargs = {
-            **_BASE_KWARGS,
+            **_LEVELED_KWARGS,
             "race": Race.DWARF,
             "subrace": SubraceName.DWARF_HILL_DWARF_PLAYERSHANDBOOK,
             "speed": 25,

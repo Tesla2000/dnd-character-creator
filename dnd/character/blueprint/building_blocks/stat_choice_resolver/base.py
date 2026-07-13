@@ -3,9 +3,9 @@ from abc import abstractmethod
 from typing import Literal
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
+from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.blueprint.sentinels import (
     _RK,
-    _StK,
     _HeK,
     _StCK,
     _SkCK,
@@ -24,7 +24,6 @@ from dnd.character.blueprint.sentinels import (
     _ARK,
     _CDK,
 )
-from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic
@@ -49,7 +48,7 @@ class StatChoiceResolver(BuildingBlock, ABC):
         self,
         blueprint: Blueprint[
             _RK,
-            _StK,
+            Stats,
             _HeK,
             _StCK,
             _SkCK,
@@ -70,7 +69,7 @@ class StatChoiceResolver(BuildingBlock, ABC):
         ],
     ) -> Blueprint[
         _RK,
-        _StK,
+        Stats,
         _HeK,
         Literal[0],
         _SkCK,
@@ -89,10 +88,10 @@ class StatChoiceResolver(BuildingBlock, ABC):
         _ARK,
         _CDK,
     ]:
-        if blueprint.n_stat_choices == 0 or blueprint.stats is None:
+        if blueprint.n_stat_choices == 0:
             return Blueprint[
                 _RK,
-                _StK,
+                Stats,
                 _HeK,
                 Literal[0],
                 _SkCK,
@@ -128,7 +127,7 @@ class StatChoiceResolver(BuildingBlock, ABC):
         )
         return Blueprint[
             _RK,
-            _StK,
+            Stats,
             _HeK,
             Literal[0],
             _SkCK,

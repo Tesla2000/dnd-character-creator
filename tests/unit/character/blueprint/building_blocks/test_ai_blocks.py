@@ -66,9 +66,6 @@ from dnd.character.blueprint.building_blocks.stat_choice_resolver.ai import (
     AIStatChoiceResolver,
     StatIncreaseSelection,
 )
-from dnd.character.blueprint.building_blocks.subclass_assigner.ai import (
-    AISubclassAssigner,
-)
 from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.feature.feats import FeatName
 from dnd.character.magical_item.items import MAGICAL_ITEMS
@@ -76,7 +73,7 @@ from dnd.character.spells.spell_slots import Cantrip, FirstLevel
 from dnd.character.stats import Stats
 from dnd.choices.alignment import Alignment
 from dnd.choices.background_creatrion.background import Background
-from dnd.choices.class_creation.character_class import Class, SUBCLASSES
+from dnd.choices.class_creation.character_class import Class
 from dnd.choices.equipment_creation.weapons import WeaponName
 from dnd.choices.language import Language
 from dnd.other_profficiencies import ToolProficiency, GamingSet, MusicalInstrument
@@ -351,60 +348,6 @@ class TestAIFeatChoiceResolver:
         result = block.apply(state)
         assert result is not None
         mock_llm.create_structured_output.assert_called_once()
-
-
-@pytest.mark.unit
-class TestAISubclassAssigner:
-    def test_already_assigned_skips_llm(self) -> None:
-        mock_llm = MagicMock()
-        wizard_subclass_enum = SUBCLASSES[Class.WIZARD]
-        first_subclass = next(iter(wizard_subclass_enum))
-
-        with patch(
-            "dnd.character.blueprint.building_blocks.subclass_assigner.ai._check_can_assign"
-        ):
-            state = Blueprint(subclasses=(first_subclass,))
-            block = AISubclassAssigner.model_construct(
-                class_=Class.WIZARD, llm=mock_llm, formatter=BlueprintFormatter()
-            )
-            result = block.apply(state)
-        assert result is not None
-        mock_llm.create_structured_output.assert_not_called()
-
-    def test_new_assignment_calls_llm(self) -> None:
-        wizard_subclass_enum = SUBCLASSES[Class.WIZARD]
-        first_subclass = next(iter(wizard_subclass_enum))
-
-        def subclass_model_side_effect(prompt: object, model_class: object) -> object:
-            return model_class(subclass=first_subclass)
-
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.side_effect = subclass_model_side_effect
-
-        with patch(
-            "dnd.character.blueprint.building_blocks.subclass_assigner.ai._check_can_assign"
-        ):
-            state = Blueprint()
-            block = AISubclassAssigner.model_construct(
-                class_=Class.WIZARD, llm=mock_llm, formatter=BlueprintFormatter()
-            )
-            result = block.apply(state)
-        assert result is not None
-        mock_llm.create_structured_output.assert_called_once()
-
-    def test_llm_error_raises_llm_error(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.side_effect = LLMRefusalError("LLM failure")
-
-        with patch(
-            "dnd.character.blueprint.building_blocks.subclass_assigner.ai._check_can_assign"
-        ):
-            state = Blueprint()
-            block = AISubclassAssigner.model_construct(
-                class_=Class.WIZARD, llm=mock_llm, formatter=BlueprintFormatter()
-            )
-            with pytest.raises(LLMRefusalError):
-                block.apply(state)
 
 
 @pytest.mark.unit
@@ -879,23 +822,6 @@ class TestAIBaseBuilderAssignerExtraBranches:
         )
         with pytest.raises(LLMRefusalError):
             block.apply(Blueprint())
-
-
-@pytest.mark.unit
-class TestAISubclassAssignerExtraBranches:
-    def test_llm_error_raises_llm_error(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
-
-        with patch(
-            "dnd.character.blueprint.building_blocks.subclass_assigner.ai._check_can_assign"
-        ):
-            state = Blueprint()
-            block = AISubclassAssigner.model_construct(
-                class_=Class.WIZARD, llm=mock_llm, formatter=BlueprintFormatter()
-            )
-            with pytest.raises(LLMRefusalError):
-                block.apply(state)
 
 
 @pytest.mark.unit

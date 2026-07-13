@@ -5,7 +5,6 @@ from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AnyChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.building_blocks.level_assigner import LevelAssigner
 from dnd.character.blueprint.building_blocks.race_assigner import AnyRaceAssigner
 from dnd.character.blueprint.building_blocks.stats_builder import AnyStatsBuilder
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -56,13 +55,11 @@ class InitialBuilder(BuildingBlock):
 
     type: Literal[BuildingBlockType.INITIAL_BUILDER] = BuildingBlockType.INITIAL_BUILDER
 
-    level_assigner: LevelAssigner
     stats_builder: AnyStatsBuilder
     race_assigner: AnyRaceAssigner
     all_choices_resolver: AnyChoiceResolver
 
     def apply(self, blueprint: EmptyBlueprint) -> InitializedBlueprint:
-        r1 = self.level_assigner.apply(blueprint)
-        r2 = self.stats_builder.apply(r1)
-        r3 = self.race_assigner.apply(r2)
-        return self.all_choices_resolver.apply(r3)
+        r1 = self.stats_builder.apply(blueprint)
+        r2 = self.race_assigner.apply(r1)
+        return self.all_choices_resolver.apply(r2)

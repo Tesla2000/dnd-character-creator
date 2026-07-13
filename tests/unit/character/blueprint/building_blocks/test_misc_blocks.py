@@ -12,18 +12,14 @@ from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_if_not_max
 from dnd.character.blueprint.building_blocks.equipment_chooser.random import (
     RandomEquipmentChooser,
 )
-from dnd.character.blueprint.building_blocks.level_up.health_increase.average import (
-    HealthIncreaseAverage,
-)
-from dnd.character.blueprint.building_blocks.level_up.health_increase.random import (
-    HealthIncreaseRandom,
-)
-from dnd.character.blueprint.building_blocks.level_up.health_increase.random_reroll_ones import (
-    HealthIncreaseRandomRerollOnes,
-)
-from dnd.character.blueprint.building_blocks.level_assigner import LevelAssigner
-from dnd.character.blueprint.building_blocks.level_up.health_increase.random_min_two import (
-    HealthIncreaseRandomMinTwo,
+from dnd.character.blueprint.building_blocks.level_up.health_increase import (
+    D6HealthIncreaseAverage,
+    D8HealthIncreaseAverage,
+    D10HealthIncreaseAverage,
+    D12HealthIncreaseAverage,
+    D6HealthIncreaseRandom,
+    D6HealthIncreaseRandomMinTwo,
+    D6HealthIncreaseRandomRerollOnes,
 )
 from dnd.character.blueprint.building_blocks.race_assigner.random_race_assigner import (
     RandomRaceAssigner,
@@ -47,21 +43,8 @@ from dnd.character.blueprint.building_blocks.stats_builder.standard_array import
     StandardArray,
 )
 from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
-from dnd.character.blueprint.building_blocks.subclass_assigner.base import (
-    CanNotAssign,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner.optional import (
-    OptionalSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner.random import (
-    RandomSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner.subclass_assigner import (
-    WizardSubclassAssigner,
-)
 from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.stats import Stats
-from dnd.choices.class_creation.character_class import Class, WizardSubclass
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.character.race.race import Race
 from pydantic import ValidationError
@@ -117,35 +100,9 @@ class TestMaxIfNotMaxedResolver:
 
 
 @pytest.mark.unit
-class TestSubclassAssigner:
-    def test_can_not_assign_raises_when_no_class(self) -> None:
-        block = WizardSubclassAssigner(subclass=WizardSubclass.ABJURATION)
-        with pytest.raises(CanNotAssign):
-            block.apply(Blueprint())
-
-    def test_early_return_when_subclass_already_present(self) -> None:
-        state = Blueprint()
-        state = LevelAssigner(level=2).apply(state)
-        state = state.model_copy(update={"classes": ClassLevels(wizard=2)})
-        state = WizardSubclassAssigner(subclass=WizardSubclass.ABJURATION).apply(state)
-        result = WizardSubclassAssigner(subclass=WizardSubclass.EVOCATION).apply(state)
-        assert WizardSubclass.ABJURATION in result.subclasses
-        assert WizardSubclass.EVOCATION not in result.subclasses
-
-    def test_random_early_return_when_subclass_already_present(self) -> None:
-        state = Blueprint()
-        state = LevelAssigner(level=2).apply(state)
-        state = state.model_copy(update={"classes": ClassLevels(wizard=2)})
-        state = WizardSubclassAssigner(subclass=WizardSubclass.ABJURATION).apply(state)
-        random_assigner = RandomSubclassAssigner(class_=Class.WIZARD)
-        result = random_assigner.apply(state)
-        assert WizardSubclass.ABJURATION in result.subclasses
-
-
-@pytest.mark.unit
 class TestHealthIncreaseRandomMinTwo:
     def test_random_min_two_on_subsequent_level(self) -> None:
-        block = HealthIncreaseRandomMinTwo(class_=Class.WIZARD)
+        block = D6HealthIncreaseRandomMinTwo()
         state = Blueprint()
         state = block.apply(state)
         state = block.apply(state)
@@ -156,7 +113,6 @@ class TestHealthIncreaseRandomMinTwo:
 class TestSorcererSpellAssigner:
     def test_first_level_assigns_spells(self) -> None:
         state = Blueprint()
-        state = LevelAssigner(level=1).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(sorcerer=1)})
         assigner = SorcererRandomSpellAssigner()
         result = assigner.apply(state)
@@ -164,7 +120,6 @@ class TestSorcererSpellAssigner:
 
     def test_second_level_assigns_spells(self) -> None:
         state = Blueprint()
-        state = LevelAssigner(level=2).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(sorcerer=2)})
         assigner = SorcererRandomSpellAssigner()
         result = assigner.apply(state)
@@ -173,15 +128,17 @@ class TestSorcererSpellAssigner:
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "class_, expected_die",
+    "block, expected_die",
     [
-        (Class.BARBARIAN, 12),
-        (Class.FIGHTER, 10),
-        (Class.BARD, 8),
+        (D12HealthIncreaseAverage(), 12),
+        (D10HealthIncreaseAverage(), 10),
+        (D8HealthIncreaseAverage(), 8),
+        (D6HealthIncreaseAverage(), 6),
     ],
 )
-def test_class_hit_die_branches(class_: Class, expected_die: int) -> None:
-    block = HealthIncreaseAverage(class_=class_)
+def test_class_hit_die_branches(
+    block: D6HealthIncreaseAverage, expected_die: int
+) -> None:
     state = Blueprint()
     result = block.apply(state)
     assert result.health_base == expected_die
@@ -190,14 +147,14 @@ def test_class_hit_die_branches(class_: Class, expected_die: int) -> None:
 @pytest.mark.unit
 class TestHealthIncreaseRandom:
     def test_random_roll_on_subsequent_levels(self) -> None:
-        block = HealthIncreaseRandom(class_=Class.WIZARD)
+        block = D6HealthIncreaseRandom()
         state = Blueprint()
         state = block.apply(state)
         state = block.apply(state)
         assert state.health_base > 0
 
     def test_reroll_ones(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        block = HealthIncreaseRandomRerollOnes(class_=Class.WIZARD)
+        block = D6HealthIncreaseRandomRerollOnes()
         state = Blueprint()
         state = block.apply(state)
         roll_values = iter([1, 4])
@@ -238,7 +195,6 @@ class TestSpellAssignerEdgeCases:
     ) -> None:
         monkeypatch.setattr(spell_base, "_get_available_spells", lambda cls, lvl: [])
         state = Blueprint()
-        state = LevelAssigner(level=1).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(wizard=1)})
         assigner = WizardRandomSpellAssigner()
         result = assigner.apply(state)
@@ -257,7 +213,6 @@ class TestSpellAssignerEdgeCases:
 
         monkeypatch.setattr(spell_base, "_get_available_spells", fake_available)
         state = Blueprint()
-        state = LevelAssigner(level=1).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(wizard=1)})
         pre_spells = Spells(
             cantrips=(mock_cantrip,),
@@ -293,41 +248,6 @@ class TestRandomRaceAssigner:
 
 
 @pytest.mark.unit
-class TestSubclassAssignerLevelTooLow:
-    def test_raises_when_level_below_required(self) -> None:
-        state = Blueprint()
-        state = LevelAssigner(level=1).apply(state)
-        state = state.model_copy(update={"classes": ClassLevels(wizard=1)})
-        assigner = WizardSubclassAssigner(subclass=WizardSubclass.ABJURATION)
-        with pytest.raises(ValueError, match="below required level"):
-            assigner.apply(state)
-
-
-@pytest.mark.unit
-class TestOptionalSubclassAssigner:
-    def test_handles_can_not_assign_gracefully(self) -> None:
-        state = Blueprint()
-        state = LevelAssigner(level=1).apply(state)
-        state = state.model_copy(update={"classes": ClassLevels(wizard=1)})
-        assigner = OptionalSubclassAssigner(
-            assigner=RandomSubclassAssigner(class_=Class.WIZARD)
-        )
-        result = assigner.apply(state)
-        assert result is not None
-
-    def test_assigns_subclass_successfully_at_eligible_level(self) -> None:
-        state = Blueprint()
-        state = LevelAssigner(level=3).apply(state)
-        state = state.model_copy(update={"classes": ClassLevels(wizard=3)})
-        assigner = OptionalSubclassAssigner(
-            assigner=RandomSubclassAssigner(class_=Class.WIZARD)
-        )
-        result = assigner.apply(state)
-        assert result is not None
-        assert len(result.subclasses) > 0
-
-
-@pytest.mark.unit
 class TestBuildingBlockApplyException:
     def test_exception_propagates_on_apply(self) -> None:
         block = NullBlock()
@@ -340,7 +260,6 @@ class TestBuildingBlockApplyException:
 class TestWizardSpellAssignerLevel2:
     def test_wizard_level_2_assigns_spells(self) -> None:
         state = Blueprint()
-        state = LevelAssigner(level=2).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(wizard=2)})
         assigner = WizardRandomSpellAssigner()
         result = assigner.apply(state)
@@ -348,7 +267,6 @@ class TestWizardSpellAssignerLevel2:
 
     def test_wizard_random_spell_assigner_select_spells(self) -> None:
         state = Blueprint()
-        state = LevelAssigner(level=2).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(wizard=2)})
         assigner = WizardRandomSpellAssigner(seed=42)
         result = assigner.apply(state)

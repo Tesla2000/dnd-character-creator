@@ -1,12 +1,13 @@
 from abc import ABC
 from abc import abstractmethod
 
+from pydantic import ConfigDict
+
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.states.state import _BPT
 from dnd.other_profficiencies import GamingSet
 from dnd.other_profficiencies import MusicalInstrument
 from dnd.other_profficiencies import ToolProficiency
-from pydantic import ConfigDict
 
 
 class ToolProficiencyChoiceResolver(BuildingBlock, ABC):

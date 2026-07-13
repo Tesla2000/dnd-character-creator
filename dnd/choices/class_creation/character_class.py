@@ -1,8 +1,5 @@
 from enum import StrEnum
 from typing import Union
-from typing import assert_never
-
-from frozendict import frozendict
 
 
 class _Subclass(StrEnum):
@@ -182,23 +179,6 @@ class Class(StrEnum):
     ARTIFICER = "Artificer"
 
 
-SUBCLASSES: frozendict[Class, type[_Subclass]] = frozendict(
-    {
-        Class.ARTIFICER: ArtificerSubclass,
-        Class.BARD: BardSubclass,
-        Class.BARBARIAN: BarbarianSubclass,
-        Class.CLERIC: ClericSubclass,
-        Class.DRUID: DruidSubclass,
-        Class.FIGHTER: FighterSubclass,
-        Class.MONK: MonkSubclass,
-        Class.PALADIN: PaladinSubclass,
-        Class.RANGER: RangerSubclass,
-        Class.ROGUE: RogueSubclass,
-        Class.SORCERER: SorcererSubclass,
-        Class.WARLOCK: WarlockSubclass,
-        Class.WIZARD: WizardSubclass,
-    }
-)
 AnySubclass = Union[
     ArtificerSubclass,
     BardSubclass,
@@ -214,31 +194,3 @@ AnySubclass = Union[
     WarlockSubclass,
     WizardSubclass,
 ]
-
-
-def _subclass_level(class_: Class) -> int:
-    match class_:
-        case Class.WIZARD:
-            return 2
-        case (
-            Class.ARTIFICER
-            | Class.BARBARIAN
-            | Class.BARD
-            | Class.CLERIC
-            | Class.DRUID
-            | Class.FIGHTER
-            | Class.MONK
-            | Class.PALADIN
-            | Class.RANGER
-            | Class.ROGUE
-            | Class.SORCERER
-            | Class.WARLOCK
-        ):
-            return 3
-        case _ as never:
-            assert_never(never)
-
-
-subclass_level: frozendict[Class, int] = frozendict(
-    {class_: _subclass_level(class_) for class_ in Class}
-)

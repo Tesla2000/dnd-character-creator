@@ -26,5 +26,6 @@
         "registry.npmjs.org"
       ]
     }
-  }
+  },
+  "theme": "dark"
 }
