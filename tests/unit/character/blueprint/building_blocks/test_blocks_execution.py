@@ -118,7 +118,6 @@ class TestCombinedBlockApply:
     def test_initial_builder_apply(self) -> None:
         builder = InitialBuilder.model_construct(
             type=BuildingBlockType.INITIAL_BUILDER,
-            level_assigner=NullBlock(),
             stats_builder=NullBlock(),
             race_assigner=NullBlock(),
             all_choices_resolver=NullBlock(),

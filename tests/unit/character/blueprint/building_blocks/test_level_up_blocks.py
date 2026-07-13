@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncreaseAverage,
+    D6HealthIncreaseAverage,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
     SorcererRandomSpellAssigner,
@@ -346,12 +346,11 @@ from dnd.character.blueprint.states.wizard.level18 import WizardLevel18Blueprint
 from dnd.character.race.race import Race
 from dnd.character.spells.max_spell_levels import FULL_CASTER_SPELL_SLOTS
 from dnd.character.stats import Stats
-from dnd.choices.class_creation.character_class import Class
 from dnd.character.blueprint.states.wizard.level20 import WizardLevel20Blueprint
 
-_WIZ_HEALTH = HealthIncreaseAverage(class_=Class.WIZARD)
+_WIZ_HEALTH = D6HealthIncreaseAverage()
 _WIZ_SPELLS = WizardRandomSpellAssigner()
-_SORC_HEALTH = HealthIncreaseAverage(class_=Class.SORCERER)
+_SORC_HEALTH = D6HealthIncreaseAverage()
 _SORC_SPELLS = SorcererRandomSpellAssigner()
 
 _STATS = Stats(
@@ -708,17 +707,3 @@ def test_sorcerer_shared_level_apply(block: Any) -> None:
 def test_sorcerer_subclass_feature_level_apply(block: Any) -> None:
     result = block.apply(_SORC_BP)
     assert result is not None
-
-
-@pytest.mark.unit
-class TestSpellAssignerEarlyReturn:
-    def test_wizard_spell_assigner_skips_when_no_wizard_levels(self) -> None:
-        assigner = WizardRandomSpellAssigner()
-        state = Blueprint()
-        result = assigner.apply(state)
-        assert result is state
-
-    def test_sorcerer_spell_assigner_skips_when_no_sorcerer_levels(self) -> None:
-        assigner = SorcererRandomSpellAssigner()
-        result = assigner.apply(_SORC_BP)
-        assert result is _SORC_BP

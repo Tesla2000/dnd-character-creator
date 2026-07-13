@@ -8,7 +8,6 @@ from dnd.character.blueprint.sentinels import AnyClassLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyWizardLevel
 from dnd.character.blueprint.states.state import Blueprint
-from dnd.character.blueprint.sentinels import Level
 from dnd.character.feature.feats import FeatName
 from dnd.character.race.race import Race
 from dnd.character.spells import SPELLCASTING_ABILITY_MAP
@@ -55,7 +54,10 @@ class PresentableCharacter(
     ]
 ):
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
-    level: Level
+
+    @_cf
+    def level(self) -> int:
+        return self.classes.total_level()
 
     @_cf
     def abilities(self) -> dict[Skill, int]:

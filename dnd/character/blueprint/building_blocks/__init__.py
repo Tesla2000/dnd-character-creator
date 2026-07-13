@@ -4,9 +4,6 @@ from typing import Union
 from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AIAllChoicesResolver,
 )
-from dnd.character.blueprint.building_blocks.all_choices_resolver.ai import (
-    AIAllNonStatChoicesResolver,
-)
 from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AllChoicesResolver,
 )
@@ -19,26 +16,8 @@ from dnd.character.blueprint.building_blocks.character_data_assigner import (
 from dnd.character.blueprint.building_blocks.equipment_adder import (
     EquipmentAdder,
 )
-from dnd.character.blueprint.building_blocks.equipment_chooser import (
-    AIEquipmentChooser,
-)
-from dnd.character.blueprint.building_blocks.equipment_chooser import (
-    RandomEquipmentChooser,
-)
 from dnd.character.blueprint.building_blocks.feat_adder import (
     FeatAdder,
-)
-from dnd.character.blueprint.building_blocks.feat_choice_resolver import (
-    AIFeatChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.feat_choice_resolver import (
-    MaxFirstResolver,
-)
-from dnd.character.blueprint.building_blocks.feat_choice_resolver import (
-    MaxIfNotMaxedResolver,
-)
-from dnd.character.blueprint.building_blocks.feat_choice_resolver import (
-    RandomFeatChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.feature_assigner import (
     FeatureAssigner,
@@ -57,27 +36,6 @@ from dnd.character.blueprint.building_blocks.initial_data_filler import (
 )
 from dnd.character.blueprint.building_blocks.initial_data_filler import (
     RandomInitialDataFiller,
-)
-from dnd.character.blueprint.building_blocks.language_choice_resolver import (
-    AILanguageChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.language_choice_resolver import (
-    RandomLanguageChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.level_assigner import (
-    LevelAssigner,
-)
-from dnd.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncreaseAverage,
-)
-from dnd.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncreaseRandom,
-)
-from dnd.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncreaseRandomMinTwo,
-)
-from dnd.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncreaseRandomRerollOnes,
 )
 from dnd.character.blueprint.building_blocks.level_up.wizard.level_1 import (
     WizardLevel1,
@@ -427,18 +385,6 @@ from dnd.character.blueprint.building_blocks.level_up.sorcerer.wild_magic.level_
 from dnd.character.blueprint.building_blocks.level_up.sorcerer.wild_magic.level_18 import (
     SorcererLevel18WildMagic,
 )
-from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    SorcererLLMSpellAssigner,
-)
-from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    SorcererRandomSpellAssigner,
-)
-from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    WizardLLMSpellAssigner,
-)
-from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
-    WizardRandomSpellAssigner,
-)
 from dnd.character.blueprint.building_blocks.magical_item_chooser import (
     AIMagicalItemChooser,
 )
@@ -565,74 +511,8 @@ from dnd.character.blueprint.building_blocks.race_assigner import (
 from dnd.character.blueprint.building_blocks.race_assigner import (
     YuanTiPurebloodRaceAssigner,
 )
-from dnd.character.blueprint.building_blocks.skill_choice_resolver import (
-    AISkillChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.skill_choice_resolver import (
-    RandomSkillChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.stat_choice_resolver import (
-    AIStatChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.stat_choice_resolver import (
-    PriorityStatChoiceResolver,
-)
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    AISubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    ArtificerSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    BarbarianSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    BardSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    ClericSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    DruidSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    FighterSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    MonkSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    OptionalSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    PaladinSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    RangerSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    RandomSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    RogueSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    SorcererSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    WarlockSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner import (
-    WizardSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
-    AIToolProficiencyChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
-    RandomToolProficiencyChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.weapon_adder import (
     WeaponAdder,
@@ -657,44 +537,16 @@ from pydantic import Field
 AnyBuildingBlock = Annotated[
     Union[
         AIAllChoicesResolver,
-        AIAllNonStatChoicesResolver,
         AIBaseBuilderAssigner,
-        AIEquipmentChooser,
-        AIFeatChoiceResolver,
-        AILanguageChoiceResolver,
         AIMagicalItemChooser,
         AIPartialBuilderAssigner,
-        AISkillChoiceResolver,
-        AIStatChoiceResolver,
-        AISubclassAssigner,
-        AIToolProficiencyChoiceResolver,
-        ArtificerSubclassAssigner,
-        BarbarianSubclassAssigner,
-        BardSubclassAssigner,
-        ClericSubclassAssigner,
-        DruidSubclassAssigner,
-        FighterSubclassAssigner,
-        MonkSubclassAssigner,
-        PaladinSubclassAssigner,
-        RangerSubclassAssigner,
-        RogueSubclassAssigner,
-        SorcererSubclassAssigner,
-        WarlockSubclassAssigner,
-        WizardSubclassAssigner,
         AllChoicesResolver,
         CharacterDataAssigner,
         EquipmentAdder,
         FeatAdder,
         FeatureAssigner,
-        HealthIncreaseAverage,
-        HealthIncreaseRandom,
-        HealthIncreaseRandomMinTwo,
-        HealthIncreaseRandomRerollOnes,
         CharacterConverter,
         InitialBuilder,
-        WizardLLMSpellAssigner,
-        SorcererLLMSpellAssigner,
-        LevelAssigner,
         WizardLevel1,
         WizardLevel3,
         WizardLevel4,
@@ -811,11 +663,7 @@ AnyBuildingBlock = Annotated[
         SorcererLevel6WildMagic,
         SorcererLevel14WildMagic,
         SorcererLevel18WildMagic,
-        MaxFirstResolver,
-        MaxIfNotMaxedResolver,
         NullBlock,
-        OptionalSubclassAssigner,
-        PriorityStatChoiceResolver,
         AarakocraRaceAssigner,
         AasimarRaceAssigner,
         BugbearRaceAssigner,
@@ -853,18 +701,10 @@ AnyBuildingBlock = Annotated[
         VerdanRaceAssigner,
         WarforgedRaceAssigner,
         YuanTiPurebloodRaceAssigner,
-        RandomEquipmentChooser,
-        RandomFeatChoiceResolver,
         RandomInitialDataFiller,
-        RandomLanguageChoiceResolver,
         RandomMagicalItemChooser,
         RandomRaceAssigner,
         RaceAssigner,
-        RandomSkillChoiceResolver,
-        WizardRandomSpellAssigner,
-        SorcererRandomSpellAssigner,
-        RandomSubclassAssigner,
-        RandomToolProficiencyChoiceResolver,
         StandardArray,
         WeaponAdder,
         AgeAssigner,
@@ -878,25 +718,14 @@ AnyBuildingBlock = Annotated[
 __all__ = [
     "AIBaseBuilderAssigner",
     "AIAllChoicesResolver",
-    "AIEquipmentChooser",
-    "AIFeatChoiceResolver",
-    "AILanguageChoiceResolver",
     "AIMagicalItemChooser",
     "AIPartialBuilderAssigner",
-    "AISkillChoiceResolver",
-    "AIStatChoiceResolver",
-    "AIToolProficiencyChoiceResolver",
     "AllChoicesResolver",
     "CharacterBaseTemplate",
     "CharacterDataAssigner",
     "EquipmentAdder",
     "FeatAdder",
     "FeatureAssigner",
-    "HealthIncreaseAverage",
-    "HealthIncreaseRandom",
-    "HealthIncreaseRandomMinTwo",
-    "HealthIncreaseRandomRerollOnes",
-    "LevelAssigner",
     "WizardLevel1",
     "WizardLevel3",
     "WizardLevel4",
@@ -1013,14 +842,8 @@ __all__ = [
     "SorcererLevel6WildMagic",
     "SorcererLevel14WildMagic",
     "SorcererLevel18WildMagic",
-    "WizardLLMSpellAssigner",
-    "SorcererLLMSpellAssigner",
-    "MaxFirstResolver",
-    "MaxIfNotMaxedResolver",
     "CharacterConverter",
     "InitialBuilder",
-    "OptionalSubclassAssigner",
-    "PriorityStatChoiceResolver",
     "AarakocraRaceAssigner",
     "AasimarRaceAssigner",
     "BugbearRaceAssigner",
@@ -1058,32 +881,10 @@ __all__ = [
     "VerdanRaceAssigner",
     "WarforgedRaceAssigner",
     "YuanTiPurebloodRaceAssigner",
-    "RandomEquipmentChooser",
-    "RandomFeatChoiceResolver",
     "RandomInitialDataFiller",
-    "RandomLanguageChoiceResolver",
     "RandomMagicalItemChooser",
     "RandomRaceAssigner",
     "RaceAssigner",
-    "RandomSkillChoiceResolver",
-    "WizardRandomSpellAssigner",
-    "SorcererRandomSpellAssigner",
-    "RandomToolProficiencyChoiceResolver",
-    "AISubclassAssigner",
-    "ArtificerSubclassAssigner",
-    "BarbarianSubclassAssigner",
-    "BardSubclassAssigner",
-    "ClericSubclassAssigner",
-    "DruidSubclassAssigner",
-    "FighterSubclassAssigner",
-    "MonkSubclassAssigner",
-    "PaladinSubclassAssigner",
-    "RangerSubclassAssigner",
-    "RandomSubclassAssigner",
-    "RogueSubclassAssigner",
-    "SorcererSubclassAssigner",
-    "WarlockSubclassAssigner",
-    "WizardSubclassAssigner",
     "StandardArray",
     "WeaponAdder",
     "AgeAssigner",

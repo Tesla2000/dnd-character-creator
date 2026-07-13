@@ -13,7 +13,6 @@ from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_if_not_max
 from dnd.character.blueprint.building_blocks.feat_choice_resolver.random import (
     RandomFeatChoiceResolver,
 )
-from dnd.character.blueprint.building_blocks.level_assigner import LevelAssigner
 from dnd.character.blueprint.building_blocks.stat_choice_resolver.priority import (
     PriorityStatChoiceResolver,
 )
@@ -98,7 +97,6 @@ class TestToolProficiencyChoiceResolverBranches:
 class TestFeatChoiceResolverBranches:
     def test_concrete_feat_returned_directly(self) -> None:
         state = Blueprint(feats=(FeatName.TOUGH,))
-        state = LevelAssigner(level=2).apply(state)
         state = StandardArray(stats_priority=_PRIORITY).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(wizard=2)})
         resolver = RandomFeatChoiceResolver(seed=0)
@@ -107,7 +105,6 @@ class TestFeatChoiceResolverBranches:
 
     def test_level_1_excludes_ability_score_improvement(self) -> None:
         state = Blueprint()
-        state = LevelAssigner(level=1).apply(state)
         state = StandardArray(stats_priority=_PRIORITY).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(wizard=1)})
         state = FeatAdder(feat=FeatName.ANY_EXCEPT_ABILITY_SCORE_IMPROVEMENT).apply(
@@ -130,7 +127,6 @@ class TestMaxIfNotMaxedResolverASI:
             charisma=20,
         )
         state = Blueprint(stats_cup=high_cup)
-        state = LevelAssigner(level=4).apply(state)
         state = StandardArray(stats_priority=_PRIORITY).apply(state)
         state = state.model_copy(update={"classes": ClassLevels(wizard=4)})
         resolver = MaxIfNotMaxedResolver(priority=_PRIORITY)

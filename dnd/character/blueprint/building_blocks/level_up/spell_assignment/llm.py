@@ -28,7 +28,7 @@ def _build_llm_prompt(
     spell_level_name = "cantrips" if spell_level == 0 else f"level {spell_level} spells"
     cd = state.character_data
     name = (cd.name if cd else None) or "Unknown"
-    level = state.level or 1
+    level = state.classes.total_level() or 1
     race = state.race
     background = cd.background if cd else None
     backstory = (cd.backstory if cd else None) or "Generic adventurer"

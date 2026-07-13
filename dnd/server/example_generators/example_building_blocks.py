@@ -1,27 +1,11 @@
 from dnd.character.blueprint.building_blocks import (
-    LevelAssigner,
     AnyBuildingBlock,
-)
-from dnd.character.blueprint.building_blocks import (
-    PriorityStatChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks import (
     HumanRaceAssigner,
 )
 from dnd.character.blueprint.building_blocks import (
-    RandomFeatChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks import (
     RandomInitialDataFiller,
-)
-from dnd.character.blueprint.building_blocks import (
-    RandomLanguageChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks import (
-    RandomSkillChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks import (
-    RandomToolProficiencyChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.all_choices_resolver import (
     AllChoicesResolver,
@@ -29,14 +13,29 @@ from dnd.character.blueprint.building_blocks.all_choices_resolver import (
 from dnd.character.blueprint.building_blocks.equipment_chooser import (
     RandomEquipmentChooser,
 )
+from dnd.character.blueprint.building_blocks.feat_choice_resolver import (
+    RandomFeatChoiceResolver,
+)
 from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_first import (
     MaxFirstResolver,
+)
+from dnd.character.blueprint.building_blocks.language_choice_resolver import (
+    RandomLanguageChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.skill_choice_resolver import (
+    RandomSkillChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.stat_choice_resolver import (
+    PriorityStatChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
+    RandomToolProficiencyChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.initial_builder import (
     InitialBuilder,
 )
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncreaseAverage,
+    D6HealthIncreaseAverage,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
     WizardRandomSpellAssigner,
@@ -51,7 +50,6 @@ from dnd.character.blueprint.building_blocks.stats_builder.standard_array import
     StandardArray,
 )
 from dnd.character.race.subraces import SubraceName
-from dnd.choices.class_creation.character_class import Class
 from dnd.choices.stats_creation.statistic import Statistic
 
 
@@ -64,7 +62,6 @@ def example_building_blocks() -> tuple[AnyBuildingBlock, ...]:
         Statistic.CHARISMA,
         Statistic.STRENGTH,
     )
-    class_ = Class.WIZARD
     all_choices_resolver = AllChoicesResolver(
         language_choice_resolver=RandomLanguageChoiceResolver(),
         skill_choice_resolver=RandomSkillChoiceResolver(),
@@ -76,11 +73,10 @@ def example_building_blocks() -> tuple[AnyBuildingBlock, ...]:
         stat_choice_resolver=PriorityStatChoiceResolver(priority=stats_priority),
         equipment_chooser=RandomEquipmentChooser(),
     )
-    health_increase = HealthIncreaseAverage(class_=class_)
+    health_increase = D6HealthIncreaseAverage()
     spell_assigner = WizardRandomSpellAssigner()
     return (
         InitialBuilder(
-            level_assigner=LevelAssigner(level=2),
             stats_builder=StandardArray(stats_priority=stats_priority),
             race_assigner=HumanRaceAssigner(
                 subrace=SubraceName.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,

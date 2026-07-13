@@ -1,6 +1,9 @@
 from abc import ABC
 from abc import abstractmethod
-from typing import assert_never
+from typing import Generic
+from typing import TypeVar
+from typing import cast
+from typing import get_args
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.states.state import Blueprint
@@ -25,47 +28,27 @@ from dnd.character.blueprint.sentinels import (
     _ARK,
     _CDK,
 )
-from dnd.choices.class_creation.character_class import Class
 from dnd.choices.equipment_creation.weapons import HitDieSize
-from pydantic import Field
 from pydantic import PositiveInt
 
+_DH = TypeVar("_DH", bound=HitDieSize)
 
-class HealthIncrease(BuildingBlock, ABC):
+
+class HealthIncrease(BuildingBlock, Generic[_DH], ABC):
     """Abstract base class for health increase strategies when leveling up.
 
     Subclasses must implement _get_hit_die_value to determine how much
-    health to gain from the hit die (fixed value, random roll, etc.).
+    health to gain from the hit die. The die size is encoded in the
+    generic type parameter _DH.
     """
-
-    class_: Class = Field(
-        description="The character class for which health is being increased"
-    )
-
-    @classmethod
-    def _class_hit_die(cls, class_: Class) -> HitDieSize:
-        match class_:
-            case Class.BARBARIAN:
-                return HitDieSize.TWELVE
-            case Class.FIGHTER | Class.PALADIN | Class.RANGER:
-                return HitDieSize.TEN
-            case Class.SORCERER | Class.WIZARD:
-                return HitDieSize.SIX
-            case (
-                Class.BARD
-                | Class.CLERIC
-                | Class.DRUID
-                | Class.MONK
-                | Class.ROGUE
-                | Class.WARLOCK
-                | Class.ARTIFICER
-            ):
-                return HitDieSize.EIGHT
-            case _ as never:
-                assert_never(never)
 
     @abstractmethod
     def _get_hit_die_value(self, hit_die: HitDieSize) -> int: ...
+
+    def _die_size(self) -> HitDieSize:
+        arg = type(self).__pydantic_generic_metadata__["args"][0]
+        inner = get_args(arg)
+        return cast(HitDieSize, inner[0] if inner else arg)
 
     def apply(
         self,
@@ -111,7 +94,7 @@ class HealthIncrease(BuildingBlock, ABC):
         _ARK,
         _CDK,
     ]:
-        hit_die = self._class_hit_die(self.class_)
+        hit_die = self._die_size()
         if blueprint.health_base is None:
             hit_die_value = hit_die.value
             base_health: int = 0

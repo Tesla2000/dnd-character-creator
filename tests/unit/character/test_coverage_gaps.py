@@ -39,12 +39,11 @@ from dnd.character.blueprint.building_blocks.language_choice_resolver.base impor
 from dnd.character.blueprint.building_blocks.language_choice_resolver.random import (
     RandomLanguageChoiceResolver,
 )
-from dnd.character.blueprint.building_blocks.level_assigner import LevelAssigner
 from dnd.character.blueprint.building_blocks.level_up.health_increase.base import (
     HealthIncrease,
 )
-from dnd.character.blueprint.building_blocks.level_up.health_increase.random_reroll_ones import (
-    HealthIncreaseRandomRerollOnes,
+from dnd.character.blueprint.building_blocks.level_up.health_increase import (
+    D6HealthIncreaseRandomRerollOnes,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     WizardSpellAssigner,
@@ -99,15 +98,6 @@ from dnd.character.blueprint.building_blocks.stats_builder.standard_array import
     StandardArray,
 )
 from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
-from dnd.character.blueprint.building_blocks.subclass_assigner.ai import (
-    AISubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner.random import (
-    RandomSubclassAssigner,
-)
-from dnd.character.blueprint.building_blocks.subclass_assigner.subclass_assigner import (
-    WizardSubclassAssigner,
-)
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.base import (
     ToolProficiencyChoiceResolver,
 )
@@ -123,11 +113,7 @@ from dnd.character.race.subraces import SubraceName
 from dnd.character.stats import Stats
 from dnd.choices.alignment import Alignment
 from dnd.choices.background_creatrion.background import Background
-from dnd.choices.class_creation.character_class import (
-    Class,
-    WizardSubclass,
-    SorcererSubclass,
-)
+from dnd.choices.class_creation.character_class import Class
 from dnd.choices.equipment_creation.weapons import HitDieSize, WeaponName
 from dnd.choices.sex import Sex
 from dnd.choices.stats_creation.statistic import Statistic
@@ -153,32 +139,27 @@ _DEFAULT_STATS = Stats(
 class TestCharacterDataFieldAssigners:
     def test_age_assigner_apply(self) -> None:
         assigner = AgeAssigner(age=25)
-        result = assigner.apply(Blueprint())
-        assert result.character_data is not None
+        result = assigner.apply(Blueprint(character_data=CharacterData()))
         assert result.character_data.age == 25
 
     def test_alignment_assigner_apply(self) -> None:
         assigner = AlignmentAssigner(alignment=Alignment.CHAOTIC_GOOD)
-        result = assigner.apply(Blueprint())
-        assert result.character_data is not None
+        result = assigner.apply(Blueprint(character_data=CharacterData()))
         assert result.character_data.alignment == Alignment.CHAOTIC_GOOD
 
     def test_background_assigner_apply(self) -> None:
         assigner = BackgroundAssigner(background=Background.SAGE)
-        result = assigner.apply(Blueprint())
-        assert result.character_data is not None
+        result = assigner.apply(Blueprint(character_data=CharacterData()))
         assert result.character_data.background == Background.SAGE
 
     def test_name_assigner_apply(self) -> None:
         assigner = NameAssigner(name="Gandalf")
-        result = assigner.apply(Blueprint())
-        assert result.character_data is not None
+        result = assigner.apply(Blueprint(character_data=CharacterData()))
         assert result.character_data.name == "Gandalf"
 
     def test_sex_assigner_apply(self) -> None:
         assigner = SexAssigner(sex=Sex.FEMALE)
-        result = assigner.apply(Blueprint())
-        assert result.character_data is not None
+        result = assigner.apply(Blueprint(character_data=CharacterData()))
         assert result.character_data.sex == Sex.FEMALE
 
     def test_character_data_assigner_apply(self) -> None:
@@ -293,8 +274,7 @@ class TestRaceAssignerGetRaceAndSubrace:
 @pytest.mark.unit
 class TestMaxFirstResolverFallback:
     def test_falls_back_to_then_at_level_1(self) -> None:
-        state = LevelAssigner(level=1).apply(Blueprint())
-        state = StandardArray(stats_priority=_PRIORITY).apply(state)
+        state = StandardArray(stats_priority=_PRIORITY).apply(Blueprint())
         state = state.model_copy(update={"classes": ClassLevels(wizard=1)})
         resolver = MaxFirstResolver(
             priority=_PRIORITY, then=RandomFeatChoiceResolver(seed=42)
@@ -438,7 +418,7 @@ class TestAbstractMethodBodies:
         assert result is None
 
     def test_health_increase_abstract_body(self) -> None:
-        block = HealthIncreaseRandomRerollOnes(class_=Class.WIZARD)
+        block = D6HealthIncreaseRandomRerollOnes()
         result = HealthIncrease._get_hit_die_value(block, HitDieSize.SIX)
         assert result is None
 
@@ -473,38 +453,9 @@ class TestAbstractMethodBodies:
 
 
 @pytest.mark.unit
-class TestSubclassAssignerLoopContinue:
-    def test_for_loop_skips_different_class_subclass(self) -> None:
-        state = Blueprint()
-        state = LevelAssigner(level=3).apply(state)
-        state = state.model_copy(
-            update={
-                "classes": ClassLevels(wizard=3, sorcerer=3),
-                "subclasses": (SorcererSubclass.WILD_MAGIC,),
-            }
-        )
-        assigner = WizardSubclassAssigner(subclass=WizardSubclass.EVOCATION)
-        result = assigner.apply(state)
-        assert WizardSubclass.EVOCATION in result.subclasses
-
-    def test_random_subclass_skips_different_class_subclass(self) -> None:
-        state = Blueprint()
-        state = LevelAssigner(level=3).apply(state)
-        state = state.model_copy(
-            update={
-                "classes": ClassLevels(wizard=3, sorcerer=3),
-                "subclasses": (SorcererSubclass.WILD_MAGIC,),
-            }
-        )
-        assigner = RandomSubclassAssigner(class_=Class.WIZARD, seed=42)
-        result = assigner.apply(state)
-        assert any(isinstance(s, WizardSubclass) for s in result.subclasses)
-
-
-@pytest.mark.unit
 class TestHealthIncreaseRerollOnesNoReroll:
     def test_roll_not_one_skips_reroll(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        block = HealthIncreaseRandomRerollOnes(class_=Class.WIZARD)
+        block = D6HealthIncreaseRandomRerollOnes()
         state = Blueprint()
         state = block.apply(state)
         roll_values = iter([4])
@@ -533,24 +484,3 @@ class TestSpellSelectorProtocolBody:
         instance = _ConcreteSelector()
         result = SpellSelector.select(instance, 1, 1, spells)
         assert result is None
-
-
-@pytest.mark.unit
-class TestAISubclassAssignerLoopContinue:
-    def test_loop_skips_different_class_subclass(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = MagicMock(
-            subclass=WizardSubclass.EVOCATION
-        )
-        state = Blueprint()
-        state = state.model_copy(
-            update={
-                "classes": ClassLevels(wizard=3, sorcerer=1),
-                "subclasses": (SorcererSubclass.WILD_MAGIC,),
-            }
-        )
-        assigner = AISubclassAssigner.model_construct(
-            class_=Class.WIZARD, llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        result = assigner.apply(state)
-        assert any(isinstance(s, WizardSubclass) for s in result.subclasses)
