@@ -4,8 +4,8 @@ import pytest
 from pydantic import Field, create_model
 
 from dnd.character.armor.names import ArmorName
-from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.formatter import BlueprintFormatter
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.class_levels import ClassLevels
 from dnd.character.feature.feats import FeatName
 from dnd.character.magical_item.item import MagicalItem

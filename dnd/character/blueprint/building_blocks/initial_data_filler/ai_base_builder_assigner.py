@@ -18,7 +18,7 @@ class AIBaseBuilderAssigner(AIBuilderBase):
         BuildingBlockType.AI_BASE_BUILDER_ASSIGNER
     )
 
-    def _compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData:
+    def compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData:
         prompt = (
             f"Create a D&D 5e character based on this description: {self.description}\n"
             f"Here are current values: {dict(blueprint)}"

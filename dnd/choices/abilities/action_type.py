@@ -9,3 +9,5 @@ class ActionType(StrEnum):
     REACTION = auto()
     FREE_ACTION = auto()
     PASSIVE = auto()
+    SHORT_REST = auto()
+    SHORT_OR_LONG_REST = auto()

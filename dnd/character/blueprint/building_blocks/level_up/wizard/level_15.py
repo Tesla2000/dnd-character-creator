@@ -7,7 +7,7 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
     WizardSharedLevelBase,
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 
 
 class WizardLevel15(

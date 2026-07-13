@@ -32,7 +32,7 @@ from dnd.character.blueprint.sentinels import (
     _WAK,
     _WZK,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.stats import Stats
 from dnd.character.feature.feats import FeatName
 from pydantic import Field

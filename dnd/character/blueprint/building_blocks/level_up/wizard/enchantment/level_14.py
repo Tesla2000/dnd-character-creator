@@ -8,7 +8,9 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
 from dnd.character.blueprint.sentinels import WizardSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import WizardSubclass
 
 
@@ -34,6 +36,19 @@ class WizardLevel14Enchantment(
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"wizard": 14}),
-                # TODO: add Enchantment level-14 subclass feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.PASSIVE,
+                        name="Alter Memories",
+                        description=(
+                            "When you cast an enchantment spell to charm a humanoid, you "
+                            "can make it unaware of your spell. Before the spell ends, you "
+                            "can use your action to try to make the target forget part of "
+                            "its memories; it forgets up to 1 hour per wizard level on a "
+                            "failed Intelligence save."
+                        ),
+                    ),
+                ),
             }
         )

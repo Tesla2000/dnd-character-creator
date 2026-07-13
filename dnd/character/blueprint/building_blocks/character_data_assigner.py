@@ -29,7 +29,7 @@ from dnd.character.blueprint.sentinels import (
     _WZK,
     _RK,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from pydantic import ConfigDict
 from pydantic import Field
 

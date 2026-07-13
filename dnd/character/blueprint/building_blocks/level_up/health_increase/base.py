@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import assert_never
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.blueprint.sentinels import (
     _RK,
     _StK,

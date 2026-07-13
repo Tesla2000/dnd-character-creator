@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.choices.language import Language
 from pydantic import ConfigDict
 

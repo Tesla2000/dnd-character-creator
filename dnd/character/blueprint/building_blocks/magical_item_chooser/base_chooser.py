@@ -6,7 +6,7 @@ from abc import ABC
 from abc import abstractmethod
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.character.magical_item.item import MagicalItem
 from pydantic import ConfigDict
 from pydantic import Field
@@ -48,10 +48,10 @@ class MagicalItemChooserBase(BuildingBlock, ABC):
     )
 
     @abstractmethod
-    def _select_items(self, blueprint: _BPT) -> tuple[MagicalItem, ...]: ...
+    def select_items(self, blueprint: _BPT) -> tuple[MagicalItem, ...]: ...
 
     def apply(self, blueprint: _BPT) -> _BPT:
-        selected_items = self._select_items(blueprint)
+        selected_items = self.select_items(blueprint)
         return blueprint.model_copy(
             update={"magical_items": blueprint.magical_items + selected_items}
         )

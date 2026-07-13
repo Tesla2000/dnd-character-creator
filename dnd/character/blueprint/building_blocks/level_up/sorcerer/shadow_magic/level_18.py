@@ -8,7 +8,9 @@ from dnd.character.blueprint.building_blocks.level_up.sorcerer.base import (
 )
 from dnd.character.blueprint.sentinels import FirstSubclassPostLevel
 from dnd.character.blueprint.sentinels import SorcererSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import SorcererSubclass
 
 
@@ -34,6 +36,18 @@ class SorcererLevel18ShadowMagic(
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"sorcerer": 18}),
-                # TODO: add Shadow Magic level-18 origin feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.BONUS_ACTION,
+                        name="Umbral Form",
+                        description=(
+                            "Spend 6 sorcery points to transform into a shadow self for "
+                            "1 minute. You gain resistance to all damage except psychic and "
+                            "radiant, and can move through creatures and objects as difficult "
+                            "terrain (5 force damage if you end your turn inside an object)."
+                        ),
+                    ),
+                ),
             }
         )

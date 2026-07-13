@@ -6,46 +6,19 @@ from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
-from dnd.character.blueprint.character_data import CharacterData
-from dnd.character.blueprint.sentinels import AnyClassLevel
-from dnd.character.blueprint.sentinels import AnySorcererLevel
-from dnd.character.blueprint.sentinels import AnyWizardLevel
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.convertible_blueprint import ConvertibleBlueprint
 from dnd.character.presentable_character import PresentableCharacter
-from dnd.character.race.race import Race
-from dnd.character.stats import Stats
-from pydantic import PositiveInt
+from pydantic import ConfigDict
 
 
 class CharacterConverter(BuildingBlock):
-    """Seals a fully resolved Blueprint into a PresentableCharacter."""
+    """Seals a fully resolved ConvertibleBlueprint into a PresentableCharacter."""
+
+    model_config = ConfigDict(frozen=True)
 
     type: Literal[BuildingBlockType.CHARACTER_CONVERTER] = (
         BuildingBlockType.CHARACTER_CONVERTER
     )
 
-    def apply(
-        self,
-        blueprint: Blueprint[
-            Race,
-            Stats,
-            PositiveInt,
-            Literal[0],
-            Literal[0],
-            AnyWizardLevel,
-            AnySorcererLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            AnyClassLevel,
-            CharacterData,
-        ],
-    ) -> PresentableCharacter:
-        return PresentableCharacter.model_validate(dict(blueprint))
+    def apply(self, blueprint: ConvertibleBlueprint) -> PresentableCharacter:
+        return blueprint.to_presentable_character()

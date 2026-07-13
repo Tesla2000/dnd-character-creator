@@ -7,7 +7,7 @@ from dnd.character.blueprint.building_blocks.level_up.sorcerer.base import (
     SorcererSharedLevelBase,
 )
 from dnd.character.blueprint.sentinels import FirstSubclassPostLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.sorcerer.base import _SBPT
 
 
 class SorcererLevel11(
@@ -22,7 +22,7 @@ class SorcererLevel11(
         BuildingBlockType.SORCERER_LEVEL_11
     )
 
-    def _update_blueprint(self, blueprint: _BPT) -> _BPT:
+    def _update_blueprint(self, blueprint: _SBPT) -> _SBPT:
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"sorcerer": 11}),

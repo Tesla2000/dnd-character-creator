@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
+from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.language_choice_resolver.base import (
     LanguageChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.choices.language import Language
 from pydantic import BaseModel
 from pydantic import Field

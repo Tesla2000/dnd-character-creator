@@ -6,7 +6,7 @@ from typing import ClassVar
 from typing import Protocol
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.character.spells import Cantrip
 from dnd.character.spells import EighthLevel
 from dnd.character.spells import FifthLevel
@@ -89,7 +89,7 @@ class WizardSpellAssigner(BuildingBlock, ABC):
     _caster_type: ClassVar[CasterType] = CasterType.FULL
 
     @abstractmethod
-    def _select_spells(
+    def select_spells(
         self,
         spell_level: int,
         count: int,
@@ -126,7 +126,7 @@ class WizardSpellAssigner(BuildingBlock, ABC):
             def select(
                 self, spell_level: int, count: int, available: list[Spell]
             ) -> tuple[Spell, ...]:
-                return assigner._select_spells(
+                return assigner.select_spells(
                     spell_level, count, available, wizard_state
                 )
 
@@ -140,7 +140,7 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
     _caster_type: ClassVar[CasterType] = CasterType.FULL
 
     @abstractmethod
-    def _select_spells(
+    def select_spells(
         self,
         spell_level: int,
         count: int,
@@ -177,7 +177,7 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
             def select(
                 self, spell_level: int, count: int, available: list[Spell]
             ) -> tuple[Spell, ...]:
-                return assigner._select_spells(
+                return assigner.select_spells(
                     spell_level, count, available, sorcerer_state
                 )
 

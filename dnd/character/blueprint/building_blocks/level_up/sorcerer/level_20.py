@@ -7,7 +7,9 @@ from dnd.character.blueprint.building_blocks.level_up.sorcerer.base import (
     SorcererSharedLevelBase,
 )
 from dnd.character.blueprint.sentinels import FirstSubclassPostLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.sorcerer.base import _SBPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 
 
 class SorcererLevel20(
@@ -22,9 +24,20 @@ class SorcererLevel20(
         BuildingBlockType.SORCERER_LEVEL_20
     )
 
-    def _update_blueprint(self, blueprint: _BPT) -> _BPT:
+    def _update_blueprint(self, blueprint: _SBPT) -> _SBPT:
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"sorcerer": 20}),
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.SHORT_REST,
+                        name="Sorcerous Restoration",
+                        description=(
+                            "When you finish a short rest, you regain 4 expended "
+                            "sorcery points."
+                        ),
+                    ),
+                ),
             }
         )

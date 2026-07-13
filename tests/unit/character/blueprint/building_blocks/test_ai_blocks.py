@@ -8,7 +8,7 @@ from pydantic import Field
 from pydantic import ValidationError
 
 from dnd.character.armor.names import ArmorName
-from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
+from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.all_choices_resolver.ai import (
     AIAllChoicesResolver,
     AIAllNonStatChoicesResolver,
@@ -71,7 +71,7 @@ from dnd.character.blueprint.building_blocks.stat_choice_resolver.ai import (
 from dnd.character.blueprint.building_blocks.subclass_assigner.ai import (
     AISubclassAssigner,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.feature.feats import FeatName
 from dnd.character.magical_item.items import MAGICAL_ITEMS
 from dnd.character.spells.spell_slots import Cantrip, FirstLevel
@@ -947,21 +947,21 @@ class TestAIToolProficiencyChoiceResolverMethods:
             llm=MagicMock(), formatter=BlueprintFormatter()
         )
         with pytest.raises(NotImplementedError):
-            block._select_tool_proficiency([], Blueprint())
+            block.select_tool_proficiency([], Blueprint())
 
     def test_select_gaming_set_not_implemented(self) -> None:
         block = AIToolProficiencyChoiceResolver.model_construct(
             llm=MagicMock(), formatter=BlueprintFormatter()
         )
         with pytest.raises(NotImplementedError):
-            block._select_gaming_set([], Blueprint())
+            block.select_gaming_set([], Blueprint())
 
     def test_select_musical_instrument_not_implemented(self) -> None:
         block = AIToolProficiencyChoiceResolver.model_construct(
             llm=MagicMock(), formatter=BlueprintFormatter()
         )
         with pytest.raises(NotImplementedError):
-            block._select_musical_instrument([], Blueprint())
+            block.select_musical_instrument([], Blueprint())
 
     def test_build_prompt_no_placeholders_returns_empty(self) -> None:
         block = AIToolProficiencyChoiceResolver.model_construct(

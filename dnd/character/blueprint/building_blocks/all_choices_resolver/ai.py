@@ -5,7 +5,7 @@ from __future__ import annotations
 from itertools import filterfalse
 from typing import Literal
 
-from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
+from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.all_choices_resolver.base_resolver import (
     AllChoicesResolverBase,
 )
@@ -27,7 +27,7 @@ from dnd.character.blueprint.building_blocks.stat_choice_resolver import (
     AnyStatChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.feature.feats import FeatName
 from dnd.choices.language import Language
 from dnd.other_profficiencies import GamingSet

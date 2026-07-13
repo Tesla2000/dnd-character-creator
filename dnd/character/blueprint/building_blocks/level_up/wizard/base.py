@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 from abc import abstractmethod
 
@@ -13,21 +15,25 @@ from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyStatChoices
 from dnd.character.blueprint.sentinels import AnyWizardLevel
 from dnd.character.blueprint.sentinels import MaybeCharacterData
-from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
 from dnd.character.blueprint.sentinels import MaybeHealth
-from dnd.character.blueprint.sentinels import MaybeRace
-from dnd.character.blueprint.sentinels import MaybeStats
+from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
 from dnd.character.blueprint.sentinels import WizardSubclassLevel
-from dnd.character.blueprint.state import Blueprint
-from dnd.character.blueprint.state import _BPT
-from dnd.choices.class_creation.character_class import WizardSubclass
 from pydantic import PositiveInt
+from dnd.character.blueprint.states.state import Blueprint
+from dnd.character.blueprint.states.state import _BPT
+from dnd.character.blueprint.states.wizard.base import WizardBlueprint
+from dnd.character.blueprint.states.wizard.level18 import WizardLevel18Blueprint
+from dnd.character.blueprint.states.wizard.level20 import WizardLevel20Blueprint
+from dnd.character.race.race import Race
+from dnd.character.spells.max_spell_levels import FULL_CASTER_SPELL_SLOTS
+from dnd.character.stats import Stats
+from dnd.choices.class_creation.character_class import WizardSubclass
 
 
-class WizardPreSubclassLevelBase[LevelIn: AnyWizardLevel, LevelOut: AnyWizardLevel](
+class WizardUpgradeLevelBase[LevelIn: AnyWizardLevel, LevelOut: AnyWizardLevel](
     BuildingBlock, ABC
 ):
-    """Base for wizard levels 1 and 2/* (pre-subclass and subclass-assigning)."""
+    """Base for WizardLevel1: upgrades Blueprint[Race, Stats, ...] → WizardBlueprint[...]."""
 
     health_increase: AnyHealthIncrease
     spell_assigner: WizardSpellAssigner
@@ -36,8 +42,6 @@ class WizardPreSubclassLevelBase[LevelIn: AnyWizardLevel, LevelOut: AnyWizardLev
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
 
     def apply[
-        _RK_: MaybeRace,
-        _StK_: MaybeStats,
         _HeK_: MaybeHealth,
         _StCK_: AnyStatChoices,
         _SkCK_: AnyStatChoices,
@@ -57,8 +61,8 @@ class WizardPreSubclassLevelBase[LevelIn: AnyWizardLevel, LevelOut: AnyWizardLev
     ](
         self,
         blueprint: Blueprint[
-            _RK_,
-            _StK_,
+            Race,
+            Stats,
             _HeK_,
             _StCK_,
             _SkCK_,
@@ -77,10 +81,7 @@ class WizardPreSubclassLevelBase[LevelIn: AnyWizardLevel, LevelOut: AnyWizardLev
             _ARK_,
             _CDK_,
         ],
-    ) -> Blueprint[
-        _RK_,
-        _StK_,
-        PositiveInt,
+    ) -> WizardBlueprint[
         _StCK_,
         _SkCK_,
         LevelOut,
@@ -101,10 +102,7 @@ class WizardPreSubclassLevelBase[LevelIn: AnyWizardLevel, LevelOut: AnyWizardLev
         r1 = self._update_blueprint(blueprint)
         r2 = self.health_increase.apply(r1)
         r3 = self.spell_assigner.apply(r2)
-        return Blueprint[
-            _RK_,
-            _StK_,
-            PositiveInt,
+        partial = WizardBlueprint[
             _StCK_,
             _SkCK_,
             LevelOut,
@@ -121,14 +119,14 @@ class WizardPreSubclassLevelBase[LevelIn: AnyWizardLevel, LevelOut: AnyWizardLev
             _WAK_,
             _ARK_,
             _CDK_,
-        ].model_validate(dict(r3))
+        ].model_validate(dict(r3) | {"spell_slots": FULL_CASTER_SPELL_SLOTS[0]})
+        return partial.increase_full_caster()
 
 
-class WizardSharedLevelBase[
-    LevelIn: SecondSubclassPostLevel,
-    LevelOut: SecondSubclassPostLevel,
-](BuildingBlock, ABC):
-    """Base for post-subclass wizard levels shared across all subclasses."""
+class WizardPreSubclassLevelBase[LevelIn: AnyWizardLevel, LevelOut: AnyWizardLevel](
+    BuildingBlock, ABC
+):
+    """Base for WizardLevel2*: WizardBlueprint[..., LevelIn, ...] → WizardBlueprint[..., LevelOut, ...]."""
 
     health_increase: AnyHealthIncrease
     spell_assigner: WizardSpellAssigner
@@ -137,10 +135,6 @@ class WizardSharedLevelBase[
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
 
     def apply[
-        SubclassT: WizardSubclass,
-        _RK_: MaybeRace,
-        _StK_: MaybeStats,
-        _HeK_: MaybeHealth,
         _StCK_: AnyStatChoices,
         _SkCK_: AnyStatChoices,
         _SOK_: AnySorcererLevel,
@@ -158,10 +152,105 @@ class WizardSharedLevelBase[
         _CDK_: MaybeCharacterData,
     ](
         self,
-        blueprint: Blueprint[
-            _RK_,
-            _StK_,
-            _HeK_,
+        blueprint: WizardBlueprint[
+            _StCK_,
+            _SkCK_,
+            LevelIn,
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ],
+    ) -> WizardBlueprint[
+        _StCK_,
+        _SkCK_,
+        LevelOut,
+        _SOK_,
+        _FGK_,
+        _BAK_,
+        _ROK_,
+        _CLK_,
+        _DRK_,
+        _PAK_,
+        _RAK_,
+        _MOK_,
+        _BDK_,
+        _WAK_,
+        _ARK_,
+        _CDK_,
+    ]:
+        r1 = self._update_blueprint(blueprint)
+        r2 = self.health_increase.apply(r1)
+        r3 = self.spell_assigner.apply(r2)
+        partial = WizardBlueprint[
+            _StCK_,
+            _SkCK_,
+            LevelOut,
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ].model_validate(
+            dict(r3)
+            | {
+                "prepared_spells": blueprint.prepared_spells,
+                "spell_slots": blueprint.spell_slots,
+                "caster_level": blueprint.caster_level,
+            }
+        )
+        return partial.increase_full_caster()
+
+
+class WizardSharedLevelBase[
+    LevelIn: SecondSubclassPostLevel,
+    LevelOut: SecondSubclassPostLevel,
+](BuildingBlock, ABC):
+    """Base for post-subclass wizard levels (3–20) shared across all subclasses."""
+
+    health_increase: AnyHealthIncrease
+    spell_assigner: WizardSpellAssigner
+
+    @abstractmethod
+    def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
+
+    def apply[
+        SubclassT: WizardSubclass,
+        _StCK_: AnyStatChoices,
+        _SkCK_: AnyStatChoices,
+        _SOK_: AnySorcererLevel,
+        _FGK_: AnyClassLevel,
+        _BAK_: AnyClassLevel,
+        _ROK_: AnyClassLevel,
+        _CLK_: AnyClassLevel,
+        _DRK_: AnyClassLevel,
+        _PAK_: AnyClassLevel,
+        _RAK_: AnyClassLevel,
+        _MOK_: AnyClassLevel,
+        _BDK_: AnyClassLevel,
+        _WAK_: AnyClassLevel,
+        _ARK_: AnyClassLevel,
+        _CDK_: MaybeCharacterData,
+    ](
+        self,
+        blueprint: WizardBlueprint[
             _StCK_,
             _SkCK_,
             WizardSubclassLevel[LevelIn, SubclassT],
@@ -179,10 +268,7 @@ class WizardSharedLevelBase[
             _ARK_,
             _CDK_,
         ],
-    ) -> Blueprint[
-        _RK_,
-        _StK_,
-        PositiveInt,
+    ) -> WizardBlueprint[
         _StCK_,
         _SkCK_,
         WizardSubclassLevel[LevelOut, SubclassT],
@@ -203,10 +289,7 @@ class WizardSharedLevelBase[
         r1 = self._update_blueprint(blueprint)
         r2 = self.health_increase.apply(r1)
         r3 = self.spell_assigner.apply(r2)
-        return Blueprint[
-            _RK_,
-            _StK_,
-            PositiveInt,
+        partial = WizardBlueprint[
             _StCK_,
             _SkCK_,
             WizardSubclassLevel[LevelOut, SubclassT],
@@ -223,14 +306,22 @@ class WizardSharedLevelBase[
             _WAK_,
             _ARK_,
             _CDK_,
-        ].model_validate(dict(r3))
+        ].model_validate(
+            dict(r3)
+            | {
+                "prepared_spells": blueprint.prepared_spells,
+                "spell_slots": blueprint.spell_slots,
+                "caster_level": blueprint.caster_level,
+            }
+        )
+        return partial.increase_full_caster()
 
 
-class WizardSubclassFeatureLevelBase[
-    LevelIn: AnyWizardLevel,
-    LevelOut: AnyWizardLevel,
+class WizardLevel18UpgradeLevelBase[
+    LevelIn: SecondSubclassPostLevel,
+    LevelOut: SecondSubclassPostLevel,
 ](BuildingBlock, ABC):
-    """Base for wizard levels 6, 10, 14 that grant subclass-specific features."""
+    """Base for WizardLevel18: WizardBlueprint → WizardLevel18Blueprint."""
 
     health_increase: AnyHealthIncrease
     spell_assigner: WizardSpellAssigner
@@ -239,9 +330,7 @@ class WizardSubclassFeatureLevelBase[
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
 
     def apply[
-        _RK_: MaybeRace,
-        _StK_: MaybeStats,
-        _HeK_: MaybeHealth,
+        SubclassT: WizardSubclass,
         _StCK_: AnyStatChoices,
         _SkCK_: AnyStatChoices,
         _SOK_: AnySorcererLevel,
@@ -259,10 +348,307 @@ class WizardSubclassFeatureLevelBase[
         _CDK_: MaybeCharacterData,
     ](
         self,
-        blueprint: Blueprint[
-            _RK_,
-            _StK_,
-            _HeK_,
+        blueprint: WizardBlueprint[
+            _StCK_,
+            _SkCK_,
+            WizardSubclassLevel[LevelIn, SubclassT],
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ],
+    ) -> WizardLevel18Blueprint[
+        _StCK_,
+        _SkCK_,
+        WizardSubclassLevel[LevelOut, SubclassT],
+        _SOK_,
+        _FGK_,
+        _BAK_,
+        _ROK_,
+        _CLK_,
+        _DRK_,
+        _PAK_,
+        _RAK_,
+        _MOK_,
+        _BDK_,
+        _WAK_,
+        _ARK_,
+        _CDK_,
+    ]:
+        r1 = self._update_blueprint(blueprint)
+        r2 = self.health_increase.apply(r1)
+        r3 = self.spell_assigner.apply(r2)
+        partial = WizardLevel18Blueprint[
+            _StCK_,
+            _SkCK_,
+            WizardSubclassLevel[LevelOut, SubclassT],
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ].model_validate(
+            dict(r3)
+            | {
+                "prepared_spells": blueprint.prepared_spells,
+                "spell_mastery_spells": (),
+                "spell_slots": blueprint.spell_slots,
+                "caster_level": blueprint.caster_level,
+            }
+        )
+        return partial.increase_full_caster()
+
+
+class WizardPostLevel18SharedLevelBase[
+    LevelIn: SecondSubclassPostLevel,
+    LevelOut: SecondSubclassPostLevel,
+](BuildingBlock, ABC):
+    """Base for WizardLevel19: WizardLevel18Blueprint → WizardLevel18Blueprint."""
+
+    health_increase: AnyHealthIncrease
+    spell_assigner: WizardSpellAssigner
+
+    @abstractmethod
+    def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
+
+    def apply[
+        SubclassT: WizardSubclass,
+        _StCK_: AnyStatChoices,
+        _SkCK_: AnyStatChoices,
+        _SOK_: AnySorcererLevel,
+        _FGK_: AnyClassLevel,
+        _BAK_: AnyClassLevel,
+        _ROK_: AnyClassLevel,
+        _CLK_: AnyClassLevel,
+        _DRK_: AnyClassLevel,
+        _PAK_: AnyClassLevel,
+        _RAK_: AnyClassLevel,
+        _MOK_: AnyClassLevel,
+        _BDK_: AnyClassLevel,
+        _WAK_: AnyClassLevel,
+        _ARK_: AnyClassLevel,
+        _CDK_: MaybeCharacterData,
+    ](
+        self,
+        blueprint: WizardLevel18Blueprint[
+            _StCK_,
+            _SkCK_,
+            WizardSubclassLevel[LevelIn, SubclassT],
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ],
+    ) -> WizardLevel18Blueprint[
+        _StCK_,
+        _SkCK_,
+        WizardSubclassLevel[LevelOut, SubclassT],
+        _SOK_,
+        _FGK_,
+        _BAK_,
+        _ROK_,
+        _CLK_,
+        _DRK_,
+        _PAK_,
+        _RAK_,
+        _MOK_,
+        _BDK_,
+        _WAK_,
+        _ARK_,
+        _CDK_,
+    ]:
+        r1 = self._update_blueprint(blueprint)
+        r2 = self.health_increase.apply(r1)
+        r3 = self.spell_assigner.apply(r2)
+        partial = WizardLevel18Blueprint[
+            _StCK_,
+            _SkCK_,
+            WizardSubclassLevel[LevelOut, SubclassT],
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ].model_validate(
+            dict(r3)
+            | {
+                "prepared_spells": blueprint.prepared_spells,
+                "spell_mastery_spells": blueprint.spell_mastery_spells,
+                "spell_slots": blueprint.spell_slots,
+                "caster_level": blueprint.caster_level,
+            }
+        )
+        return partial.increase_full_caster()
+
+
+class WizardLevel20UpgradeLevelBase[
+    LevelIn: SecondSubclassPostLevel,
+    LevelOut: SecondSubclassPostLevel,
+](BuildingBlock, ABC):
+    """Base for WizardLevel20: WizardLevel18Blueprint → WizardLevel20Blueprint."""
+
+    health_increase: AnyHealthIncrease
+    spell_assigner: WizardSpellAssigner
+
+    @abstractmethod
+    def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
+
+    def apply[
+        SubclassT: WizardSubclass,
+        _StCK_: AnyStatChoices,
+        _SkCK_: AnyStatChoices,
+        _SOK_: AnySorcererLevel,
+        _FGK_: AnyClassLevel,
+        _BAK_: AnyClassLevel,
+        _ROK_: AnyClassLevel,
+        _CLK_: AnyClassLevel,
+        _DRK_: AnyClassLevel,
+        _PAK_: AnyClassLevel,
+        _RAK_: AnyClassLevel,
+        _MOK_: AnyClassLevel,
+        _BDK_: AnyClassLevel,
+        _WAK_: AnyClassLevel,
+        _ARK_: AnyClassLevel,
+        _CDK_: MaybeCharacterData,
+    ](
+        self,
+        blueprint: WizardLevel18Blueprint[
+            _StCK_,
+            _SkCK_,
+            WizardSubclassLevel[LevelIn, SubclassT],
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ],
+    ) -> WizardLevel20Blueprint[
+        _StCK_,
+        _SkCK_,
+        WizardSubclassLevel[LevelOut, SubclassT],
+        _SOK_,
+        _FGK_,
+        _BAK_,
+        _ROK_,
+        _CLK_,
+        _DRK_,
+        _PAK_,
+        _RAK_,
+        _MOK_,
+        _BDK_,
+        _WAK_,
+        _ARK_,
+        _CDK_,
+        PositiveInt,
+    ]:
+        r1 = self._update_blueprint(blueprint)
+        r2 = self.health_increase.apply(r1)
+        r3 = self.spell_assigner.apply(r2)
+        partial = WizardLevel20Blueprint[
+            _StCK_,
+            _SkCK_,
+            WizardSubclassLevel[LevelOut, SubclassT],
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+            PositiveInt,
+        ].model_validate(
+            dict(r3)
+            | {
+                "prepared_spells": blueprint.prepared_spells,
+                "spell_mastery_spells": blueprint.spell_mastery_spells,
+                "signature_spells": (),
+                "n_signature_spell_choices": 2,
+                "spell_slots": blueprint.spell_slots,
+                "caster_level": blueprint.caster_level,
+            }
+        )
+        return partial.increase_full_caster()
+
+
+class WizardSubclassFeatureLevelBase[
+    LevelIn: AnyWizardLevel,
+    LevelOut: AnyWizardLevel,
+](BuildingBlock, ABC):
+    """Base for wizard levels 6, 10, 14 that grant subclass-specific features."""
+
+    health_increase: AnyHealthIncrease
+    spell_assigner: WizardSpellAssigner
+
+    @abstractmethod
+    def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
+
+    def apply[
+        _StCK_: AnyStatChoices,
+        _SkCK_: AnyStatChoices,
+        _SOK_: AnySorcererLevel,
+        _FGK_: AnyClassLevel,
+        _BAK_: AnyClassLevel,
+        _ROK_: AnyClassLevel,
+        _CLK_: AnyClassLevel,
+        _DRK_: AnyClassLevel,
+        _PAK_: AnyClassLevel,
+        _RAK_: AnyClassLevel,
+        _MOK_: AnyClassLevel,
+        _BDK_: AnyClassLevel,
+        _WAK_: AnyClassLevel,
+        _ARK_: AnyClassLevel,
+        _CDK_: MaybeCharacterData,
+    ](
+        self,
+        blueprint: WizardBlueprint[
             _StCK_,
             _SkCK_,
             LevelIn,
@@ -280,10 +666,7 @@ class WizardSubclassFeatureLevelBase[
             _ARK_,
             _CDK_,
         ],
-    ) -> Blueprint[
-        _RK_,
-        _StK_,
-        PositiveInt,
+    ) -> WizardBlueprint[
         _StCK_,
         _SkCK_,
         LevelOut,
@@ -304,10 +687,7 @@ class WizardSubclassFeatureLevelBase[
         r1 = self._update_blueprint(blueprint)
         r2 = self.health_increase.apply(r1)
         r3 = self.spell_assigner.apply(r2)
-        return Blueprint[
-            _RK_,
-            _StK_,
-            PositiveInt,
+        partial = WizardBlueprint[
             _StCK_,
             _SkCK_,
             LevelOut,
@@ -324,4 +704,12 @@ class WizardSubclassFeatureLevelBase[
             _WAK_,
             _ARK_,
             _CDK_,
-        ].model_validate(dict(r3))
+        ].model_validate(
+            dict(r3)
+            | {
+                "prepared_spells": blueprint.prepared_spells,
+                "spell_slots": blueprint.spell_slots,
+                "caster_level": blueprint.caster_level,
+            }
+        )
+        return partial.increase_full_caster()

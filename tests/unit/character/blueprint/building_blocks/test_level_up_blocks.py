@@ -341,13 +341,58 @@ from dnd.character.blueprint.building_blocks.level_up.sorcerer.wild_magic.level_
 from dnd.character.blueprint.building_blocks.level_up.sorcerer.wild_magic.level_18 import (
     SorcererLevel18WildMagic,
 )
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.sorcerer.base import SorcererBlueprint
+from dnd.character.blueprint.states.state import Blueprint
+from dnd.character.blueprint.states.wizard.base import WizardBlueprint
+from dnd.character.blueprint.states.wizard.level18 import WizardLevel18Blueprint
+from dnd.character.race.race import Race
+from dnd.character.spells.max_spell_levels import FULL_CASTER_SPELL_SLOTS
+from dnd.character.stats import Stats
 from dnd.choices.class_creation.character_class import Class
+from dnd.character.blueprint.states.wizard.level20 import WizardLevel20Blueprint
 
 _WIZ_HEALTH = HealthIncreaseAverage(class_=Class.WIZARD)
 _WIZ_SPELLS = WizardRandomSpellAssigner()
 _SORC_HEALTH = HealthIncreaseAverage(class_=Class.SORCERER)
 _SORC_SPELLS = SorcererRandomSpellAssigner()
+
+_STATS = Stats(
+    strength=10,
+    dexterity=10,
+    constitution=10,
+    intelligence=16,
+    wisdom=12,
+    charisma=8,
+)
+_WIZ_BP = WizardBlueprint(
+    race=Race.HUMAN,
+    stats=_STATS,
+    health_base=6,
+    spell_slots=FULL_CASTER_SPELL_SLOTS[16],
+    caster_level=17,
+)
+_WIZ_L18_BP = WizardLevel18Blueprint(
+    race=Race.HUMAN,
+    stats=_STATS,
+    health_base=6,
+    spell_slots=FULL_CASTER_SPELL_SLOTS[17],
+    caster_level=18,
+)
+_WIZ_L19_BP = WizardLevel18Blueprint(
+    race=Race.HUMAN,
+    stats=_STATS,
+    health_base=6,
+    spell_slots=FULL_CASTER_SPELL_SLOTS[18],
+    caster_level=19,
+)
+_SORC_BP = SorcererBlueprint(
+    race=Race.HUMAN,
+    stats=_STATS,
+    health_base=6,
+    spell_slots=FULL_CASTER_SPELL_SLOTS[18],
+    caster_level=19,
+)
+_SORC_INPUT_BP = Blueprint(race=Race.HUMAN, stats=_STATS, health_base=6)
 
 
 @pytest.mark.unit
@@ -366,14 +411,38 @@ _SORC_SPELLS = SorcererRandomSpellAssigner()
         WizardLevel15(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
         WizardLevel16(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
         WizardLevel17(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
-        WizardLevel18(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
-        WizardLevel19(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
-        WizardLevel20(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
     ],
 )
 def test_wizard_shared_level_apply(block: Any) -> None:
-    result = block.apply(Blueprint())
+    result = block.apply(_WIZ_BP)
     assert result is not None
+
+
+@pytest.mark.unit
+def test_wizard_level18_apply() -> None:
+    block = WizardLevel18(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS)
+    result = block.apply(_WIZ_BP)
+    assert result is not None
+    assert isinstance(result, WizardLevel18Blueprint)
+    assert result.spell_slots == FULL_CASTER_SPELL_SLOTS[17]
+
+
+@pytest.mark.unit
+def test_wizard_level19_apply() -> None:
+    block = WizardLevel19(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS)
+    result = block.apply(_WIZ_L18_BP)
+    assert result is not None
+    assert isinstance(result, WizardLevel18Blueprint)
+    assert result.spell_slots == FULL_CASTER_SPELL_SLOTS[18]
+
+
+@pytest.mark.unit
+def test_wizard_level20_apply() -> None:
+    block = WizardLevel20(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS)
+    result = block.apply(_WIZ_L19_BP)
+    assert result is not None
+    assert isinstance(result, WizardLevel20Blueprint)
+    assert result.spell_slots == FULL_CASTER_SPELL_SLOTS[19]
 
 
 @pytest.mark.unit
@@ -403,7 +472,7 @@ def test_wizard_shared_level_apply(block: Any) -> None:
     ],
 )
 def test_wizard_subclass_level2_apply(block: Any) -> None:
-    result = block.apply(Blueprint())
+    result = block.apply(_WIZ_BP)
     assert result is not None
 
 
@@ -493,7 +562,7 @@ def test_wizard_subclass_level2_apply(block: Any) -> None:
     ],
 )
 def test_wizard_subclass_feature_level_apply(block: Any) -> None:
-    result = block.apply(Blueprint())
+    result = block.apply(_WIZ_BP)
     assert result is not None
 
 
@@ -528,8 +597,9 @@ def test_wizard_subclass_feature_level_apply(block: Any) -> None:
     ],
 )
 def test_sorcerer_level1_subclass_apply(block: Any) -> None:
-    result = block.apply(Blueprint())
+    result = block.apply(_SORC_INPUT_BP)
     assert result is not None
+    assert isinstance(result, SorcererBlueprint)
 
 
 @pytest.mark.unit
@@ -555,7 +625,7 @@ def test_sorcerer_level1_subclass_apply(block: Any) -> None:
     ],
 )
 def test_sorcerer_shared_level_apply(block: Any) -> None:
-    result = block.apply(Blueprint())
+    result = block.apply(_SORC_BP)
     assert result is not None
 
 
@@ -638,7 +708,7 @@ def test_sorcerer_shared_level_apply(block: Any) -> None:
     ],
 )
 def test_sorcerer_subclass_feature_level_apply(block: Any) -> None:
-    result = block.apply(Blueprint())
+    result = block.apply(_SORC_BP)
     assert result is not None
 
 
@@ -652,6 +722,5 @@ class TestSpellAssignerEarlyReturn:
 
     def test_sorcerer_spell_assigner_skips_when_no_sorcerer_levels(self) -> None:
         assigner = SorcererRandomSpellAssigner()
-        state = Blueprint()
-        result = assigner.apply(state)
-        assert result is state
+        result = assigner.apply(_SORC_BP)
+        assert result is _SORC_BP

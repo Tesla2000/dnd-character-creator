@@ -146,7 +146,7 @@ class RandomInitialDataFiller(InitialDataFiller):
         "I have a secret that could ruin me if discovered.",
     )
 
-    def _compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData:
+    def compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData:
         random.seed(self.seed)
         cd = blueprint.character_data or CharacterData()
         return cd.model_copy(

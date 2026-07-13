@@ -18,7 +18,7 @@ class AIPartialBuilderAssigner(AIBuilderBase):
         BuildingBlockType.AI_PARTIAL_BUILDER_ASSIGNER
     )
 
-    def _compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData:
+    def compute_character_data(self, blueprint: _WideBlueprint) -> CharacterData:
         prompt = (
             f"Create a D&D 5e character based on this description: {self.description}\n"
             f"The following fields are already set and must be respected: {dict(blueprint)}\n"

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Literal
 from typing import ClassVar
 
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.blueprint.building_blocks.stats_builder.stats_builder import (
     StatsBuilder,
 )

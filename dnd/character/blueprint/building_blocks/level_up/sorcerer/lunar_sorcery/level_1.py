@@ -6,9 +6,11 @@ from dnd.character.blueprint.building_blocks.building_block_type import (
 from dnd.character.blueprint.building_blocks.level_up.sorcerer.base import (
     SorcererLevel1Base,
 )
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.choices.class_creation.character_class import SorcererSubclass
 from dnd.choices.equipment_creation.weapons import WeaponName
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import WeaponProficiency
 from dnd.skill_proficiency import Skill
@@ -58,6 +60,17 @@ class SorcererLevel1LunarSorcery(
                 ),
                 "other_equipment": blueprint.other_equipment
                 + (WeaponName.DAGGER, WeaponName.DAGGER),
-                # TODO: add Lunar Sorcery level-1 origin feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.SHORT_OR_LONG_REST,
+                        name="Lunar Embodiment",
+                        description=(
+                            "You manifest lunar magic each long rest. Choose Full Moon, "
+                            "New Moon, or Crescent Moon phase. Each phase grants different "
+                            "features and access to additional spells."
+                        ),
+                    ),
+                ),
             }
         )

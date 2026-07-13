@@ -4,7 +4,7 @@ from abc import ABC
 from abc import abstractmethod
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.other_profficiencies import GamingSet
 from dnd.other_profficiencies import MusicalInstrument
 from dnd.other_profficiencies import ToolProficiency
@@ -23,21 +23,21 @@ class ToolProficiencyChoiceResolver(BuildingBlock, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def _select_tool_proficiency(
+    def select_tool_proficiency(
         self,
         available: list[ToolProficiency],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> ToolProficiency: ...
 
     @abstractmethod
-    def _select_gaming_set(
+    def select_gaming_set(
         self,
         available: list[GamingSet],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
     ) -> GamingSet: ...
 
     @abstractmethod
-    def _select_musical_instrument(
+    def select_musical_instrument(
         self,
         available: list[MusicalInstrument],
         tool_proficiencies: tuple[ToolProficiency | GamingSet | MusicalInstrument, ...],
@@ -56,7 +56,7 @@ class ToolProficiencyChoiceResolver(BuildingBlock, ABC):
                     if t != ToolProficiency.ANY_OF_YOUR_CHOICE
                 ]
                 resolved.append(
-                    self._select_tool_proficiency(
+                    self.select_tool_proficiency(
                         available_tools, blueprint.tool_proficiencies
                     )
                 )
@@ -65,7 +65,7 @@ class ToolProficiencyChoiceResolver(BuildingBlock, ABC):
                     g for g in GamingSet if g != GamingSet.ANY_OF_YOUR_CHOICE
                 ]
                 resolved.append(
-                    self._select_gaming_set(
+                    self.select_gaming_set(
                         available_gaming_sets, blueprint.tool_proficiencies
                     )
                 )
@@ -79,7 +79,7 @@ class ToolProficiencyChoiceResolver(BuildingBlock, ABC):
                     if m != MusicalInstrument.ANY_OF_YOUR_CHOICE
                 ]
                 resolved.append(
-                    self._select_musical_instrument(
+                    self.select_musical_instrument(
                         available_instruments, blueprint.tool_proficiencies
                     )
                 )

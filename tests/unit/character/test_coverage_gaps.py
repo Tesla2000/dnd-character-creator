@@ -8,7 +8,7 @@ from pydantic import create_model
 
 from dnd.character.armor.armors import ARMORS
 from dnd.character.armor.names import ArmorName
-from dnd.character.blueprint.blueprint_formatter import BlueprintFormatter
+from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.age_assigner import AgeAssigner
 from dnd.character.blueprint.building_blocks.alignment_assigner import AlignmentAssigner
 from dnd.character.blueprint.building_blocks.background_assigner import (
@@ -48,11 +48,6 @@ from dnd.character.blueprint.building_blocks.level_up.health_increase.base impor
 from dnd.character.blueprint.building_blocks.level_up.health_increase.random_reroll_ones import (
     HealthIncreaseRandomRerollOnes,
 )
-from dnd.character.blueprint.building_blocks.level_up.sorcerer.base import (
-    SorcererLevel1Base,
-    SorcererSharedLevelBase,
-    SorcererSubclassFeatureLevelBase,
-)
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     WizardSpellAssigner,
     SorcererSpellAssigner,
@@ -63,34 +58,8 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
     SorcererRandomSpellAssigner,
     WizardRandomSpellAssigner,
 )
-from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
-    WizardPreSubclassLevelBase,
-    WizardSharedLevelBase,
-    WizardSubclassFeatureLevelBase,
-)
 from dnd.character.blueprint.building_blocks.initial_data_filler.random_filler import (
     RandomInitialDataFiller,
-)
-from dnd.character.blueprint.building_blocks.level_up.health_increase import (
-    HealthIncreaseAverage,
-)
-from dnd.character.blueprint.building_blocks.level_up.sorcerer.aberrant_mind.level_1 import (
-    SorcererLevel1AberrantMind,
-)
-from dnd.character.blueprint.building_blocks.level_up.sorcerer.aberrant_mind.level_6 import (
-    SorcererLevel6AberrantMind,
-)
-from dnd.character.blueprint.building_blocks.level_up.sorcerer.level_2 import (
-    SorcererLevel2,
-)
-from dnd.character.blueprint.building_blocks.level_up.wizard.evocation.level_2 import (
-    WizardLevel2Evocation,
-)
-from dnd.character.blueprint.building_blocks.level_up.wizard.evocation.level_6 import (
-    WizardLevel6Evocation,
-)
-from dnd.character.blueprint.building_blocks.level_up.wizard.level_3 import (
-    WizardLevel3,
 )
 from dnd.character.blueprint.building_blocks.magical_item_chooser.base_chooser import (
     MagicalItemChooserBase,
@@ -148,7 +117,7 @@ from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.ra
     RandomToolProficiencyChoiceResolver,
 )
 from dnd.character.blueprint.character_data import CharacterData
-from dnd.character.blueprint.state import Blueprint
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.class_levels import ClassLevels
 from dnd.character.magical_item.items import robe_of_the_archmagi
 from dnd.character.race.race import Race
@@ -477,77 +446,29 @@ class TestAbstractMethodBodies:
 
     def test_initial_data_filler_abstract_body(self) -> None:
         filler = RandomInitialDataFiller()
-        result = InitialDataFiller._compute_character_data(filler, Blueprint())
+        result = InitialDataFiller.compute_character_data(filler, Blueprint())
         assert result is None
 
     def test_magical_item_chooser_abstract_body(self) -> None:
         chooser = RandomMagicalItemChooser()
-        result = MagicalItemChooserBase._select_items(chooser, Blueprint())
+        result = MagicalItemChooserBase.select_items(chooser, Blueprint())
         assert result is None
 
     def test_wizard_spell_assigner_abstract_body(self) -> None:
         assigner = WizardRandomSpellAssigner()
-        result = WizardSpellAssigner._select_spells(assigner, 0, 1, [], Blueprint())
+        result = WizardSpellAssigner.select_spells(assigner, 0, 1, [], Blueprint())
         assert result is None
 
     def test_sorcerer_spell_assigner_abstract_body(self) -> None:
         assigner = SorcererRandomSpellAssigner()
-        result = SorcererSpellAssigner._select_spells(assigner, 0, 1, [], Blueprint())
-        assert result is None
-
-    def test_wizard_pre_subclass_abstract_body(self) -> None:
-        block = WizardLevel2Evocation(
-            health_increase=HealthIncreaseAverage(class_=Class.WIZARD),
-            spell_assigner=WizardRandomSpellAssigner(),
-        )
-        result = WizardPreSubclassLevelBase._update_blueprint(block, Blueprint())
-        assert result is None
-
-    def test_wizard_shared_level_abstract_body(self) -> None:
-        block = WizardLevel3(
-            health_increase=HealthIncreaseAverage(class_=Class.WIZARD),
-            spell_assigner=WizardRandomSpellAssigner(),
-        )
-        result = WizardSharedLevelBase._update_blueprint(block, Blueprint())
-        assert result is None
-
-    def test_wizard_subclass_feature_abstract_body(self) -> None:
-        block = WizardLevel6Evocation(
-            health_increase=HealthIncreaseAverage(class_=Class.WIZARD),
-            spell_assigner=WizardRandomSpellAssigner(),
-        )
-        result = WizardSubclassFeatureLevelBase._update_blueprint(block, Blueprint())
-        assert result is None
-
-    def test_sorcerer_level1_abstract_body(self) -> None:
-        block = SorcererLevel1AberrantMind(
-            health_increase=HealthIncreaseAverage(class_=Class.SORCERER),
-            spell_assigner=SorcererRandomSpellAssigner(),
-        )
-        result = SorcererLevel1Base._update_blueprint(block, Blueprint())
-        assert result is None
-
-    def test_sorcerer_shared_level_abstract_body(self) -> None:
-        block = SorcererLevel2(
-            health_increase=HealthIncreaseAverage(class_=Class.SORCERER),
-            spell_assigner=SorcererRandomSpellAssigner(),
-        )
-        result = SorcererSharedLevelBase._update_blueprint(block, Blueprint())
-        assert result is None
-
-    def test_sorcerer_subclass_feature_abstract_body(self) -> None:
-        block = SorcererLevel6AberrantMind(
-            health_increase=HealthIncreaseAverage(class_=Class.SORCERER),
-            spell_assigner=SorcererRandomSpellAssigner(),
-        )
-        result = SorcererSubclassFeatureLevelBase._update_blueprint(block, Blueprint())
+        result = SorcererSpellAssigner.select_spells(assigner, 0, 1, [], Blueprint())
         assert result is None
 
     def test_tool_proficiency_abstract_bodies(self) -> None:
         resolver = RandomToolProficiencyChoiceResolver()
-        r1 = ToolProficiencyChoiceResolver._select_tool_proficiency(resolver, [], ())
-        r2 = ToolProficiencyChoiceResolver._select_gaming_set(resolver, [], ())
-        r3 = ToolProficiencyChoiceResolver._select_musical_instrument(resolver, [], ())
+        r1 = ToolProficiencyChoiceResolver.select_tool_proficiency(resolver, [], ())
+        r2 = ToolProficiencyChoiceResolver.select_gaming_set(resolver, [], ())
+        r3 = ToolProficiencyChoiceResolver.select_musical_instrument(resolver, [], ())
         assert r1 is None
         assert r2 is None
         assert r3 is None

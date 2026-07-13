@@ -7,7 +7,7 @@ from abc import abstractmethod
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.character_data import CharacterData
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from pydantic import ConfigDict
 
 

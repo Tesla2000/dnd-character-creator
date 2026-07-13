@@ -8,7 +8,9 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.base import (
 )
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
 from dnd.character.blueprint.sentinels import WizardSubclassLevel
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
+from dnd.choices.abilities.action import BasicAction
+from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.class_creation.character_class import WizardSubclass
 
 
@@ -32,6 +34,18 @@ class WizardLevel6Conjuration(
         return blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"wizard": 6}),
-                # TODO: add Conjuration level-6 subclass feature
+                "actions": blueprint.actions
+                + (
+                    BasicAction(
+                        action_type=ActionType.ACTION,
+                        name="Benign Transposition",
+                        description=(
+                            "Teleport up to 30 feet to an unoccupied space you can see, or "
+                            "choose a willing creature you can see within 30 feet to teleport "
+                            "to an unoccupied space within 30 feet of you. Recharge: long "
+                            "rest or casting a conjuration spell of 1st level or higher."
+                        ),
+                    ),
+                ),
             }
         )

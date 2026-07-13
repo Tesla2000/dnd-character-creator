@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Literal
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
-from dnd.character.blueprint.state import _BPT
+from dnd.character.blueprint.states.state import _BPT
 from dnd.choices.equipment_creation.weapons import WeaponName
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
