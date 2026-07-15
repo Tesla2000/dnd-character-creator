@@ -1,7 +1,7 @@
 """AI-powered equipment chooser for intelligent equipment selection."""
 
+import json
 from dnd.character.armor.names import ArmorName
-from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.equipment_chooser.base import (
     EquipmentChooser,
 )
@@ -36,13 +36,9 @@ class AIEquipmentChooser(EquipmentChooser):
     )
 
     llm: RaisingService = Field(
+        exclude=True,
         default_factory=lambda: RaisingService(service=OpenAIService()),
         description="Language model for making AI-powered decisions",
-    )
-
-    formatter: BlueprintFormatter = Field(
-        default_factory=BlueprintFormatter,
-        description="Blueprint formatter for creating AI prompts",
     )
 
     @staticmethod
@@ -60,9 +56,17 @@ class AIEquipmentChooser(EquipmentChooser):
             "based on the character's class, background, stats, and concept.",
         ]
 
-        character_description = self.formatter.format(state)
-        if character_description:
-            parts.append(character_description)
+        parts.append(
+            "Character state (JSON):\n"
+            + json.dumps(
+                {
+                    k: v
+                    for k, v in state.model_dump(mode="json").items()
+                    if v is not None
+                },
+                indent=2,
+            )
+        )
 
         equipment_choices = state.equipment_choices
         if equipment_choices:

@@ -6,7 +6,6 @@ from pydantic import create_model
 
 from dnd.character.armor.armors import ARMORS
 from dnd.character.armor.names import ArmorName
-from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.age_assigner import AgeAssigner
 from dnd.character.blueprint.building_blocks.alignment_assigner import AlignmentAssigner
 from dnd.character.blueprint.building_blocks.background_assigner import (
@@ -367,7 +366,7 @@ class TestAISkillChoiceResolverWithCharacterDescription:
             selected_skills=(Skill.ARCANA,)
         )
         block = AISkillChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(
             race=Race.HUMAN,
@@ -392,7 +391,7 @@ class TestAIEquipmentChooserWithCharacterDescription:
             model_class(choice_0=0)
         )
         block = AIEquipmentChooser.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(
             race=Race.HUMAN,
@@ -403,9 +402,7 @@ class TestAIEquipmentChooserWithCharacterDescription:
         mock_llm.create_structured_output.assert_called_once()
 
     def test_build_prompt_with_no_equipment_choices(self) -> None:
-        block = AIEquipmentChooser.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AIEquipmentChooser.model_construct()
         result = block._build_prompt(Blueprint())
         assert "Selection Instructions" not in result
 

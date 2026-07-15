@@ -126,6 +126,8 @@ class FeatChoiceResolver(BuildingBlock, ABC):
         if feat not in FeatName.not_choosables():
             return feat
         excluded = list(FeatName.not_choosables())
+        if feat == FeatName.ANY_EXCEPT_ABILITY_SCORE_IMPROVEMENT:
+            excluded.append(FeatName.ABILITY_SCORE_IMPROVEMENT)
         if not ability_score_improvement_allowed:
             excluded.append(FeatName.ABILITY_SCORE_IMPROVEMENT)
         available = [f for f in FeatName if f not in excluded]

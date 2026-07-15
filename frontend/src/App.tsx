@@ -1,41 +1,56 @@
-import { useState, useMemo, useCallback } from "preact/hooks";
+import { useState, useMemo } from "preact/hooks";
 import { useBlockRegistry } from "./hooks/useBlockRegistry";
-import { usePipelineState, computeSatisfiedSnapshots } from "./hooks/usePipelineState";
+import { usePipelineState } from "./hooks/usePipelineState";
 import { Pipeline } from "./components/Pipeline";
 import { BlockForm } from "./components/BlockForm";
 import { CharacterPreview } from "./components/CharacterPreview";
 import { buildCharacter } from "./api/buildCharacter";
-import type { CharacterResult, PipelineBlock } from "./types";
+import { downloadCharacter } from "./api/downloadCharacter";
+import { computeBlueprintSnapshots, pipelineMissingFields } from "./utils/blueprintState";
+import { blockHasUnfilledRequired } from "./utils/blockValidation";
+import type { ArgSpec, CharacterResult } from "./types";
+import pipelineMeta from "./data/pipeline-meta.json";
 
 export function App() {
   const { registry, byType } = useBlockRegistry();
-  const { blocks, removeBlock, updateConfig, reorderBlocks } = usePipelineState();
+  const { blocks, addBlock, removeBlock, updateConfig } = usePipelineState();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [buildResult, setBuildResult] = useState<CharacterResult | null>(null);
   const [buildError, setBuildError] = useState<string | null>(null);
   const [building, setBuilding] = useState(false);
   const [, setShowResult] = useState(false);
 
-  const snapshots = useMemo(
-    () => computeSatisfiedSnapshots(blocks, byType),
+  const blueprintSnapshots = useMemo(
+    () =>
+      computeBlueprintSnapshots(
+        blocks,
+        byType,
+        pipelineMeta.emptyBlueprintArgs as ArgSpec[],
+        pipelineMeta.originHierarchy as Record<string, string[]>
+      ),
     [blocks, byType]
   );
 
   const selectedBlock = blocks.find((b) => b.id === selectedId) ?? null;
   const selectedInfo = selectedBlock ? byType.get(selectedBlock.blockType) : null;
 
-  const handleAddAtIndex = useCallback(
-    (blockType: string, atIndex: number): void => {
-      // We simulate insert by adding at end then moving
-      const newId = `block-insert-${Date.now()}`;
-      const newBlock: PipelineBlock = { id: newId, blockType, config: {} };
-      const next = [...blocks];
-      next.splice(atIndex, 0, newBlock);
-      reorderBlocks(next);
-      setSelectedId(newId);
-    },
-    [blocks, reorderBlocks]
+  const hasIncomplete = useMemo(
+    () =>
+      blocks.some((b) => {
+        const info = byType.get(b.blockType);
+        return info ? blockHasUnfilledRequired(b, info) : false;
+      }),
+    [blocks, byType],
   );
+
+  const missingFields = useMemo(() => {
+    const finalState = blueprintSnapshots[blueprintSnapshots.length - 1];
+    if (!finalState) return [];
+    return pipelineMissingFields(
+      finalState,
+      pipelineMeta.presentableBlueprintArgs as ArgSpec[]
+    );
+  }, [blueprintSnapshots]);
 
   async function handleBuild() {
     setBuilding(true);
@@ -56,15 +71,6 @@ export function App() {
     }
   }
 
-  const invalidCount = blocks.filter((b, i) => {
-    const meta = byType.get(b.blockType);
-    if (!meta) return false;
-    const prev = snapshots[i] ?? new Set();
-    return (
-      !meta.requires.every((p) => prev.has(p)) || meta.conflicts.some((p) => prev.has(p))
-    );
-  }).length;
-
   return (
     <div className="flex flex-col h-screen bg-dnd-dark text-white">
       {/* Header */}
@@ -76,18 +82,20 @@ export function App() {
           </h1>
         </div>
         <div className="flex items-center gap-3">
-          {invalidCount > 0 && (
-            <span className="text-xs text-red-400 bg-red-900/30 border border-red-700 rounded px-2 py-1">
-              {invalidCount} block{invalidCount > 1 ? "s" : ""} with unmet requirements
-            </span>
-          )}
-          <button
-            onClick={handleBuild}
-            disabled={building || blocks.length === 0}
-            className="bg-dnd-red hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold px-4 py-1.5 rounded transition-colors text-sm"
-          >
-            {building ? "Building..." : "Build Character"}
-          </button>
+          <div className="flex flex-col items-end gap-1">
+            <button
+              onClick={handleBuild}
+              disabled={building || blocks.length === 0 || hasIncomplete || missingFields.length > 0}
+              className="bg-dnd-red hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold px-4 py-1.5 rounded transition-colors text-sm"
+            >
+              {building ? "Building..." : "Build Character"}
+            </button>
+            {missingFields.length > 0 && (
+              <p className="text-xs text-yellow-500">
+                Missing: {missingFields.join(", ")}
+              </p>
+            )}
+          </div>
         </div>
       </header>
 
@@ -106,15 +114,19 @@ export function App() {
               blocks={blocks}
               byType={byType}
               registry={registry}
-              snapshots={snapshots}
+              blueprintSnapshots={blueprintSnapshots}
               selectedId={selectedId}
               onSelect={setSelectedId}
-              onAdd={handleAddAtIndex}
-              onRemove={(id) => {
-                removeBlock(id);
-                if (selectedId === id) setSelectedId(null);
+              onAppend={(blockType) => {
+                const info = byType.get(blockType);
+                addBlock(blockType, info?.default_config ?? {});
               }}
-              onReorder={reorderBlocks}
+              onRemoveLast={() => {
+                const last = blocks[blocks.length - 1];
+                if (!last) return;
+                removeBlock(last.id);
+                if (selectedId === last.id) setSelectedId(null);
+              }}
             />
           </div>
         </div>
@@ -149,15 +161,33 @@ export function App() {
               Character
             </h2>
             {buildResult && (
-              <button
-                className="text-xs text-gray-500 hover:text-white"
-                onClick={() => {
-                  setBuildResult(null);
-                  setShowResult(false);
-                }}
-              >
-                clear
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  className="text-xs text-dnd-gold hover:text-yellow-300"
+                  onClick={async () => {
+                    const json = await downloadCharacter(buildResult);
+                    if (!json) return;
+                    const blob = new Blob([json], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `${buildResult.character_data?.name ?? "character"}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                >
+                  download
+                </button>
+                <button
+                  className="text-xs text-gray-500 hover:text-white"
+                  onClick={() => {
+                    setBuildResult(null);
+                    setShowResult(false);
+                  }}
+                >
+                  clear
+                </button>
+              </div>
             )}
           </div>
           <div className="flex-1 overflow-y-auto p-4">

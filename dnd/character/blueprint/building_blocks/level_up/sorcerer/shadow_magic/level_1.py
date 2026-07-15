@@ -14,6 +14,13 @@ from dnd.choices.abilities.action_type import ActionType
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import WeaponProficiency
 from dnd.skill_proficiency import Skill
+from dnd.character.blueprint.building_blocks.skill_choice_resolver import (
+    AnySkillChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.skill_choice_resolver.random import (
+    RandomSkillChoiceResolver,
+)
+from pydantic import Field
 
 
 class SorcererLevel1ShadowMagic(
@@ -24,9 +31,12 @@ class SorcererLevel1ShadowMagic(
     type: Literal[BuildingBlockType.SORCERER_LEVEL_1_SHADOW_MAGIC] = (
         BuildingBlockType.SORCERER_LEVEL_1_SHADOW_MAGIC
     )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
 
     def _update_blueprint(self, blueprint: _BPT) -> _BPT:
-        return blueprint.model_copy(
+        result = blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"sorcerer": 1}),
                 "weapon_proficiencies": blueprint.weapon_proficiencies
@@ -75,3 +85,4 @@ class SorcererLevel1ShadowMagic(
                 ),
             }
         )
+        return self.skill_choice_resolver.apply(result)

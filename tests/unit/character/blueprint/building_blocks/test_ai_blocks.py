@@ -6,15 +6,6 @@ from pydantic import Field
 from pydantic import ValidationError
 
 from dnd.character.armor.names import ArmorName
-from dnd.character.blueprint.formatter import BlueprintFormatter
-from dnd.character.blueprint.building_blocks.all_choices_resolver.ai import (
-    AIAllChoicesResolver,
-    AIAllNonStatChoicesResolver,
-)
-from dnd.character.blueprint.building_blocks.building_block_type import (
-    BuildingBlockType,
-)
-from dnd.character.blueprint.building_blocks.null_block import NullBlock
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.ai import (
     AIToolProficiencyChoiceResolver,
     ToolProficiencySelection,
@@ -22,9 +13,6 @@ from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.ai
 from dnd.character.blueprint.building_blocks.language_choice_resolver.ai import (
     AILanguageChoiceResolver,
     LanguageSelection,
-)
-from dnd.character.blueprint.building_blocks.all_choices_resolver.choice_package import (
-    ChoicePackage,
 )
 from dnd.character.blueprint.building_blocks.character_base_template import (
     CharacterBaseTemplate,
@@ -177,7 +165,7 @@ class TestAIStatChoiceResolver:
     def test_no_stat_choices_skips_llm(self) -> None:
         mock_llm = MagicMock()
         block = AIStatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         result = block.apply(_StatsBP())
         assert result is not None
@@ -190,7 +178,7 @@ class TestAIStatChoiceResolver:
         )
 
         block = AIStatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = _StatsBP(n_stat_choices=2)
         result = block.apply(state)
@@ -203,7 +191,7 @@ class TestAISkillChoiceResolver:
     def test_no_skill_choices_skips_llm(self) -> None:
         mock_llm = MagicMock()
         block = AISkillChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         result = block.apply(Blueprint())
         assert result is not None
@@ -216,7 +204,7 @@ class TestAISkillChoiceResolver:
         )
 
         block = AISkillChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(
             n_skill_choices=2,
@@ -230,39 +218,11 @@ class TestAISkillChoiceResolver:
 
 
 @pytest.mark.unit
-class TestAIAllNonStatChoicesResolver:
-    def test_no_choices_skips_llm(self) -> None:
-        mock_llm = MagicMock()
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        result = block.apply(Blueprint(stats=_DEFAULT_STATS))
-        assert result is not None
-        mock_llm.create_structured_output.assert_not_called()
-
-    def test_with_language_choice_calls_llm(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = ChoicePackage(
-            languages=[Language.COMMON]
-        )
-
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        state = Blueprint(
-            stats=_DEFAULT_STATS, languages=(Language.ANY_OF_YOUR_CHOICE,)
-        )
-        result = block.apply(state)
-        assert result is not None
-        mock_llm.create_structured_output.assert_called_once()
-
-
-@pytest.mark.unit
 class TestAIMagicalItemChooser:
     def test_no_items_skips_llm(self) -> None:
         mock_llm = MagicMock()
         block = AIMagicalItemChooser.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         result = block.apply(Blueprint())
         assert result is not None
@@ -277,7 +237,6 @@ class TestAIMagicalItemChooser:
 
         block = AIMagicalItemChooser.model_construct(
             llm=mock_llm,
-            formatter=BlueprintFormatter(),
             n_common=1,
             n_uncommon=0,
             n_rare=0,
@@ -297,7 +256,7 @@ class TestAIEquipmentChooser:
     def test_no_choices_skips_llm(self) -> None:
         mock_llm = MagicMock()
         block = AIEquipmentChooser.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         result = block.apply(Blueprint())
         assert result is not None
@@ -310,7 +269,7 @@ class TestAIEquipmentChooser:
         )
 
         block = AIEquipmentChooser.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(
             equipment_choices=(
@@ -329,7 +288,7 @@ class TestAIFeatChoiceResolver:
     def test_no_placeholders_skips_llm(self) -> None:
         mock_llm = MagicMock()
         block = AIFeatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         result = block.apply(Blueprint())
         assert result is not None
@@ -342,7 +301,7 @@ class TestAIFeatChoiceResolver:
         )
 
         block = AIFeatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(feats=(FeatName.ANY_OF_YOUR_CHOICE,))
         result = block.apply(state)
@@ -424,72 +383,11 @@ class TestWizardLLMSpellAssignerErrors:
 
 
 @pytest.mark.unit
-class TestAIAllNonStatChoicesResolverExtraBranches:
-    def test_skill_proficiency_choice_calls_llm(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = ChoicePackage(
-            skill_proficiencies=[Skill.PERCEPTION]
-        )
-
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        state = Blueprint(
-            stats=_DEFAULT_STATS, skill_proficiencies=(Skill.ANY_OF_YOUR_CHOICE,)
-        )
-        result = block.apply(state)
-        assert result is not None
-        mock_llm.create_structured_output.assert_called_once()
-
-    def test_feat_choice_calls_llm(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = ChoicePackage(
-            feats=[FeatName.ALERT]
-        )
-
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        state = Blueprint(stats=_DEFAULT_STATS, feats=(FeatName.ANY_OF_YOUR_CHOICE,))
-        result = block.apply(state)
-        assert result is not None
-        mock_llm.create_structured_output.assert_called_once()
-
-    def test_tool_proficiency_choice_calls_llm(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = ChoicePackage(
-            tool_proficiencies=[ToolProficiency.ALCHEMISTS_SUPPLIES]
-        )
-
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        state = Blueprint(
-            stats=_DEFAULT_STATS,
-            tool_proficiencies=(ToolProficiency.ANY_OF_YOUR_CHOICE,),
-        )
-        result = block.apply(state)
-        assert result is not None
-        mock_llm.create_structured_output.assert_called_once()
-
-    def test_llm_error_raises_llm_error(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
-
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        state = Blueprint(languages=(Language.ANY_OF_YOUR_CHOICE,))
-        with pytest.raises(LLMRefusalError):
-            block.apply(state)
-
-
-@pytest.mark.unit
 class TestAILanguageChoiceResolver:
     def test_no_placeholder_skips_llm(self) -> None:
         mock_llm = MagicMock()
         block = AILanguageChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(languages=(Language.COMMON,))
         result = block.apply(state)
@@ -503,7 +401,7 @@ class TestAILanguageChoiceResolver:
         )
 
         block = AILanguageChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(languages=(Language.ANY_OF_YOUR_CHOICE,))
         result = block.apply(state)
@@ -517,7 +415,7 @@ class TestAILanguageChoiceResolver:
         )
 
         block = AILanguageChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(languages=(Language.ANY_OF_YOUR_CHOICE,))
         with pytest.raises(ValueError, match="AI returned"):
@@ -528,7 +426,7 @@ class TestAILanguageChoiceResolver:
         mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
 
         block = AILanguageChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(languages=(Language.ANY_OF_YOUR_CHOICE,))
         with pytest.raises(LLMRefusalError):
@@ -540,7 +438,7 @@ class TestAIToolProficiencyChoiceResolver:
     def test_no_placeholder_skips_llm(self) -> None:
         mock_llm = MagicMock()
         block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(tool_proficiencies=(ToolProficiency.ALCHEMISTS_SUPPLIES,))
         result = block.apply(state)
@@ -554,7 +452,7 @@ class TestAIToolProficiencyChoiceResolver:
         )
 
         block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(tool_proficiencies=(ToolProficiency.ANY_OF_YOUR_CHOICE,))
         result = block.apply(state)
@@ -568,7 +466,7 @@ class TestAIToolProficiencyChoiceResolver:
         )
 
         block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(tool_proficiencies=(GamingSet.ANY_OF_YOUR_CHOICE,))
         result = block.apply(state)
@@ -582,7 +480,7 @@ class TestAIToolProficiencyChoiceResolver:
         )
 
         block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(tool_proficiencies=(MusicalInstrument.ANY_OF_YOUR_CHOICE,))
         result = block.apply(state)
@@ -594,7 +492,7 @@ class TestAIToolProficiencyChoiceResolver:
         mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
 
         block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(tool_proficiencies=(ToolProficiency.ANY_OF_YOUR_CHOICE,))
         with pytest.raises(LLMRefusalError):
@@ -610,7 +508,7 @@ class TestAIFeatChoiceResolverExtraBranches:
         )
 
         block = AIFeatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(feats=(FeatName.ANY_OF_YOUR_CHOICE,))
         with pytest.raises(ValueError, match="AI returned"):
@@ -621,7 +519,7 @@ class TestAIFeatChoiceResolverExtraBranches:
         mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
 
         block = AIFeatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(feats=(FeatName.ANY_OF_YOUR_CHOICE,))
         with pytest.raises(LLMRefusalError):
@@ -637,7 +535,7 @@ class TestAISkillChoiceResolverExtraBranches:
         )
 
         block = AISkillChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(
             n_skill_choices=2,
@@ -655,7 +553,7 @@ class TestAISkillChoiceResolverExtraBranches:
         )
 
         block = AISkillChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(
             n_skill_choices=2,
@@ -669,7 +567,7 @@ class TestAISkillChoiceResolverExtraBranches:
         mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
 
         block = AISkillChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(
             n_skill_choices=2,
@@ -688,7 +586,7 @@ class TestAIStatChoiceResolverExtraBranches:
         )
 
         block = AIStatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = _StatsBP(n_stat_choices=2)
         with pytest.raises(ValueError, match="AI distributed"):
@@ -701,7 +599,7 @@ class TestAIStatChoiceResolverExtraBranches:
         )
 
         block = AIStatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = _StatsBP(n_stat_choices=2)
         with pytest.raises(ValueError, match="negative increase"):
@@ -712,7 +610,7 @@ class TestAIStatChoiceResolverExtraBranches:
         mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
 
         block = AIStatChoiceResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = _StatsBP(n_stat_choices=2)
         with pytest.raises(LLMRefusalError):
@@ -728,7 +626,7 @@ class TestAIEquipmentChooserExtraBranches:
         )
 
         block = AIEquipmentChooser.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(
             equipment_choices=(
@@ -746,7 +644,7 @@ class TestAIEquipmentChooserExtraBranches:
         )
 
         block = AIEquipmentChooser.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(equipment_choices=((WeaponName.DAGGER,),))
         with pytest.raises(ValidationError):
@@ -757,7 +655,7 @@ class TestAIEquipmentChooserExtraBranches:
         mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
 
         block = AIEquipmentChooser.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
+            llm=mock_llm,
         )
         state = Blueprint(equipment_choices=((WeaponName.DAGGER,),))
         with pytest.raises(LLMRefusalError):
@@ -772,7 +670,6 @@ class TestAIMagicalItemChooserExtraBranches:
 
         block = AIMagicalItemChooser.model_construct(
             llm=mock_llm,
-            formatter=BlueprintFormatter(),
             n_common=1,
             n_uncommon=0,
             n_rare=0,
@@ -797,7 +694,6 @@ class TestAIMagicalItemChooserExtraBranches:
 
         block = AIMagicalItemChooser.model_construct(
             llm=mock_llm,
-            formatter=BlueprintFormatter(),
             n_common=1,
             n_uncommon=0,
             n_rare=0,
@@ -835,7 +731,6 @@ class TestAIMagicalItemChooserRarityBranches:
 
         block = AIMagicalItemChooser.model_construct(
             llm=mock_llm,
-            formatter=BlueprintFormatter(),
             n_common=0,
             n_uncommon=1,
             n_rare=1,
@@ -851,7 +746,6 @@ class TestAIMagicalItemChooserRarityBranches:
     def test_build_prompt_no_items_returns_empty(self) -> None:
         block = AIMagicalItemChooser.model_construct(
             llm=MagicMock(),
-            formatter=BlueprintFormatter(),
             n_common=0,
             n_uncommon=0,
             n_rare=0,
@@ -867,30 +761,22 @@ class TestAIMagicalItemChooserRarityBranches:
 @pytest.mark.unit
 class TestAIToolProficiencyChoiceResolverMethods:
     def test_select_tool_proficiency_not_implemented(self) -> None:
-        block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AIToolProficiencyChoiceResolver.model_construct()
         with pytest.raises(NotImplementedError):
             block.select_tool_proficiency([], Blueprint())
 
     def test_select_gaming_set_not_implemented(self) -> None:
-        block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AIToolProficiencyChoiceResolver.model_construct()
         with pytest.raises(NotImplementedError):
             block.select_gaming_set([], Blueprint())
 
     def test_select_musical_instrument_not_implemented(self) -> None:
-        block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AIToolProficiencyChoiceResolver.model_construct()
         with pytest.raises(NotImplementedError):
             block.select_musical_instrument([], Blueprint())
 
     def test_build_prompt_no_placeholders_returns_empty(self) -> None:
-        block = AIToolProficiencyChoiceResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AIToolProficiencyChoiceResolver.model_construct()
         state = Blueprint(tool_proficiencies=(ToolProficiency.ALCHEMISTS_SUPPLIES,))
         assert block._build_prompt(state) == ""
 
@@ -898,9 +784,7 @@ class TestAIToolProficiencyChoiceResolverMethods:
         with patch.object(
             AIToolProficiencyChoiceResolver, "_build_prompt", return_value=""
         ):
-            block = AIToolProficiencyChoiceResolver.model_construct(
-                llm=MagicMock(), formatter=BlueprintFormatter()
-            )
+            block = AIToolProficiencyChoiceResolver.model_construct()
             state = Blueprint(tool_proficiencies=(ToolProficiency.ANY_OF_YOUR_CHOICE,))
             result = block.apply(state)
         assert result is not None
@@ -909,23 +793,17 @@ class TestAIToolProficiencyChoiceResolverMethods:
 @pytest.mark.unit
 class TestAILanguageChoiceResolverMethods:
     def test_select_from_available_not_implemented(self) -> None:
-        block = AILanguageChoiceResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AILanguageChoiceResolver.model_construct()
         with pytest.raises(NotImplementedError):
             block._select_from_available([], Blueprint())
 
     def test_build_prompt_no_placeholders_returns_empty(self) -> None:
-        block = AILanguageChoiceResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AILanguageChoiceResolver.model_construct()
         assert block._build_prompt(Blueprint(languages=(Language.COMMON,))) == ""
 
     def test_get_change_empty_prompt_returns_early(self) -> None:
         with patch.object(AILanguageChoiceResolver, "_build_prompt", return_value=""):
-            block = AILanguageChoiceResolver.model_construct(
-                llm=MagicMock(), formatter=BlueprintFormatter()
-            )
+            block = AILanguageChoiceResolver.model_construct()
             state = Blueprint(languages=(Language.ANY_OF_YOUR_CHOICE,))
             result = block.apply(state)
         assert result is not None
@@ -934,15 +812,11 @@ class TestAILanguageChoiceResolverMethods:
 @pytest.mark.unit
 class TestAIFeatChoiceResolverBuildPrompt:
     def test_build_prompt_no_placeholders_returns_empty(self) -> None:
-        block = AIFeatChoiceResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AIFeatChoiceResolver.model_construct()
         assert block._build_prompt(Blueprint(feats=(FeatName.ALERT,))) == ""
 
     def test_build_prompt_level_one_adds_asi_note(self) -> None:
-        block = AIFeatChoiceResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
+        block = AIFeatChoiceResolver.model_construct()
         state = Blueprint(
             feats=(FeatName.ANY_OF_YOUR_CHOICE,), classes=_Level1ClassLevels()
         )
@@ -951,65 +825,10 @@ class TestAIFeatChoiceResolverBuildPrompt:
 
     def test_get_change_empty_prompt_returns_early(self) -> None:
         with patch.object(AIFeatChoiceResolver, "_build_prompt", return_value=""):
-            block = AIFeatChoiceResolver.model_construct(
-                llm=MagicMock(), formatter=BlueprintFormatter()
-            )
+            block = AIFeatChoiceResolver.model_construct()
             state = Blueprint(feats=(FeatName.ANY_OF_YOUR_CHOICE,))
             result = block.apply(state)
         assert result is not None
-
-
-@pytest.mark.unit
-class TestAIAllNonStatChoicesResolverBuildPrompt:
-    def test_feat_level_one_note(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = ChoicePackage(
-            feats=[FeatName.ALERT]
-        )
-
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        state = Blueprint(
-            stats=_DEFAULT_STATS,
-            feats=(FeatName.ANY_OF_YOUR_CHOICE,),
-            classes=_Level1ClassLevels(),
-        )
-        result = block.apply(state)
-        assert result is not None
-
-    def test_stat_choices_section_in_prompt(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = ChoicePackage(
-            languages=[Language.COMMON]
-        )
-
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        state = Blueprint(
-            stats=_DEFAULT_STATS,
-            n_stat_choices=2,
-            languages=(Language.ANY_OF_YOUR_CHOICE,),
-        )
-        result = block.apply(state)
-        assert result is not None
-
-    def test_skill_choices_section_in_prompt(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = ChoicePackage()
-
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=mock_llm, formatter=BlueprintFormatter()
-        )
-        result = block.apply(Blueprint(stats=_DEFAULT_STATS, n_skill_choices=2))
-        assert result is not None
-
-    def test_build_prompt_all_zero_returns_empty(self) -> None:
-        block = AIAllNonStatChoicesResolver.model_construct(
-            llm=MagicMock(), formatter=BlueprintFormatter()
-        )
-        assert block._build_prompt(Blueprint(), 0, 0, 0, 0) == ""
 
 
 @pytest.mark.unit
@@ -1039,17 +858,3 @@ class TestEquipmentChooserBasePickEquipment:
         block = _ConcreteEquipmentChooser.model_construct()
         with pytest.raises(NotImplementedError):
             block._pick_equipment(Blueprint())
-
-
-@pytest.mark.unit
-class TestAIAllChoicesResolverGetChange:
-    def test_get_change_with_null_blocks(self) -> None:
-        resolver = AIAllChoicesResolver.model_construct(
-            type=BuildingBlockType.AI_ALL_CHOICES_RESOLVER,
-            stat_choice_resolver=NullBlock(),
-            equipment_chooser=NullBlock(),
-            feat_choice_resolver=NullBlock(),
-            all_non_stat_choices_resolver=NullBlock(),
-        )
-        result = resolver.apply(Blueprint())
-        assert result is not None

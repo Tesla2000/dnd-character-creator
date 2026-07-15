@@ -71,7 +71,7 @@ resource "aws_cloudfront_distribution" "frontend" {
 
   # Route API calls to Lambda
   dynamic "ordered_cache_behavior" {
-    for_each = ["/create_character", "/create_character/*", "/openapi.json", "/docs", "/docs/*"]
+    for_each = ["/create_character", "/create_character/*", "/convert_character_json", "/openapi.json", "/docs", "/docs/*"]
     content {
       path_pattern           = ordered_cache_behavior.value
       target_origin_id       = local.api_origin_id

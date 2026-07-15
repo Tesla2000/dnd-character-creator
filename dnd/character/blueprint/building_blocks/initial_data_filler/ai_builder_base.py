@@ -22,6 +22,7 @@ class AIBuilderBase(InitialDataFiller, ABC):
     )
 
     llm: RaisingService = Field(
+        exclude=True,
         default_factory=lambda: RaisingService(service=OpenAIService()),
         description="Language model for making AI-powered decisions",
     )

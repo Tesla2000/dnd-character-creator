@@ -8,11 +8,10 @@ interface Props {
 }
 
 const CATEGORY_ORDER = [
+  "Leveling",
   "Builders",
-  "Identity",
   "Stats",
   "Race",
-  "Level-Up",
   "Spells",
   "Subclass",
   "Feats",
@@ -24,6 +23,7 @@ const CATEGORY_ORDER = [
   "AI",
   "Utility",
   "Other",
+  "Identity",
 ];
 
 export function BlockPicker({ available, onSelect, onClose }: Props) {

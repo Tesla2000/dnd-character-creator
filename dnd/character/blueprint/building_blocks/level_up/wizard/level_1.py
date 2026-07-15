@@ -15,6 +15,13 @@ from dnd.choices.equipment_creation.weapons import WeaponName
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import WeaponProficiency
 from dnd.skill_proficiency import Skill
+from dnd.character.blueprint.building_blocks.skill_choice_resolver import (
+    AnySkillChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.skill_choice_resolver.random import (
+    RandomSkillChoiceResolver,
+)
+from pydantic import Field
 
 
 class WizardLevel1(
@@ -26,9 +33,12 @@ class WizardLevel1(
     """Increments wizard to level 1 and grants first-level proficiencies and choices."""
 
     type: Literal[BuildingBlockType.WIZARD_LEVEL_1] = BuildingBlockType.WIZARD_LEVEL_1
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
 
     def _update_blueprint(self, blueprint: _BPT) -> _BPT:
-        return blueprint.model_copy(
+        result = blueprint.model_copy(
             update={
                 "classes": blueprint.classes.model_copy(update={"wizard": 1}),
                 "weapon_proficiencies": blueprint.weapon_proficiencies
@@ -76,3 +86,4 @@ class WizardLevel1(
                 ),
             }
         )
+        return self.skill_choice_resolver.apply(result)

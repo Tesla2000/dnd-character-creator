@@ -1,4 +1,4 @@
-name: Build and Deploy Lambda
+name: Build and Deploy
 
 on:
   push:
@@ -54,3 +54,24 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform
         run: terraform apply -auto-approve -input=false -var="environment=production" -var="image_tag=${{ github.sha }}"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm ci && npm run build
+
+      - name: Upload frontend to S3
+        working-directory: terraform
+        run: |
+          BUCKET=$(terraform output -raw frontend_bucket)
+          aws s3 sync ../frontend/dist/ s3://$BUCKET/ --delete
+
+      - name: Invalidate CloudFront cache
+        working-directory: terraform
+        run: |
+          DIST_ID=$(terraform output -raw cloudfront_distribution_id)
+          aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"

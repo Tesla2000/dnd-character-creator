@@ -1,7 +1,6 @@
-from typing import Any
-
 import pytest
 
+from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
     D6HealthIncreaseAverage,
 )
@@ -410,7 +409,7 @@ _SORC_INPUT_BP = Blueprint(race=Race.HUMAN, stats=_STATS, health_base=6)
         WizardLevel17(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
     ],
 )
-def test_wizard_shared_level_apply(block: Any) -> None:
+def test_wizard_shared_level_apply(block: BuildingBlock) -> None:
     result = block.apply(_WIZ_BP)
     assert result is not None
 
@@ -468,7 +467,7 @@ def test_wizard_level20_apply() -> None:
         WizardLevel2WarMagic(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
     ],
 )
-def test_wizard_subclass_level2_apply(block: Any) -> None:
+def test_wizard_subclass_level2_apply(block: BuildingBlock) -> None:
     result = block.apply(_WIZ_BP)
     assert result is not None
 
@@ -558,7 +557,7 @@ def test_wizard_subclass_level2_apply(block: Any) -> None:
         WizardLevel14WarMagic(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
     ],
 )
-def test_wizard_subclass_feature_level_apply(block: Any) -> None:
+def test_wizard_subclass_feature_level_apply(block: BuildingBlock) -> None:
     result = block.apply(_WIZ_BP)
     assert result is not None
 
@@ -593,7 +592,7 @@ def test_wizard_subclass_feature_level_apply(block: Any) -> None:
         ),
     ],
 )
-def test_sorcerer_level1_subclass_apply(block: Any) -> None:
+def test_sorcerer_level1_subclass_apply(block: BuildingBlock) -> None:
     result = block.apply(_SORC_INPUT_BP)
     assert result is not None
     assert isinstance(result, SorcererBlueprint)
@@ -621,7 +620,7 @@ def test_sorcerer_level1_subclass_apply(block: Any) -> None:
         SorcererLevel20(health_increase=_SORC_HEALTH, spell_assigner=_SORC_SPELLS),
     ],
 )
-def test_sorcerer_shared_level_apply(block: Any) -> None:
+def test_sorcerer_shared_level_apply(block: BuildingBlock) -> None:
     result = block.apply(_SORC_BP)
     assert result is not None
 
@@ -704,6 +703,6 @@ def test_sorcerer_shared_level_apply(block: Any) -> None:
         ),
     ],
 )
-def test_sorcerer_subclass_feature_level_apply(block: Any) -> None:
+def test_sorcerer_subclass_feature_level_apply(block: BuildingBlock) -> None:
     result = block.apply(_SORC_BP)
     assert result is not None

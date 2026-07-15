@@ -1,8 +1,11 @@
 import json
 import sys
+import termios
+import tty
+from collections.abc import Callable, Iterator
+from functools import partial
 from itertools import islice
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -10,6 +13,7 @@ import dnd.fight._attack as attack_module
 import dnd.fight._creature as creature_module
 import dnd.fight._saving_throw as saving_throw_module
 import dnd.fight._spell_attack as spell_attack_module
+import scripts.fight as fight_module
 from dnd.character._creature_base import _CreatureBase
 from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic
@@ -35,6 +39,33 @@ from scripts.fight import (
     _select,
     _stats,
 )
+
+
+class _Rec:
+    """Records calls; replaces unittest.mock.patch."""
+
+    def __init__(
+        self, *values: object, fn: Callable[..., object] | None = None
+    ) -> None:
+        self._it: Iterator[object] | None = iter(values) if values else None
+        self._fn: Callable[..., object] | None = fn
+        self.call_args_list: list[tuple[tuple[object, ...], dict[str, object]]] = []
+        self.call_count = 0
+
+    def __call__(self, *args: object, **kwargs: object) -> object:
+        self.call_args_list.append((args, kwargs))
+        self.call_count += 1
+        if self._fn is not None:
+            return self._fn(*args, **kwargs)
+        if self._it is not None:
+            return next(self._it)
+        return None
+
+    def __get__(self, obj: object, objtype: object = None) -> object:
+        if obj is None:
+            return self
+        return partial(self, obj)
+
 
 _STATS = Stats(
     strength=10,
@@ -85,36 +116,34 @@ class TestAttack:
         n_dice=2, dice_size=6, attack_bonus=3, damage_bonus=1, name="sword"
     )
 
-    def test_perform_normal_rolls(self) -> None:
-        with patch.object(
-            attack_module, "randint", side_effect=[10, 15, 4, 3, 2, 1, 3, 2]
-        ):
-            result = self._attack.perform()
+    def test_perform_normal_rolls(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        rec = _Rec(10, 15, 4, 3, 2, 1, 3, 2)
+        monkeypatch.setattr(attack_module, "randint", rec)
+        result = self._attack.perform()
         assert result.first_roll == 13
         assert result.second_roll == 18
         assert isinstance(result, _AttackResult)
 
-    def test_perform_first_roll_critical(self) -> None:
-        with patch.object(
-            attack_module, "randint", side_effect=[20, 10, 3, 4, 2, 1, 3, 2]
-        ):
-            result = self._attack.perform()
+    def test_perform_first_roll_critical(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        rec = _Rec(20, 10, 3, 4, 2, 1, 3, 2)
+        monkeypatch.setattr(attack_module, "randint", rec)
+        result = self._attack.perform()
         assert result.first_roll == "critical"
         assert result.second_roll == 13
 
-    def test_perform_second_roll_critical(self) -> None:
-        with patch.object(
-            attack_module, "randint", side_effect=[10, 20, 3, 4, 2, 1, 3, 2]
-        ):
-            result = self._attack.perform()
+    def test_perform_second_roll_critical(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        rec = _Rec(10, 20, 3, 4, 2, 1, 3, 2)
+        monkeypatch.setattr(attack_module, "randint", rec)
+        result = self._attack.perform()
         assert result.first_roll == 13
         assert result.second_roll == "critical"
 
-    def test_perform_both_critical(self) -> None:
-        with patch.object(
-            attack_module, "randint", side_effect=[20, 20, 3, 4, 2, 1, 3, 2]
-        ):
-            result = self._attack.perform()
+    def test_perform_both_critical(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        rec = _Rec(20, 20, 3, 4, 2, 1, 3, 2)
+        monkeypatch.setattr(attack_module, "randint", rec)
+        result = self._attack.perform()
         assert result.first_roll == "critical"
         assert result.second_roll == "critical"
 
@@ -147,7 +176,7 @@ class TestAttackResult:
 
 @pytest.mark.unit
 class TestSavingThrow:
-    def test_perform_half_on_success(self) -> None:
+    def test_perform_half_on_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
         st = _SavingThrow(
             n_dice=2,
             dice_size=6,
@@ -157,15 +186,16 @@ class TestSavingThrow:
             saving_throw_type=Statistic.DEXTERITY,
             half_on_success=True,
         )
-        with patch.object(saving_throw_module, "randint", side_effect=[4, 4]):
-            result = st.perform()
+        rec = _Rec(4, 4)
+        monkeypatch.setattr(saving_throw_module, "randint", rec)
+        result = st.perform()
         assert isinstance(result, _SavingThrowResult)
         assert result.dc == 15
         assert result.saving_throw_type == Statistic.DEXTERITY
         assert result.damage_on_fail == 8
         assert result.damage_on_success == 4
 
-    def test_perform_no_half_on_success(self) -> None:
+    def test_perform_no_half_on_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
         st = _SavingThrow(
             n_dice=1,
             dice_size=8,
@@ -175,8 +205,9 @@ class TestSavingThrow:
             saving_throw_type=Statistic.CONSTITUTION,
             half_on_success=False,
         )
-        with patch.object(saving_throw_module, "randint", side_effect=[6]):
-            result = st.perform()
+        rec = _Rec(6)
+        monkeypatch.setattr(saving_throw_module, "randint", rec)
+        result = st.perform()
         assert result.damage_on_fail == 8
         assert result.damage_on_success == 0
 
@@ -192,17 +223,16 @@ class TestSavingThrow:
 
 @pytest.mark.unit
 class TestMultiAttack:
-    def test_perform_calls_each_attack(self) -> None:
+    def test_perform_calls_each_attack(self, monkeypatch: pytest.MonkeyPatch) -> None:
         attack1 = _Attack(n_dice=1, dice_size=6, attack_bonus=2, damage_bonus=1)
         attack2 = _Attack(n_dice=1, dice_size=8, attack_bonus=3, damage_bonus=2)
         multi = _MultiAttack(attacks=(attack1, attack2))
         mock_result = _AttackResult(
             first_roll=10, second_roll=15, damage=5, crit_damage=8
         )
-        with patch.object(
-            _Attack, _Attack.perform.__name__, return_value=mock_result
-        ) as mock_perform:
-            results = multi.perform()
+        mock_perform = _Rec(fn=lambda self: mock_result)
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, mock_perform)
+        results = multi.perform()
         assert mock_perform.call_count == 2
         assert results == [mock_result, mock_result]
 
@@ -220,41 +250,41 @@ class TestSpellAttack:
         name="magic missile",
     )
 
-    def test_perform_returns_one_result_per_level(self) -> None:
-        with patch.object(spell_attack_module, "randint", return_value=10):
-            results = self._spell.perform()
+    def test_perform_returns_one_result_per_level(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(spell_attack_module, "randint", lambda *a: 10)
+        results = self._spell.perform()
         assert len(results) == 3
 
-    def test_perform_at_level_critical(self) -> None:
-        with patch.object(
-            spell_attack_module, "randint", side_effect=[20, 10, 3, 4, 2]
-        ):
-            result = self._spell._perform_at_level(1)
+    def test_perform_at_level_critical(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        rec = _Rec(20, 10, 3, 4, 2)
+        monkeypatch.setattr(spell_attack_module, "randint", rec)
+        result = self._spell._perform_at_level(1)
         assert result.first_roll == "critical"
         assert result.second_roll == 15
 
-    def test_perform_at_level_second_critical(self) -> None:
-        with patch.object(
-            spell_attack_module, "randint", side_effect=[10, 20, 3, 4, 2, 1]
-        ):
-            result = self._spell._perform_at_level(1)
+    def test_perform_at_level_second_critical(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        rec = _Rec(10, 20, 3, 4, 2, 1)
+        monkeypatch.setattr(spell_attack_module, "randint", rec)
+        result = self._spell._perform_at_level(1)
         assert result.first_roll == 15
         assert result.second_roll == "critical"
 
-    def test_extra_dice_scale_with_level(self) -> None:
-        with patch.object(spell_attack_module, "randint", return_value=3):
-            result_l1 = self._spell._perform_at_level(1)
-            result_l2 = self._spell._perform_at_level(2)
+    def test_extra_dice_scale_with_level(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(spell_attack_module, "randint", lambda *a: 3)
+        result_l1 = self._spell._perform_at_level(1)
+        result_l2 = self._spell._perform_at_level(2)
         assert result_l2.damage > result_l1.damage
 
 
 @pytest.mark.unit
 class TestCreatureInit:
-    def test_roll_initiative_with_bonus(self) -> None:
-        with patch.object(creature_module, "randint", return_value=10):
-            creature = _Creature.model_validate(
-                {**_CREATURE_DATA, "initiative_bonus": 5}
-            )
+    def test_roll_initiative_with_bonus(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(creature_module, "randint", lambda *a: 10)
+        creature = _Creature.model_validate({**_CREATURE_DATA, "initiative_bonus": 5})
         assert creature.initiative == 15
 
     def test_roll_initiative_invalid_bonus_type(self) -> None:
@@ -263,9 +293,9 @@ class TestCreatureInit:
                 {**_CREATURE_DATA, "initiative_bonus": 21.37}
             )
 
-    def test_default_type_uses_name(self) -> None:
-        with patch.object(creature_module, "randint", return_value=1):
-            creature = _Creature.model_validate(_CREATURE_DATA)
+    def test_default_type_uses_name(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(creature_module, "randint", lambda *a: 1)
+        creature = _Creature.model_validate(_CREATURE_DATA)
         assert creature.type == "test"
 
     def test_default_type_invalid_name_type(self) -> None:
@@ -328,20 +358,20 @@ class TestActionGroups:
         half_on_success=False,
     )
 
-    def test_or_perform(self) -> None:
+    def test_or_perform(self, monkeypatch: pytest.MonkeyPatch) -> None:
         mock_result = _AttackResult(
             first_roll=10, second_roll=8, damage=4, crit_damage=0
         )
-        with patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result):
-            result = _Or(options=(self._attack,)).perform()
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        result = _Or(options=(self._attack,)).perform()
         assert result == mock_result
 
-    def test_and_perform(self) -> None:
+    def test_and_perform(self, monkeypatch: pytest.MonkeyPatch) -> None:
         mock_result = _AttackResult(
             first_roll=10, second_roll=8, damage=4, crit_damage=0
         )
-        with patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result):
-            results = _And(options=(self._attack, self._attack)).perform()
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        results = _And(options=(self._attack, self._attack)).perform()
         assert len(results) == 2
 
 
@@ -435,25 +465,25 @@ class TestFightHelpers:
         result = _select((attack,), "Choose")
         assert result is attack
 
-    def test_select_multiple_options(self) -> None:
+    def test_select_multiple_options(self, monkeypatch: pytest.MonkeyPatch) -> None:
         attack1 = _Attack(
             n_dice=1, dice_size=6, attack_bonus=2, damage_bonus=0, name="claw"
         )
         attack2 = _Attack(
             n_dice=1, dice_size=8, attack_bonus=3, damage_bonus=1, name="bite"
         )
-        with patch("scripts.fight._pick", return_value=1):
-            result = _select((attack1, attack2), "Choose")
+        monkeypatch.setattr(fight_module, "_pick", lambda *a, **k: 1)
+        result = _select((attack1, attack2), "Choose")
         assert result is attack2
 
-    def test_fire_non_attack(self) -> None:
+    def test_fire_non_attack(self, monkeypatch: pytest.MonkeyPatch) -> None:
         na = _NonAttack(name="Roar", description="loud noise")
         written: list[str] = []
-        with patch("sys.stdout.write", side_effect=written.append):
-            _fire("monster", na)
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        _fire("monster", na)
         assert any("Roar" in s and "loud noise" in s for s in written)
 
-    def test_fire_and(self) -> None:
+    def test_fire_and(self, monkeypatch: pytest.MonkeyPatch) -> None:
         attack = _Attack(
             n_dice=1, dice_size=6, attack_bonus=2, damage_bonus=0, name="claw"
         )
@@ -462,14 +492,12 @@ class TestFightHelpers:
             first_roll=10, second_roll=8, damage=4, crit_damage=0
         )
         written: list[str] = []
-        with (
-            patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
-            patch("sys.stdout.write", side_effect=written.append),
-        ):
-            _fire("wolf", and_group)
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        _fire("wolf", and_group)
         assert len(written) == 2
 
-    def test_fire_attack(self) -> None:
+    def test_fire_attack(self, monkeypatch: pytest.MonkeyPatch) -> None:
         attack = _Attack(
             n_dice=1, dice_size=6, attack_bonus=2, damage_bonus=0, name="bite"
         )
@@ -477,14 +505,12 @@ class TestFightHelpers:
             first_roll=10, second_roll=8, damage=4, crit_damage=0
         )
         written: list[str] = []
-        with (
-            patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
-            patch("sys.stdout.write", side_effect=written.append),
-        ):
-            _fire("wolf", attack)
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        _fire("wolf", attack)
         assert any("wolf" in s and "bite" in s for s in written)
 
-    def test_fire_or_single(self) -> None:
+    def test_fire_or_single(self, monkeypatch: pytest.MonkeyPatch) -> None:
         attack = _Attack(
             n_dice=1, dice_size=6, attack_bonus=2, damage_bonus=0, name="scratch"
         )
@@ -493,14 +519,12 @@ class TestFightHelpers:
             first_roll=10, second_roll=8, damage=4, crit_damage=0
         )
         written: list[str] = []
-        with (
-            patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
-            patch("sys.stdout.write", side_effect=written.append),
-        ):
-            _fire("cat", or_group)
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        _fire("cat", or_group)
         assert any("scratch" in s for s in written)
 
-    def test_fire_or_multiple(self) -> None:
+    def test_fire_or_multiple(self, monkeypatch: pytest.MonkeyPatch) -> None:
         attack1 = _Attack(
             n_dice=1, dice_size=6, attack_bonus=2, damage_bonus=0, name="claw"
         )
@@ -512,112 +536,111 @@ class TestFightHelpers:
             first_roll=10, second_roll=8, damage=4, crit_damage=0
         )
         written: list[str] = []
-        with (
-            patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
-            patch("scripts.fight._pick", return_value=0),
-            patch("sys.stdout.write", side_effect=written.append),
-        ):
-            _fire("monster", or_group)
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        monkeypatch.setattr(fight_module, "_pick", lambda *a, **k: 0)
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        _fire("monster", or_group)
         assert len(written) >= 1
 
 
 @pytest.mark.unit
 class TestPick:
-    def test_pick_non_tty_empty_input_returns_zero(self) -> None:
-        with (
-            patch.object(sys.stdin, "isatty", return_value=False),
-            patch("builtins.input", return_value=""),
-            patch("sys.stdout.write"),
-        ):
-            result = _pick(["option1", "option2"], "Choose:")
+    def test_pick_non_tty_empty_input_returns_zero(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+        monkeypatch.setattr("builtins.input", lambda *a, **k: "")
+        monkeypatch.setattr(sys.stdout, "write", lambda *a: None)
+        result = _pick(["option1", "option2"], "Choose:")
         assert result == 0
 
-    def test_pick_non_tty_valid_number(self) -> None:
-        with (
-            patch.object(sys.stdin, "isatty", return_value=False),
-            patch("builtins.input", side_effect=["2"]),
-            patch("sys.stdout.write"),
-        ):
-            result = _pick(["option1", "option2"], "Choose:")
+    def test_pick_non_tty_valid_number(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+        rec = _Rec("2")
+        monkeypatch.setattr("builtins.input", rec)
+        monkeypatch.setattr(sys.stdout, "write", lambda *a: None)
+        result = _pick(["option1", "option2"], "Choose:")
         assert result == 1
 
-    def test_pick_non_tty_invalid_then_valid(self) -> None:
-        with (
-            patch.object(sys.stdin, "isatty", return_value=False),
-            patch("builtins.input", side_effect=["99", "abc", "1"]),
-            patch("sys.stdout.write"),
-        ):
-            result = _pick(["option1", "option2"], "Choose:")
+    def test_pick_non_tty_invalid_then_valid(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+        rec = _Rec("99", "abc", "1")
+        monkeypatch.setattr("builtins.input", rec)
+        monkeypatch.setattr(sys.stdout, "write", lambda *a: None)
+        result = _pick(["option1", "option2"], "Choose:")
         assert result == 0
 
-    def test_pick_tty_enter_key(self) -> None:
-        with (
-            patch.object(sys.stdin, "isatty", return_value=True),
-            patch.object(sys.stdin, "fileno", return_value=0),
-            patch("termios.tcgetattr", return_value=[]),
-            patch("tty.setraw"),
-            patch("termios.tcsetattr"),
-            patch.object(sys.stdin, "read", side_effect=["\r"]),
-            patch("sys.stdout.write"),
-            patch("sys.stdout.flush"),
-        ):
-            result = _pick(["option1", "option2"], "Choose:")
+    def test_pick_tty_enter_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
+        monkeypatch.setattr(sys.stdin, "fileno", lambda: 0)
+        monkeypatch.setattr(termios, "tcgetattr", lambda *a: [])
+        monkeypatch.setattr(tty, "setraw", lambda *a: None)
+        monkeypatch.setattr(termios, "tcsetattr", lambda *a: None)
+        rec = _Rec("\r")
+        monkeypatch.setattr(sys.stdin, "read", rec)
+        monkeypatch.setattr(sys.stdout, "write", lambda *a: None)
+        monkeypatch.setattr(sys.stdout, "flush", lambda: None)
+        result = _pick(["option1", "option2"], "Choose:")
         assert result == 0
 
-    def test_pick_tty_down_arrow_then_enter(self) -> None:
-        with (
-            patch.object(sys.stdin, "isatty", return_value=True),
-            patch.object(sys.stdin, "fileno", return_value=0),
-            patch("termios.tcgetattr", return_value=[]),
-            patch("tty.setraw"),
-            patch("termios.tcsetattr"),
-            patch.object(sys.stdin, "read", side_effect=["\x1b", "[B", "\r"]),
-            patch("sys.stdout.write"),
-            patch("sys.stdout.flush"),
-        ):
-            result = _pick(["option1", "option2"], "Choose:")
+    def test_pick_tty_down_arrow_then_enter(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
+        monkeypatch.setattr(sys.stdin, "fileno", lambda: 0)
+        monkeypatch.setattr(termios, "tcgetattr", lambda *a: [])
+        monkeypatch.setattr(tty, "setraw", lambda *a: None)
+        monkeypatch.setattr(termios, "tcsetattr", lambda *a: None)
+        rec = _Rec("\x1b", "[B", "\r")
+        monkeypatch.setattr(sys.stdin, "read", rec)
+        monkeypatch.setattr(sys.stdout, "write", lambda *a: None)
+        monkeypatch.setattr(sys.stdout, "flush", lambda: None)
+        result = _pick(["option1", "option2"], "Choose:")
         assert result == 1
 
-    def test_pick_tty_up_arrow_clamps_at_zero(self) -> None:
-        with (
-            patch.object(sys.stdin, "isatty", return_value=True),
-            patch.object(sys.stdin, "fileno", return_value=0),
-            patch("termios.tcgetattr", return_value=[]),
-            patch("tty.setraw"),
-            patch("termios.tcsetattr"),
-            patch.object(sys.stdin, "read", side_effect=["\x1b", "[A", "\r"]),
-            patch("sys.stdout.write"),
-            patch("sys.stdout.flush"),
-        ):
-            result = _pick(["option1", "option2"], "Choose:")
+    def test_pick_tty_up_arrow_clamps_at_zero(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
+        monkeypatch.setattr(sys.stdin, "fileno", lambda: 0)
+        monkeypatch.setattr(termios, "tcgetattr", lambda *a: [])
+        monkeypatch.setattr(tty, "setraw", lambda *a: None)
+        monkeypatch.setattr(termios, "tcsetattr", lambda *a: None)
+        rec = _Rec("\x1b", "[A", "\r")
+        monkeypatch.setattr(sys.stdin, "read", rec)
+        monkeypatch.setattr(sys.stdout, "write", lambda *a: None)
+        monkeypatch.setattr(sys.stdout, "flush", lambda: None)
+        result = _pick(["option1", "option2"], "Choose:")
         assert result == 0
 
-    def test_pick_tty_ctrl_c_raises(self) -> None:
-        with (
-            patch.object(sys.stdin, "isatty", return_value=True),
-            patch.object(sys.stdin, "fileno", return_value=0),
-            patch("termios.tcgetattr", return_value=[]),
-            patch("tty.setraw"),
-            patch("termios.tcsetattr"),
-            patch.object(sys.stdin, "read", side_effect=["\x03"]),
-            patch("sys.stdout.write"),
-            patch("sys.stdout.flush"),
-        ):
-            with pytest.raises(KeyboardInterrupt):
-                _pick(["option1", "option2"], "Choose:")
+    def test_pick_tty_ctrl_c_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
+        monkeypatch.setattr(sys.stdin, "fileno", lambda: 0)
+        monkeypatch.setattr(termios, "tcgetattr", lambda *a: [])
+        monkeypatch.setattr(tty, "setraw", lambda *a: None)
+        monkeypatch.setattr(termios, "tcsetattr", lambda *a: None)
+        rec = _Rec("\x03")
+        monkeypatch.setattr(sys.stdin, "read", rec)
+        monkeypatch.setattr(sys.stdout, "write", lambda *a: None)
+        monkeypatch.setattr(sys.stdout, "flush", lambda: None)
+        with pytest.raises(KeyboardInterrupt):
+            _pick(["option1", "option2"], "Choose:")
 
-    def test_pick_tty_unknown_escape_ignored(self) -> None:
-        with (
-            patch.object(sys.stdin, "isatty", return_value=True),
-            patch.object(sys.stdin, "fileno", return_value=0),
-            patch("termios.tcgetattr", return_value=[]),
-            patch("tty.setraw"),
-            patch("termios.tcsetattr"),
-            patch.object(sys.stdin, "read", side_effect=["\x1b", "[X", "\n"]),
-            patch("sys.stdout.write"),
-            patch("sys.stdout.flush"),
-        ):
-            result = _pick(["option1", "option2"], "Choose:")
+    def test_pick_tty_unknown_escape_ignored(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
+        monkeypatch.setattr(sys.stdin, "fileno", lambda: 0)
+        monkeypatch.setattr(termios, "tcgetattr", lambda *a: [])
+        monkeypatch.setattr(tty, "setraw", lambda *a: None)
+        monkeypatch.setattr(termios, "tcsetattr", lambda *a: None)
+        rec = _Rec("\x1b", "[X", "\n")
+        monkeypatch.setattr(sys.stdin, "read", rec)
+        monkeypatch.setattr(sys.stdout, "write", lambda *a: None)
+        monkeypatch.setattr(sys.stdout, "flush", lambda: None)
+        result = _pick(["option1", "option2"], "Choose:")
         assert result == 0
 
 
@@ -627,23 +650,27 @@ class TestLoadCreature:
         creature = _Creature.model_validate({**_CREATURE_DATA, "initiative": 10})
         assert _load_creature(creature) is creature
 
-    def test_loads_from_file(self, tmp_path: Path) -> None:
+    def test_loads_from_file(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         (creatures_dir / "goblin.json").write_text(
             json.dumps({**_CREATURE_DATA, "name": "goblin", "initiative": 5})
         )
-        with patch("scripts.fight._CREATURE_DIR", creatures_dir):
-            result = _load_creature("goblin")
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        result = _load_creature("goblin")
         assert isinstance(result, _Creature)
         assert result.name == "goblin"
 
-    def test_raises_on_missing_file(self, tmp_path: Path) -> None:
+    def test_raises_on_missing_file(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
-        with patch("scripts.fight._CREATURE_DIR", creatures_dir):
-            with pytest.raises(ValueError, match="Unknown creature type"):
-                _load_creature("goblin")
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        with pytest.raises(ValueError, match="Unknown creature type"):
+            _load_creature("goblin")
 
     def test_raises_on_invalid_type(self) -> None:
         with pytest.raises(ValueError, match="creature must be a str"):
@@ -656,21 +683,25 @@ class TestLoadCharacter:
         base = _CreatureBase.model_validate(_BASE_DATA)
         assert _load_character(base) is base
 
-    def test_loads_from_file(self, tmp_path: Path) -> None:
+    def test_loads_from_file(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         characters_dir = tmp_path / "characters"
         characters_dir.mkdir()
         (characters_dir / "hero.json").write_text(json.dumps(_BASE_DATA))
-        with patch("scripts.fight._CHARACTER_DIR", characters_dir):
-            result = _load_character("hero")
+        monkeypatch.setattr(fight_module, "_CHARACTER_DIR", characters_dir)
+        result = _load_character("hero")
         assert isinstance(result, _CreatureBase)
         assert result.name == "test"
 
-    def test_raises_on_missing_file(self, tmp_path: Path) -> None:
+    def test_raises_on_missing_file(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         characters_dir = tmp_path / "characters"
         characters_dir.mkdir()
-        with patch("scripts.fight._CHARACTER_DIR", characters_dir):
-            with pytest.raises(ValueError, match="Unknown character"):
-                _load_character("hero")
+        monkeypatch.setattr(fight_module, "_CHARACTER_DIR", characters_dir)
+        with pytest.raises(ValueError, match="Unknown character"):
+            _load_character("hero")
 
     def test_raises_on_invalid_type(self) -> None:
         with pytest.raises(ValueError, match="character must be a str"):
@@ -679,7 +710,9 @@ class TestLoadCharacter:
 
 @pytest.mark.unit
 class TestRunFight:
-    def test_player_turn_no_attack_output(self, tmp_path: Path) -> None:
+    def test_player_turn_no_attack_output(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         characters_dir = tmp_path / "characters"
@@ -690,30 +723,30 @@ class TestRunFight:
         (characters_dir / "hero.json").write_text(
             json.dumps({**_BASE_DATA, "name": "hero"})
         )
-        with (
-            patch("scripts.fight._CREATURE_DIR", creatures_dir),
-            patch("scripts.fight._CHARACTER_DIR", characters_dir),
-        ):
-            cli = _FightCli.model_construct(
-                encounter=[
-                    _EncounterEntry.model_validate(
-                        {"creature": "skeleton", "n_entities": 1}
-                    )
-                ],
-                players=[
-                    _PlayerEntry.model_validate({"character": "hero", "initiative": 20})
-                ],
-            )
-        with (
-            patch("builtins.input", side_effect=["", "", "", ""]),
-            patch("builtins.print") as mock_print,
-            patch("scripts.fight.cycle", side_effect=lambda it: islice(it, 2)),
-        ):
-            cli.cli_cmd()
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        monkeypatch.setattr(fight_module, "_CHARACTER_DIR", characters_dir)
+        cli = _FightCli.model_construct(
+            encounter=[
+                _EncounterEntry.model_validate(
+                    {"creature": "skeleton", "n_entities": 1}
+                )
+            ],
+            players=[
+                _PlayerEntry.model_validate({"character": "hero", "initiative": 20})
+            ],
+        )
+        mock_input = _Rec("", "", "", "")
+        monkeypatch.setattr("builtins.input", mock_input)
+        mock_print = _Rec()
+        monkeypatch.setattr("builtins.print", mock_print)
+        monkeypatch.setattr(fight_module, "cycle", lambda it: islice(it, 2))
+        cli.cli_cmd()
         printed_args = [str(call) for call in mock_print.call_args_list]
         assert not any("hero" in arg for arg in printed_args)
 
-    def test_monster_turn_prints_attacks(self, tmp_path: Path) -> None:
+    def test_monster_turn_prints_attacks(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         attack = _Attack(
@@ -726,31 +759,30 @@ class TestRunFight:
             "attacks": [attack.model_dump()],
         }
         (creatures_dir / "wolf.json").write_text(json.dumps(creature_data))
-        with patch("scripts.fight._CREATURE_DIR", creatures_dir):
-            cli = _FightCli.model_construct(
-                encounter=[
-                    _EncounterEntry.model_validate(
-                        {"creature": "wolf", "n_entities": 1}
-                    )
-                ],
-                players=[],
-            )
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        cli = _FightCli.model_construct(
+            encounter=[
+                _EncounterEntry.model_validate({"creature": "wolf", "n_entities": 1})
+            ],
+            players=[],
+        )
         mock_result = _AttackResult(
             first_roll=12, second_roll=8, damage=5, crit_damage=9
         )
         written: list[str] = []
-        with (
-            patch("builtins.input", side_effect=["", ""]) as mock_input,
-            patch("sys.stdout.write", side_effect=written.append),
-            patch("scripts.fight.cycle", side_effect=lambda it: islice(it, 1)),
-            patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
-        ):
-            cli.cli_cmd()
+        mock_input = _Rec("", "")
+        monkeypatch.setattr("builtins.input", mock_input)
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        monkeypatch.setattr(fight_module, "cycle", lambda it: islice(it, 1))
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        cli.cli_cmd()
         all_prompts = [call[0][0] for call in mock_input.call_args_list]
         assert any("wolf" in p and "moves now" in p for p in all_prompts)
         assert any("wolf [claw]" in line for line in written)
 
-    def test_duplicate_attack_names_grouped(self, tmp_path: Path) -> None:
+    def test_duplicate_attack_names_grouped(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         attack = _Attack(
@@ -763,30 +795,28 @@ class TestRunFight:
             "attacks": [attack.model_dump(), attack.model_dump()],
         }
         (creatures_dir / "wolf.json").write_text(json.dumps(creature_data))
-        with patch("scripts.fight._CREATURE_DIR", creatures_dir):
-            cli = _FightCli.model_construct(
-                encounter=[
-                    _EncounterEntry.model_validate(
-                        {"creature": "wolf", "n_entities": 1}
-                    )
-                ],
-                players=[],
-            )
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        cli = _FightCli.model_construct(
+            encounter=[
+                _EncounterEntry.model_validate({"creature": "wolf", "n_entities": 1})
+            ],
+            players=[],
+        )
         mock_result = _AttackResult(
             first_roll=12, second_roll=8, damage=5, crit_damage=9
         )
         written: list[str] = []
-        with (
-            patch("builtins.input", side_effect=["", ""]),
-            patch("sys.stdout.write", side_effect=written.append),
-            patch("scripts.fight.cycle", side_effect=lambda it: islice(it, 1)),
-            patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
-            patch("scripts.fight._pick", return_value=0),
-        ):
-            cli.cli_cmd()
+        monkeypatch.setattr("builtins.input", _Rec("", ""))
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        monkeypatch.setattr(fight_module, "cycle", lambda it: islice(it, 1))
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        monkeypatch.setattr(fight_module, "_pick", lambda *a, **k: 0)
+        cli.cli_cmd()
         assert any("wolf [claw]" in line for line in written)
 
-    def test_offhand_attack_fires(self, tmp_path: Path) -> None:
+    def test_offhand_attack_fires(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         main_attack = _Attack(
@@ -806,29 +836,27 @@ class TestRunFight:
             "attacks": [main_attack.model_dump(), offhand_attack.model_dump()],
         }
         (creatures_dir / "fighter.json").write_text(json.dumps(creature_data))
-        with patch("scripts.fight._CREATURE_DIR", creatures_dir):
-            cli = _FightCli.model_construct(
-                encounter=[
-                    _EncounterEntry.model_validate(
-                        {"creature": "fighter", "n_entities": 1}
-                    )
-                ],
-                players=[],
-            )
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        cli = _FightCli.model_construct(
+            encounter=[
+                _EncounterEntry.model_validate({"creature": "fighter", "n_entities": 1})
+            ],
+            players=[],
+        )
         mock_result = _AttackResult(
             first_roll=12, second_roll=8, damage=5, crit_damage=9
         )
         written: list[str] = []
-        with (
-            patch("builtins.input", side_effect=["", ""]),
-            patch("sys.stdout.write", side_effect=written.append),
-            patch("scripts.fight.cycle", side_effect=lambda it: islice(it, 1)),
-            patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
-        ):
-            cli.cli_cmd()
+        monkeypatch.setattr("builtins.input", _Rec("", ""))
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        monkeypatch.setattr(fight_module, "cycle", lambda it: islice(it, 1))
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        cli.cli_cmd()
         assert any("dagger (offhand)" in line for line in written)
 
-    def test_hp_tracking_after_player_deals_damage(self, tmp_path: Path) -> None:
+    def test_hp_tracking_after_player_deals_damage(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         characters_dir = tmp_path / "characters"
@@ -846,31 +874,27 @@ class TestRunFight:
         (characters_dir / "hero.json").write_text(
             json.dumps({**_BASE_DATA, "name": "hero"})
         )
-        with (
-            patch("scripts.fight._CREATURE_DIR", creatures_dir),
-            patch("scripts.fight._CHARACTER_DIR", characters_dir),
-        ):
-            cli = _FightCli.model_construct(
-                encounter=[
-                    _EncounterEntry.model_validate(
-                        {"creature": "goblin", "n_entities": 1}
-                    )
-                ],
-                players=[
-                    _PlayerEntry.model_validate({"character": "hero", "initiative": 20})
-                ],
-            )
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        monkeypatch.setattr(fight_module, "_CHARACTER_DIR", characters_dir)
+        cli = _FightCli.model_construct(
+            encounter=[
+                _EncounterEntry.model_validate({"creature": "goblin", "n_entities": 1})
+            ],
+            players=[
+                _PlayerEntry.model_validate({"character": "hero", "initiative": 20})
+            ],
+        )
         written: list[str] = []
-        with (
-            patch("builtins.input", side_effect=["", "5", "", ""]),
-            patch("sys.stdout.write", side_effect=written.append),
-            patch("scripts.fight.cycle", side_effect=lambda it: islice(it, 1)),
-            patch("scripts.fight._pick", side_effect=[1, 0]),
-        ):
-            cli.cli_cmd()
+        monkeypatch.setattr("builtins.input", _Rec("", "5", "", ""))
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        monkeypatch.setattr(fight_module, "cycle", lambda it: islice(it, 1))
+        monkeypatch.setattr(fight_module, "_pick", _Rec(1, 0))
+        cli.cli_cmd()
         assert any("→" in line for line in written)
 
-    def test_hp_tracking_empty_damage_breaks_inner_loop(self, tmp_path: Path) -> None:
+    def test_hp_tracking_empty_damage_breaks_inner_loop(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         characters_dir = tmp_path / "characters"
@@ -888,31 +912,27 @@ class TestRunFight:
         (characters_dir / "hero.json").write_text(
             json.dumps({**_BASE_DATA, "name": "hero"})
         )
-        with (
-            patch("scripts.fight._CREATURE_DIR", creatures_dir),
-            patch("scripts.fight._CHARACTER_DIR", characters_dir),
-        ):
-            cli = _FightCli.model_construct(
-                encounter=[
-                    _EncounterEntry.model_validate(
-                        {"creature": "goblin", "n_entities": 1}
-                    )
-                ],
-                players=[
-                    _PlayerEntry.model_validate({"character": "hero", "initiative": 20})
-                ],
-            )
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        monkeypatch.setattr(fight_module, "_CHARACTER_DIR", characters_dir)
+        cli = _FightCli.model_construct(
+            encounter=[
+                _EncounterEntry.model_validate({"creature": "goblin", "n_entities": 1})
+            ],
+            players=[
+                _PlayerEntry.model_validate({"character": "hero", "initiative": 20})
+            ],
+        )
         written: list[str] = []
-        with (
-            patch("builtins.input", side_effect=["", "", ""]),
-            patch("sys.stdout.write", side_effect=written.append),
-            patch("scripts.fight.cycle", side_effect=lambda it: islice(it, 1)),
-            patch("scripts.fight._pick", side_effect=[1, 0]),
-        ):
-            cli.cli_cmd()
+        monkeypatch.setattr("builtins.input", _Rec("", "", ""))
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        monkeypatch.setattr(fight_module, "cycle", lambda it: islice(it, 1))
+        monkeypatch.setattr(fight_module, "_pick", _Rec(1, 0))
+        cli.cli_cmd()
         assert written is not None
 
-    def test_hp_tracking_invalid_damage_then_valid(self, tmp_path: Path) -> None:
+    def test_hp_tracking_invalid_damage_then_valid(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         characters_dir = tmp_path / "characters"
@@ -930,31 +950,27 @@ class TestRunFight:
         (characters_dir / "hero.json").write_text(
             json.dumps({**_BASE_DATA, "name": "hero"})
         )
-        with (
-            patch("scripts.fight._CREATURE_DIR", creatures_dir),
-            patch("scripts.fight._CHARACTER_DIR", characters_dir),
-        ):
-            cli = _FightCli.model_construct(
-                encounter=[
-                    _EncounterEntry.model_validate(
-                        {"creature": "goblin", "n_entities": 1}
-                    )
-                ],
-                players=[
-                    _PlayerEntry.model_validate({"character": "hero", "initiative": 20})
-                ],
-            )
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        monkeypatch.setattr(fight_module, "_CHARACTER_DIR", characters_dir)
+        cli = _FightCli.model_construct(
+            encounter=[
+                _EncounterEntry.model_validate({"creature": "goblin", "n_entities": 1})
+            ],
+            players=[
+                _PlayerEntry.model_validate({"character": "hero", "initiative": 20})
+            ],
+        )
         written: list[str] = []
-        with (
-            patch("builtins.input", side_effect=["", "bad", "3", "", ""]),
-            patch("sys.stdout.write", side_effect=written.append),
-            patch("scripts.fight.cycle", side_effect=lambda it: islice(it, 1)),
-            patch("scripts.fight._pick", side_effect=[1, 0]),
-        ):
-            cli.cli_cmd()
+        monkeypatch.setattr("builtins.input", _Rec("", "bad", "3", "", ""))
+        monkeypatch.setattr(sys.stdout, "write", written.append)
+        monkeypatch.setattr(fight_module, "cycle", lambda it: islice(it, 1))
+        monkeypatch.setattr(fight_module, "_pick", _Rec(1, 0))
+        cli.cli_cmd()
         assert any("valid number" in line for line in written)
 
-    def test_multi_entity_index_in_prefix(self, tmp_path: Path) -> None:
+    def test_multi_entity_index_in_prefix(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         creatures_dir = tmp_path / "creatures"
         creatures_dir.mkdir()
         attack = _Attack(
@@ -967,25 +983,22 @@ class TestRunFight:
             "attacks": [attack.model_dump()],
         }
         (creatures_dir / "wolf.json").write_text(json.dumps(creature_data))
-        with patch("scripts.fight._CREATURE_DIR", creatures_dir):
-            cli = _FightCli.model_construct(
-                encounter=[
-                    _EncounterEntry.model_validate(
-                        {"creature": "wolf", "n_entities": 3}
-                    )
-                ],
-                players=[],
-            )
+        monkeypatch.setattr(fight_module, "_CREATURE_DIR", creatures_dir)
+        cli = _FightCli.model_construct(
+            encounter=[
+                _EncounterEntry.model_validate({"creature": "wolf", "n_entities": 3})
+            ],
+            players=[],
+        )
         mock_result = _AttackResult(
             first_roll=12, second_roll=8, damage=5, crit_damage=9
         )
-        with (
-            patch("builtins.input", side_effect=["", "", "", "", "", ""]) as mock_input,
-            patch("builtins.print"),
-            patch("scripts.fight.cycle", side_effect=lambda it: islice(it, 3)),
-            patch.object(_Attack, _Attack.perform.__name__, return_value=mock_result),
-        ):
-            cli.cli_cmd()
+        mock_input = _Rec("", "", "", "", "", "")
+        monkeypatch.setattr("builtins.input", mock_input)
+        monkeypatch.setattr("builtins.print", lambda *a, **k: None)
+        monkeypatch.setattr(fight_module, "cycle", lambda it: islice(it, 3))
+        monkeypatch.setattr(_Attack, _Attack.perform.__name__, lambda self: mock_result)
+        cli.cli_cmd()
         move_prompts = [
             call[0][0]
             for call in mock_input.call_args_list

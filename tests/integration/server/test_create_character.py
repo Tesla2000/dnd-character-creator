@@ -2,36 +2,14 @@ import pytest
 from pydantic import TypeAdapter
 
 from dnd.character.blueprint.building_blocks import AnyBuildingBlock
-from dnd.character.blueprint.building_blocks.all_choices_resolver.base import (
-    AllChoicesResolver,
-)
-from dnd.character.blueprint.building_blocks.equipment_chooser.random import (
-    RandomEquipmentChooser,
-)
-from dnd.character.blueprint.building_blocks.feat_choice_resolver.random import (
-    RandomFeatChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.initial_builder import InitialBuilder
 from dnd.character.blueprint.building_blocks.initial_data_filler.random_filler import (
     RandomInitialDataFiller,
-)
-from dnd.character.blueprint.building_blocks.language_choice_resolver.random import (
-    RandomLanguageChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.race_assigner.random_race_assigner import (
     RandomRaceAssigner,
 )
-from dnd.character.blueprint.building_blocks.skill_choice_resolver.random import (
-    RandomSkillChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.stat_choice_resolver.priority import (
-    PriorityStatChoiceResolver,
-)
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
-)
-from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.random import (
-    RandomToolProficiencyChoiceResolver,
 )
 from dnd.choices.stats_creation.statistic import Statistic
 from tests.integration.server.test_client import TestClient
@@ -44,31 +22,22 @@ _PRIORITY = (
     Statistic.WISDOM,
     Statistic.CHARISMA,
 )
-_ACR = AllChoicesResolver(
-    language_choice_resolver=RandomLanguageChoiceResolver(),
-    skill_choice_resolver=RandomSkillChoiceResolver(),
-    feat_choice_resolver=RandomFeatChoiceResolver(),
-    tool_proficiency_choice_resolver=RandomToolProficiencyChoiceResolver(),
-    stat_choice_resolver=PriorityStatChoiceResolver(priority=_PRIORITY),
-    equipment_chooser=RandomEquipmentChooser(),
-)
-_BUILDING_BLOCKS: list[AnyBuildingBlock] = [
-    InitialBuilder(
-        stats_builder=StandardArray(stats_priority=_PRIORITY),
-        race_assigner=RandomRaceAssigner(),
-        all_choices_resolver=_ACR,
-    ),
-    RandomInitialDataFiller(seed=42),
-    _ACR,
-]
 _ta: TypeAdapter[list[AnyBuildingBlock]] = TypeAdapter(list[AnyBuildingBlock])
-_BLOCKS_JSON = _ta.dump_python(_BUILDING_BLOCKS, mode="json")
 
 
-@pytest.mark.integration
+def _blocks_json() -> list[object]:
+    blocks: list[AnyBuildingBlock] = [
+        StandardArray(stats_priority=_PRIORITY),
+        RandomRaceAssigner(),
+        RandomInitialDataFiller(seed=42),
+    ]
+    return _ta.dump_python(blocks, mode="json")
+
+
+@pytest.mark.smoke
 class TestCreateCharacter(TestClient):
     def test_create_character_success(self, client) -> None:
-        response = client.post("/create_character", json=_BLOCKS_JSON)
+        response = client.post("/create_character", json=_blocks_json())
         assert response.status_code == 200
         data = response.json()
         assert "race" in data
