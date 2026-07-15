@@ -9,15 +9,33 @@ export async function buildCharacter(blocks: PipelineBlock[]): Promise<BuildResu
   const res = await fetch("/create_character", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      building_blocks,
-      increment_chain: {},
-    }),
+    body: JSON.stringify(building_blocks),
   });
 
-  const data = await res.json();
-  if (!res.ok && res.status !== 422) {
-    return { character: null, error: data.detail ?? "Unknown error" };
+  const text = await res.text();
+  if (!res.ok) {
+    if (!text) return { character: null, error: `HTTP ${res.status}` };
+    try {
+      const parsed = JSON.parse(text) as {
+        detail?: string | Array<{ msg: string; loc?: unknown[] }>;
+      };
+      const detail = parsed.detail;
+      if (typeof detail === "string") {
+        return { character: null, error: detail };
+      }
+      if (Array.isArray(detail)) {
+        const msgs = detail.map((e) =>
+          e.loc ? `${e.loc.slice(2).join(".")}: ${e.msg}` : e.msg,
+        );
+        return { character: null, error: msgs.join("\n") };
+      }
+      return { character: null, error: text };
+    } catch {
+      return { character: null, error: text };
+    }
   }
-  return { character: data.character ?? null, error: data.error ?? null };
+  if (!text) {
+    return { character: null, error: "Empty response from server" };
+  }
+  return { character: JSON.parse(text) as BuildResult["character"], error: null };
 }

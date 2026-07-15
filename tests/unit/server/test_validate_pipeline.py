@@ -2,34 +2,12 @@ import typing
 
 import pytest
 
-from dnd.character.blueprint.building_blocks.all_choices_resolver.base import (
-    AllChoicesResolver,
-)
-from dnd.character.blueprint.building_blocks.equipment_chooser.random import (
-    RandomEquipmentChooser,
-)
-from dnd.character.blueprint.building_blocks.feat_choice_resolver.random import (
-    RandomFeatChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.initial_builder import InitialBuilder
-from dnd.character.blueprint.building_blocks.language_choice_resolver.random import (
-    RandomLanguageChoiceResolver,
-)
 from dnd.character.blueprint.building_blocks.null_block import NullBlock
 from dnd.character.blueprint.building_blocks.race_assigner.random_race_assigner import (
     RandomRaceAssigner,
 )
-from dnd.character.blueprint.building_blocks.skill_choice_resolver.random import (
-    RandomSkillChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.stat_choice_resolver.priority import (
-    PriorityStatChoiceResolver,
-)
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
-)
-from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.random import (
-    RandomToolProficiencyChoiceResolver,
 )
 from dnd.character.blueprint.states.state import EmptyBlueprint
 from dnd.character.race.race import Race
@@ -50,18 +28,9 @@ _PRIORITY = (
     Statistic.WISDOM,
     Statistic.CHARISMA,
 )
-_ACR = AllChoicesResolver(
-    language_choice_resolver=RandomLanguageChoiceResolver(),
-    skill_choice_resolver=RandomSkillChoiceResolver(),
-    feat_choice_resolver=RandomFeatChoiceResolver(),
-    tool_proficiency_choice_resolver=RandomToolProficiencyChoiceResolver(),
-    stat_choice_resolver=PriorityStatChoiceResolver(priority=_PRIORITY),
-    equipment_chooser=RandomEquipmentChooser(),
-)
-_INITIAL_BUILDER = InitialBuilder(
-    stats_builder=StandardArray(stats_priority=_PRIORITY),
-    race_assigner=RandomRaceAssigner(),
-    all_choices_resolver=_ACR,
+_INITIAL_PIPELINE = (
+    StandardArray(stats_priority=_PRIORITY),
+    RandomRaceAssigner(),
 )
 
 
@@ -116,28 +85,42 @@ class TestGenericHelpers:
 
 @pytest.mark.unit
 class TestValidatePipeline:
-    def test_empty_pipeline_is_valid(self) -> None:
-        _validate_pipeline(EmptyBlueprint(), [])
+    def test_empty_pipeline_raises_for_missing_fields(self) -> None:
+        with pytest.raises(TypeError, match="race"):
+            _validate_pipeline(EmptyBlueprint(), [])
 
-    def test_null_block_passes_on_empty_blueprint(self) -> None:
-        _validate_pipeline(EmptyBlueprint(), [NullBlock()])
+    def test_null_block_raises_for_insufficient_pipeline(self) -> None:
+        with pytest.raises(TypeError, match="race"):
+            _validate_pipeline(EmptyBlueprint(), [NullBlock()])
 
-    def test_null_block_passes_after_initial_builder(self) -> None:
-        _validate_pipeline(EmptyBlueprint(), [_INITIAL_BUILDER, NullBlock()])
+    def test_null_block_after_initial_pipeline_raises_for_insufficient_pipeline(
+        self,
+    ) -> None:
+        with pytest.raises(TypeError):
+            _validate_pipeline(EmptyBlueprint(), [*_INITIAL_PIPELINE, NullBlock()])
 
-    def test_multiple_null_blocks_are_valid(self) -> None:
-        _validate_pipeline(EmptyBlueprint(), [NullBlock(), NullBlock(), NullBlock()])
+    def test_multiple_null_blocks_raise_for_insufficient_pipeline(self) -> None:
+        with pytest.raises(TypeError, match="race"):
+            _validate_pipeline(
+                EmptyBlueprint(), [NullBlock(), NullBlock(), NullBlock()]
+            )
 
-    def test_initial_builder_on_empty_blueprint_is_valid(self) -> None:
-        _validate_pipeline(EmptyBlueprint(), [_INITIAL_BUILDER])
+    def test_initial_pipeline_alone_raises_for_insufficient_pipeline(self) -> None:
+        with pytest.raises(TypeError):
+            _validate_pipeline(EmptyBlueprint(), list(_INITIAL_PIPELINE))
 
-    def test_initial_builder_twice_raises_type_error(self) -> None:
-        with pytest.raises(TypeError, match="InitialBuilder"):
-            _validate_pipeline(EmptyBlueprint(), [_INITIAL_BUILDER, _INITIAL_BUILDER])
+    def test_race_assigner_twice_raises_type_error(self) -> None:
+        with pytest.raises(TypeError, match="RandomRaceAssigner"):
+            _validate_pipeline(
+                EmptyBlueprint(), [*_INITIAL_PIPELINE, RandomRaceAssigner()]
+            )
 
     def test_type_error_includes_block_index(self) -> None:
-        with pytest.raises(TypeError, match="Block 1"):
-            _validate_pipeline(EmptyBlueprint(), [_INITIAL_BUILDER, _INITIAL_BUILDER])
+        with pytest.raises(TypeError, match="Block 2"):
+            _validate_pipeline(
+                EmptyBlueprint(), [*_INITIAL_PIPELINE, RandomRaceAssigner()]
+            )
 
     def test_pipeline_validates_iterable_not_just_list(self) -> None:
-        _validate_pipeline(EmptyBlueprint(), iter([NullBlock()]))
+        with pytest.raises(TypeError, match="race"):
+            _validate_pipeline(EmptyBlueprint(), iter([NullBlock()]))

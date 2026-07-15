@@ -106,6 +106,7 @@ class WizardLLMSpellAssigner(WizardSpellAssigner):
         default=Class.WIZARD, description="Character class this assigner handles"
     )
     llm: RaisingService = Field(
+        exclude=True,
         default_factory=lambda: RaisingService(service=OpenAIService()),
         description="Language model for making AI-powered decisions",
     )
@@ -156,6 +157,7 @@ class SorcererLLMSpellAssigner(SorcererSpellAssigner):
         default=Class.SORCERER, description="Character class this assigner handles"
     )
     llm: RaisingService = Field(
+        exclude=True,
         default_factory=lambda: RaisingService(service=OpenAIService()),
         description="Language model for making AI-powered decisions",
     )

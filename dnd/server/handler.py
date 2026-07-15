@@ -1,4 +1,4 @@
-from dnd.server.app import app
+from dnd.server.app import create_app
 from mangum import Mangum
 
-handler = Mangum(app)
+handler = Mangum(create_app())

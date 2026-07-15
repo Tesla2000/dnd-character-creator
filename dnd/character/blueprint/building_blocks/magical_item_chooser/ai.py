@@ -1,6 +1,6 @@
 """AI-powered holistic magical item selection."""
 
-from dnd.character.blueprint.formatter import BlueprintFormatter
+import json
 from dnd.character.blueprint.building_blocks.magical_item_chooser.base_chooser import (
     MagicalItemChooserBase,
 )
@@ -49,13 +49,9 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
     model_config = ConfigDict(frozen=True)
 
     llm: RaisingService = Field(
+        exclude=True,
         default_factory=lambda: RaisingService(service=OpenAIService()),
         description="Language model for making AI-powered decisions",
-    )
-
-    formatter: BlueprintFormatter = Field(
-        default_factory=BlueprintFormatter,
-        description="Blueprint formatter for creating AI prompts",
     )
 
     def _build_prompt(self, state: _WideBlueprint) -> str:
@@ -68,8 +64,17 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
             "complement each other and the character's build.\n"
         )
 
-        character_description = self.formatter.format(
-            state, system_prompt=system_prompt
+        character_description = (
+            system_prompt
+            + "\n\nCharacter state (JSON):\n"
+            + json.dumps(
+                {
+                    k: v
+                    for k, v in state.model_dump(mode="json").items()
+                    if v is not None
+                },
+                indent=2,
+            )
         )
 
         counts = []

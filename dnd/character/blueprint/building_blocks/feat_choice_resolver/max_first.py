@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Literal
 
 from dnd.character.blueprint.building_blocks.building_block_type import (
@@ -31,30 +33,42 @@ from dnd.character.blueprint.sentinels import (
     _WZK,
 )
 from dnd.character.blueprint.states.state import Blueprint
-from dnd.character.stats import Stats
 from dnd.character.feature.feats import FeatName
+from dnd.character.stats import Stats
+from dnd.choices.stats_creation.statistic import Statistic
 from pydantic import Field
 
 
 class MaxFirstResolver(FeatChoiceResolver):
-    """Prioritizes maxing the highest priority stat before choosing other feats."""
+    """Prioritizes maxing stats before choosing other feats.
+
+    When priority is set, tries to max priority[0] first.
+    When priority is None (default), tries to max whichever stat currently
+    has the highest value that is still below its cap.
+    Falls through to `then` when no stat can be increased.
+    """
 
     type: Literal[BuildingBlockType.MAX_FIRST_RESOLVER] = (
         BuildingBlockType.MAX_FIRST_RESOLVER
     )
 
-    priority: StatsPriority = Field(description="Ability score priority order")
-    then: RandomFeatChoiceResolver = Field(description="Fallback resolver")
+    priority: StatsPriority | None = Field(default=None)
+    then: RandomFeatChoiceResolver = Field(default_factory=RandomFeatChoiceResolver)
 
     def _select_from_available(
         self, available: list[FeatName], stats: Stats, stats_cup: Stats
     ) -> FeatName | None:
-        highest_priority_stat = self.priority[0]
-        if FeatName.ABILITY_SCORE_IMPROVEMENT in available and stats.get_stat(
-            highest_priority_stat
-        ) < stats_cup.get_stat(highest_priority_stat):
-            return FeatName.ABILITY_SCORE_IMPROVEMENT
-        return None
+        if FeatName.ABILITY_SCORE_IMPROVEMENT not in available:
+            return None
+        if self.priority is not None:
+            top = self.priority[0]
+            if stats.get_stat(top) < stats_cup.get_stat(top):
+                return FeatName.ABILITY_SCORE_IMPROVEMENT
+            return None
+        top = max(Statistic, key=lambda s: stats.get_stat(s))
+        if stats.get_stat(top) >= stats_cup.get_stat(top):
+            return None
+        return FeatName.ABILITY_SCORE_IMPROVEMENT
 
     def apply(
         self,

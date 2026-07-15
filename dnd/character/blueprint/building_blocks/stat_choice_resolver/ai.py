@@ -1,6 +1,6 @@
 """AI-powered stat choice resolver for intelligent ability score increases."""
 
-from dnd.character.blueprint.formatter import BlueprintFormatter
+import json
 from dnd.character.blueprint.building_blocks.stat_choice_resolver.base import (
     StatChoiceResolver,
 )
@@ -41,13 +41,9 @@ class AIStatChoiceResolver(StatChoiceResolver):
     )
 
     llm: RaisingService = Field(
+        exclude=True,
         default_factory=lambda: RaisingService(service=OpenAIService()),
         description="Language model for making AI-powered decisions",
-    )
-
-    formatter: BlueprintFormatter = Field(
-        default_factory=BlueprintFormatter,
-        description="Blueprint formatter for creating AI prompts",
     )
 
     def _build_prompt(self, state: _WideBlueprint) -> str:
@@ -59,8 +55,17 @@ class AIStatChoiceResolver(StatChoiceResolver):
             "Choose which ability scores to increase to optimize the character's effectiveness.\n"
         )
 
-        character_description = self.formatter.format(
-            state, system_prompt=system_prompt
+        character_description = (
+            system_prompt
+            + "\n\nCharacter state (JSON):\n"
+            + json.dumps(
+                {
+                    k: v
+                    for k, v in state.model_dump(mode="json").items()
+                    if v is not None
+                },
+                indent=2,
+            )
         )
 
         instructions = [

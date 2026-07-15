@@ -46,7 +46,7 @@ class BaseRaceAssigner(BuildingBlock, ABC):
     @abstractmethod
     def _get_race_and_subrace(self) -> RaceSubracePair: ...
 
-    def apply(
+    def _build_race_blueprint(
         self,
         blueprint: Blueprint[
             None,
@@ -150,5 +150,79 @@ class BaseRaceAssigner(BuildingBlock, ABC):
                     blueprint.other_active_abilities
                     + subrace_stats.other_active_abilities
                 ),
+            }
+        )
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(
+            dict(race_bp)
+            | {
+                "n_stat_choices": 0,
+                "n_skill_choices": 0,
+                "skills_to_choose_from": frozenset(),
             }
         )

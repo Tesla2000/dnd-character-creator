@@ -8,6 +8,7 @@ from typing import cast
 from dnd.character.armor.names import ArmorName
 from dnd.character.magical_item.item import MagicalItem
 from dnd.character.feature.feats import FeatName
+from dnd.character.health_modifier import AnyHealthModifier
 from dnd.character.race.subraces import SubraceName
 from dnd.character.spells.spells import Spells
 from dnd.character.stats import Stats
@@ -128,6 +129,7 @@ class Blueprint(
     spell_save_dc_bonus: NonNegativeInt = 0
     spellcasting_ability_bonus: NonNegativeInt = 0
     feats: tuple[FeatName, ...] = Field(default=())
+    health_modifiers: tuple[AnyHealthModifier, ...] = Field(default=())
     subclasses: tuple[AnySubclass, ...] = ()
     armors: tuple[ArmorName, ...] = ()
     weapons: tuple[WeaponName, ...] = ()

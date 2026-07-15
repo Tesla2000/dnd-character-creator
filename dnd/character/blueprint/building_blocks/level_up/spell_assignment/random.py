@@ -7,7 +7,6 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base impo
 )
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.spells import Spell
-from dnd.choices.class_creation.character_class import Class
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
@@ -38,9 +37,6 @@ class WizardRandomSpellAssigner(WizardSpellAssigner):
 
     model_config = ConfigDict(frozen=True)
 
-    class_: Literal[Class.WIZARD] = Field(
-        default=Class.WIZARD, description="Character class this assigner handles"
-    )
     seed: int | None = Field(
         default=None,
         description="Optional seed for reproducible random selection",
@@ -72,9 +68,6 @@ class SorcererRandomSpellAssigner(SorcererSpellAssigner):
 
     model_config = ConfigDict(frozen=True)
 
-    class_: Literal[Class.SORCERER] = Field(
-        default=Class.SORCERER, description="Character class this assigner handles"
-    )
     seed: int | None = Field(
         default=None,
         description="Optional seed for reproducible random selection",

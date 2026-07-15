@@ -1,17 +1,13 @@
 import { useState, useEffect } from "preact/hooks";
 import type { BlockInfo } from "../types";
 import generatedBlocks from "../data/blocks-generated.json";
-import { BLOCK_META } from "../data/blockMeta";
 
 let cached: BlockInfo[] | null = null;
 
+const HIDDEN_BLOCK_TYPES = new Set(["null_block"]);
+
 function buildRegistry(): BlockInfo[] {
-  return (generatedBlocks as Omit<BlockInfo, "requires" | "provides" | "conflicts">[]).map(
-    (b) => {
-      const meta = BLOCK_META[b.type] ?? { requires: [], provides: [], conflicts: [] };
-      return { ...b, ...meta };
-    }
-  );
+  return (generatedBlocks as BlockInfo[]).filter((b) => !HIDDEN_BLOCK_TYPES.has(b.type));
 }
 
 export function useBlockRegistry() {

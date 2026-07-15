@@ -1,6 +1,6 @@
 """AI-powered language choice resolver."""
 
-from dnd.character.blueprint.formatter import BlueprintFormatter
+import json
 from dnd.character.blueprint.building_blocks.language_choice_resolver.base import (
     LanguageChoiceResolver,
 )
@@ -39,13 +39,9 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
     )
 
     llm: RaisingService = Field(
+        exclude=True,
         default_factory=lambda: RaisingService(service=OpenAIService()),
         description="Language model for making AI-powered decisions",
-    )
-
-    formatter: BlueprintFormatter = Field(
-        default_factory=BlueprintFormatter,
-        description="Blueprint formatter for creating AI prompts",
     )
 
     def _select_from_available(
@@ -62,8 +58,17 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
             "based on the character's race, class, background, and concept.\n"
         )
 
-        character_description = self.formatter.format(
-            blueprint, system_prompt=system_prompt
+        character_description = (
+            system_prompt
+            + "\n\nCharacter state (JSON):\n"
+            + json.dumps(
+                {
+                    k: v
+                    for k, v in blueprint.model_dump(mode="json").items()
+                    if v is not None
+                },
+                indent=2,
+            )
         )
 
         instructions = ["\n## Placeholders to Resolve\n"]

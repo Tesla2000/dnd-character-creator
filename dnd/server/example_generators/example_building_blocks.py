@@ -7,32 +7,11 @@ from dnd.character.blueprint.building_blocks import (
 from dnd.character.blueprint.building_blocks import (
     RandomInitialDataFiller,
 )
-from dnd.character.blueprint.building_blocks.all_choices_resolver import (
-    AllChoicesResolver,
+from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_if_not_maxed import (
+    MaxIfNotMaxedResolver,
 )
-from dnd.character.blueprint.building_blocks.equipment_chooser import (
-    RandomEquipmentChooser,
-)
-from dnd.character.blueprint.building_blocks.feat_choice_resolver import (
-    RandomFeatChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_first import (
-    MaxFirstResolver,
-)
-from dnd.character.blueprint.building_blocks.language_choice_resolver import (
+from dnd.character.blueprint.building_blocks.language_choice_resolver.random import (
     RandomLanguageChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.skill_choice_resolver import (
-    RandomSkillChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.stat_choice_resolver import (
-    PriorityStatChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver import (
-    RandomToolProficiencyChoiceResolver,
-)
-from dnd.character.blueprint.building_blocks.initial_builder import (
-    InitialBuilder,
 )
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
     D6HealthIncreaseAverage,
@@ -45,6 +24,12 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.evocation.level_2 i
 )
 from dnd.character.blueprint.building_blocks.level_up.wizard.level_1 import (
     WizardLevel1,
+)
+from dnd.character.blueprint.building_blocks.skill_choice_resolver.random import (
+    RandomSkillChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.stat_choice_resolver import (
+    PriorityStatChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
@@ -62,43 +47,20 @@ def example_building_blocks() -> tuple[AnyBuildingBlock, ...]:
         Statistic.CHARISMA,
         Statistic.STRENGTH,
     )
-    all_choices_resolver = AllChoicesResolver(
-        language_choice_resolver=RandomLanguageChoiceResolver(),
-        skill_choice_resolver=RandomSkillChoiceResolver(),
-        feat_choice_resolver=MaxFirstResolver(
-            priority=stats_priority,
-            then=RandomFeatChoiceResolver(),
-        ),
-        tool_proficiency_choice_resolver=RandomToolProficiencyChoiceResolver(),
-        stat_choice_resolver=PriorityStatChoiceResolver(priority=stats_priority),
-        equipment_chooser=RandomEquipmentChooser(),
-    )
     health_increase = D6HealthIncreaseAverage()
     spell_assigner = WizardRandomSpellAssigner()
     return (
-        InitialBuilder(
-            stats_builder=StandardArray(stats_priority=stats_priority),
-            race_assigner=HumanRaceAssigner(
-                subrace=SubraceName.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,
-            ),
-            all_choices_resolver=AllChoicesResolver(
-                language_choice_resolver=RandomLanguageChoiceResolver(),
-                skill_choice_resolver=RandomSkillChoiceResolver(),
-                feat_choice_resolver=MaxFirstResolver(
-                    priority=stats_priority,
-                    then=RandomFeatChoiceResolver(),
-                ),
-                tool_proficiency_choice_resolver=RandomToolProficiencyChoiceResolver(),
-                stat_choice_resolver=PriorityStatChoiceResolver(
-                    priority=stats_priority
-                ),
-                equipment_chooser=RandomEquipmentChooser(),
-            ),
+        StandardArray(stats_priority=stats_priority),
+        HumanRaceAssigner(
+            subrace=SubraceName.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,
+            stat_choice_resolver=PriorityStatChoiceResolver(priority=stats_priority),
+            skill_choice_resolver=RandomSkillChoiceResolver(),
+            language_choice_resolver=RandomLanguageChoiceResolver(),
+            feat_choice_resolver=MaxIfNotMaxedResolver(priority=stats_priority),
         ),
         RandomInitialDataFiller(),
         WizardLevel1(health_increase=health_increase, spell_assigner=spell_assigner),
         WizardLevel2Evocation(
             health_increase=health_increase, spell_assigner=spell_assigner
         ),
-        all_choices_resolver,
     )

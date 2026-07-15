@@ -8,7 +8,8 @@ from dnd.character.stats import Stats
 from dnd.choices.alignment import Alignment
 from dnd.choices.background_creatrion.background import Background
 from dnd.choices.sex import Sex
-from dnd.character.feature.feats import FeatName
+from dnd.character.health_modifier import DwarfHealthModifier
+from dnd.character.health_modifier import ToughHealthModifier
 
 _STATS = Stats(
     strength=10,
@@ -71,20 +72,18 @@ _LEVELED_KWARGS: dict[str, object] = {**_BASE_KWARGS, "classes": ClassLevels(fig
 
 @pytest.mark.unit
 class TestPresentableCharacterHealth:
-    def test_health_with_tough_feat(self) -> None:
-        char = PresentableCharacter(
-            **_LEVELED_KWARGS,
-            feats=frozenset({FeatName.TOUGH}),
-        )
+    def test_health_with_tough_modifier(self) -> None:
         base_char = PresentableCharacter(**_LEVELED_KWARGS)
-        assert char.health > base_char.health
-
-    def test_health_with_dwarf_race(self) -> None:
-        dwarf_kwargs = {
+        tough_char = PresentableCharacter(
             **_LEVELED_KWARGS,
-            "race": Race.DWARF,
-            "subrace": SubraceName.DWARF_HILL_DWARF_PLAYERSHANDBOOK,
-            "speed": 25,
-        }
-        char = PresentableCharacter(**dwarf_kwargs)
-        assert char.health >= char.health_base
+            health_modifiers=(ToughHealthModifier(),),
+        )
+        assert tough_char.health == base_char.health + base_char.level * 2
+
+    def test_health_with_dwarf_modifier(self) -> None:
+        base_char = PresentableCharacter(**_LEVELED_KWARGS)
+        dwarf_char = PresentableCharacter(
+            **_LEVELED_KWARGS,
+            health_modifiers=(DwarfHealthModifier(),),
+        )
+        assert dwarf_char.health == base_char.health + base_char.level

@@ -1,6 +1,6 @@
 """AI-powered feat choice resolver."""
 
-from dnd.character.blueprint.formatter import BlueprintFormatter
+import json
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.blueprint.states.state import _BPT
@@ -28,17 +28,25 @@ class AIFeatChoiceResolver(BuildingBlock):
     )
 
     llm: RaisingService = Field(
-        default_factory=lambda: RaisingService(service=OpenAIService())
+        exclude=True, default_factory=lambda: RaisingService(service=OpenAIService())
     )
-    formatter: BlueprintFormatter = Field(default_factory=BlueprintFormatter)
 
     def _build_prompt(self, blueprint: _WideBlueprint) -> str:
         system_prompt = (
             "You are resolving FeatName.ANY_OF_YOUR_CHOICE placeholders for a D&D 5e character.\n"
             "Replace each placeholder with the most appropriate feat based on the character's concept.\n"
         )
-        character_description = self.formatter.format(
-            blueprint, system_prompt=system_prompt
+        character_description = (
+            system_prompt
+            + "\n\nCharacter state (JSON):\n"
+            + json.dumps(
+                {
+                    k: v
+                    for k, v in blueprint.model_dump(mode="json").items()
+                    if v is not None
+                },
+                indent=2,
+            )
         )
         count = sum(list(blueprint.feats).count(fc) for fc in FeatName.not_choosables())
         if count == 0:

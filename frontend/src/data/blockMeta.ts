@@ -34,7 +34,7 @@ type BlockMetaMap = Record<string, BlockPreconditions>;
 
 const RACE_PROVIDES = ["HasRace", "HasLanguages", "HasSkillProficiencies", "HasNStatChoices"];
 
-const SUBCLASS_REQUIRES = ["HasClasses", "HasSubclasses"];
+const SUBCLASS_REQUIRES = ["HasClasses", "HasSubclasses", "HasLevel"];
 const SUBCLASS_PROVIDES = ["HasSubclasses"];
 
 export const BLOCK_META: BlockMetaMap = {
@@ -108,15 +108,15 @@ export const BLOCK_META: BlockMetaMap = {
     provides: ["HasClasses", "HasHealthBase", "HasWizardLevel", "HasSorcererLevel"],
     conflicts: [],
   },
-  health_increase_average: { requires: ["HasClasses"], provides: ["HasHealthBase"], conflicts: [] },
-  health_increase_random: { requires: ["HasClasses"], provides: ["HasHealthBase"], conflicts: [] },
+  health_increase_average: { requires: ["HasClasses", "HasLevel"], provides: ["HasHealthBase"], conflicts: [] },
+  health_increase_random: { requires: ["HasClasses", "HasLevel"], provides: ["HasHealthBase"], conflicts: [] },
   health_increase_random_min_two: {
-    requires: ["HasClasses"],
+    requires: ["HasClasses", "HasLevel"],
     provides: ["HasHealthBase"],
     conflicts: [],
   },
   health_increase_random_reroll_ones: {
-    requires: ["HasClasses"],
+    requires: ["HasClasses", "HasLevel"],
     provides: ["HasHealthBase"],
     conflicts: [],
   },

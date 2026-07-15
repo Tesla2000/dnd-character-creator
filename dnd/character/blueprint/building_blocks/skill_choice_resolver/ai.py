@@ -1,6 +1,5 @@
 """AI-powered skill choice resolver for intelligent skill selection."""
 
-from dnd.character.blueprint.formatter import BlueprintFormatter
 from dnd.character.blueprint.building_blocks.skill_choice_resolver.base import (
     SkillChoiceResolver,
 )
@@ -24,31 +23,16 @@ class SkillSelection(BaseModel):
 
 
 class AISkillChoiceResolver(SkillChoiceResolver):
-    """AI-powered skill choice resolver that selects skills based on character context.
-
-    Uses an LLM to make intelligent skill selections based on the character's
-    class, background, stats, and overall concept. The AI considers which skills
-    best fit the character's role and abilities.
-
-    Example:
-        >>> from langchain_openai import ChatOpenAI
-        >>> resolver = AISkillChoiceResolver(
-        ...     llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
-        ... )
-    """
+    """AI-powered skill choice resolver that selects skills based on character context."""
 
     type: Literal[BuildingBlockType.AI_SKILL_CHOICE_RESOLVER] = (
         BuildingBlockType.AI_SKILL_CHOICE_RESOLVER
     )
 
     llm: RaisingService = Field(
+        exclude=True,
         default_factory=lambda: RaisingService(service=OpenAIService()),
         description="Language model for making AI-powered decisions",
-    )
-
-    formatter: BlueprintFormatter = Field(
-        default_factory=BlueprintFormatter,
-        description="Blueprint formatter for creating AI prompts",
     )
 
     def _build_prompt(self, state: _WideBlueprint) -> str:
@@ -60,10 +44,6 @@ class AISkillChoiceResolver(SkillChoiceResolver):
             "Choose skills that best fit the character's class, background, "
             "ability scores, and overall concept.",
         ]
-
-        character_description = self.formatter.format(state)
-        if character_description:
-            parts.append(character_description)
 
         parts.append("\n## Available Skills")
         parts.append(f"Select exactly {n} skills from the following options:\n")

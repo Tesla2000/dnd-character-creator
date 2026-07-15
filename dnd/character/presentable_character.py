@@ -156,12 +156,8 @@ class PresentableCharacter(
     @_cf
     def health(self) -> int:
         constitution_modifier = self._get_modifier(Statistic.CONSTITUTION)
-        health_increase_per_level = constitution_modifier
-        if FeatName.TOUGH in self.feats:
-            health_increase_per_level += 2
-        if self.race == Race.DWARF:
-            health_increase_per_level += 1
-        return self.health_base + self.level * health_increase_per_level
+        base = self.health_base + self.level * constitution_modifier
+        return base + sum(modifier.apply(self) for modifier in self.health_modifiers)
 
     def _get_spellcasting_modifier(self) -> int:
         if self.spellcasting_ability is None:

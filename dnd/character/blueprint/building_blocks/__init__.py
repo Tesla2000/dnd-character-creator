@@ -1,12 +1,6 @@
 from typing import Annotated
 from typing import Union
 
-from dnd.character.blueprint.building_blocks.all_choices_resolver import (
-    AIAllChoicesResolver,
-)
-from dnd.character.blueprint.building_blocks.all_choices_resolver import (
-    AllChoicesResolver,
-)
 from dnd.character.blueprint.building_blocks.character_base_template import (
     CharacterBaseTemplate,
 )
@@ -19,14 +13,13 @@ from dnd.character.blueprint.building_blocks.equipment_adder import (
 from dnd.character.blueprint.building_blocks.feat_adder import (
     FeatAdder,
 )
-from dnd.character.blueprint.building_blocks.feature_assigner import (
-    FeatureAssigner,
+from dnd.character.blueprint.building_blocks.feat_block import (
+    AbilityScoreImprovementFeatBlock,
+    AnyFeatBlock,
+    AnyFeatSelectionBlock,
 )
 from dnd.character.blueprint.building_blocks.character_converter import (
     CharacterConverter,
-)
-from dnd.character.blueprint.building_blocks.initial_builder import (
-    InitialBuilder,
 )
 from dnd.character.blueprint.building_blocks.initial_data_filler import (
     AIBaseBuilderAssigner,
@@ -536,17 +529,15 @@ from pydantic import Field
 
 AnyBuildingBlock = Annotated[
     Union[
-        AIAllChoicesResolver,
         AIBaseBuilderAssigner,
         AIMagicalItemChooser,
         AIPartialBuilderAssigner,
-        AllChoicesResolver,
         CharacterDataAssigner,
         EquipmentAdder,
         FeatAdder,
-        FeatureAssigner,
+        AbilityScoreImprovementFeatBlock,
+        AnyFeatSelectionBlock,
         CharacterConverter,
-        InitialBuilder,
         WizardLevel1,
         WizardLevel3,
         WizardLevel4,
@@ -717,15 +708,15 @@ AnyBuildingBlock = Annotated[
 ]
 __all__ = [
     "AIBaseBuilderAssigner",
-    "AIAllChoicesResolver",
     "AIMagicalItemChooser",
     "AIPartialBuilderAssigner",
-    "AllChoicesResolver",
     "CharacterBaseTemplate",
     "CharacterDataAssigner",
     "EquipmentAdder",
     "FeatAdder",
-    "FeatureAssigner",
+    "AbilityScoreImprovementFeatBlock",
+    "AnyFeatBlock",
+    "AnyFeatSelectionBlock",
     "WizardLevel1",
     "WizardLevel3",
     "WizardLevel4",
@@ -843,7 +834,6 @@ __all__ = [
     "SorcererLevel14WildMagic",
     "SorcererLevel18WildMagic",
     "CharacterConverter",
-    "InitialBuilder",
     "AarakocraRaceAssigner",
     "AasimarRaceAssigner",
     "BugbearRaceAssigner",

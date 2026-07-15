@@ -1,18 +1,11 @@
 import pytest
 
-from dnd.character.blueprint.building_blocks.all_choices_resolver.base import (
-    AllChoicesResolver,
-)
 from dnd.character.blueprint.building_blocks.initial_data_filler.random_filler import (
     RandomInitialDataFiller,
 )
-from dnd.character.blueprint.building_blocks.building_block_type import (
-    BuildingBlockType,
-)
 from dnd.character.blueprint.building_blocks.equipment_adder import EquipmentAdder
 from dnd.character.blueprint.building_blocks.feat_adder import FeatAdder
-from dnd.character.blueprint.building_blocks.feature_assigner import FeatureAssigner
-from dnd.character.blueprint.building_blocks.initial_builder import InitialBuilder
+from dnd.character.blueprint.building_blocks.feat_block.feats import ToughFeatBlock
 from dnd.character.blueprint.building_blocks.magical_item_chooser.random import (
     RandomMagicalItemChooser,
 )
@@ -20,8 +13,9 @@ from dnd.character.blueprint.building_blocks.null_block import NullBlock
 from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
 from dnd.character.blueprint.building_blocks.weapon_adder import WeaponAdder
 from dnd.character.blueprint.states.state import Blueprint
-from dnd.character.feature.feature import Feature
 from dnd.character.feature.feats import FeatName
+from dnd.character.health_modifier import ToughHealthModifier
+from dnd.character.stats import Stats
 from dnd.choices.equipment_creation.weapons import WeaponName
 from dnd.choices.stats_creation.statistic import Statistic
 
@@ -74,17 +68,24 @@ class TestEquipmentBlocks:
         result = block.apply(Blueprint())
         assert result is not None
 
-    def test_feat_adder_duplicate_feat_raises(self) -> None:
+    def test_feat_adder_duplicate_feat_is_noop(self) -> None:
         state_with_feat = FeatAdder(feat=FeatName.ALERT).apply(Blueprint())
-        block = FeatAdder(feat=FeatName.ALERT)
-        with pytest.raises(ValueError, match="already exists"):
-            block.apply(state_with_feat)
+        result = FeatAdder(feat=FeatName.ALERT).apply(state_with_feat)
+        assert result.feats == state_with_feat.feats
 
-    def test_feature_assigner_apply(self) -> None:
-        feature = Feature()
-        block = FeatureAssigner(feature=feature)
-        result = block.apply(Blueprint())
-        assert result is not None
+    def test_tough_feat_block_adds_health_modifier(self) -> None:
+        stats = Stats(
+            strength=10,
+            dexterity=10,
+            constitution=10,
+            intelligence=10,
+            wisdom=10,
+            charisma=10,
+        )
+        result = ToughFeatBlock().apply(Blueprint(stats=stats))
+        assert FeatName.TOUGH in result.feats
+        assert len(result.health_modifiers) == 1
+        assert isinstance(result.health_modifiers[0], ToughHealthModifier)
 
 
 @pytest.mark.unit
@@ -97,30 +98,4 @@ class TestRandomMagicalItemChooser:
     def test_select_uncommon_item(self) -> None:
         block = RandomMagicalItemChooser(n_uncommon=1, seed=42)
         result = block.apply(Blueprint())
-        assert result is not None
-
-
-@pytest.mark.unit
-class TestCombinedBlockApply:
-    def test_all_choices_resolver_apply(self) -> None:
-        resolver = AllChoicesResolver.model_construct(
-            type=BuildingBlockType.ALL_CHOICES_RESOLVER,
-            language_choice_resolver=NullBlock(),
-            skill_choice_resolver=NullBlock(),
-            feat_choice_resolver=NullBlock(),
-            tool_proficiency_choice_resolver=NullBlock(),
-            stat_choice_resolver=NullBlock(),
-            equipment_chooser=NullBlock(),
-        )
-        result = resolver.apply(Blueprint())
-        assert result is not None
-
-    def test_initial_builder_apply(self) -> None:
-        builder = InitialBuilder.model_construct(
-            type=BuildingBlockType.INITIAL_BUILDER,
-            stats_builder=NullBlock(),
-            race_assigner=NullBlock(),
-            all_choices_resolver=NullBlock(),
-        )
-        result = builder.apply(Blueprint())
         assert result is not None

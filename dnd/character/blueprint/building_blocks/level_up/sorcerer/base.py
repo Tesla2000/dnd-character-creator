@@ -3,12 +3,20 @@ from abc import abstractmethod
 from typing import Literal
 from typing import cast
 
+from pydantic import Field
+
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
+from dnd.character.blueprint.building_blocks.feat_block import (
+    AnyFeatBlock,
+    AnyFeatSelectionBlock,
+)
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
     AnyD6HealthIncrease,
+    D6HealthIncreaseAverage,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
     AnySorcererSpellAssigner,
+    SorcererRandomSpellAssigner,
 )
 from dnd.character.blueprint.sentinels import AnyClassLevel
 from dnd.character.blueprint.sentinels import AnyMetamagicChoices
@@ -35,8 +43,12 @@ from dnd.choices.class_creation.character_class import SorcererSubclass
 class SorcererLevel1Base[SubclassOut: SorcererSubclass](BuildingBlock, ABC):
     """Base for sorcerer level 1 (subclass-assigning level)."""
 
-    health_increase: AnyD6HealthIncrease
-    spell_assigner: AnySorcererSpellAssigner
+    health_increase: AnyD6HealthIncrease = Field(
+        default_factory=D6HealthIncreaseAverage
+    )
+    spell_assigner: AnySorcererSpellAssigner = Field(
+        default_factory=SorcererRandomSpellAssigner
+    )
 
     @abstractmethod
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
@@ -161,8 +173,12 @@ class SorcererSharedLevelBase[
 ](BuildingBlock, ABC):
     """Base for post-subclass sorcerer levels shared across all subclasses."""
 
-    health_increase: AnyD6HealthIncrease
-    spell_assigner: AnySorcererSpellAssigner
+    health_increase: AnyD6HealthIncrease = Field(
+        default_factory=D6HealthIncreaseAverage
+    )
+    spell_assigner: AnySorcererSpellAssigner = Field(
+        default_factory=SorcererRandomSpellAssigner
+    )
 
     @abstractmethod
     def _update_blueprint(self, blueprint: _SBPT) -> _SBPT: ...
@@ -257,14 +273,95 @@ class SorcererSharedLevelBase[
         return partial.increase_full_caster()
 
 
+class SorcererFeatGrantingLevelBase[
+    LevelIn: FirstSubclassPostLevel,
+    LevelOut: FirstSubclassPostLevel,
+](SorcererSharedLevelBase[LevelIn, LevelOut]):
+    """Base for sorcerer levels that grant a feat choice (4, 8, 12, 16, 19)."""
+
+    feat_block: AnyFeatBlock = Field(default_factory=AnyFeatSelectionBlock)
+
+    def apply[
+        SubclassT: SorcererSubclass,
+        _StCK_: AnyStatChoices,
+        _SkCK_: AnyStatChoices,
+        _WZK_: AnyWizardLevel,
+        _FGK_: AnyClassLevel,
+        _BAK_: AnyClassLevel,
+        _ROK_: AnyClassLevel,
+        _CLK_: AnyClassLevel,
+        _DRK_: AnyClassLevel,
+        _PAK_: AnyClassLevel,
+        _RAK_: AnyClassLevel,
+        _MOK_: AnyClassLevel,
+        _BDK_: AnyClassLevel,
+        _WAK_: AnyClassLevel,
+        _ARK_: AnyClassLevel,
+        _CDK_: MaybeCharacterData,
+        _McK_: AnyMetamagicChoices,
+    ](
+        self,
+        blueprint: SorcererBlueprint[
+            _StCK_,
+            _SkCK_,
+            _WZK_,
+            SorcererSubclassLevel[LevelIn, SubclassT],
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+            _McK_,
+        ],
+    ) -> SorcererBlueprint[
+        _StCK_,
+        _SkCK_,
+        _WZK_,
+        SorcererSubclassLevel[LevelOut, SubclassT],
+        _FGK_,
+        _BAK_,
+        _ROK_,
+        _CLK_,
+        _DRK_,
+        _PAK_,
+        _RAK_,
+        _MOK_,
+        _BDK_,
+        _WAK_,
+        _ARK_,
+        _CDK_,
+        _McK_,
+    ]:
+        result = super().apply(blueprint)
+        feat_applied = self.feat_block.apply(result)
+        return result.model_copy(
+            update={
+                "feats": feat_applied.feats,
+                "stats": feat_applied.stats,
+                "n_stat_choices": feat_applied.n_stat_choices,
+            }
+        )
+
+
 class SorcererSubclassFeatureLevelBase[
     LevelIn: AnyNonZeroSorcererLevel,
     LevelOut: AnyNonZeroSorcererLevel,
 ](BuildingBlock, ABC):
     """Base for sorcerer levels 6, 14, 18 that grant subclass-specific features."""
 
-    health_increase: AnyD6HealthIncrease
-    spell_assigner: AnySorcererSpellAssigner
+    health_increase: AnyD6HealthIncrease = Field(
+        default_factory=D6HealthIncreaseAverage
+    )
+    spell_assigner: AnySorcererSpellAssigner = Field(
+        default_factory=SorcererRandomSpellAssigner
+    )
 
     @abstractmethod
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...

@@ -43,6 +43,7 @@ from dnd.character.blueprint.building_blocks.race_assigner.race_assigner import 
     YuanTiPurebloodRaceAssigner,
 )
 from dnd.character.blueprint.states.state import Blueprint
+from dnd.character.health_modifier import DwarfHealthModifier
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
 from dnd.character.stats import Stats
@@ -218,6 +219,22 @@ def test_race_assigner(
     assert a._get_race_and_subrace() == RaceSubracePair(
         race=expected_race, subrace=subrace
     )
+
+
+@pytest.mark.unit
+def test_dwarf_race_assigner_adds_health_modifier() -> None:
+    assigner = DwarfRaceAssigner(subrace=SubraceName.DWARF_HILL_DWARF_PLAYERSHANDBOOK)
+    stats = Stats(
+        strength=10,
+        dexterity=10,
+        constitution=10,
+        intelligence=10,
+        wisdom=10,
+        charisma=10,
+    )
+    result = assigner.apply(Blueprint(stats=stats))
+    assert len(result.health_modifiers) == 1
+    assert isinstance(result.health_modifiers[0], DwarfHealthModifier)
 
 
 def test_race_assigner_apply() -> None:

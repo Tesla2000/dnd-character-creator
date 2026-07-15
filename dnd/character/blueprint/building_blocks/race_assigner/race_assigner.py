@@ -3,14 +3,59 @@ from typing import Literal
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
+from dnd.character.health_modifier import DwarfHealthModifier
+from dnd.character.blueprint.building_blocks.feat_choice_resolver import (
+    AnyFeatChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.feat_choice_resolver.random import (
+    RandomFeatChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.language_choice_resolver import (
+    AnyLanguageChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.language_choice_resolver.random import (
+    RandomLanguageChoiceResolver,
+)
 from dnd.character.blueprint.building_blocks.race_assigner.base_race_assigner import (
     BaseRaceAssigner,
 )
 from dnd.character.blueprint.building_blocks.race_assigner.base_race_assigner import (
     RaceSubracePair,
 )
+from dnd.character.blueprint.building_blocks.skill_choice_resolver import (
+    AnySkillChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.skill_choice_resolver.random import (
+    RandomSkillChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.stat_choice_resolver import (
+    AnyStatChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.stat_choice_resolver.random import (
+    RandomStatChoiceResolver,
+)
+from dnd.character.blueprint.sentinels import (
+    _ARK,
+    _BAK,
+    _BDK,
+    _CDK,
+    _CLK,
+    _DRK,
+    _FGK,
+    _HeK,
+    _MOK,
+    _PAK,
+    _RAK,
+    _ROK,
+    _SkCK,
+    _SOK,
+    _WAK,
+    _WZK,
+)
+from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
+from dnd.character.stats import Stats
 from pydantic import Field
 
 
@@ -35,8 +80,92 @@ class HumanRaceAssigner(BaseRaceAssigner):
         SubraceName.HUMAN_VARIANT_HUMAN_PLAYERSHANDBOOK,
     ] = Field(description="Human subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+    feat_choice_resolver: AnyFeatChoiceResolver = Field(
+        default_factory=RandomFeatChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.HUMAN, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        r5 = self.feat_choice_resolver.apply(r4)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r5))
 
 
 class ElfRaceAssigner(BaseRaceAssigner):
@@ -60,8 +189,88 @@ class ElfRaceAssigner(BaseRaceAssigner):
         SubraceName.ELF_ASTRAL_ELF_SPELLJAMMERADVENTURESINSPACE,
     ] = Field(description="Elf subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.ELF, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r4))
 
 
 class DwarfRaceAssigner(BaseRaceAssigner):
@@ -77,6 +286,60 @@ class DwarfRaceAssigner(BaseRaceAssigner):
 
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.DWARF, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        result = super().apply(blueprint)
+        return result.model_copy(
+            update={
+                "health_modifiers": (
+                    *result.health_modifiers,
+                    DwarfHealthModifier(),
+                )
+            }
+        )
 
 
 class HalflingRaceAssigner(BaseRaceAssigner):
@@ -94,8 +357,84 @@ class HalflingRaceAssigner(BaseRaceAssigner):
         SubraceName.HALFLING_GHOSTWISE_SWORDCOASTADVENTURERSGUIDE,
     ] = Field(description="Halfling subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.HALFLING, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r3))
 
 
 class HalfElfRaceAssigner(BaseRaceAssigner):
@@ -111,8 +450,84 @@ class HalfElfRaceAssigner(BaseRaceAssigner):
         SubraceName.HALF_ELF_WOOD_ELF_HERITAGE_PLAYERSHANDBOOK,
     ] = Field(description="Half-Elf subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.HALF_ELF, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.language_choice_resolver.apply(r2)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r3))
 
 
 class HalfOrcRaceAssigner(BaseRaceAssigner):
@@ -175,8 +590,84 @@ class DragonbornRaceAssigner(BaseRaceAssigner):
         SubraceName.DRAGONBORN_METALLIC_UNEARTHEDARCANA,
     ] = Field(description="Dragonborn subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.DRAGONBORN, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.language_choice_resolver.apply(r2)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r3))
 
 
 class GnomeRaceAssigner(BaseRaceAssigner):
@@ -210,8 +701,156 @@ class AasimarRaceAssigner(BaseRaceAssigner):
         SubraceName.AASIMAR_SCOURGE_AASIMAR_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Aasimar subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.AASIMAR, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r3))
+
+
+def _apply_stat_lang(
+    race_assigner: "BaseRaceAssigner",
+    blueprint: Blueprint[
+        None,
+        Stats,
+        _HeK,
+        Literal[0],
+        _SkCK,
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ],
+    stat_choice_resolver: AnyStatChoiceResolver,
+    language_choice_resolver: AnyLanguageChoiceResolver,
+) -> Blueprint[
+    Race,
+    Stats,
+    _HeK,
+    Literal[0],
+    Literal[0],
+    _WZK,
+    _SOK,
+    _FGK,
+    _BAK,
+    _ROK,
+    _CLK,
+    _DRK,
+    _PAK,
+    _RAK,
+    _MOK,
+    _BDK,
+    _WAK,
+    _ARK,
+    _CDK,
+]:
+    race_bp = race_assigner._build_race_blueprint(blueprint)
+    r2 = stat_choice_resolver.apply(race_bp)
+    r3 = language_choice_resolver.apply(r2)
+    return Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ].model_validate(dict(r3))
 
 
 class GenasiAirRaceAssigner(BaseRaceAssigner):
@@ -225,8 +864,63 @@ class GenasiAirRaceAssigner(BaseRaceAssigner):
         SubraceName.GENASI_AIR_AIR_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE,
     ] = Field(description="Air Genasi subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.GENASI_AIR, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class GenasiWaterRaceAssigner(BaseRaceAssigner):
@@ -240,8 +934,63 @@ class GenasiWaterRaceAssigner(BaseRaceAssigner):
         SubraceName.GENASI_WATER_WATER_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE,
     ] = Field(description="Water Genasi subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.GENASI_WATER, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class GenasiFireRaceAssigner(BaseRaceAssigner):
@@ -255,8 +1004,63 @@ class GenasiFireRaceAssigner(BaseRaceAssigner):
         SubraceName.GENASI_FIRE_FIRE_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE,
     ] = Field(description="Fire Genasi subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.GENASI_FIRE, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class GenasiEarthRaceAssigner(BaseRaceAssigner):
@@ -270,8 +1074,63 @@ class GenasiEarthRaceAssigner(BaseRaceAssigner):
         SubraceName.GENASI_EARTH_EARTH_GENASI_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE,
     ] = Field(description="Earth Genasi subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.GENASI_EARTH, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class GoliathRaceAssigner(BaseRaceAssigner):
@@ -285,8 +1144,63 @@ class GoliathRaceAssigner(BaseRaceAssigner):
         SubraceName.GOLIATH_GOLIATH_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE,
     ] = Field(description="Goliath subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.GOLIATH, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class FirbolgRaceAssigner(BaseRaceAssigner):
@@ -300,8 +1214,63 @@ class FirbolgRaceAssigner(BaseRaceAssigner):
         SubraceName.FIRBOLG_FIRBOLG_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Firbolg subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.FIRBOLG, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class TabaxiRaceAssigner(BaseRaceAssigner):
@@ -315,8 +1284,63 @@ class TabaxiRaceAssigner(BaseRaceAssigner):
         SubraceName.TABAXI_TABAXI_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Tabaxi subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.TABAXI, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class LizardfolkRaceAssigner(BaseRaceAssigner):
@@ -330,8 +1354,63 @@ class LizardfolkRaceAssigner(BaseRaceAssigner):
         SubraceName.LIZARDFOLK_LIZARDFOLK_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Lizardfolk subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.LIZARDFOLK, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class KenkuRaceAssigner(BaseRaceAssigner):
@@ -344,8 +1423,88 @@ class KenkuRaceAssigner(BaseRaceAssigner):
         SubraceName.KENKU_KENKU_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE
     ] = Field(description="Kenku subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.KENKU, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r4))
 
 
 class TortleRaceAssigner(BaseRaceAssigner):
@@ -358,8 +1517,63 @@ class TortleRaceAssigner(BaseRaceAssigner):
         SubraceName.TORTLE_TORTLE_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE
     ] = Field(description="Tortle subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.TORTLE, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class AarakocraRaceAssigner(BaseRaceAssigner):
@@ -372,8 +1586,59 @@ class AarakocraRaceAssigner(BaseRaceAssigner):
         SubraceName.AARAKOCRA_AARAKOCRA_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE
     ] = Field(description="Aarakocra subrace selection")
 
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.AARAKOCRA, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        result = super().apply(blueprint)
+        return self.language_choice_resolver.apply(result)
 
 
 class BugbearRaceAssigner(BaseRaceAssigner):
@@ -387,8 +1652,88 @@ class BugbearRaceAssigner(BaseRaceAssigner):
         SubraceName.BUGBEAR_BUGBEAR_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Bugbear subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.BUGBEAR, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r4))
 
 
 class GoblinRaceAssigner(BaseRaceAssigner):
@@ -404,8 +1749,88 @@ class GoblinRaceAssigner(BaseRaceAssigner):
         SubraceName.GOBLIN_GOBLIN_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Goblin subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.GOBLIN, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r4))
 
 
 class HobgoblinRaceAssigner(BaseRaceAssigner):
@@ -420,8 +1845,84 @@ class HobgoblinRaceAssigner(BaseRaceAssigner):
         SubraceName.HOBGOBLIN_HOBGOBLIN_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Hobgoblin subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.HOBGOBLIN, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r3))
 
 
 class KoboldRaceAssigner(BaseRaceAssigner):
@@ -436,8 +1937,59 @@ class KoboldRaceAssigner(BaseRaceAssigner):
         SubraceName.KOBOLD_KOBOLD_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Kobold subrace selection")
 
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.KOBOLD, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        result = super().apply(blueprint)
+        return self.language_choice_resolver.apply(result)
 
 
 class OrcRaceAssigner(BaseRaceAssigner):
@@ -454,8 +2006,59 @@ class OrcRaceAssigner(BaseRaceAssigner):
         SubraceName.ORC_ORC_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Orc subrace selection")
 
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.ORC, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        result = super().apply(blueprint)
+        return self.language_choice_resolver.apply(result)
 
 
 class WarforgedRaceAssigner(BaseRaceAssigner):
@@ -471,8 +2074,88 @@ class WarforgedRaceAssigner(BaseRaceAssigner):
         SubraceName.WARFORGED_SKIRMISHER_UNEARTHEDARCANA,
     ] = Field(description="Warforged subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.WARFORGED, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r4))
 
 
 class ChangelingRaceAssigner(BaseRaceAssigner):
@@ -487,8 +2170,88 @@ class ChangelingRaceAssigner(BaseRaceAssigner):
         SubraceName.CHANGELING_CHANGELING_UNEARTHEDARCANA,
     ] = Field(description="Changeling subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.CHANGELING, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r4))
 
 
 class ShifterRaceAssigner(BaseRaceAssigner):
@@ -510,8 +2273,59 @@ class ShifterRaceAssigner(BaseRaceAssigner):
         SubraceName.SHIFTER_RAZORCLAW_UNEARTHEDARCANA,
     ] = Field(description="Shifter subrace selection")
 
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.SHIFTER, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        result = super().apply(blueprint)
+        return self.language_choice_resolver.apply(result)
 
 
 class MinotaurRaceAssigner(BaseRaceAssigner):
@@ -524,8 +2338,59 @@ class MinotaurRaceAssigner(BaseRaceAssigner):
         SubraceName.MINOTAUR_MINOTAUR_MORDENKAINENPRESENTSMONSTERSOFTHEMULTIVERSE
     ] = Field(description="Minotaur subrace selection")
 
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.MINOTAUR, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        result = super().apply(blueprint)
+        return self.language_choice_resolver.apply(result)
 
 
 class CentaurRaceAssigner(BaseRaceAssigner):
@@ -542,8 +2407,88 @@ class CentaurRaceAssigner(BaseRaceAssigner):
         SubraceName.CENTAUR_PHERES_MYTHICODYSSEYSOFTHEROS,
     ] = Field(description="Centaur subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.CENTAUR, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r4))
 
 
 class SatyrRaceAssigner(BaseRaceAssigner):
@@ -557,8 +2502,63 @@ class SatyrRaceAssigner(BaseRaceAssigner):
         SubraceName.SATYR_SATYR_MYTHICODYSSEYSOFTHEROS,
     ] = Field(description="Satyr subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.SATYR, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class LeoninRaceAssigner(BaseRaceAssigner):
@@ -585,8 +2585,59 @@ class VerdanRaceAssigner(BaseRaceAssigner):
         description="Verdan subrace selection"
     )
 
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.VERDAN, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        result = super().apply(blueprint)
+        return self.language_choice_resolver.apply(result)
 
 
 class GrungRaceAssigner(BaseRaceAssigner):
@@ -614,8 +2665,59 @@ class KalashtarRaceAssigner(BaseRaceAssigner):
         SubraceName.KALASHTAR_KALASHTAR_UNEARTHEDARCANA,
     ] = Field(description="Kalashtar subrace selection")
 
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.KALASHTAR, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        result = super().apply(blueprint)
+        return self.language_choice_resolver.apply(result)
 
 
 class YuanTiPurebloodRaceAssigner(BaseRaceAssigner):
@@ -629,8 +2731,63 @@ class YuanTiPurebloodRaceAssigner(BaseRaceAssigner):
         SubraceName.YUAN_TI_PUREBLOOD_VOLOSGUIDETOMONSTERS,
     ] = Field(description="Yuan-Ti Pureblood subrace selection")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=Race.YUAN_TI_PUREBLOOD, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        return _apply_stat_lang(
+            self, blueprint, self.stat_choice_resolver, self.language_choice_resolver
+        )
 
 
 class RaceAssigner(BaseRaceAssigner):
@@ -640,5 +2797,89 @@ class RaceAssigner(BaseRaceAssigner):
     race: Race = Field(description="The race to assign")
     subrace: SubraceName = Field(description="The subrace to assign")
 
+    stat_choice_resolver: AnyStatChoiceResolver = Field(
+        default_factory=RandomStatChoiceResolver
+    )
+    skill_choice_resolver: AnySkillChoiceResolver = Field(
+        default_factory=RandomSkillChoiceResolver
+    )
+    language_choice_resolver: AnyLanguageChoiceResolver = Field(
+        default_factory=RandomLanguageChoiceResolver
+    )
+    feat_choice_resolver: AnyFeatChoiceResolver = Field(
+        default_factory=RandomFeatChoiceResolver
+    )
+
     def _get_race_and_subrace(self) -> RaceSubracePair:
         return RaceSubracePair(race=self.race, subrace=self.subrace)
+
+    def apply(
+        self,
+        blueprint: Blueprint[
+            None,
+            Stats,
+            _HeK,
+            Literal[0],
+            _SkCK,
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        _HeK,
+        Literal[0],
+        Literal[0],
+        _WZK,
+        _SOK,
+        _FGK,
+        _BAK,
+        _ROK,
+        _CLK,
+        _DRK,
+        _PAK,
+        _RAK,
+        _MOK,
+        _BDK,
+        _WAK,
+        _ARK,
+        _CDK,
+    ]:
+        race_bp = self._build_race_blueprint(blueprint)
+        r2 = self.stat_choice_resolver.apply(race_bp)
+        r3 = self.skill_choice_resolver.apply(r2)
+        r4 = self.language_choice_resolver.apply(r3)
+        r5 = self.feat_choice_resolver.apply(r4)
+        return Blueprint[
+            Race,
+            Stats,
+            _HeK,
+            Literal[0],
+            Literal[0],
+            _WZK,
+            _SOK,
+            _FGK,
+            _BAK,
+            _ROK,
+            _CLK,
+            _DRK,
+            _PAK,
+            _RAK,
+            _MOK,
+            _BDK,
+            _WAK,
+            _ARK,
+            _CDK,
+        ].model_validate(dict(r5))
