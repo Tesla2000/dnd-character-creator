@@ -18,14 +18,6 @@ from dnd.character.blueprint.building_blocks.building_block_type import (
 )
 
 
-class ToolProficiencySelection(BaseModel):
-    """Schema for AI to select tool proficiency replacements."""
-
-    tool_proficiencies: set[ToolProficiency | GamingSet | MusicalInstrument] = Field(
-        default_factory=set
-    )
-
-
 class AIToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
     """AI-powered resolver for tool proficiency ANY_OF_YOUR_CHOICE placeholders."""
 
@@ -98,9 +90,16 @@ class AIToolProficiencyChoiceResolver(ToolProficiencyChoiceResolver):
         if not has_placeholder:
             return blueprint
 
+        count = sum(1 for t in blueprint.tool_proficiencies if t in not_choice)
+
         prompt = self._build_prompt(blueprint)
         if not prompt:
             return blueprint
+
+        class ToolProficiencySelection(BaseModel):
+            tool_proficiencies: list[
+                ToolProficiency | GamingSet | MusicalInstrument
+            ] = Field(min_length=count, max_length=count)
 
         selection = self.llm.create_structured_output(prompt, ToolProficiencySelection)
         new_tools: set[ToolProficiency | GamingSet | MusicalInstrument] = {

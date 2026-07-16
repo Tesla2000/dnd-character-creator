@@ -79,7 +79,6 @@ from dnd.character.blueprint.building_blocks.race_assigner.race_assigner import 
 from dnd.character.blueprint.building_blocks.sex_assigner import SexAssigner
 from dnd.character.blueprint.building_blocks.skill_choice_resolver.ai import (
     AISkillChoiceResolver,
-    SkillSelection,
 )
 from dnd.character.blueprint.building_blocks.skill_choice_resolver.base import (
     SkillChoiceResolver,
@@ -119,6 +118,12 @@ from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import ArmorProficiency
 from dnd.skill_proficiency import Skill
 import dnd.fight._creature as creature_module
+from pydantic import BaseModel as _BaseModel
+
+
+class SkillSelection(_BaseModel):
+    selected_skills: list[Skill]
+
 
 _PRIORITY: StatsPriority = (
     Statistic.STRENGTH,

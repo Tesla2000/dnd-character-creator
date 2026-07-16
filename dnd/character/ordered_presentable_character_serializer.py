@@ -1,10 +1,7 @@
-from typing import TypeAlias
-
 from pydantic import ConfigDict, BaseModel
+from pydantic import JsonValue
 
 from dnd.character.presentable_character import PresentableCharacter
-
-_SerializedCharacter: TypeAlias = dict[str, object]
 
 
 class OrderedPresentableCharacterSerializer(BaseModel):
@@ -18,7 +15,7 @@ class OrderedPresentableCharacterSerializer(BaseModel):
         "saving_throw_modifiers",
     )
 
-    def serialize(self, character: PresentableCharacter) -> _SerializedCharacter:
+    def serialize(self, character: PresentableCharacter) -> dict[str, JsonValue]:
         data = character.model_dump(mode="json")
         result = {k: data[k] for k in self.pinned_fields if k in data}
         result.update(

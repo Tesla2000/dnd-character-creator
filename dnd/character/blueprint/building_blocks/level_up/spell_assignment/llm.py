@@ -5,26 +5,27 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base impo
     WizardSpellAssigner,
 )
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
+from dnd.character.spells import ClassSpellLevel
 from dnd.character.spells import Spell
+from dnd.character.spells import SpellLevel
+from dnd.character.spells.spell_slots import get_class_spell_selector
 from dnd.choices.class_creation.character_class import Class
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
-from pydantic import BaseModel
 from pydantic import ConfigDict
-from pydantic import create_model
 from pydantic import Field
 from structured_output_creator import OpenAIService, RaisingService
 
 
 def _build_llm_prompt(
-    class_name: str,
+    query: ClassSpellLevel,
     character_description: str | None,
-    spell_level: int,
     count: int,
     available_spells: list[Spell],
     state: _WideBlueprint,
 ) -> str:
+    class_, spell_level = query[0], query[1]
     spell_level_name = "cantrips" if spell_level == 0 else f"level {spell_level} spells"
     cd = state.character_data
     name = (cd.name if cd else None) or "Unknown"
@@ -37,7 +38,7 @@ def _build_llm_prompt(
         f"You are selecting {count} {spell_level_name} for a D&D 5e character.\n\n"
         "Character Details:\n"
         f"- Name: {name}\n"
-        f"- Class: {class_name}\n"
+        f"- Class: {class_.value}\n"
         f"- Level: {level}\n"
         f"- Race: {race.value if race else 'Unknown'}\n"
         f"- Background: {background.value if background else 'Unknown'}\n"
@@ -58,28 +59,19 @@ def _build_llm_prompt(
 
 def _llm_select(
     llm: RaisingService,
-    class_name: str,
+    query: ClassSpellLevel,
     character_description: str | None,
-    spell_level: int,
     count: int,
     available_spells: list[Spell],
     state: _WideBlueprint,
 ) -> tuple[Spell, ...]:
     context = _build_llm_prompt(
-        class_name, character_description, spell_level, count, available_spells, state
+        query, character_description, count, available_spells, state
     )
 
-    class _SpellSelectionBase(BaseModel):
-        spells: tuple[Spell, ...]
-
-    SpellSelection = create_model(
-        f"Level{spell_level}SpellSelection",
-        __base__=_SpellSelectionBase,
-        spells=(tuple[Spell, ...], ...),
-    )
-
-    _result = llm.create_structured_output(context, SpellSelection)
-    return tuple(_result.spells[:count])
+    selector = get_class_spell_selector(query, count)
+    _result = llm.create_structured_output(context, selector)
+    return tuple(_result.spells)
 
 
 class WizardLLMSpellAssigner(WizardSpellAssigner):
@@ -117,16 +109,16 @@ class WizardLLMSpellAssigner(WizardSpellAssigner):
 
     def select_spells(
         self,
-        spell_level: int,
+        spell_level: SpellLevel,
         count: int,
         available_spells: list[Spell],
         state: _WideBlueprint,
     ) -> tuple[Spell, ...]:
+        query: ClassSpellLevel = (Class.WIZARD, spell_level)
         return _llm_select(
             self.llm,
-            Class.WIZARD.value,
+            query,
             self.character_description,
-            spell_level,
             count,
             available_spells,
             state,
@@ -168,16 +160,16 @@ class SorcererLLMSpellAssigner(SorcererSpellAssigner):
 
     def select_spells(
         self,
-        spell_level: int,
+        spell_level: SpellLevel,
         count: int,
         available_spells: list[Spell],
         state: _WideBlueprint,
     ) -> tuple[Spell, ...]:
+        query: ClassSpellLevel = (Class.SORCERER, spell_level)
         return _llm_select(
             self.llm,
-            Class.SORCERER.value,
+            query,
             self.character_description,
-            spell_level,
             count,
             available_spells,
             state,

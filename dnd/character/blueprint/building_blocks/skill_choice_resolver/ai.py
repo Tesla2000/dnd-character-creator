@@ -14,14 +14,6 @@ from pydantic import Field
 from structured_output_creator import OpenAIService, RaisingService
 
 
-class SkillSelection(BaseModel):
-    """Schema for AI to select skills."""
-
-    selected_skills: tuple[Skill, ...] = Field(
-        description="Selected skill proficiencies"
-    )
-
-
 class AISkillChoiceResolver(SkillChoiceResolver):
     """AI-powered skill choice resolver that selects skills based on character context."""
 
@@ -69,14 +61,12 @@ class AISkillChoiceResolver(SkillChoiceResolver):
 
     def _select_skills(self, state: _WideBlueprint) -> frozenset[Skill]:
         prompt = self._build_prompt(state)
+        n = state.n_skill_choices
+
+        class SkillSelection(BaseModel):
+            selected_skills: list[Skill] = Field(min_length=n, max_length=n)
 
         selection = self.llm.create_structured_output(prompt, SkillSelection)
-
-        if len(selection.selected_skills) != state.n_skill_choices:
-            raise ValueError(
-                f"AI returned {len(selection.selected_skills)} skills "
-                f"but expected {state.n_skill_choices}"
-            )
 
         actual_available = frozenset(
             skill

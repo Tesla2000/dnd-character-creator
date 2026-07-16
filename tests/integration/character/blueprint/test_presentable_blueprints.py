@@ -11,7 +11,8 @@ from dnd.character.blueprint.states.wizard.presentable import (
 from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
 from dnd.character.spells.max_spell_levels import FULL_CASTER_SPELL_SLOTS
-from dnd.character.spells.spell_slots import FirstLevel, ThirdLevel
+from dnd.character.spells.spell_slots import WizardFirstLevel as FirstLevel
+from dnd.character.spells.spell_slots import WizardThirdLevel as ThirdLevel
 from dnd.character.stats import Stats
 from dnd.choices.abilities.metamagic import MetamagicOption
 

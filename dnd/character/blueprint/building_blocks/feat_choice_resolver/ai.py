@@ -14,12 +14,6 @@ from pydantic import Field
 from structured_output_creator import OpenAIService, RaisingService
 
 
-class FeatSelection(BaseModel):
-    """Schema for AI to select feat replacements."""
-
-    feats: set[FeatName] = Field(default_factory=set)
-
-
 class AIFeatChoiceResolver(BuildingBlock):
     """AI-powered resolver for FeatName.ANY_OF_YOUR_CHOICE placeholders."""
 
@@ -87,11 +81,11 @@ class AIFeatChoiceResolver(BuildingBlock):
             )
 
         count = sum(list(blueprint.feats).count(fc) for fc in FeatName.not_choosables())
+
+        class FeatSelection(BaseModel):
+            feats: list[FeatName] = Field(min_length=count, max_length=count)
+
         selection = self.llm.create_structured_output(prompt, FeatSelection)
-        if len(selection.feats) != count:
-            raise ValueError(
-                f"AI returned {len(selection.feats)} feats but expected {count}"
-            )
 
         new_feats = set(blueprint.feats)
         new_feats.difference_update(FeatName.not_choosables())

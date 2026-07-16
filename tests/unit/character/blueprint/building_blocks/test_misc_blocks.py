@@ -32,8 +32,8 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.random im
     WizardRandomSpellAssigner,
 )
 from dnd.character.class_levels import ClassLevels
-from dnd.character.spells import Cantrip
-from dnd.character.spells import FirstLevel
+from dnd.character.spells.spell_slots import WizardCantrip as Cantrip
+from dnd.character.spells.spell_slots import WizardFirstLevel as FirstLevel
 from dnd.character.spells.spells import Spells
 from dnd.character.blueprint.building_blocks.magical_item_chooser.random import (
     RandomMagicalItemChooser,
@@ -193,7 +193,7 @@ class TestSpellAssignerEdgeCases:
     def test_no_available_spells_skips_level(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setattr(spell_base, "_get_available_spells", lambda cls, lvl: [])
+        monkeypatch.setattr(spell_base, "_get_available_spells", lambda query: [])
         state = Blueprint()
         state = state.model_copy(update={"classes": ClassLevels(wizard=1)})
         assigner = WizardRandomSpellAssigner()
@@ -206,8 +206,8 @@ class TestSpellAssignerEdgeCases:
         mock_cantrip = Cantrip.ACID_SPLASH
         mock_spell = FirstLevel.ABSORB_ELEMENTS
 
-        def fake_available(cls, lvl):
-            if lvl == 0:
+        def fake_available(query):
+            if query[1] == 0:
                 return [mock_cantrip]
             return [mock_spell]
 

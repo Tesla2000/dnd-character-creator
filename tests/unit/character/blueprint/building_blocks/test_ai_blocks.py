@@ -5,14 +5,14 @@ import pytest
 from pydantic import Field
 from pydantic import ValidationError
 
+from pydantic import BaseModel as _BaseModel
+
 from dnd.character.armor.names import ArmorName
 from dnd.character.blueprint.building_blocks.tool_proficiency_choice_resolver.ai import (
     AIToolProficiencyChoiceResolver,
-    ToolProficiencySelection,
 )
 from dnd.character.blueprint.building_blocks.language_choice_resolver.ai import (
     AILanguageChoiceResolver,
-    LanguageSelection,
 )
 from dnd.character.blueprint.building_blocks.character_base_template import (
     CharacterBaseTemplate,
@@ -22,7 +22,6 @@ from dnd.character.blueprint.building_blocks.equipment_chooser.ai import (
 )
 from dnd.character.blueprint.building_blocks.feat_choice_resolver.ai import (
     AIFeatChoiceResolver,
-    FeatSelection,
 )
 from dnd.character.blueprint.building_blocks.initial_data_filler.ai_base_builder_assigner import (
     AIBaseBuilderAssigner,
@@ -44,11 +43,9 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.llm impor
 from dnd.character.class_levels import ClassLevels
 from dnd.character.blueprint.building_blocks.magical_item_chooser.ai import (
     AIMagicalItemChooser,
-    MagicalItemSelection,
 )
 from dnd.character.blueprint.building_blocks.skill_choice_resolver.ai import (
     AISkillChoiceResolver,
-    SkillSelection,
 )
 from dnd.character.blueprint.building_blocks.stat_choice_resolver.ai import (
     AIStatChoiceResolver,
@@ -57,7 +54,8 @@ from dnd.character.blueprint.building_blocks.stat_choice_resolver.ai import (
 from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.feature.feats import FeatName
 from dnd.character.magical_item.items import MAGICAL_ITEMS
-from dnd.character.spells.spell_slots import Cantrip, FirstLevel
+from dnd.character.spells.spell_slots import WizardCantrip as Cantrip
+from dnd.character.spells.spell_slots import WizardFirstLevel as FirstLevel
 from dnd.character.stats import Stats
 from dnd.choices.alignment import Alignment
 from dnd.choices.background_creatrion.background import Background
@@ -67,7 +65,6 @@ from dnd.choices.language import Language
 from dnd.other_profficiencies import ToolProficiency, GamingSet, MusicalInstrument
 from dnd.character.race.race import Race
 from dnd.choices.sex import Sex
-from dnd.choices.stats_creation.statistic import Statistic
 from dnd.skill_proficiency import Skill
 from structured_output_creator import LLMRefusalError
 
@@ -78,6 +75,26 @@ def _exhaust(gen: Generator[object, object, object]) -> object:
             next(gen)
     except StopIteration as exc:
         return exc.value
+
+
+class SkillSelection(_BaseModel):
+    selected_skills: list[Skill]
+
+
+class MagicalItemSelection(_BaseModel):
+    selected_items: list[str]
+
+
+class FeatSelection(_BaseModel):
+    feats: list[FeatName]
+
+
+class LanguageSelection(_BaseModel):
+    languages: list[Language]
+
+
+class ToolProficiencySelection(_BaseModel):
+    tool_proficiencies: list[ToolProficiency | GamingSet | MusicalInstrument]
 
 
 _DEFAULT_STATS = Stats(
@@ -174,7 +191,7 @@ class TestAIStatChoiceResolver:
     def test_with_stat_choices_calls_llm(self) -> None:
         mock_llm = MagicMock()
         mock_llm.create_structured_output.return_value = StatIncreaseSelection(
-            stat_increases={Statistic.INTELLIGENCE: 2}
+            intelligence=2
         )
 
         block = AIStatChoiceResolver.model_construct(
@@ -318,8 +335,8 @@ class TestWizardLLMSpellAssigner:
             level = call_count[0]
             call_count[0] += 1
             if level == 0:
-                return model_class(spells=(Cantrip.FIRE_BOLT,))
-            return model_class(spells=(FirstLevel.MAGIC_MISSILE,))
+                return model_class.model_construct(spells=(Cantrip.FIRE_BOLT,))
+            return model_class.model_construct(spells=(FirstLevel.MAGIC_MISSILE,))
 
         mock_llm = MagicMock()
         mock_llm.create_structured_output.side_effect = spell_model_side_effect
@@ -342,8 +359,8 @@ class TestSorcererLLMSpellAssigner:
             level = call_count[0]
             call_count[0] += 1
             if level == 0:
-                return model_class(spells=(Cantrip.FIRE_BOLT,))
-            return model_class(spells=(FirstLevel.MAGIC_MISSILE,))
+                return model_class.model_construct(spells=(Cantrip.FIRE_BOLT,))
+            return model_class.model_construct(spells=(FirstLevel.MAGIC_MISSILE,))
 
         mock_llm = MagicMock()
         mock_llm.create_structured_output.side_effect = spell_model_side_effect
@@ -407,19 +424,6 @@ class TestAILanguageChoiceResolver:
         result = block.apply(state)
         assert result is not None
         mock_llm.create_structured_output.assert_called_once()
-
-    def test_wrong_count_raises_value_error(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = LanguageSelection(
-            languages={Language.ELVISH, Language.DWARVISH}
-        )
-
-        block = AILanguageChoiceResolver.model_construct(
-            llm=mock_llm,
-        )
-        state = Blueprint(languages=(Language.ANY_OF_YOUR_CHOICE,))
-        with pytest.raises(ValueError, match="AI returned"):
-            block.apply(state)
 
     def test_llm_error_raises_llm_error(self) -> None:
         mock_llm = MagicMock()
@@ -501,19 +505,6 @@ class TestAIToolProficiencyChoiceResolver:
 
 @pytest.mark.unit
 class TestAIFeatChoiceResolverExtraBranches:
-    def test_wrong_count_raises_value_error(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = FeatSelection(
-            feats={FeatName.ALERT, FeatName.ACTOR}
-        )
-
-        block = AIFeatChoiceResolver.model_construct(
-            llm=mock_llm,
-        )
-        state = Blueprint(feats=(FeatName.ANY_OF_YOUR_CHOICE,))
-        with pytest.raises(ValueError, match="AI returned"):
-            block.apply(state)
-
     def test_llm_error_raises_llm_error(self) -> None:
         mock_llm = MagicMock()
         mock_llm.create_structured_output.side_effect = LLMRefusalError("bad output")
@@ -528,24 +519,6 @@ class TestAIFeatChoiceResolverExtraBranches:
 
 @pytest.mark.unit
 class TestAISkillChoiceResolverExtraBranches:
-    def test_wrong_count_raises_value_error(self) -> None:
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = SkillSelection(
-            selected_skills=(Skill.ARCANA, Skill.HISTORY, Skill.PERCEPTION)
-        )
-
-        block = AISkillChoiceResolver.model_construct(
-            llm=mock_llm,
-        )
-        state = Blueprint(
-            n_skill_choices=2,
-            skills_to_choose_from=frozenset(
-                {Skill.ARCANA, Skill.HISTORY, Skill.PERCEPTION}
-            ),
-        )
-        with pytest.raises(ValueError, match="AI returned"):
-            block.apply(state)
-
     def test_invalid_skill_raises_value_error(self) -> None:
         mock_llm = MagicMock()
         mock_llm.create_structured_output.return_value = SkillSelection(
@@ -582,7 +555,7 @@ class TestAIStatChoiceResolverExtraBranches:
     def test_wrong_total_raises_value_error(self) -> None:
         mock_llm = MagicMock()
         mock_llm.create_structured_output.return_value = StatIncreaseSelection(
-            stat_increases={Statistic.INTELLIGENCE: 1}
+            intelligence=1
         )
 
         block = AIStatChoiceResolver.model_construct(
@@ -595,7 +568,7 @@ class TestAIStatChoiceResolverExtraBranches:
     def test_negative_increase_raises_value_error(self) -> None:
         mock_llm = MagicMock()
         mock_llm.create_structured_output.return_value = StatIncreaseSelection(
-            stat_increases={Statistic.INTELLIGENCE: 3, Statistic.WISDOM: -1}
+            intelligence=3, wisdom=-1
         )
 
         block = AIStatChoiceResolver.model_construct(
@@ -680,30 +653,6 @@ class TestAIMagicalItemChooserExtraBranches:
             n_mistery=0,
         )
         with pytest.raises(LLMRefusalError):
-            block.apply(Blueprint())
-
-    def test_wrong_count_raises_value_error(self) -> None:
-        first_item = next(iter(MAGICAL_ITEMS))
-        second_item = next(
-            item for item in MAGICAL_ITEMS if item.name != first_item.name
-        )
-        mock_llm = MagicMock()
-        mock_llm.create_structured_output.return_value = MagicalItemSelection(
-            selected_items=[first_item.name, second_item.name]
-        )
-
-        block = AIMagicalItemChooser.model_construct(
-            llm=mock_llm,
-            n_common=1,
-            n_uncommon=0,
-            n_rare=0,
-            n_very_rare=0,
-            n_legendary=0,
-            n_artifact=0,
-            n_unique=0,
-            n_mistery=0,
-        )
-        with pytest.raises(ValueError, match="AI selected"):
             block.apply(Blueprint())
 
 

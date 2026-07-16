@@ -7,6 +7,7 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base impo
 )
 from dnd.character.blueprint.building_blocks.building_block import _WideBlueprint
 from dnd.character.spells import Spell
+from dnd.character.spells import SpellLevel
 from dnd.character.blueprint.building_blocks.building_block_type import (
     BuildingBlockType,
 )
@@ -44,7 +45,7 @@ class WizardRandomSpellAssigner(WizardSpellAssigner):
 
     def select_spells(
         self,
-        spell_level: int,
+        spell_level: SpellLevel,
         count: int,
         available_spells: list[Spell],
         _state: _WideBlueprint,
@@ -75,7 +76,7 @@ class SorcererRandomSpellAssigner(SorcererSpellAssigner):
 
     def select_spells(
         self,
-        spell_level: int,
+        spell_level: SpellLevel,
         count: int,
         available_spells: list[Spell],
         _state: _WideBlueprint,
