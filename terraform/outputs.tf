@@ -1,6 +1,6 @@
 output "api_url" {
-  description = "API Gateway invoke URL"
-  value       = aws_apigatewayv2_stage.default.invoke_url
+  description = "Lambda function URL"
+  value       = aws_lambda_function_url.app.function_url
 }
 
 output "ecr_repository_url" {

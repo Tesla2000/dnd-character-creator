@@ -21,8 +21,7 @@ locals {
   s3_origin_id  = "frontend-s3"
   api_origin_id = "backend-apigw"
 
-  # Strip the https:// prefix from the API Gateway URL for use as a CloudFront origin domain
-  api_gateway_domain = replace(aws_apigatewayv2_stage.default.invoke_url, "https://", "")
+  api_gateway_domain = trimsuffix(replace(aws_lambda_function_url.app.function_url, "https://", ""), "/")
 }
 
 resource "aws_cloudfront_distribution" "frontend" {
@@ -44,10 +43,12 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_id   = local.api_origin_id
 
     custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
+      http_port                = 80
+      https_port               = 443
+      origin_protocol_policy   = "https-only"
+      origin_ssl_protocols     = ["TLSv1.2"]
+      origin_read_timeout      = 60
+      origin_keepalive_timeout = 60
     }
   }
 

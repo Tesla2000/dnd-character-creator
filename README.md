@@ -11,7 +11,9 @@ The API is then available at `http://localhost:8000` with interactive docs at `h
 Deployment is fully automated via GitHub Actions. Every push to `main`:
 
 1. Builds a Docker image and pushes it to Amazon ECR.
-2. Runs `terraform apply` to update the Lambda function to the new image.
+2. Runs `terraform apply` to update infrastructure.
+3. Builds the frontend and uploads it to S3.
+4. Invalidates the CloudFront cache.
 
 Manual deploys can be triggered from the GitHub Actions UI.
 
@@ -60,7 +62,7 @@ cd terraform && \
 
 If this fails with `EntityAlreadyExists`, some resources already exist in your account. Import each conflicting resource with `terraform import <resource> <id>` and re-run the apply command until it succeeds.
 
-CloudShell's credentials are used automatically — no profile needed. This provisions all infrastructure (ECR, Lambda, API Gateway, IAM) and grants the CI role the permissions it needs for future deploys.
+CloudShell's credentials are used automatically — no profile needed. This provisions all infrastructure (ECR, Lambda, S3, CloudFront, IAM) and grants the CI role the permissions it needs for future deploys.
 
 **Step 5 — Set the OpenAI API key (in CloudShell)**
 

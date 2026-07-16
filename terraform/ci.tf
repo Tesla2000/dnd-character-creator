@@ -86,6 +86,7 @@ data "aws_iam_policy_document" "deployer_production_policy" {
       "s3:DeleteBucketPolicy",
       "s3:GetBucketPublicAccessBlock",
       "s3:PutBucketPublicAccessBlock",
+      "s3:GetAccelerateConfiguration",
       "s3:GetBucketAcl",
       "s3:GetBucketCORS",
       "s3:GetBucketLocation",
@@ -95,6 +96,8 @@ data "aws_iam_policy_document" "deployer_production_policy" {
       "s3:GetBucketTagging",
       "s3:GetBucketVersioning",
       "s3:GetBucketWebsite",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetBucketOwnershipControls",
       "s3:GetLifecycleConfiguration",
       "s3:GetReplicationConfiguration",
       "s3:ListBucket",
@@ -146,6 +149,9 @@ data "aws_iam_policy_document" "deployer_production_policy" {
       "ecr:SetRepositoryPolicy",
       "ecr:GetRepositoryPolicy",
       "ecr:DeleteRepositoryPolicy",
+      "ecr:PutLifecyclePolicy",
+      "ecr:GetLifecyclePolicy",
+      "ecr:DeleteLifecyclePolicy",
       "ecr:ListTagsForResource",
       "ecr:TagResource",
       "ecr:UntagResource",
@@ -165,6 +171,10 @@ data "aws_iam_policy_document" "deployer_production_policy" {
       "lambda:RemovePermission",
       "lambda:GetPolicy",
       "lambda:ListVersionsByFunction",
+      "lambda:CreateFunctionUrlConfig",
+      "lambda:UpdateFunctionUrlConfig",
+      "lambda:DeleteFunctionUrlConfig",
+      "lambda:GetFunctionUrlConfig",
     ]
     resources = ["arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:dnd-character-creator"]
   }
@@ -199,11 +209,6 @@ data "aws_iam_policy_document" "deployer_production_policy" {
     resources = ["*"]
   }
 
-  statement {
-    sid       = "APIGatewayManage"
-    actions   = ["apigateway:*"]
-    resources = ["arn:aws:apigateway:${var.aws_region}::*"]
-  }
 
   statement {
     sid = "SSMManage"
@@ -257,6 +262,7 @@ data "aws_iam_policy_document" "deployer_development_policy" {
       "s3:DeleteBucketPolicy",
       "s3:GetBucketPublicAccessBlock",
       "s3:PutBucketPublicAccessBlock",
+      "s3:GetAccelerateConfiguration",
       "s3:GetBucketAcl",
       "s3:GetBucketCORS",
       "s3:GetBucketLocation",
@@ -266,6 +272,8 @@ data "aws_iam_policy_document" "deployer_development_policy" {
       "s3:GetBucketTagging",
       "s3:GetBucketVersioning",
       "s3:GetBucketWebsite",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetBucketOwnershipControls",
       "s3:GetLifecycleConfiguration",
       "s3:GetReplicationConfiguration",
       "s3:ListBucket",
@@ -317,6 +325,9 @@ data "aws_iam_policy_document" "deployer_development_policy" {
       "ecr:SetRepositoryPolicy",
       "ecr:GetRepositoryPolicy",
       "ecr:DeleteRepositoryPolicy",
+      "ecr:PutLifecyclePolicy",
+      "ecr:GetLifecyclePolicy",
+      "ecr:DeleteLifecyclePolicy",
       "ecr:ListTagsForResource",
       "ecr:TagResource",
       "ecr:UntagResource",
@@ -335,6 +346,10 @@ data "aws_iam_policy_document" "deployer_development_policy" {
       "lambda:AddPermission",
       "lambda:RemovePermission",
       "lambda:GetPolicy",
+      "lambda:CreateFunctionUrlConfig",
+      "lambda:UpdateFunctionUrlConfig",
+      "lambda:DeleteFunctionUrlConfig",
+      "lambda:GetFunctionUrlConfig",
     ]
     resources = ["arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:dnd-character-creator-development"]
   }
@@ -370,11 +385,6 @@ data "aws_iam_policy_document" "deployer_development_policy" {
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dnd-character-creator-development-exec"]
   }
 
-  statement {
-    sid       = "APIGatewayManage"
-    actions   = ["apigateway:*"]
-    resources = ["arn:aws:apigateway:${var.aws_region}::*"]
-  }
 
   statement {
     sid = "SSMManage"

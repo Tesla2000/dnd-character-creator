@@ -19,7 +19,7 @@ variable "lambda_memory_mb" {
 variable "lambda_timeout_s" {
   description = "Lambda function timeout in seconds"
   type        = number
-  default     = 30
+  default     = 60
 }
 
 variable "image_tag" {

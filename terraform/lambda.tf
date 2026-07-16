@@ -13,3 +13,8 @@ resource "aws_lambda_function" "app" {
     }
   }
 }
+
+resource "aws_lambda_function_url" "app" {
+  function_name      = aws_lambda_function.app.function_name
+  authorization_type = "NONE"
+}
