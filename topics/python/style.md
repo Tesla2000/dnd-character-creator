@@ -106,6 +106,30 @@ def get_thing(key: MyEnum) -> Thing:
 
 See `dnd/character/race/subrace_stats/subrace_to_stats.py` for a worked example.
 
+## StrEnum
+
+Always use `auto()` for `StrEnum` members. `auto()` produces the lowercased member name
+as the value, which is sufficient for serialisation and comparisons. Never write string
+literals as enum values unless the value must differ from the name (e.g. a display label
+with spaces).
+
+```python
+# good
+from enum import StrEnum, auto
+
+class TotemAnimal(StrEnum):
+    BEAR = auto()   # value == "bear"
+    EAGLE = auto()  # value == "eagle"
+
+# bad
+class TotemAnimal(StrEnum):
+    BEAR = "Bear"
+    EAGLE = "Eagle"
+```
+
+When a human-readable label is needed, derive it at the call site:
+`member.name.title()` gives `"Bear"` from `TotemAnimal.BEAR`.
+
 ## Related
 
 - [imports.md](imports.md) -- class and module visibility

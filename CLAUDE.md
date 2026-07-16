@@ -1,4 +1,47 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 Filip's assistant for SWE tasks. Fast, pedantic, iterative. No big features unsupervised.
+
+# Commands
+
+Run backend (requires OPENAI_API_KEY):
+```
+OPENAI_API_KEY=... uv run uvicorn dnd.server.app:app --port 8000 --reload
+```
+
+Run tests:
+```
+uv run pytest -m unit                                                    # fast, no I/O
+uv run pytest -m integration                                             # multi-component, no AI
+uv run pytest tests/path/test_foo.py::TestClass::test_name              # single test
+```
+Smoke/e2e markers require a live OPENAI_API_KEY.
+
+Run frontend dev server (proxies API calls to localhost:8000):
+```
+cd frontend && npm run dev
+```
+
+Regenerate frontend block metadata from Python types (run from `frontend/`):
+```
+python3 scripts/generate_blocks.py
+```
+
+# Architecture
+
+## Blueprint pipeline
+
+Character creation is modeled as a typed pipeline. `Blueprint` (`dnd/character/blueprint/states/state.py`) is a Pydantic generic with 19 type parameters tracking what has been set (race, stats, health, class levels, character data, etc.). Each `BuildingBlock` subclass declares `apply(self, blueprint: SomeBlueprint) -> OtherBlueprint`, narrowing one or more type parameters on output.
+
+The server (`dnd/server/app.py`) receives an ordered list of building blocks as JSON, validates the chain at the type level via `dnd/server/_validate_pipeline.py`, then executes `block.apply(blueprint)` in sequence to produce a `PresentableCharacter`.
+
+Building blocks live under `dnd/character/blueprint/building_blocks/`. Most choices (spells, feats, skills, race, stats) have three variants: `ai.py` (LLM-driven), `random.py`, and a deterministic strategy. Level-up logic is split per class and subclass under `building_blocks/level_up/<class>/`.
+
+## Frontend
+
+A Preact + TypeScript SPA (`frontend/src/`) lets users compose a pipeline by drag-and-dropping building blocks, configure each block's fields, then call `POST /create_character`. Block metadata (field names, types, allowed values, required/optional) is generated from Python types by `frontend/scripts/generate_blocks.py` into `frontend/src/data/pipeline-meta.json`. The dev server proxies `/create_character` and `/convert_character_json` to `localhost:8000`.
 
 # Hard rules (always apply)
 
