@@ -58,7 +58,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Build frontend
         working-directory: frontend
@@ -76,7 +76,8 @@ jobs:
           DIST_ID=$(terraform output -raw cloudfront_distribution_id)
           aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
 
-      - name: Print dev URL
+      - name: Print URLs
         working-directory: terraform
         run: |
-          echo "Dev URL: $(terraform output -raw frontend_url)"
+          echo "API:      $(terraform output -raw api_url)"
+          echo "Frontend: $(terraform output -raw frontend_url)"
