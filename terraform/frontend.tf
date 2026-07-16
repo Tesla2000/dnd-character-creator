@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "frontend" {
-  bucket = "${local.name}-frontend"
+  bucket        = "${local.name}-frontend"
+  force_destroy = var.environment == "development"
 }
 
 resource "aws_s3_bucket_public_access_block" "frontend" {
