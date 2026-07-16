@@ -1,5 +1,6 @@
 import pytest
 
+from dnd.character.ac_modifier import BarbarianUnarmoredDefenseAcModifier
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
     D12HealthIncreaseAverage,
@@ -188,6 +189,9 @@ def test_barbarian_level1_apply() -> None:
     result = block.apply(_INPUT_BP)
     assert result is not None
     assert isinstance(result, BarbarianBlueprint)
+    assert any(
+        isinstance(m, BarbarianUnarmoredDefenseAcModifier) for m in result.ac_modifiers
+    )
 
 
 @pytest.mark.unit

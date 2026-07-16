@@ -179,59 +179,37 @@ class TestCharacterDataFieldAssigners:
 
 
 @pytest.mark.unit
-class TestArmorCalcAC:
+class TestArmorApply:
     def _make_state(
         self,
         race: Race = Race.HUMAN,
         proficiencies: tuple[ArmorProficiency, ...] = (),
-        classes: ClassLevels | None = None,
     ) -> Blueprint:
         state = Blueprint(stats=_DEFAULT_STATS)
-        state = state.model_copy(
+        return state.model_copy(
             update={
                 "race": race,
                 "armor_proficiencies": frozenset(proficiencies),
-                "classes": classes or ClassLevels(),
             }
         )
-        return state
 
     def test_heavy_armor_with_proficiency(self) -> None:
         armor = ARMORS[ArmorName.CHAIN_MAIL]
         state = self._make_state(proficiencies=(ArmorProficiency.HEAVY_ARMOR,))
-        ac = armor.calc_ac(state)
-        assert ac == armor.base_ac
+        assert armor.apply(state) == armor.base_ac
 
     def test_medium_armor_with_proficiency(self) -> None:
         armor = ARMORS[ArmorName.BREASTPLATE]
         state = self._make_state(proficiencies=(ArmorProficiency.MEDIUM_ARMOR,))
-        ac = armor.calc_ac(state)
-        assert ac == armor.base_ac + min(
+        assert armor.apply(state) == armor.base_ac + min(
             2, _DEFAULT_STATS.get_modifier(Statistic.DEXTERITY)
         )
-
-    def test_monk_wisdom_bonus(self) -> None:
-        armor = ARMORS[ArmorName.CLOTHES]
-        state = self._make_state(classes=ClassLevels(monk=1))
-        ac = armor.calc_ac(state)
-        dex_mod = _DEFAULT_STATS.get_modifier(Statistic.DEXTERITY)
-        wis_mod = _DEFAULT_STATS.get_modifier(Statistic.WISDOM)
-        assert ac == armor.base_ac + dex_mod + wis_mod
-
-    def test_barbarian_constitution_bonus(self) -> None:
-        armor = ARMORS[ArmorName.CLOTHES]
-        state = self._make_state(classes=ClassLevels(barbarian=1))
-        ac = armor.calc_ac(state)
-        dex_mod = _DEFAULT_STATS.get_modifier(Statistic.DEXTERITY)
-        con_mod = _DEFAULT_STATS.get_modifier(Statistic.CONSTITUTION)
-        assert ac == armor.base_ac + dex_mod + con_mod
 
     def test_lizardfolk_natural_ac(self) -> None:
         armor = ARMORS[ArmorName.CLOTHES]
         state = self._make_state(race=Race.LIZARDFOLK)
-        ac = armor.calc_ac(state)
         dex_mod = _DEFAULT_STATS.get_modifier(Statistic.DEXTERITY)
-        assert ac == max(armor.base_ac + dex_mod, 13 + dex_mod)
+        assert armor.apply(state) == max(armor.base_ac + dex_mod, 13 + dex_mod)
 
 
 @pytest.mark.unit
@@ -246,12 +224,13 @@ class TestClassLevelsGetItem:
 
 
 @pytest.mark.unit
-class TestRobeOfTheArchmagiCalcAC:
-    def test_calc_ac_returns_base_plus_dex(self) -> None:
+class TestRobeOfTheArchmagiApply:
+    def test_apply_returns_base_plus_dex(self) -> None:
         robe = robe_of_the_archmagi
         state = Blueprint(stats=_DEFAULT_STATS)
-        ac = robe.calc_ac(state)
-        assert ac == robe.base_ac + _DEFAULT_STATS.get_modifier(Statistic.DEXTERITY)
+        assert robe.apply(state) == robe.base_ac + _DEFAULT_STATS.get_modifier(
+            Statistic.DEXTERITY
+        )
 
 
 @pytest.mark.unit

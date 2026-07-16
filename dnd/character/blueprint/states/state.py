@@ -5,6 +5,8 @@ from typing import TypeAlias
 from typing import TypeVar
 from typing import cast
 
+from dnd.character.ac_modifier import AnyAcModifier
+from dnd.character.armor.armors import ARMORS
 from dnd.character.armor.names import ArmorName
 from dnd.character.magical_item.item import MagicalItem
 from dnd.character.feature.feats import FeatName
@@ -105,7 +107,6 @@ class Blueprint(
 
     classes: ClassLevels = Field(default_factory=ClassLevels)
 
-    ac_bonus: NonNegativeInt = Field(0, exclude=True)
     spell_save_dc_bonus: NonNegativeInt = Field(0, exclude=True)
     spellcasting_ability_bonus: NonNegativeInt = Field(0, exclude=True)
     saving_throw_bonuses: Stats = Field(
@@ -134,6 +135,9 @@ class Blueprint(
     initiative_bonus: int = 0
     feats: tuple[FeatName, ...] = Field(default=())
     health_modifiers: tuple[AnyHealthModifier, ...] = Field(default=())
+    ac_modifiers: tuple[AnyAcModifier, ...] = Field(
+        default_factory=lambda: (ARMORS[ArmorName.CLOTHES],)
+    )
     subclasses: tuple[AnySubclass, ...] = ()
     armors: tuple[ArmorName, ...] = ()
     weapons: tuple[WeaponName, ...] = ()
