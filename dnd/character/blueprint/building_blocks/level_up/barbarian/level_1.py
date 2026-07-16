@@ -14,6 +14,7 @@ from dnd.character.blueprint.building_blocks.skill_choice_resolver import (
 from dnd.character.blueprint.building_blocks.skill_choice_resolver.random import (
     RandomSkillChoiceResolver,
 )
+from dnd.character.ac_modifier import BarbarianUnarmoredDefenseAcModifier
 from dnd.character.blueprint.sentinels import ClassPreSubclassLevel
 from dnd.character.blueprint.sentinels import ThirdSubclassPreLevel
 from dnd.character.blueprint.states.state import _BPT
@@ -72,6 +73,8 @@ class BarbarianLevel1(
                         Skill.SURVIVAL,
                     }
                 ),
+                "ac_modifiers": blueprint.ac_modifiers
+                + (BarbarianUnarmoredDefenseAcModifier(),),
                 "actions": blueprint.actions
                 + (
                     BasicAction(

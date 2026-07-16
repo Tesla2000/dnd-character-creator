@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 from typing import Literal
 
-from dnd.character.armor.armors import ARMORS
-from dnd.character.armor.names import ArmorName
+from dnd.character.ac_modifier import AdditiveAcModifier
+from dnd.character.ac_modifier import CompetingAcModifier
 from dnd.character.blueprint.character_data import CharacterData
 from dnd.character.blueprint.sentinels import AnyClassLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
@@ -92,13 +92,17 @@ class PresentableCharacter(
 
     @_cf
     def ac(self) -> int:
-        return (
-            max(
-                ARMORS[armor].calc_ac(self)
-                for armor in (self.armors + (ArmorName.CLOTHES,))
-            )
-            + self.ac_bonus
+        candidates = [
+            m.apply(self)
+            for m in self.ac_modifiers
+            if isinstance(m, CompetingAcModifier)
+        ]
+        additive = sum(
+            m.apply(self)
+            for m in self.ac_modifiers
+            if isinstance(m, AdditiveAcModifier)
         )
+        return max(candidates) + additive
 
     @_cf
     def capacity(self) -> int:

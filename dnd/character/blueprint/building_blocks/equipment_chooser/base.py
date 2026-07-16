@@ -1,8 +1,9 @@
 from abc import ABC
 
+from dnd.character.armor.armors import ARMORS
+from dnd.character.armor.names import ArmorName
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.states.state import _BPT
-from dnd.character.armor.names import ArmorName
 from dnd.choices.equipment_creation.weapons import WeaponName
 from pydantic import ConfigDict
 
@@ -18,6 +19,8 @@ class EquipmentChooser(BuildingBlock, ABC):
             update={
                 "weapons": blueprint.weapons + tuple(weapons),
                 "armors": blueprint.armors + tuple(armors),
+                "ac_modifiers": blueprint.ac_modifiers
+                + tuple(ARMORS[armor] for armor in armors),
                 "other_equipment": blueprint.other_equipment + tuple(others),
                 "equipment_choices": (),
             }
