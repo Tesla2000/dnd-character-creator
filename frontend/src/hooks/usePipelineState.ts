@@ -21,19 +21,6 @@ export function usePipelineState() {
     setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, config } : b)));
   }, []);
 
-  const moveBlock = useCallback((fromIndex: number, toIndex: number) => {
-    setBlocks((prev) => {
-      const next = [...prev];
-      const [item] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, item);
-      return next;
-    });
-  }, []);
-
-  const reorderBlocks = useCallback((newOrder: PipelineBlock[]) => {
-    setBlocks(newOrder);
-  }, []);
-
   const loadBlocks = useCallback((entries: { type: string; [k: string]: unknown }[]) => {
     setBlocks(entries.map(({ type, ...config }) => ({
       id: newId(),
@@ -42,5 +29,5 @@ export function usePipelineState() {
     })));
   }, []);
 
-  return { blocks, addBlock, removeBlock, updateConfig, moveBlock, reorderBlocks, loadBlocks };
+  return { blocks, addBlock, removeBlock, updateConfig, loadBlocks };
 }
