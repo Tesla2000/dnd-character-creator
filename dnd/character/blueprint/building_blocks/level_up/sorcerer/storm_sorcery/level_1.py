@@ -36,52 +36,56 @@ class SorcererLevel1StormSorcery(
     )
 
     def _update_blueprint(self, blueprint: _BPT) -> _BPT:
-        result = blueprint.model_copy(
-            update={
-                "classes": blueprint.classes.model_copy(update={"sorcerer": 1}),
-                "weapon_proficiencies": blueprint.weapon_proficiencies
-                | frozenset(
-                    {
-                        WeaponProficiency.DAGGER,
-                        WeaponProficiency.DART,
-                        WeaponProficiency.SLING,
-                        WeaponProficiency.QUARTERSTAFF,
-                        WeaponProficiency.LIGHT_CROSSBOW,
-                    }
-                ),
-                "n_skill_choices": blueprint.n_skill_choices + 2,
-                "skills_to_choose_from": frozenset(
-                    {
-                        Skill.ARCANA,
-                        Skill.DECEPTION,
-                        Skill.INSIGHT,
-                        Skill.INTIMIDATION,
-                        Skill.PERSUASION,
-                        Skill.RELIGION,
-                    }
-                ),
-                "saving_throw_proficiencies": blueprint.saving_throw_proficiencies
-                + (Statistic.CHARISMA, Statistic.CONSTITUTION),
-                "equipment_choices": blueprint.equipment_choices
-                + (
-                    (WeaponName.CROSSBOW_LIGHT, WeaponName.DAGGER),
-                    ("component pouch", "arcane focus"),
-                    ("dungeoneer's pack", "explorer's pack"),
-                ),
-                "other_equipment": blueprint.other_equipment
-                + (WeaponName.DAGGER, WeaponName.DAGGER),
-                "actions": blueprint.actions
-                + (
-                    BasicAction(
-                        action_type=ActionType.BONUS_ACTION,
-                        name="Tempestuous Magic",
-                        description=(
-                            "Immediately before or after casting a spell of 1st level or "
-                            "higher, you can fly up to 10 feet without provoking "
-                            "opportunity attacks."
-                        ),
+        is_first_class = blueprint.classes.total_level() == 0
+        update: dict[str, object] = {
+            "classes": blueprint.classes.model_copy(update={"sorcerer": 1}),
+            "weapon_proficiencies": blueprint.weapon_proficiencies
+            | frozenset(
+                {
+                    WeaponProficiency.DAGGER,
+                    WeaponProficiency.DART,
+                    WeaponProficiency.SLING,
+                    WeaponProficiency.QUARTERSTAFF,
+                    WeaponProficiency.LIGHT_CROSSBOW,
+                }
+            ),
+            "actions": blueprint.actions
+            + (
+                BasicAction(
+                    action_type=ActionType.BONUS_ACTION,
+                    name="Tempestuous Magic",
+                    description=(
+                        "Immediately before or after casting a spell of 1st level or "
+                        "higher, you can fly up to 10 feet without provoking "
+                        "opportunity attacks."
                     ),
                 ),
-            }
-        )
-        return self.skill_choice_resolver.apply(result)
+            ),
+        }
+        if is_first_class:
+            update["n_skill_choices"] = blueprint.n_skill_choices + 2
+            update["skills_to_choose_from"] = frozenset(
+                {
+                    Skill.ARCANA,
+                    Skill.DECEPTION,
+                    Skill.INSIGHT,
+                    Skill.INTIMIDATION,
+                    Skill.PERSUASION,
+                    Skill.RELIGION,
+                }
+            )
+            update["saving_throw_proficiencies"] = (
+                blueprint.saving_throw_proficiencies
+                + (Statistic.CHARISMA, Statistic.CONSTITUTION)
+            )
+            update["equipment_choices"] = blueprint.equipment_choices + (
+                (WeaponName.CROSSBOW_LIGHT, WeaponName.DAGGER),
+                ("component pouch", "arcane focus"),
+                ("dungeoneer's pack", "explorer's pack"),
+            )
+            update["other_equipment"] = blueprint.other_equipment + (
+                WeaponName.DAGGER,
+                WeaponName.DAGGER,
+            )
+        result = blueprint.model_copy(update=update)
+        return self.skill_choice_resolver.apply(result) if is_first_class else result

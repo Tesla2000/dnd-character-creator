@@ -38,52 +38,54 @@ class WizardLevel1(
     )
 
     def _update_blueprint(self, blueprint: _BPT) -> _BPT:
-        result = blueprint.model_copy(
-            update={
-                "classes": blueprint.classes.model_copy(update={"wizard": 1}),
-                "weapon_proficiencies": blueprint.weapon_proficiencies
-                | frozenset(
-                    {
-                        WeaponProficiency.DAGGER,
-                        WeaponProficiency.DART,
-                        WeaponProficiency.SLING,
-                        WeaponProficiency.QUARTERSTAFF,
-                        WeaponProficiency.LIGHT_CROSSBOW,
-                    }
-                ),
-                "n_skill_choices": blueprint.n_skill_choices + 2,
-                "skills_to_choose_from": frozenset(
-                    {
-                        Skill.ARCANA,
-                        Skill.HISTORY,
-                        Skill.INSIGHT,
-                        Skill.INVESTIGATION,
-                        Skill.MEDICINE,
-                        Skill.RELIGION,
-                    }
-                ),
-                "saving_throw_proficiencies": blueprint.saving_throw_proficiencies
-                + (Statistic.INTELLIGENCE, Statistic.WISDOM),
-                "equipment_choices": blueprint.equipment_choices
-                + (
-                    (WeaponName.QUARTERSTAFF, WeaponName.DAGGER),
-                    ("component pouch", "arcane focus"),
-                    ("scholar's pack", "explorer's pack"),
-                ),
-                "other_equipment": blueprint.other_equipment + ("spellbook",),
-                "actions": blueprint.actions
-                + (
-                    BasicAction(
-                        action_type=ActionType.FREE_ACTION,
-                        name="Arcane Recovery",
-                        description=(
-                            "Once per day when you finish a short rest, you can choose "
-                            "expended spell slots to recover. The slots can have a combined "
-                            "level equal to or less than half your wizard level (rounded up), "
-                            "and none can be 6th level or higher."
-                        ),
+        is_first_class = blueprint.classes.total_level() == 0
+        update: dict[str, object] = {
+            "classes": blueprint.classes.model_copy(update={"wizard": 1}),
+            "weapon_proficiencies": blueprint.weapon_proficiencies
+            | frozenset(
+                {
+                    WeaponProficiency.DAGGER,
+                    WeaponProficiency.DART,
+                    WeaponProficiency.SLING,
+                    WeaponProficiency.QUARTERSTAFF,
+                    WeaponProficiency.LIGHT_CROSSBOW,
+                }
+            ),
+            "actions": blueprint.actions
+            + (
+                BasicAction(
+                    action_type=ActionType.FREE_ACTION,
+                    name="Arcane Recovery",
+                    description=(
+                        "Once per day when you finish a short rest, you can choose "
+                        "expended spell slots to recover. The slots can have a combined "
+                        "level equal to or less than half your wizard level (rounded up), "
+                        "and none can be 6th level or higher."
                     ),
                 ),
-            }
-        )
-        return self.skill_choice_resolver.apply(result)
+            ),
+        }
+        if is_first_class:
+            update["n_skill_choices"] = blueprint.n_skill_choices + 2
+            update["skills_to_choose_from"] = frozenset(
+                {
+                    Skill.ARCANA,
+                    Skill.HISTORY,
+                    Skill.INSIGHT,
+                    Skill.INVESTIGATION,
+                    Skill.MEDICINE,
+                    Skill.RELIGION,
+                }
+            )
+            update["saving_throw_proficiencies"] = (
+                blueprint.saving_throw_proficiencies
+                + (Statistic.INTELLIGENCE, Statistic.WISDOM)
+            )
+            update["equipment_choices"] = blueprint.equipment_choices + (
+                (WeaponName.QUARTERSTAFF, WeaponName.DAGGER),
+                ("component pouch", "arcane focus"),
+                ("scholar's pack", "explorer's pack"),
+            )
+            update["other_equipment"] = blueprint.other_equipment + ("spellbook",)
+        result = blueprint.model_copy(update=update)
+        return self.skill_choice_resolver.apply(result) if is_first_class else result
