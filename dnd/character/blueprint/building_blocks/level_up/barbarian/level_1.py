@@ -42,62 +42,65 @@ class BarbarianLevel1(
     )
 
     def _update_blueprint(self, blueprint: _BPT) -> _BPT:
-        result = blueprint.model_copy(
-            update={
-                "classes": blueprint.classes.model_copy(update={"barbarian": 1}),
-                "armor_proficiencies": blueprint.armor_proficiencies
-                | frozenset(
-                    {
-                        ArmorProficiency.LIGHT_ARMOR,
-                        ArmorProficiency.MEDIUM_ARMOR,
-                        ArmorProficiency.SHIELDS,
-                    }
-                ),
-                "weapon_proficiencies": blueprint.weapon_proficiencies
-                | frozenset(
-                    {
-                        WeaponProficiency.SIMPLE_WEAPON,
-                        WeaponProficiency.MARTIAL_WEAPON,
-                    }
-                ),
-                "saving_throw_proficiencies": blueprint.saving_throw_proficiencies
-                + (Statistic.STRENGTH, Statistic.CONSTITUTION),
-                "n_skill_choices": blueprint.n_skill_choices + 2,
-                "skills_to_choose_from": frozenset(
-                    {
-                        Skill.ANIMAL_HANDLING,
-                        Skill.ATHLETICS,
-                        Skill.INTIMIDATION,
-                        Skill.NATURE,
-                        Skill.PERCEPTION,
-                        Skill.SURVIVAL,
-                    }
-                ),
-                "ac_modifiers": blueprint.ac_modifiers
-                + (BarbarianUnarmoredDefenseAcModifier(),),
-                "actions": blueprint.actions
-                + (
-                    BasicAction(
-                        action_type=ActionType.BONUS_ACTION,
-                        name="Rage",
-                        description=(
-                            "You can enter a rage as a bonus action. While raging, you gain "
-                            "advantage on Strength checks and saving throws, a bonus to melee "
-                            "damage rolls using Strength (starting at +2), and resistance to "
-                            "bludgeoning, piercing, and slashing damage. Your rage lasts for "
-                            "1 minute. You have a limited number of rages per long rest."
-                        ),
-                    ),
-                    BasicAction(
-                        action_type=ActionType.PASSIVE,
-                        name="Unarmored Defense",
-                        description=(
-                            "While you are not wearing any armor, your Armor Class equals "
-                            "10 + your Dexterity modifier + your Constitution modifier. "
-                            "You can use a shield and still gain this benefit."
-                        ),
+        is_first_class = blueprint.classes.total_level() == 0
+        update: dict[str, object] = {
+            "classes": blueprint.classes.model_copy(update={"barbarian": 1}),
+            "armor_proficiencies": blueprint.armor_proficiencies
+            | frozenset(
+                {
+                    ArmorProficiency.LIGHT_ARMOR,
+                    ArmorProficiency.MEDIUM_ARMOR,
+                    ArmorProficiency.SHIELDS,
+                }
+            ),
+            "weapon_proficiencies": blueprint.weapon_proficiencies
+            | frozenset(
+                {
+                    WeaponProficiency.SIMPLE_WEAPON,
+                    WeaponProficiency.MARTIAL_WEAPON,
+                }
+            ),
+            "ac_modifiers": blueprint.ac_modifiers
+            + (BarbarianUnarmoredDefenseAcModifier(),),
+            "actions": blueprint.actions
+            + (
+                BasicAction(
+                    action_type=ActionType.BONUS_ACTION,
+                    name="Rage",
+                    description=(
+                        "You can enter a rage as a bonus action. While raging, you gain "
+                        "advantage on Strength checks and saving throws, a bonus to melee "
+                        "damage rolls using Strength (starting at +2), and resistance to "
+                        "bludgeoning, piercing, and slashing damage. Your rage lasts for "
+                        "1 minute. You have a limited number of rages per long rest."
                     ),
                 ),
-            }
-        )
-        return self.skill_choice_resolver.apply(result)
+                BasicAction(
+                    action_type=ActionType.PASSIVE,
+                    name="Unarmored Defense",
+                    description=(
+                        "While you are not wearing any armor, your Armor Class equals "
+                        "10 + your Dexterity modifier + your Constitution modifier. "
+                        "You can use a shield and still gain this benefit."
+                    ),
+                ),
+            ),
+        }
+        if is_first_class:
+            update["saving_throw_proficiencies"] = (
+                blueprint.saving_throw_proficiencies
+                + (Statistic.STRENGTH, Statistic.CONSTITUTION)
+            )
+            update["n_skill_choices"] = blueprint.n_skill_choices + 2
+            update["skills_to_choose_from"] = frozenset(
+                {
+                    Skill.ANIMAL_HANDLING,
+                    Skill.ATHLETICS,
+                    Skill.INTIMIDATION,
+                    Skill.NATURE,
+                    Skill.PERCEPTION,
+                    Skill.SURVIVAL,
+                }
+            )
+        result = blueprint.model_copy(update=update)
+        return self.skill_choice_resolver.apply(result) if is_first_class else result
