@@ -18,9 +18,26 @@ from structured_output_creator import OpenAIService, RaisingService
 class StatIncreaseSelection(BaseModel):
     """Schema for AI to select stat increases."""
 
-    stat_increases: dict[Statistic, int] = Field(
-        description="Dictionary mapping statistics to their increase amounts"
+    strength: int = Field(default=0, description="Increase to Strength (0 if none)")
+    dexterity: int = Field(default=0, description="Increase to Dexterity (0 if none)")
+    constitution: int = Field(
+        default=0, description="Increase to Constitution (0 if none)"
     )
+    intelligence: int = Field(
+        default=0, description="Increase to Intelligence (0 if none)"
+    )
+    wisdom: int = Field(default=0, description="Increase to Wisdom (0 if none)")
+    charisma: int = Field(default=0, description="Increase to Charisma (0 if none)")
+
+    def to_stat_dict(self) -> dict[Statistic, int]:
+        return {
+            Statistic.STRENGTH: self.strength,
+            Statistic.DEXTERITY: self.dexterity,
+            Statistic.CONSTITUTION: self.constitution,
+            Statistic.INTELLIGENCE: self.intelligence,
+            Statistic.WISDOM: self.wisdom,
+            Statistic.CHARISMA: self.charisma,
+        }
 
 
 class AIStatChoiceResolver(StatChoiceResolver):
@@ -77,8 +94,8 @@ class AIStatChoiceResolver(StatChoiceResolver):
             "  - Whether to focus on primary stats or shore up weaknesses",
             "  - The character's role in a party (tank, damage dealer, support, etc.)",
             "  - Reaching important stat breakpoints (even numbers for +1 to modifier)",
-            "\nReturn a dictionary mapping each stat to its increase amount.",
-            "Stats with no increase can be omitted or set to 0.",
+            "\nReturn the increase amount for each of the six ability scores.",
+            "Stats with no increase should be 0.",
         ]
 
         return character_description + "\n".join(instructions)
@@ -87,18 +104,19 @@ class AIStatChoiceResolver(StatChoiceResolver):
         prompt = self._build_prompt(state)
 
         selection = self.llm.create_structured_output(prompt, StatIncreaseSelection)
+        stat_increases = selection.to_stat_dict()
 
-        total_increases = sum(selection.stat_increases.values())
+        total_increases = sum(stat_increases.values())
         if total_increases != state.n_stat_choices:
             raise ValueError(
                 f"AI distributed {total_increases} increases "
                 f"but expected {state.n_stat_choices}"
             )
 
-        for stat, amount in selection.stat_increases.items():
+        for stat, amount in stat_increases.items():
             if amount < 0:
                 raise ValueError(
                     f"AI selected negative increase for {stat.value}: {amount}"
                 )
 
-        return selection.stat_increases
+        return stat_increases

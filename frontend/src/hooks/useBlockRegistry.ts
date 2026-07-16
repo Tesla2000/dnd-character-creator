@@ -1,4 +1,4 @@
-import { useState, useEffect } from "preact/hooks";
+import { useState, useEffect, useMemo } from "preact/hooks";
 import type { BlockInfo } from "../types";
 import generatedBlocks from "../data/blocks-generated.json";
 
@@ -24,7 +24,10 @@ export function useBlockRegistry() {
     }
   }, []);
 
-  const byType = new Map<string, BlockInfo>(registry.map((b) => [b.type, b]));
+  const byType = useMemo(
+    () => new Map<string, BlockInfo>(registry.map((b) => [b.type, b])),
+    [registry],
+  );
 
   return { registry, loading, byType };
 }

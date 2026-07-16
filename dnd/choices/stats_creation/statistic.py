@@ -9,13 +9,3 @@ class Statistic(StrEnum):
     INTELLIGENCE = auto()
     WISDOM = auto()
     CHARISMA = auto()
-
-
-class StatisticAndAny(StrEnum):
-    STRENGTH = auto()
-    DEXTERITY = auto()
-    CONSTITUTION = auto()
-    INTELLIGENCE = auto()
-    WISDOM = auto()
-    CHARISMA = auto()
-    ANY_OF_YOUR_CHOICE = "any of your choice"

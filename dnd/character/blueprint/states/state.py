@@ -104,16 +104,10 @@ class Blueprint(
     health_base: _HeK_co = Field(default=cast(_HeK_co, None))
 
     classes: ClassLevels = Field(default_factory=ClassLevels)
-    stats_cup: Stats = Field(
-        default=Stats(
-            strength=20,
-            dexterity=20,
-            constitution=20,
-            intelligence=20,
-            wisdom=20,
-            charisma=20,
-        )
-    )
+
+    ac_bonus: NonNegativeInt = Field(0, exclude=True)
+    spell_save_dc_bonus: NonNegativeInt = Field(0, exclude=True)
+    spellcasting_ability_bonus: NonNegativeInt = Field(0, exclude=True)
     saving_throw_bonuses: Stats = Field(
         default=Stats(
             strength=0,
@@ -122,12 +116,22 @@ class Blueprint(
             intelligence=0,
             wisdom=0,
             charisma=0,
-        )
+        ),
+        exclude=True,
     )
+    stats_cup: Stats = Field(
+        default=Stats(
+            strength=20,
+            dexterity=20,
+            constitution=20,
+            intelligence=20,
+            wisdom=20,
+            charisma=20,
+        ),
+        exclude=True,
+    )
+
     initiative_bonus: int = 0
-    ac_bonus: NonNegativeInt = 0
-    spell_save_dc_bonus: NonNegativeInt = 0
-    spellcasting_ability_bonus: NonNegativeInt = 0
     feats: tuple[FeatName, ...] = Field(default=())
     health_modifiers: tuple[AnyHealthModifier, ...] = Field(default=())
     subclasses: tuple[AnySubclass, ...] = ()

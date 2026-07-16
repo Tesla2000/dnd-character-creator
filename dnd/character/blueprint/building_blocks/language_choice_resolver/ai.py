@@ -16,12 +16,6 @@ from dnd.character.blueprint.building_blocks.building_block_type import (
 )
 
 
-class LanguageSelection(BaseModel):
-    """Schema for AI to select language replacements."""
-
-    languages: set[Language] = Field(default_factory=set)
-
-
 class AILanguageChoiceResolver(LanguageChoiceResolver):
     """AI-powered resolver for Language.ANY_OF_YOUR_CHOICE placeholders.
 
@@ -102,13 +96,12 @@ class AILanguageChoiceResolver(LanguageChoiceResolver):
         if not prompt:
             return blueprint
 
-        selection = self.llm.create_structured_output(prompt, LanguageSelection)
-
         count = list(blueprint.languages).count(Language.ANY_OF_YOUR_CHOICE)
-        if len(selection.languages) != count:
-            raise ValueError(
-                f"AI returned {len(selection.languages)} languages but expected {count}"
-            )
+
+        class LanguageSelection(BaseModel):
+            languages: list[Language] = Field(min_length=count, max_length=count)
+
+        selection = self.llm.create_structured_output(prompt, LanguageSelection)
 
         new_languages = set(blueprint.languages)
         new_languages.discard(Language.ANY_OF_YOUR_CHOICE)

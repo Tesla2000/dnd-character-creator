@@ -4,6 +4,7 @@ import { usePipelineState } from "./hooks/usePipelineState";
 import { Pipeline } from "./components/Pipeline";
 import { BlockForm } from "./components/BlockForm";
 import { CharacterPreview } from "./components/CharacterPreview";
+import { TemplateModal } from "./components/TemplateModal";
 import { buildCharacter } from "./api/buildCharacter";
 import { downloadCharacter } from "./api/downloadCharacter";
 import { computeBlueprintSnapshots, pipelineMissingFields } from "./utils/blueprintState";
@@ -13,12 +14,13 @@ import pipelineMeta from "./data/pipeline-meta.json";
 
 export function App() {
   const { registry, byType } = useBlockRegistry();
-  const { blocks, addBlock, removeBlock, updateConfig } = usePipelineState();
+  const { blocks, addBlock, removeBlock, updateConfig, loadBlocks, reorderBlocks } = usePipelineState();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [buildResult, setBuildResult] = useState<CharacterResult | null>(null);
   const [buildError, setBuildError] = useState<string | null>(null);
   const [building, setBuilding] = useState(false);
   const [, setShowResult] = useState(false);
+  const [templateOpen, setTemplateOpen] = useState(false);
 
   const blueprintSnapshots = useMemo(
     () =>
@@ -52,6 +54,35 @@ export function App() {
     );
   }, [blueprintSnapshots]);
 
+  function handleSave() {
+    const data = blocks.map((b) => ({ type: b.blockType, ...b.config }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "pipeline.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleLoadFile(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    file.text().then((text) => {
+      try {
+        const data = JSON.parse(text) as { type: string; [k: string]: unknown }[];
+        if (!Array.isArray(data)) throw new Error("Pipeline file must be a JSON array");
+        loadBlocks(data);
+        setSelectedId(null);
+        setBuildResult(null);
+        setBuildError(null);
+      } catch (err) {
+        setBuildError(`Failed to load pipeline: ${String(err)}`);
+      }
+      (e.target as HTMLInputElement).value = "";
+    });
+  }
+
   async function handleBuild() {
     setBuilding(true);
     setBuildError(null);
@@ -82,6 +113,12 @@ export function App() {
           </h1>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setTemplateOpen(true)}
+            className="text-sm border border-dnd-border rounded px-3 py-1.5 text-dnd-gold hover:text-yellow-300 hover:border-dnd-gold transition-colors"
+          >
+            Template
+          </button>
           <div className="flex flex-col items-end gap-1">
             <button
               onClick={handleBuild}
@@ -121,12 +158,15 @@ export function App() {
                 const info = byType.get(blockType);
                 addBlock(blockType, info?.default_config ?? {});
               }}
+              onReorder={reorderBlocks}
               onRemoveLast={() => {
                 const last = blocks[blocks.length - 1];
                 if (!last) return;
                 removeBlock(last.id);
                 if (selectedId === last.id) setSelectedId(null);
               }}
+              onSave={handleSave}
+              onLoad={handleLoadFile}
             />
           </div>
         </div>
@@ -209,6 +249,20 @@ export function App() {
           </div>
         </div>
       </div>
+
+      {templateOpen && (
+        <TemplateModal
+          byType={byType}
+          onGenerate={(entries) => {
+            loadBlocks(entries);
+            setSelectedId(null);
+            setBuildResult(null);
+            setBuildError(null);
+            setTemplateOpen(false);
+          }}
+          onClose={() => setTemplateOpen(false)}
+        />
+      )}
     </div>
   );
 }

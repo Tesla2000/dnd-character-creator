@@ -18,15 +18,6 @@ from pydantic import Field
 from structured_output_creator import OpenAIService, RaisingService
 
 
-class MagicalItemSelection(BaseModel):
-    """Package of magical item selections."""
-
-    selected_items: list[str] = Field(
-        default_factory=list,
-        description="List of selected magical item names",
-    )
-
-
 class AIMagicalItemChooser(MagicalItemChooserBase):
     """AI-powered magical item chooser that makes all selections holistically.
 
@@ -146,15 +137,17 @@ class AIMagicalItemChooser(MagicalItemChooserBase):
             return ()
 
         prompt = self._build_prompt(state)
+
+        class MagicalItemSelection(BaseModel):
+            selected_items: list[str] = Field(
+                min_length=total_requested,
+                max_length=total_requested,
+                description="List of selected magical item names",
+            )
+
         selection = self.llm.create_structured_output(prompt, MagicalItemSelection)
 
         item_map = {item.name: item for item in MAGICAL_ITEMS}
         selected_items = tuple(map(item_map.__getitem__, selection.selected_items))
-
-        if len(selected_items) != total_requested:
-            raise ValueError(
-                f"AI selected {len(selected_items)} items but "
-                f"{total_requested} were requested"
-            )
 
         return selected_items

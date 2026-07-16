@@ -29,7 +29,7 @@ from dnd.character.blueprint.states.state import Blueprint
 from dnd.character.blueprint.states.wizard.level20 import WizardLevel20Blueprint
 from dnd.character.race.race import Race
 from dnd.character.spells.max_spell_levels import FULL_CASTER_SPELL_SLOTS
-from dnd.character.spells.spell_slots import ThirdLevel
+from dnd.character.spells.spell_slots import WizardThirdLevel as ThirdLevel
 from dnd.character.spells.spells import Spells
 from dnd.choices.abilities.metamagic import MetamagicOption
 from dnd.character.feature.feats import FeatName

@@ -30,36 +30,17 @@ from dnd.character.blueprint.sentinels import (
     _WZK,
     _WZK_NZ,
 )
+from collections.abc import Callable
+
 from dnd.character.blueprint.states.state import Blueprint
-from dnd.character.spells import Cantrip
-from dnd.character.spells import EighthLevel
-from dnd.character.spells import FifthLevel
-from dnd.character.spells import filter_accessible
-from dnd.character.spells import FirstLevel
-from dnd.character.spells import FourthLevel
-from dnd.character.spells import NinthLevel
-from dnd.character.spells import SecondLevel
-from dnd.character.spells import SeventhLevel
-from dnd.character.spells import SixthLevel
+from dnd.character.spells import ClassSpellLevel
+from dnd.character.spells import get_class_spells_set
+from dnd.character.spells import SpellLevel
 from dnd.character.spells import Spell
-from dnd.character.spells import ThirdLevel
 from dnd.character.spells.max_spell_levels import CasterType
 from dnd.character.spells.max_spell_levels import MAX_SPELL_LEVELS
 from dnd.character.spells.spells import Spells
 from dnd.choices.class_creation.character_class import Class
-
-_SPELL_LEVEL_TO_CLASS: list[type[Spell]] = [
-    Cantrip,
-    FirstLevel,
-    SecondLevel,
-    ThirdLevel,
-    FourthLevel,
-    FifthLevel,
-    SixthLevel,
-    SeventhLevel,
-    EighthLevel,
-    NinthLevel,
-]
 
 _SPELL_LEVEL_TO_ATTR: list[str] = [
     "cantrips",
@@ -77,22 +58,30 @@ _SPELL_LEVEL_TO_ATTR: list[str] = [
 
 class SpellSelector(Protocol):
     def select(
-        self, spell_level: int, count: int, available: list[Spell]
+        self, spell_level: SpellLevel, count: int, available: list[Spell]
     ) -> tuple[Spell, ...]: ...
 
 
-def _get_available_spells(class_: Class, spell_level: int) -> frozenset[Spell]:
-    return filter_accessible(_SPELL_LEVEL_TO_CLASS[spell_level], class_)
+def _get_available_spells(query: ClassSpellLevel) -> frozenset[Spell]:
+    return get_class_spells_set(query)
+
+
+def _wizard_query(spell_level: SpellLevel) -> ClassSpellLevel:
+    return (Class.WIZARD, spell_level)
+
+
+def _sorcerer_query(spell_level: SpellLevel) -> ClassSpellLevel:
+    return (Class.SORCERER, spell_level)
 
 
 def _apply_spells(
     spells: Spells,
-    to_learn: dict[int, int],
-    class_: Class,
+    to_learn: dict[SpellLevel, int],
+    make_query: Callable[[SpellLevel], ClassSpellLevel],
     selector: SpellSelector,
 ) -> Spells:
     for spell_level, count in to_learn.items():
-        available = list(_get_available_spells(class_, spell_level))
+        available = list(_get_available_spells(make_query(spell_level)))
         if not available:
             continue
         existing = set(spells.get_spells_by_level()[spell_level])
@@ -114,13 +103,13 @@ class WizardSpellAssigner(BuildingBlock, ABC):
     @abstractmethod
     def select_spells(
         self,
-        spell_level: int,
+        spell_level: SpellLevel,
         count: int,
         available_spells: list[Spell],
         state: _WideBlueprint,
     ) -> tuple[Spell, ...]: ...
 
-    def _get_spells_to_learn(self, state: _WideBlueprint) -> dict[int, int]:
+    def _get_spells_to_learn(self, state: _WideBlueprint) -> dict[SpellLevel, int]:
         level = state.classes.get_level(Class.WIZARD)
         if level == 1:
             return {0: 3, 1: 6}
@@ -185,14 +174,14 @@ class WizardSpellAssigner(BuildingBlock, ABC):
 
         class _Selector:
             def select(
-                self, spell_level: int, count: int, available: list[Spell]
+                self, spell_level: SpellLevel, count: int, available: list[Spell]
             ) -> tuple[Spell, ...]:
                 return assigner.select_spells(
                     spell_level, count, available, wizard_state
                 )
 
         spells = _apply_spells(
-            blueprint.spells, spells_to_learn, Class.WIZARD, _Selector()
+            blueprint.spells, spells_to_learn, _wizard_query, _Selector()
         )
         return blueprint.model_copy(update={"spells": spells})
 
@@ -205,13 +194,13 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
     @abstractmethod
     def select_spells(
         self,
-        spell_level: int,
+        spell_level: SpellLevel,
         count: int,
         available_spells: list[Spell],
         state: _WideBlueprint,
     ) -> tuple[Spell, ...]: ...
 
-    def _get_spells_to_learn(self, state: _WideBlueprint) -> dict[int, int]:
+    def _get_spells_to_learn(self, state: _WideBlueprint) -> dict[SpellLevel, int]:
         level = state.classes.get_level(Class.SORCERER)
         if level == 1:
             return {0: 4, 1: 2}
@@ -276,13 +265,13 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
 
         class _Selector:
             def select(
-                self, spell_level: int, count: int, available: list[Spell]
+                self, spell_level: SpellLevel, count: int, available: list[Spell]
             ) -> tuple[Spell, ...]:
                 return assigner.select_spells(
                     spell_level, count, available, sorcerer_state
                 )
 
         spells = _apply_spells(
-            blueprint.spells, spells_to_learn, Class.SORCERER, _Selector()
+            blueprint.spells, spells_to_learn, _sorcerer_query, _Selector()
         )
         return blueprint.model_copy(update={"spells": spells})

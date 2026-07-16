@@ -34,5 +34,13 @@ export function usePipelineState() {
     setBlocks(newOrder);
   }, []);
 
-  return { blocks, addBlock, removeBlock, updateConfig, moveBlock, reorderBlocks };
+  const loadBlocks = useCallback((entries: { type: string; [k: string]: unknown }[]) => {
+    setBlocks(entries.map(({ type, ...config }) => ({
+      id: newId(),
+      blockType: type,
+      config,
+    })));
+  }, []);
+
+  return { blocks, addBlock, removeBlock, updateConfig, moveBlock, reorderBlocks, loadBlocks };
 }
