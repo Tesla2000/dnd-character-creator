@@ -234,6 +234,162 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.war_magic.level_10 
 from dnd.character.blueprint.building_blocks.level_up.wizard.war_magic.level_14 import (
     WizardLevel14WarMagic,
 )
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_1 import (
+    BarbarianLevel1,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_2 import (
+    BarbarianLevel2,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_4 import (
+    BarbarianLevel4,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_5 import (
+    BarbarianLevel5,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_7 import (
+    BarbarianLevel7,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_8 import (
+    BarbarianLevel8,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_9 import (
+    BarbarianLevel9,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_11 import (
+    BarbarianLevel11,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_12 import (
+    BarbarianLevel12,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_13 import (
+    BarbarianLevel13,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_15 import (
+    BarbarianLevel15,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_16 import (
+    BarbarianLevel16,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_17 import (
+    BarbarianLevel17,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_18 import (
+    BarbarianLevel18,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_19 import (
+    BarbarianLevel19,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.level_20 import (
+    BarbarianLevel20,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.ancestral_guardian.level_3 import (
+    BarbarianLevel3AncestralGuardian,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.ancestral_guardian.level_6 import (
+    BarbarianLevel6AncestralGuardian,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.ancestral_guardian.level_10 import (
+    BarbarianLevel10AncestralGuardian,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.ancestral_guardian.level_14 import (
+    BarbarianLevel14AncestralGuardian,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.battlerager.level_3 import (
+    BarbarianLevel3Battlerager,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.battlerager.level_6 import (
+    BarbarianLevel6Battlerager,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.battlerager.level_10 import (
+    BarbarianLevel10Battlerager,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.battlerager.level_14 import (
+    BarbarianLevel14Battlerager,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.beast.level_3 import (
+    BarbarianLevel3Beast,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.beast.level_6 import (
+    BarbarianLevel6Beast,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.beast.level_10 import (
+    BarbarianLevel10Beast,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.beast.level_14 import (
+    BarbarianLevel14Beast,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.berserker.level_3 import (
+    BarbarianLevel3Berserker,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.berserker.level_6 import (
+    BarbarianLevel6Berserker,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.berserker.level_10 import (
+    BarbarianLevel10Berserker,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.berserker.level_14 import (
+    BarbarianLevel14Berserker,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.giant.level_3 import (
+    BarbarianLevel3Giant,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.giant.level_6 import (
+    BarbarianLevel6Giant,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.giant.level_10 import (
+    BarbarianLevel10Giant,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.giant.level_14 import (
+    BarbarianLevel14Giant,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.storm_herald.level_3 import (
+    BarbarianLevel3StormHerald,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.storm_herald.level_6 import (
+    BarbarianLevel6StormHerald,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.storm_herald.level_10 import (
+    BarbarianLevel10StormHerald,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.storm_herald.level_14 import (
+    BarbarianLevel14StormHerald,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.totem_warrior.level_3 import (
+    BarbarianLevel3TotemWarrior,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.totem_warrior.level_6 import (
+    BarbarianLevel6TotemWarrior,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.totem_warrior.level_10 import (
+    BarbarianLevel10TotemWarrior,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.totem_warrior.level_14 import (
+    BarbarianLevel14TotemWarrior,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.wild_magic.level_3 import (
+    BarbarianLevel3WildMagic,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.wild_magic.level_6 import (
+    BarbarianLevel6WildMagic,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.wild_magic.level_10 import (
+    BarbarianLevel10WildMagic,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.wild_magic.level_14 import (
+    BarbarianLevel14WildMagic,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.zealot.level_3 import (
+    BarbarianLevel3Zealot,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.zealot.level_6 import (
+    BarbarianLevel6Zealot,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.zealot.level_10 import (
+    BarbarianLevel10Zealot,
+)
+from dnd.character.blueprint.building_blocks.level_up.barbarian.zealot.level_14 import (
+    BarbarianLevel14Zealot,
+)
 from dnd.character.blueprint.building_blocks.level_up.sorcerer.level_2 import (
     SorcererLevel2,
 )
@@ -606,6 +762,58 @@ AnyBuildingBlock = Annotated[
         WizardLevel6WarMagic,
         WizardLevel10WarMagic,
         WizardLevel14WarMagic,
+        BarbarianLevel1,
+        BarbarianLevel2,
+        BarbarianLevel4,
+        BarbarianLevel5,
+        BarbarianLevel7,
+        BarbarianLevel8,
+        BarbarianLevel9,
+        BarbarianLevel11,
+        BarbarianLevel12,
+        BarbarianLevel13,
+        BarbarianLevel15,
+        BarbarianLevel16,
+        BarbarianLevel17,
+        BarbarianLevel18,
+        BarbarianLevel19,
+        BarbarianLevel20,
+        BarbarianLevel3AncestralGuardian,
+        BarbarianLevel6AncestralGuardian,
+        BarbarianLevel10AncestralGuardian,
+        BarbarianLevel14AncestralGuardian,
+        BarbarianLevel3Battlerager,
+        BarbarianLevel6Battlerager,
+        BarbarianLevel10Battlerager,
+        BarbarianLevel14Battlerager,
+        BarbarianLevel3Beast,
+        BarbarianLevel6Beast,
+        BarbarianLevel10Beast,
+        BarbarianLevel14Beast,
+        BarbarianLevel3Berserker,
+        BarbarianLevel6Berserker,
+        BarbarianLevel10Berserker,
+        BarbarianLevel14Berserker,
+        BarbarianLevel3Giant,
+        BarbarianLevel6Giant,
+        BarbarianLevel10Giant,
+        BarbarianLevel14Giant,
+        BarbarianLevel3StormHerald,
+        BarbarianLevel6StormHerald,
+        BarbarianLevel10StormHerald,
+        BarbarianLevel14StormHerald,
+        BarbarianLevel3TotemWarrior,
+        BarbarianLevel6TotemWarrior,
+        BarbarianLevel10TotemWarrior,
+        BarbarianLevel14TotemWarrior,
+        BarbarianLevel3WildMagic,
+        BarbarianLevel6WildMagic,
+        BarbarianLevel10WildMagic,
+        BarbarianLevel14WildMagic,
+        BarbarianLevel3Zealot,
+        BarbarianLevel6Zealot,
+        BarbarianLevel10Zealot,
+        BarbarianLevel14Zealot,
         SorcererLevel2,
         SorcererLevel3,
         SorcererLevel4,
@@ -785,6 +993,58 @@ __all__ = [
     "WizardLevel6WarMagic",
     "WizardLevel10WarMagic",
     "WizardLevel14WarMagic",
+    "BarbarianLevel1",
+    "BarbarianLevel2",
+    "BarbarianLevel4",
+    "BarbarianLevel5",
+    "BarbarianLevel7",
+    "BarbarianLevel8",
+    "BarbarianLevel9",
+    "BarbarianLevel11",
+    "BarbarianLevel12",
+    "BarbarianLevel13",
+    "BarbarianLevel15",
+    "BarbarianLevel16",
+    "BarbarianLevel17",
+    "BarbarianLevel18",
+    "BarbarianLevel19",
+    "BarbarianLevel20",
+    "BarbarianLevel3AncestralGuardian",
+    "BarbarianLevel6AncestralGuardian",
+    "BarbarianLevel10AncestralGuardian",
+    "BarbarianLevel14AncestralGuardian",
+    "BarbarianLevel3Battlerager",
+    "BarbarianLevel6Battlerager",
+    "BarbarianLevel10Battlerager",
+    "BarbarianLevel14Battlerager",
+    "BarbarianLevel3Beast",
+    "BarbarianLevel6Beast",
+    "BarbarianLevel10Beast",
+    "BarbarianLevel14Beast",
+    "BarbarianLevel3Berserker",
+    "BarbarianLevel6Berserker",
+    "BarbarianLevel10Berserker",
+    "BarbarianLevel14Berserker",
+    "BarbarianLevel3Giant",
+    "BarbarianLevel6Giant",
+    "BarbarianLevel10Giant",
+    "BarbarianLevel14Giant",
+    "BarbarianLevel3StormHerald",
+    "BarbarianLevel6StormHerald",
+    "BarbarianLevel10StormHerald",
+    "BarbarianLevel14StormHerald",
+    "BarbarianLevel3TotemWarrior",
+    "BarbarianLevel6TotemWarrior",
+    "BarbarianLevel10TotemWarrior",
+    "BarbarianLevel14TotemWarrior",
+    "BarbarianLevel3WildMagic",
+    "BarbarianLevel6WildMagic",
+    "BarbarianLevel10WildMagic",
+    "BarbarianLevel14WildMagic",
+    "BarbarianLevel3Zealot",
+    "BarbarianLevel6Zealot",
+    "BarbarianLevel10Zealot",
+    "BarbarianLevel14Zealot",
     "SorcererLevel2",
     "SorcererLevel3",
     "SorcererLevel4",
