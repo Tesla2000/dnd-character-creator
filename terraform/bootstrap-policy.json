@@ -50,21 +50,13 @@
         "lambda:GetPolicy",
         "lambda:ListVersionsByFunction",
         "lambda:TagResource",
-        "lambda:ListTags"
+        "lambda:ListTags",
+        "lambda:CreateFunctionUrlConfig",
+        "lambda:UpdateFunctionUrlConfig",
+        "lambda:DeleteFunctionUrlConfig",
+        "lambda:GetFunctionUrlConfig"
       ],
       "Resource": "arn:aws:lambda:eu-central-1:472765723468:function:dnd-character-creator"
-    },
-    {
-      "Sid": "APIGateway",
-      "Effect": "Allow",
-      "Action": [
-        "apigateway:GET",
-        "apigateway:POST",
-        "apigateway:PUT",
-        "apigateway:PATCH",
-        "apigateway:DELETE"
-      ],
-      "Resource": "arn:aws:apigateway:eu-central-1::*"
     },
     {
       "Sid": "SSM",

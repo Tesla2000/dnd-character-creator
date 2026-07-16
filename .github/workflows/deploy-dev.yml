@@ -55,7 +55,28 @@ jobs:
         working-directory: terraform
         run: terraform apply -auto-approve -input=false -var="environment=development" -var="image_tag=development-${{ github.sha }}"
 
-      - name: Print dev API URL
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm ci && npm run build
+
+      - name: Upload frontend to S3
         working-directory: terraform
         run: |
-          echo "Dev API URL: $(terraform output -raw api_url)"
+          BUCKET=$(terraform output -raw frontend_bucket)
+          aws s3 sync ../frontend/dist/ s3://$BUCKET/ --delete
+
+      - name: Invalidate CloudFront cache
+        working-directory: terraform
+        run: |
+          DIST_ID=$(terraform output -raw cloudfront_distribution_id)
+          aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
+
+      - name: Print dev URL
+        working-directory: terraform
+        run: |
+          echo "Dev URL: $(terraform output -raw frontend_url)"
