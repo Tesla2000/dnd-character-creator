@@ -14,7 +14,7 @@ import pipelineMeta from "./data/pipeline-meta.json";
 
 export function App() {
   const { registry, byType } = useBlockRegistry();
-  const { blocks, addBlock, removeBlock, updateConfig, loadBlocks, reorderBlocks } = usePipelineState();
+  const { blocks, addBlock, removeBlock, updateConfig, loadBlocks } = usePipelineState();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [buildResult, setBuildResult] = useState<CharacterResult | null>(null);
   const [buildError, setBuildError] = useState<string | null>(null);
@@ -158,7 +158,6 @@ export function App() {
                 const info = byType.get(blockType);
                 addBlock(blockType, info?.default_config ?? {});
               }}
-              onReorder={reorderBlocks}
               onRemoveLast={() => {
                 const last = blocks[blocks.length - 1];
                 if (!last) return;
