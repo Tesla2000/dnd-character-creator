@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         npm \
         openssh-client \
         locales-all \
-        micro \
         gnupg \
         unzip \
         pulseaudio-utils \
@@ -47,7 +46,6 @@ RUN groupadd --gid 1000 dev && useradd --uid 1000 --gid 1000 --shell /bin/bash -
 ENV UV_LINK_MODE=copy
 ENV PATH="/workspace/.venv/bin:${PATH}"
 ENV PRE_COMMIT_HOME="/.jbdevcontainer/pre-commit"
-ENV EDITOR=micro
 
 RUN mkdir -p /.jbdevcontainer/pre-commit && chown -R dev:dev /.jbdevcontainer
 
