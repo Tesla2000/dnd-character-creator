@@ -17,20 +17,6 @@
       "Bash(cat .env)"
     ]
   },
-  "sandbox": {
-    "enabled": true,
-    "network": {
-      "allowedDomains": [
-        "api.anthropic.com",
-        "github.com",
-        "*.github.com",
-        "*.githubusercontent.com",
-        "pypi.org",
-        "files.pythonhosted.org",
-        "registry.npmjs.org"
-      ]
-    }
-  },
   "hooks": {
     "PreToolUse": [
       {
@@ -61,5 +47,20 @@
         ]
       }
     ]
-  }
+  },
+  "sandbox": {
+    "enabled": true,
+    "network": {
+      "allowedDomains": [
+        "api.anthropic.com",
+        "github.com",
+        "*.github.com",
+        "*.githubusercontent.com",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "registry.npmjs.org"
+      ]
+    }
+  },
+  "theme": "dark"
 }

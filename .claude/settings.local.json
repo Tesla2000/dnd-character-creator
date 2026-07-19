@@ -11,7 +11,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "printf '\\a' > /dev/tty 2>/dev/null || true"
+            "command": "bash /workspace/.claude/hooks/notify.sh"
           }
         ]
       }
@@ -23,6 +23,15 @@
           {
             "type": "command",
             "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Interview me to find the goal for this change and the acceptance criteria. The baseline acceptance criteria is pre-commit and github test workflows passing.\"}}'"
+          }
+        ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /workspace/.claude/hooks/notify.sh"
           }
         ]
       }
