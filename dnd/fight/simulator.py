@@ -70,29 +70,29 @@ class Simulator(Generic[SlotT]):
         for action_name in attacker.character.actions:
             match action_name:
                 case AbilityName.ATTACK_WITH_AXE:
-                    opts = AttackWithAxe.create_oa(
+                    axe_opts = AttackWithAxe.create_oa(
                         actor_slot, attacker, target_slot, battlemap
                     )
-                    if opts:
-                        candidates.append(opts)
+                    if axe_opts:
+                        candidates.append(axe_opts)
                 case AbilityName.ATTACK_WITH_BATTLEAXE:
-                    opts = AttackWithBattleaxe.create_oa(
+                    battleaxe_opts = AttackWithBattleaxe.create_oa(
                         actor_slot, attacker, target_slot, battlemap
                     )
-                    if opts:
-                        candidates.append(opts)
+                    if battleaxe_opts:
+                        candidates.append(battleaxe_opts)
                 case AbilityName.ATTACK_WITH_GREATAXE:
-                    opts = AttackWithGreataxe.create_oa(
+                    greataxe_opts = AttackWithGreataxe.create_oa(
                         actor_slot, attacker, target_slot, battlemap
                     )
-                    if opts:
-                        candidates.append(opts)
+                    if greataxe_opts:
+                        candidates.append(greataxe_opts)
                 case AbilityName.ATTACK_WITH_HANDAXE:
-                    opts = AttackWithHandaxe.create_oa(
+                    handaxe_opts = AttackWithHandaxe.create_oa(
                         actor_slot, attacker, target_slot, battlemap
                     )
-                    if opts:
-                        candidates.append(opts)
+                    if handaxe_opts:
+                        candidates.append(handaxe_opts)
                 case _:
                     pass
         return tuple(candidates)
@@ -111,9 +111,7 @@ class Simulator(Generic[SlotT]):
                     attacker_slot = self._slot_from_int(
                         oa_event.attacker_slot, battlemap
                     )
-                    target_slot = self._slot_from_int(
-                        oa_event.target_slot, battlemap
-                    )
+                    target_slot = self._slot_from_int(oa_event.target_slot, battlemap)
                     match battlemap.get_combatant(attacker_slot):
                         case FightCharacter() as attacker if attacker.has_reaction:
                             oa_groups = self._get_oa_options(
@@ -121,9 +119,9 @@ class Simulator(Generic[SlotT]):
                             )
                             if oa_groups:
                                 any_oa = True
-                                oa_action = self._strategy_for(
-                                    attacker.team_id
-                                ).choose(oa_groups)
+                                oa_action = self._strategy_for(attacker.team_id).choose(
+                                    oa_groups
+                                )
                                 battlemap = oa_action.perform(battlemap)
                                 log.append(
                                     f"  {attacker.name}"
@@ -170,9 +168,7 @@ class Simulator(Generic[SlotT]):
                     )
                     battlemap = move_action.perform(battlemap)
 
-                battlemap, had_oa = self._process_oa_events(
-                    battlemap, log_before, log
-                )
+                battlemap, had_oa = self._process_oa_events(battlemap, log_before, log)
                 if had_oa:
                     any_action_this_round = True
 

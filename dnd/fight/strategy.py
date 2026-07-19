@@ -1,5 +1,4 @@
 import random
-from enum import IntEnum
 from typing import Generic, Protocol
 
 from dnd.character.actions.combat import AnyCombatAction

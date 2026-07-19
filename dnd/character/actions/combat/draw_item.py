@@ -42,13 +42,9 @@ class DrawItem(FreeAction[SlotT], Generic[SlotT]):
                     )
                 continue
             if fighter.main_hand is None and fighter.off_hand != item:
-                options.append(
-                    cls(actor_slot=actor_slot, item=item, which_hand="main")
-                )
+                options.append(cls(actor_slot=actor_slot, item=item, which_hand="main"))
             if fighter.off_hand is None and fighter.main_hand != item:
-                options.append(
-                    cls(actor_slot=actor_slot, item=item, which_hand="off")
-                )
+                options.append(cls(actor_slot=actor_slot, item=item, which_hand="off"))
         return tuple(options)
 
     def perform(self, battlemap: Battlemap[SlotT]) -> Battlemap[SlotT]:
@@ -67,5 +63,7 @@ class DrawItem(FreeAction[SlotT], Generic[SlotT]):
             )
         else:
             field = "main_hand" if self.which_hand == "main" else "off_hand"
-            updated = fighter.model_copy(update={field: self.item, "has_free_action": False})
+            updated = fighter.model_copy(
+                update={field: self.item, "has_free_action": False}
+            )
         return battlemap.replace_combatant(self.actor_slot, updated)

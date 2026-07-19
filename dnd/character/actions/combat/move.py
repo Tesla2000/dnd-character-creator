@@ -64,7 +64,9 @@ class Move(MovementAction[SlotT], Generic[SlotT]):
             if slot == mover_slot:
                 continue
             match battlemap.get_combatant(slot):
-                case FightCharacter() as c if c.team_id != fighter.team_id and c.has_reaction:
+                case FightCharacter() as c if (
+                    c.team_id != fighter.team_id and c.has_reaction
+                ):
                     cx, cy = c.position
                     was_adjacent = max(abs(cx - fx), abs(cy - fy)) <= 1
                     will_be_adjacent = max(abs(cx - tx), abs(cy - ty)) <= 1
