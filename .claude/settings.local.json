@@ -16,6 +16,16 @@
         ]
       }
     ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /workspace/.claude/hooks/notify.sh"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "EnterPlanMode",
@@ -59,6 +69,15 @@
             "type": "command",
             "if": "Bash(git commit)",
             "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Commits must be reviewed by the user before finalizing. Stage and prepare the change but do not run git commit without explicit go-ahead.\"}}'"
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /workspace/.claude/hooks/notify.sh"
           }
         ]
       }
