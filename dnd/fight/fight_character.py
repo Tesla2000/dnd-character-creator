@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import IntEnum
 from random import randint
 from typing import (
     TYPE_CHECKING,
@@ -22,6 +23,7 @@ from uuid_string import UUIDString
 if TYPE_CHECKING:
     pass
 
+from dnd._position import Position
 from dnd.character._ability_name import AbilityName
 from dnd.character.actions._any_modifier import AnyModifier
 from dnd.character.actions._damage_type import DamageType
@@ -58,7 +60,7 @@ class _CombatantBase[HealthType: NonNegativeInt](BaseModel):
     team_id: TeamId = TeamId.A
     speed: int = 30
     movement_remaining: int = 0
-    position: tuple[int, int] = (0, 0)
+    position: Position = Position(x=0, y=0)
 
     @property
     def name(self) -> str:
@@ -83,9 +85,9 @@ class _CombatantBase[HealthType: NonNegativeInt](BaseModel):
         new_temp = max(self.temporary_health, amount)
         return self.model_copy(update={"temporary_health": new_temp})
 
-    def on_event(
-        self, event: AnyCombatEvent
-    ) -> tuple[Self, tuple[AnyCombatEvent, ...]]:
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[Self, tuple[AnyCombatEvent[T], ...]]:
         return self, ()
 
 
@@ -115,14 +117,25 @@ class FightCharacter(_CombatantBase[PositiveInt]):
         shield_prof = ArmorProficiency.SHIELDS in self.character.armor_proficiencies
         return self.base_ac + (2 if shield_held and shield_prof else 0)
 
+    @staticmethod
+    def _resources_from_character(
+        character: PresentableCharacter,
+    ) -> tuple[_FightResource, ...]:
+        return tuple(
+            _FightResource(name=r.name, max_uses=r.max_uses, remaining_uses=r.max_uses)
+            for r in character.resource_max_uses
+        )
+
     @classmethod
     def from_presentable(
         cls,
         character: PresentableCharacter,
         initiative: int,
-        resources: tuple[_FightResource, ...] = (),
+        resources: tuple[_FightResource, ...] | None = None,
         team_id: TeamId = TeamId.A,
     ) -> FightCharacter:
+        if resources is None:
+            resources = cls._resources_from_character(character)
         number_of_attacks = 2 if AbilityName.EXTRA_ATTACK in character.actions else 1
         brutal_critical_dice = (
             3
@@ -167,10 +180,10 @@ class FightCharacter(_CombatantBase[PositiveInt]):
             off_hand=off_hand,
         )
 
-    def on_event(
-        self, event: AnyCombatEvent
-    ) -> tuple[Self, tuple[AnyCombatEvent, ...]]:
-        pending: list[AnyCombatEvent] = []
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[Self, tuple[AnyCombatEvent[T], ...]]:
+        pending: list[AnyCombatEvent[T]] = []
         surviving: list[AnyModifier] = []
         for m in self.modifiers:
             r, emitted = m.on_event(event)
@@ -236,6 +249,9 @@ class FightCharacter(_CombatantBase[PositiveInt]):
             new_temp -= absorbed
             remaining -= absorbed
         new_hp = self.current_health - remaining
+        active_features = self.active_features
+        if AbilityName.WILD_SHAPE in active_features and new_temp == 0:
+            active_features = active_features - {AbilityName.WILD_SHAPE}
         if new_hp <= 0:
             if (
                 self.has_reaction
@@ -247,6 +263,7 @@ class FightCharacter(_CombatantBase[PositiveInt]):
                         "current_health": 1,
                         "temporary_health": new_temp,
                         "has_reaction": False,
+                        "active_features": active_features,
                     }
                 )
             return DownedFightCharacter.from_active(
@@ -258,6 +275,7 @@ class FightCharacter(_CombatantBase[PositiveInt]):
             update={
                 "current_health": new_hp,
                 "temporary_health": new_temp,
+                "active_features": active_features,
             }
         )
 
@@ -274,9 +292,11 @@ class SpellcasterFightCharacter(FightCharacter):
         cls,
         character: PresentableCharacter,
         initiative: int,
-        resources: tuple[_FightResource, ...] = (),
+        resources: tuple[_FightResource, ...] | None = None,
         team_id: TeamId = TeamId.A,
     ) -> SpellcasterFightCharacter:
+        if resources is None:
+            resources = cls._resources_from_character(character)
         number_of_attacks = 2 if AbilityName.EXTRA_ATTACK in character.actions else 1
         brutal_critical_dice = (
             3
@@ -331,10 +351,24 @@ class SpellcasterFightCharacter(FightCharacter):
             }
         )
 
+    def spend_level_2_slot(self) -> Self:
+        return self.model_copy(
+            update={
+                "remaining_spell_slots": self.remaining_spell_slots.spend_level_2_slot()
+            }
+        )
+
     def spend_level_3_slot(self) -> Self:
         return self.model_copy(
             update={
                 "remaining_spell_slots": self.remaining_spell_slots.spend_level_3_slot()
+            }
+        )
+
+    def spend_level_4_slot(self) -> Self:
+        return self.model_copy(
+            update={
+                "remaining_spell_slots": self.remaining_spell_slots.spend_level_4_slot()
             }
         )
 

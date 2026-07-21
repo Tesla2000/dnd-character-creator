@@ -43,7 +43,7 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "assert_never",
     "case _ as never:",
-    "...",
+    "\\.\\.\\.",
     "pass",
 ]
 

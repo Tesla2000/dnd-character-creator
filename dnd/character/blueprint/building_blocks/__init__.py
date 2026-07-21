@@ -234,6 +234,42 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.war_magic.level_10 
 from dnd.character.blueprint.building_blocks.level_up.wizard.war_magic.level_14 import (
     WizardLevel14WarMagic,
 )
+from dnd.character.blueprint.building_blocks.level_up.druid.level_1 import (
+    DruidLevel1,
+)
+from dnd.character.blueprint.building_blocks.level_up.druid.level_3 import (
+    DruidLevel3,
+)
+from dnd.character.blueprint.building_blocks.level_up.druid.level_4 import (
+    DruidLevel4,
+)
+from dnd.character.blueprint.building_blocks.level_up.druid.level_5 import (
+    DruidLevel5,
+)
+from dnd.character.blueprint.building_blocks.level_up.druid.level_7 import (
+    DruidLevel7,
+)
+from dnd.character.blueprint.building_blocks.level_up.druid.moon.level_2 import (
+    DruidLevel2Moon,
+)
+from dnd.character.blueprint.building_blocks.level_up.druid.moon.level_6 import (
+    DruidLevel6Moon,
+)
+from dnd.character.blueprint.building_blocks.level_up.ranger.level_1 import (
+    RangerLevel1,
+)
+from dnd.character.blueprint.building_blocks.level_up.ranger.level_2 import (
+    RangerLevel2,
+)
+from dnd.character.blueprint.building_blocks.level_up.ranger.gloom_stalker.level_3 import (
+    RangerLevel3GloomStalker,
+)
+from dnd.character.blueprint.building_blocks.level_up.ranger.level_4 import (
+    RangerLevel4,
+)
+from dnd.character.blueprint.building_blocks.level_up.ranger.level_5 import (
+    RangerLevel5,
+)
 from dnd.character.blueprint.building_blocks.level_up.barbarian.level_1 import (
     BarbarianLevel1,
 )
@@ -762,6 +798,18 @@ AnyBuildingBlock = Annotated[
         WizardLevel6WarMagic,
         WizardLevel10WarMagic,
         WizardLevel14WarMagic,
+        DruidLevel1,
+        DruidLevel2Moon,
+        DruidLevel3,
+        DruidLevel4,
+        DruidLevel5,
+        DruidLevel6Moon,
+        DruidLevel7,
+        RangerLevel1,
+        RangerLevel2,
+        RangerLevel3GloomStalker,
+        RangerLevel4,
+        RangerLevel5,
         BarbarianLevel1,
         BarbarianLevel2,
         BarbarianLevel4,
@@ -993,6 +1041,18 @@ __all__ = [
     "WizardLevel6WarMagic",
     "WizardLevel10WarMagic",
     "WizardLevel14WarMagic",
+    "DruidLevel1",
+    "DruidLevel2Moon",
+    "DruidLevel3",
+    "DruidLevel4",
+    "DruidLevel5",
+    "DruidLevel6Moon",
+    "DruidLevel7",
+    "RangerLevel1",
+    "RangerLevel2",
+    "RangerLevel3GloomStalker",
+    "RangerLevel4",
+    "RangerLevel5",
     "BarbarianLevel1",
     "BarbarianLevel2",
     "BarbarianLevel4",

@@ -17,9 +17,11 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
     WizardRandomSpellAssigner,
 )
 from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import AnyNonZeroWizardLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyStatChoices
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.sentinels import MaybeCharacterData
 from dnd.character.blueprint.sentinels import MaybeHealth
 from dnd.character.blueprint.sentinels import SecondSubclassPostLevel
@@ -59,7 +61,7 @@ class WizardUpgradeLevelBase[LevelOut: AnyNonZeroWizardLevel](BuildingBlock, ABC
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -170,7 +172,7 @@ class WizardPreSubclassLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -287,7 +289,7 @@ class WizardSharedLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -396,7 +398,7 @@ class WizardFeatGrantingLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -486,7 +488,7 @@ class WizardLevel18UpgradeLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -633,7 +635,7 @@ class WizardPostLevel18SharedLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -773,7 +775,7 @@ class WizardPostLevel18FeatGrantingLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -863,7 +865,7 @@ class WizardLevel20UpgradeLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -1014,7 +1016,7 @@ class WizardSubclassFeatureLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,

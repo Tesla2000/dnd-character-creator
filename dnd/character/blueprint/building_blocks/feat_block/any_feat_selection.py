@@ -20,9 +20,11 @@ from dnd.character.blueprint.building_blocks.feat_choice_resolver import (
 )
 from dnd.character.blueprint.sentinels import (
     AnyClassLevel,
+    AnyDruidLevel,
     AnySorcererLevel,
     AnyStatChoices,
     AnyWizardLevel,
+    DruidInfo,
     MaybeCharacterData,
     MaybeHealth,
     MaybeRace,
@@ -206,7 +208,7 @@ class AnyFeatSelectionBlock(AbstractFeatBlock):
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,

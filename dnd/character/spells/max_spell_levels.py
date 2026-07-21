@@ -90,3 +90,26 @@ FULL_CASTER_SPELL_SLOTS: tuple[SpellSlots, ...] = (
     SpellSlots(4, 3, 3, 3, 3, 2, 1, 1, 1),
     SpellSlots(4, 3, 3, 3, 3, 2, 2, 1, 1),
 )
+
+HALF_CASTER_SPELL_SLOTS: tuple[SpellSlots, ...] = (
+    SpellSlots(0, 0, 0, 0, 0, 0, 0, 0, 0),
+    SpellSlots(2, 0, 0, 0, 0, 0, 0, 0, 0),
+    SpellSlots(3, 0, 0, 0, 0, 0, 0, 0, 0),
+    SpellSlots(3, 0, 0, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 2, 0, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 2, 0, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 0, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 0, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 2, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 2, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 0, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 1, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 1, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 2, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 2, 0, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 3, 1, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 3, 1, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0),
+    SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0),
+)

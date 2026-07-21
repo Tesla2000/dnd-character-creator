@@ -9,15 +9,20 @@ from dnd.character.blueprint.building_blocks.feat_block import (
     AnyFeatBlock,
     AnyFeatSelectionBlock,
 )
+from dnd.character.blueprint.building_blocks.level_up.barbarian.rage_uses import (
+    RageUses,
+)
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
     AnyD12HealthIncrease,
     D12HealthIncreaseAverage,
 )
 from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyStatChoices
 from dnd.character.blueprint.sentinels import AnyWizardLevel
 from dnd.character.blueprint.sentinels import ClassPreSubclassLevel
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.states._caster_info import CasterInfo
 from dnd.character.blueprint.states.wizard._info import WizardInfo
 from dnd.character.blueprint.sentinels import ClassSubclassLevel
@@ -41,6 +46,7 @@ class BarbarianUpgradeLevelBase[LevelIn: AnyClassLevel, LevelOut: AnyClassLevel]
     health_increase: AnyD12HealthIncrease = Field(
         default_factory=D12HealthIncreaseAverage
     )
+    rage_uses: RageUses = Field(default_factory=RageUses)
 
     @abstractmethod
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
@@ -55,7 +61,7 @@ class BarbarianUpgradeLevelBase[LevelIn: AnyClassLevel, LevelOut: AnyClassLevel]
         _FGK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -107,6 +113,7 @@ class BarbarianUpgradeLevelBase[LevelIn: AnyClassLevel, LevelOut: AnyClassLevel]
         _CDK_,
     ]:
         r1 = self._update_blueprint(blueprint)
+        r1 = self.rage_uses.apply(r1)
         r2 = self.health_increase.apply(r1)
         return BarbarianBlueprint[
             _StCK_,
@@ -138,6 +145,7 @@ class BarbarianPreSubclassLevelBase[
     health_increase: AnyD12HealthIncrease = Field(
         default_factory=D12HealthIncreaseAverage
     )
+    rage_uses: RageUses = Field(default_factory=RageUses)
 
     @abstractmethod
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
@@ -151,7 +159,7 @@ class BarbarianPreSubclassLevelBase[
         _FGK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -200,6 +208,7 @@ class BarbarianPreSubclassLevelBase[
         _CDK_,
     ]:
         r1 = self._update_blueprint(blueprint)
+        r1 = self.rage_uses.apply(r1)
         r2 = self.health_increase.apply(r1)
         return BarbarianBlueprint[
             _StCK_,
@@ -230,6 +239,7 @@ class BarbarianSubclassAssignLevelBase[SubclassOut: BarbarianSubclass](
     health_increase: AnyD12HealthIncrease = Field(
         default_factory=D12HealthIncreaseAverage
     )
+    rage_uses: RageUses = Field(default_factory=RageUses)
 
     @abstractmethod
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
@@ -243,7 +253,7 @@ class BarbarianSubclassAssignLevelBase[SubclassOut: BarbarianSubclass](
         _FGK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -292,6 +302,7 @@ class BarbarianSubclassAssignLevelBase[SubclassOut: BarbarianSubclass](
         _CDK_,
     ]:
         r1 = self._update_blueprint(blueprint)
+        r1 = self.rage_uses.apply(r1)
         r2 = self.health_increase.apply(r1)
         return BarbarianBlueprint[
             _StCK_,
@@ -323,6 +334,7 @@ class BarbarianSharedLevelBase[
     health_increase: AnyD12HealthIncrease = Field(
         default_factory=D12HealthIncreaseAverage
     )
+    rage_uses: RageUses = Field(default_factory=RageUses)
 
     @abstractmethod
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
@@ -337,7 +349,7 @@ class BarbarianSharedLevelBase[
         _FGK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -386,6 +398,7 @@ class BarbarianSharedLevelBase[
         _CDK_,
     ]:
         r1 = self._update_blueprint(blueprint)
+        r1 = self.rage_uses.apply(r1)
         r2 = self.health_increase.apply(r1)
         return BarbarianBlueprint[
             _StCK_,
@@ -426,7 +439,7 @@ class BarbarianFeatGrantingLevelBase[
         _FGK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -494,6 +507,7 @@ class BarbarianSubclassFeatureLevelBase[
     health_increase: AnyD12HealthIncrease = Field(
         default_factory=D12HealthIncreaseAverage
     )
+    rage_uses: RageUses = Field(default_factory=RageUses)
 
     @abstractmethod
     def _update_blueprint(self, blueprint: _BPT) -> _BPT: ...
@@ -507,7 +521,7 @@ class BarbarianSubclassFeatureLevelBase[
         _FGK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -556,6 +570,7 @@ class BarbarianSubclassFeatureLevelBase[
         _CDK_,
     ]:
         r1 = self._update_blueprint(blueprint)
+        r1 = self.rage_uses.apply(r1)
         r2 = self.health_increase.apply(r1)
         return BarbarianBlueprint[
             _StCK_,

@@ -18,10 +18,12 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment import (
     SorcererRandomSpellAssigner,
 )
 from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import AnyMetamagicChoices
 from dnd.character.blueprint.sentinels import AnyNonZeroSorcererLevel
 from dnd.character.blueprint.sentinels import AnyStatChoices
 from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.states._caster_info import CasterInfo
 from dnd.character.blueprint.states.wizard._info import WizardInfo
 from dnd.character.blueprint.sentinels import FirstSubclassPostLevel
@@ -63,7 +65,7 @@ class SorcererLevel1Base[SubclassOut: SorcererSubclass](BuildingBlock, ABC):
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -170,7 +172,7 @@ class SorcererSharedLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -272,7 +274,7 @@ class SorcererFeatGrantingLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -359,7 +361,7 @@ class SorcererSubclassFeatureLevelBase[
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,

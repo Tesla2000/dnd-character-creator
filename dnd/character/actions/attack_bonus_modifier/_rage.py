@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import IntEnum
 from typing import TYPE_CHECKING, Literal
 
 from typing import Self
@@ -25,9 +26,9 @@ class _RageAttackBonusModifier(_AttackBonusModifier):
     ) -> int:
         return 2 if AbilityName.RAGE in attacker.active_features else 0
 
-    def on_event(
-        self, event: AnyCombatEvent
-    ) -> tuple[Self | None, tuple[AnyCombatEvent, ...]]:
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[Self | None, tuple[AnyCombatEvent[T], ...]]:
         match event:
             case RageEndsEvent() if event.target_id == self.owner_id:
                 return None, ()

@@ -6,6 +6,8 @@ from dnd.character.blueprint.building_blocks.level_up.spell_assignment.llm impor
     WizardLLMSpellAssigner,
 )
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.random import (
+    DruidRandomSpellAssigner,
+    RangerRandomSpellAssigner,
     SorcererRandomSpellAssigner,
     WizardRandomSpellAssigner,
 )
@@ -21,10 +23,16 @@ AnySorcererSpellAssigner = Annotated[
     Field(discriminator="type"),
 ]
 
+AnyDruidSpellAssigner = DruidRandomSpellAssigner
+
+AnyRangerSpellAssigner = RangerRandomSpellAssigner
+
 AnySpellAssigner = Annotated[
     Union[
         WizardRandomSpellAssigner,
         SorcererRandomSpellAssigner,
+        DruidRandomSpellAssigner,
+        RangerRandomSpellAssigner,
         WizardLLMSpellAssigner,
         SorcererLLMSpellAssigner,
     ],
@@ -34,9 +42,13 @@ AnySpellAssigner = Annotated[
 __all__ = [
     "WizardRandomSpellAssigner",
     "SorcererRandomSpellAssigner",
+    "DruidRandomSpellAssigner",
+    "RangerRandomSpellAssigner",
     "WizardLLMSpellAssigner",
     "SorcererLLMSpellAssigner",
     "AnyWizardSpellAssigner",
     "AnySorcererSpellAssigner",
+    "AnyDruidSpellAssigner",
+    "AnyRangerSpellAssigner",
     "AnySpellAssigner",
 ]

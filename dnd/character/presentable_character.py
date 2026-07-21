@@ -6,11 +6,12 @@ from dnd.character.ac_modifier import AdditiveAcModifier
 from dnd.character.ac_modifier import CompetingAcModifier
 from dnd.character.blueprint.character_data import CharacterData
 from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
-from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.states._caster_info import CasterInfo
 from dnd.character.blueprint.states.state import Blueprint
-from dnd.character.blueprint.states.wizard._info import WizardInfo
+from dnd.character.blueprint.states.wizard._info import AnyWizardInfo
 from dnd.character.feature.feats import FeatName
 from dnd.character.race.race import Race
 from dnd.character.spells import SPELLCASTING_ABILITY_MAP
@@ -38,14 +39,14 @@ class PresentableCharacter(
         PositiveInt,
         Literal[0],
         Literal[0],
-        WizardInfo[AnyWizardLevel] | None,
+        AnyWizardInfo | None,
         CasterInfo | None,
         AnySorcererLevel,
         AnyClassLevel,
         AnyClassLevel,
         AnyClassLevel,
         AnyClassLevel,
-        AnyClassLevel,
+        DruidInfo[AnyDruidLevel] | None,
         AnyClassLevel,
         AnyClassLevel,
         AnyClassLevel,

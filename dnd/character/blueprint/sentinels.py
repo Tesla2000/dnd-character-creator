@@ -1,15 +1,21 @@
 import types
 from enum import IntEnum
+from typing import ClassVar
 from typing import Generic
 from typing import Literal
 from typing import TypeVar
 
 from dnd.character.blueprint.character_data import CharacterData
 from dnd.character.race.race import Race
+from dnd.character.spells.spell_slots import Spell
 from dnd.character.stats import Stats
 from dnd.choices.class_creation.character_class import AnySubclass
+from dnd.choices.class_creation.character_class import DruidSubclass
 from dnd.choices.class_creation.character_class import SorcererSubclass
 from dnd.choices.class_creation.character_class import WizardSubclass
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
 from pydantic import PositiveInt
 
 
@@ -120,6 +126,9 @@ _SSS = TypeVar("_SSS", bound=SorcererSubclass, covariant=True)
 _CPL = TypeVar("_CPL", bound=ThirdSubclassPreLevel, covariant=True)
 _CSL = TypeVar("_CSL", bound=ThirdSubclassPostLevel, covariant=True)
 _CSS = TypeVar("_CSS", bound=AnySubclass, covariant=True)
+_DPL = TypeVar("_DPL", bound=SecondSubclassPreLevel, covariant=True)
+_DSL = TypeVar("_DSL", bound=SecondSubclassPostLevel, covariant=True)
+_DSS = TypeVar("_DSS", bound=DruidSubclass, covariant=True)
 _NT = TypeVar("_NT", bound=None, covariant=True)
 
 
@@ -163,6 +172,26 @@ class SorcererSubclassLevel(Generic[_SSL, _SSS]):
         )
 
 
+class DruidPreSubclassLevel(Generic[_DPL, _NT]):
+    """Phantom: druid at a pre-subclass level (0-1). SubclassT is always None."""
+
+    @classmethod
+    def __class_getitem__(cls, params: object) -> types.GenericAlias:
+        return types.GenericAlias(
+            cls, params if isinstance(params, tuple) else (params,)
+        )
+
+
+class DruidSubclassLevel(Generic[_DSL, _DSS]):
+    """Phantom: druid at a post-subclass level (2-20) with assigned subclass."""
+
+    @classmethod
+    def __class_getitem__(cls, params: object) -> types.GenericAlias:
+        return types.GenericAlias(
+            cls, params if isinstance(params, tuple) else (params,)
+        )
+
+
 class ClassPreSubclassLevel(Generic[_CPL, _NT]):
     """Phantom: standard class (subclass at 3) at a pre-subclass level (0–2)."""
 
@@ -198,6 +227,10 @@ type AnySorcererLevel = (
     SorcererPreSubclassLevel[FirstSubclassPreLevel, None]
     | SorcererSubclassLevel[FirstSubclassPostLevel, SorcererSubclass]
 )
+type AnyDruidLevel = (
+    DruidPreSubclassLevel[SecondSubclassPreLevel, None]
+    | DruidSubclassLevel[SecondSubclassPostLevel, DruidSubclass]
+)
 type AnyClassLevel = (
     ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
     | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass]
@@ -210,6 +243,28 @@ type AnyNonZeroWizardLevel = (
 type AnyNonZeroSorcererLevel = SorcererSubclassLevel[
     FirstSubclassPostLevel, SorcererSubclass
 ]
+type AnyNonZeroDruidLevel = (
+    DruidPreSubclassLevel[Literal[SecondSubclassPreLevel.FIRST], None]
+    | DruidSubclassLevel[SecondSubclassPostLevel, DruidSubclass]
+)
+
+_DZK_co = TypeVar(
+    "_DZK_co",
+    bound=DruidPreSubclassLevel[SecondSubclassPreLevel, None]
+    | DruidSubclassLevel[SecondSubclassPostLevel, DruidSubclass],
+    covariant=True,
+)
+
+
+class DruidInfo(BaseModel, Generic[_DZK_co]):
+    """Real (non-phantom) druid state: carries prepared spells, tracked by level/subclass via _DZK_co."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
+
+    prepared_spells: tuple[Spell, ...] = Field(default=())
+
+
+type AnyDruidInfo = DruidInfo[AnyDruidLevel]
 
 
 # Pass-through TypeVars for all Blueprint dimensions.
@@ -259,11 +314,7 @@ _CLK = TypeVar(
     bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
     | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
 )
-_DRK = TypeVar(
-    "_DRK",
-    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
-    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
-)
+_DRK = TypeVar("_DRK", bound=DruidInfo[AnyDruidLevel] | None)
 _PAK = TypeVar(
     "_PAK",
     bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
@@ -341,10 +392,7 @@ _CLK_co = TypeVar(
     covariant=True,
 )
 _DRK_co = TypeVar(
-    "_DRK_co",
-    bound=ClassPreSubclassLevel[ThirdSubclassPreLevel, None]
-    | ClassSubclassLevel[ThirdSubclassPostLevel, AnySubclass],
-    covariant=True,
+    "_DRK_co", bound=DruidInfo[AnyDruidLevel] | None, covariant=True
 )
 _PAK_co = TypeVar(
     "_PAK_co",
@@ -398,6 +446,9 @@ __all__ = [
     "SorcererSubclassLevel",
     "ClassPreSubclassLevel",
     "ClassSubclassLevel",
+    "DruidPreSubclassLevel",
+    "DruidSubclassLevel",
+    "DruidInfo",
     "_RK",
     "_StK",
     "_HeK",
@@ -444,6 +495,7 @@ __all__ = [
     "_CDK_co",
     "WizardSubclass",
     "SorcererSubclass",
+    "DruidSubclass",
     "MaybeRace",
     "MaybeStats",
     "MaybeHealth",
@@ -454,6 +506,9 @@ __all__ = [
     "AnyNonZeroWizardLevel",
     "AnySorcererLevel",
     "AnyNonZeroSorcererLevel",
+    "AnyDruidLevel",
+    "AnyNonZeroDruidLevel",
+    "AnyDruidInfo",
     "AnyClassLevel",
     "MaybeCharacterData",
 ]

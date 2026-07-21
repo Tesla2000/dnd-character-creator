@@ -1,5 +1,6 @@
 import pytest
 
+from dnd.character._fight_resource import ResourceName
 from dnd.character.ac_modifier import BarbarianUnarmoredDefenseAcModifier
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
@@ -295,3 +296,22 @@ def test_barbarian_level3_subclass_apply(block: BuildingBlock) -> None:
 def test_barbarian_subclass_feature_level_apply(block: BuildingBlock) -> None:
     result = block.apply(_BARB_BP)
     assert result is not None
+
+
+@pytest.mark.unit
+def test_barbarian_rage_uses_by_level() -> None:
+    l1 = BarbarianLevel1(health_increase=_BARB_HEALTH).apply(_INPUT_BP)
+    l3 = BarbarianLevel3Berserker(health_increase=_BARB_HEALTH).apply(_BARB_L2_BP)
+    l6 = BarbarianLevel6Berserker(health_increase=_BARB_HEALTH).apply(_BARB_BP)
+    l12 = BarbarianLevel12(health_increase=_BARB_HEALTH).apply(_BARB_BP)
+    l17 = BarbarianLevel17(health_increase=_BARB_HEALTH).apply(_BARB_BP)
+
+    for result, expected_uses in (
+        (l1, 2),
+        (l3, 3),
+        (l6, 4),
+        (l12, 5),
+        (l17, 6),
+    ):
+        rage = next(r for r in result.resource_max_uses if r.name == ResourceName.RAGE)
+        assert rage.max_uses == expected_uses

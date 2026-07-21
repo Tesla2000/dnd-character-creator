@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict, NonNegativeInt, PositiveInt
 
-from dnd.character.actions._fight_resource import ResourceName
+from dnd.character._fight_resource import ResourceName
 
 __all__ = ["ResourceName", "_FightResource"]
 

@@ -1,6 +1,11 @@
 from typing import Generic, NamedTuple, assert_never
 
-from dnd._combat_event import OpportunityAttackEvent, TurnStartEvent
+from dnd._combat_event import (
+    ActionTakenEvent,
+    OpportunityAttackEvent,
+    TurnEndEvent,
+    TurnStartEvent,
+)
 from dnd.character._ability_name import AbilityName
 from dnd.character.actions.combat import AnyCombatAction
 from dnd.character.actions.combat.attack_with_axe import AttackWithAxe
@@ -8,7 +13,7 @@ from dnd.character.actions.combat.attack_with_battleaxe import AttackWithBattlea
 from dnd.character.actions.combat.attack_with_greataxe import AttackWithGreataxe
 from dnd.character.actions.combat.attack_with_handaxe import AttackWithHandaxe
 from dnd.character.actions.combat.move import Move
-from dnd.character.actions.get_actions import get_actions
+from dnd.character.actions.get_actions import ActionResolver
 from dnd.fight._combatant_slot import SlotT
 from dnd.fight._team_id import TeamId
 from dnd.fight.battlemap import Battlemap
@@ -20,6 +25,18 @@ class SimResult(NamedTuple):
     winner: TeamId | None
     log: list[str]
     rounds: int
+
+
+class RoundCapExceededError(Exception):
+    pass
+
+
+class ActionCapExceededError(Exception):
+    pass
+
+
+_MAX_ROUNDS = 500
+_MAX_ACTIONS_PER_TURN = 100
 
 
 class Simulator(Generic[SlotT]):
@@ -55,9 +72,6 @@ class Simulator(Generic[SlotT]):
                 return self._strategy_b
             case _ as never:
                 assert_never(never)
-
-    def _slot_from_int(self, value: int, battlemap: Battlemap[SlotT]) -> SlotT:
-        return next(s for s in battlemap.all_slots() if int(s) == value)
 
     def _get_oa_options(
         self,
@@ -102,25 +116,26 @@ class Simulator(Generic[SlotT]):
         battlemap: Battlemap[SlotT],
         log_before: int,
         log: list[str],
-    ) -> tuple[Battlemap[SlotT], bool]:
-        any_oa = False
+    ) -> Battlemap[SlotT]:
         new_events = battlemap.event_log[log_before:]
         for event in new_events:
             match event:
                 case OpportunityAttackEvent() as oa_event:
-                    attacker_slot = self._slot_from_int(
-                        oa_event.attacker_slot, battlemap
-                    )
-                    target_slot = self._slot_from_int(oa_event.target_slot, battlemap)
+                    attacker_slot = oa_event.attacker_slot
+                    target_slot = oa_event.target_slot
                     match battlemap.get_combatant(attacker_slot):
                         case FightCharacter() as attacker if attacker.has_reaction:
                             oa_groups = self._get_oa_options(
                                 attacker_slot, attacker, target_slot, battlemap
                             )
                             if oa_groups:
-                                any_oa = True
+                                oa_candidates = tuple(
+                                    candidate
+                                    for group in oa_groups
+                                    for candidate in group
+                                )
                                 oa_action = self._strategy_for(attacker.team_id).choose(
-                                    oa_groups
+                                    oa_candidates, battlemap, attacker_slot
                                 )
                                 battlemap = oa_action.perform(battlemap)
                                 log.append(
@@ -132,17 +147,22 @@ class Simulator(Generic[SlotT]):
                             pass
                 case _:
                     pass
-        return battlemap, any_oa
+        return battlemap
 
-    def run(self) -> SimResult:
+    def run(self) -> SimResult | RoundCapExceededError | ActionCapExceededError:
         battlemap = self._battlemap
         log: list[str] = []
         round_number = 0
 
         while True:
             round_number += 1
+            if round_number > _MAX_ROUNDS:
+                return RoundCapExceededError(
+                    f"Exceeded {_MAX_ROUNDS} rounds without a natural end -- "
+                    "this indicates a bug, not a legitimate long fight."
+                )
             log.append(f"--- Round {round_number} ---")
-            any_action_this_round = False
+            round_start_log_len = len(battlemap.event_log)
 
             for slot in self._turn_order:
                 match battlemap.get_combatant(slot):
@@ -157,63 +177,101 @@ class Simulator(Generic[SlotT]):
                     case FightCharacter() as fighter:
                         pass
                     case _:
+                        battlemap = battlemap.emit(TurnEndEvent(actor_slot=slot))
                         continue
 
                 log_before = len(battlemap.event_log)
                 move_options = Move.create(slot, fighter, battlemap)
                 if move_options:
-                    any_action_this_round = True
                     move_action = self._strategy_for(fighter.team_id).choose(
-                        (move_options,)
+                        move_options, battlemap, slot
                     )
                     battlemap = move_action.perform(battlemap)
 
-                battlemap, had_oa = self._process_oa_events(battlemap, log_before, log)
-                if had_oa:
-                    any_action_this_round = True
+                battlemap = self._process_oa_events(battlemap, log_before, log)
 
                 match battlemap.get_combatant(slot):
                     case FightCharacter() as fighter:
                         pass
                     case _:
+                        battlemap = battlemap.emit(TurnEndEvent(actor_slot=slot))
                         continue
 
-                action_groups = get_actions(slot, fighter, battlemap)
-                if not action_groups:
+                took_action = False
+                actions_this_turn = 0
+                while True:
+                    action_groups = ActionResolver.get_actions(
+                        slot, fighter, battlemap
+                    )
+                    if not action_groups:
+                        break
+                    took_action = True
+                    actions_this_turn += 1
+                    if actions_this_turn > _MAX_ACTIONS_PER_TURN:
+                        return ActionCapExceededError(
+                            f"{fighter.name} exceeded {_MAX_ACTIONS_PER_TURN} actions"
+                            " in a single turn -- this indicates a bug, not a"
+                            " legitimate turn."
+                        )
+
+                    action_candidates = tuple(
+                        candidate
+                        for group in action_groups
+                        for candidate in group
+                    )
+                    action = self._strategy_for(fighter.team_id).choose(
+                        action_candidates, battlemap, slot
+                    )
+                    battlemap = action.perform(battlemap)
+                    battlemap = battlemap.emit(
+                        ActionTakenEvent(actor_slot=slot, action_name=action.name)
+                    )
+
+                    hp_parts: list[str] = []
+                    for s in battlemap.all_slots():
+                        c = battlemap.get_combatant(s)
+                        if isinstance(c, DeadFightCharacter):
+                            hp_parts.append(f"{c.name}=DEAD")
+                        else:
+                            hp_parts.append(
+                                f"{c.name}={c.current_health}/{c.max_health}"
+                            )
+
+                    log.append(
+                        f"  {fighter.name} (team {fighter.team_id.name})"
+                        f" uses {action.name} | {', '.join(hp_parts)}"
+                    )
+
+                    for team in TeamId:
+                        if self._is_eliminated(team, battlemap):
+                            match team:
+                                case TeamId.A:
+                                    winner = TeamId.B
+                                case TeamId.B:
+                                    winner = TeamId.A
+                                case _ as never:
+                                    assert_never(never)
+                            log.append(f"Team {winner.name} wins!")
+                            return SimResult(
+                                winner=winner, log=log, rounds=round_number
+                            )
+
+                    if action.name == AbilityName.PASS:
+                        break
+
+                    match battlemap.get_combatant(slot):
+                        case FightCharacter() as fighter:
+                            pass
+                        case _:
+                            break
+
+                if not took_action:
                     log.append(
                         f"  {fighter.name} (team {fighter.team_id.name}): no actions"
                     )
-                    continue
 
-                any_action_this_round = True
-                action = self._strategy_for(fighter.team_id).choose(action_groups)
-                battlemap = action.perform(battlemap)
+                battlemap = battlemap.emit(TurnEndEvent(actor_slot=slot))
 
-                hp_parts: list[str] = []
-                for s in battlemap.all_slots():
-                    c = battlemap.get_combatant(s)
-                    if isinstance(c, DeadFightCharacter):
-                        hp_parts.append(f"{c.name}=DEAD")
-                    else:
-                        hp_parts.append(f"{c.name}={c.current_health}/{c.max_health}")
-
-                log.append(
-                    f"  {fighter.name} (team {fighter.team_id.name})"
-                    f" uses {action.name} | {', '.join(hp_parts)}"
-                )
-
-                for team in TeamId:
-                    if self._is_eliminated(team, battlemap):
-                        match team:
-                            case TeamId.A:
-                                winner = TeamId.B
-                            case TeamId.B:
-                                winner = TeamId.A
-                            case _ as never:
-                                assert_never(never)
-                        log.append(f"Team {winner.name} wins!")
-                        return SimResult(winner=winner, log=log, rounds=round_number)
-
-            if not any_action_this_round:
+            if not battlemap.has_progress_since(round_start_log_len):
                 log.append("Stagnation detected -- no actions possible this round.")
                 return SimResult(winner=None, log=log, rounds=round_number)

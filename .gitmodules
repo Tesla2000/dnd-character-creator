@@ -1,0 +1,8 @@
+[submodule ".devcontainer"]
+	path = .devcontainer
+	url = https://github.com/Tesla2000/devcontainer
+	branch = dnd-character-creator
+[submodule ".claude"]
+	path = .claude
+	url = git@github.com:Tesla2000/ai-knowledge.git
+	branch = main

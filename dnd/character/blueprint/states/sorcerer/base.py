@@ -8,10 +8,12 @@ from pydantic import Field
 from pydantic import PositiveInt
 
 from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import AnyMetamagicChoices
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyStatChoices
 from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.sentinels import MaybeCharacterData
 from dnd.character.blueprint.sentinels import _ARK_co
 from dnd.character.blueprint.sentinels import _BAK_co
@@ -101,7 +103,7 @@ type AnySorcererBlueprint = SorcererBlueprint[
     AnyClassLevel,
     AnyClassLevel,
     AnyClassLevel,
-    AnyClassLevel,
+    DruidInfo[AnyDruidLevel] | None,
     AnyClassLevel,
     AnyClassLevel,
     AnyClassLevel,

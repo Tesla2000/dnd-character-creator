@@ -6,6 +6,7 @@ from pydantic import ConfigDict
 from pydantic import NonNegativeInt
 
 from dnd.character.spells.max_spell_levels import FULL_CASTER_SPELL_SLOTS
+from dnd.character.spells.max_spell_levels import HALF_CASTER_SPELL_SLOTS
 from dnd.character.spells.max_spell_levels import SpellSlots
 
 
@@ -21,5 +22,13 @@ class CasterInfo(BaseModel):
             update={
                 "caster_level": new_level,
                 "spell_slots": FULL_CASTER_SPELL_SLOTS[new_level - 1],
+            }
+        )
+
+    def increase_half_caster(self, new_level: NonNegativeInt) -> Self:
+        return self.model_copy(
+            update={
+                "caster_level": new_level,
+                "spell_slots": HALF_CASTER_SPELL_SLOTS[new_level - 1],
             }
         )

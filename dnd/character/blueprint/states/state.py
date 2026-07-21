@@ -1,10 +1,13 @@
 from typing import ClassVar
 from typing import Generic
 from typing import Literal
+from typing import Self
 from typing import TypeAlias
 from typing import TypeVar
 from typing import cast
 
+from dnd.character._fight_resource import ResourceAllotment
+from dnd.character._fight_resource import ResourceName
 from dnd.character.ac_modifier import AnyAcModifier
 from dnd.character.spell_attack_bonus_modifier import AnySpellAttackBonusModifier
 from dnd.character.spell_save_dc_modifier import AnySpellSaveDcModifier
@@ -31,7 +34,9 @@ from dnd.character.class_levels import ClassLevels
 from pydantic import Field
 from pydantic import NonNegativeInt, BaseModel, ConfigDict
 from pydantic import PositiveInt
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import ClassPreSubclassLevel
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.sentinels import FirstSubclassPreLevel
 from dnd.character.blueprint.sentinels import SorcererPreSubclassLevel
 from dnd.character.blueprint.sentinels import ThirdSubclassPreLevel
@@ -63,6 +68,7 @@ from dnd.character.blueprint.sentinels import MaybeRace
 from dnd.character.blueprint.sentinels import MaybeStats
 from dnd.character.blueprint.states._caster_info import CasterInfo
 from dnd.character.blueprint.states.wizard._info import WizardInfo
+from dnd.choices.abilities.fighting_style import FightingStyle
 
 type Equipment = WeaponName | ArmorName | str
 
@@ -161,13 +167,29 @@ class Blueprint(
     saving_throw_proficiencies: tuple[Statistic, ...] = ()
     other_active_abilities: tuple[str, ...] = ()
     actions: tuple[AbilityName, ...] = Field(default=())
+    resource_max_uses: tuple[ResourceAllotment, ...] = Field(default=())
     n_stat_choices: _StCK_co = Field(default=cast(_StCK_co, 0))
     n_skill_choices: _SkCK_co = Field(default=cast(_SkCK_co, 0))
     skills_to_choose_from: frozenset[Skill] = Field(default_factory=frozenset)
+    fighting_style: FightingStyle | None = Field(default=None)
+    n_fighting_style_choices: NonNegativeInt = Field(default=0)
+    fighting_styles_to_choose_from: frozenset[FightingStyle] = Field(
+        default_factory=frozenset
+    )
     equipment_choices: tuple[tuple[Equipment, ...], ...] = ()
     character_data: _CDK_co = Field(default=cast(_CDK_co, None))
     wizard: _WIK_co = Field(default=cast(_WIK_co, None))
     caster: _CK_co = Field(default=cast(_CK_co, None))
+    druid: _DRK_co = Field(default=cast(_DRK_co, None))
+
+    def with_resource_max_uses(self, name: ResourceName, max_uses: int) -> Self:
+        kept = tuple(r for r in self.resource_max_uses if r.name != name)
+        return self.model_copy(
+            update={
+                "resource_max_uses": kept
+                + (ResourceAllotment(name=name, max_uses=max_uses),)
+            }
+        )
 
 
 _SZ = Literal[FirstSubclassPreLevel.ZEROTH]
@@ -186,7 +208,7 @@ EmptyBlueprint: TypeAlias = Blueprint[
     ClassPreSubclassLevel[_TZ, None],
     ClassPreSubclassLevel[_TZ, None],
     ClassPreSubclassLevel[_TZ, None],
-    ClassPreSubclassLevel[_TZ, None],
+    None,
     ClassPreSubclassLevel[_TZ, None],
     ClassPreSubclassLevel[_TZ, None],
     ClassPreSubclassLevel[_TZ, None],
@@ -208,7 +230,7 @@ type AnyBluprint = Blueprint[
     AnyClassLevel,
     AnyClassLevel,
     AnyClassLevel,
-    AnyClassLevel,
+    DruidInfo[AnyDruidLevel] | None,
     AnyClassLevel,
     AnyClassLevel,
     AnyClassLevel,

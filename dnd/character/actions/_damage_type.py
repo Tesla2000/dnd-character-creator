@@ -16,3 +16,6 @@ class DamageType(StrEnum):
     PSYCHIC = auto()
     FORCE = auto()
     ELEMENTAL = auto()
+    MAGICAL_BLUDGEONING = auto()
+    MAGICAL_PIERCING = auto()
+    MAGICAL_SLASHING = auto()

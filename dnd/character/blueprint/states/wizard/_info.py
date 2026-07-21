@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
+from dnd.character.blueprint.sentinels import AnyWizardLevel
 from dnd.character.blueprint.sentinels import _WZK_co
 from dnd.character.spells.spell_slots import Spell
 
@@ -22,3 +23,10 @@ class WizardLevel18Info(WizardInfo[_WZK_co], Generic[_WZK_co]):
 class WizardLevel20Info(WizardLevel18Info[_WZK_co], Generic[_WZK_co]):
     signature_spells: tuple[Spell, ...] = Field(default=())
     n_signature_spell_choices: int = 0
+
+
+type AnyWizardInfo = (
+    WizardInfo[AnyWizardLevel]
+    | WizardLevel18Info[AnyWizardLevel]
+    | WizardLevel20Info[AnyWizardLevel]
+)

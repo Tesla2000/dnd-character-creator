@@ -5,7 +5,7 @@ from random import randint
 from typing import TYPE_CHECKING, ClassVar, Generic, Literal, Self
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, PositiveInt
 from uuid_string import UUIDString
 
 from dnd._combat_event import (
@@ -20,8 +20,12 @@ from dnd.character.actions.advantage_modifier import (
     DisadvantageModifier,
     GrantsAdvantageModifier,
 )
+from dnd.character.actions._damage_type import DamageType
 from dnd.character.actions.attack_bonus_modifier import AttackBonusModifier
+from dnd.character.actions.damage_resistance_modifier import DamageResistanceModifier
+from dnd.choices.abilities.fighting_style import FightingStyle
 from dnd.choices.equipment_creation.weapons import HitDieSize, WeaponName
+from dnd.choices.stats_creation.statistic import Statistic
 from dnd.fight._combatant_slot import SlotT
 from dnd.fight.fight_character import FightCharacter
 
@@ -34,6 +38,9 @@ class _MeleeAttackExecutor(BaseModel, Generic[SlotT]):
     actor_slot: SlotT
     target_slot: SlotT
     die: HitDieSize
+    damage_type: DamageType
+    n_dice: PositiveInt = 1
+    ability_modifier: int = 0
     is_oa: bool = False
 
     def attack(self, bm: Battlemap[SlotT]) -> Battlemap[SlotT]:
@@ -120,7 +127,10 @@ class _MeleeAttackExecutor(BaseModel, Generic[SlotT]):
                 return bm
 
         if roll + total_bonus >= target.ac:
-            damage = randint(1, int(self.die))
+            damage = (
+                sum(randint(1, int(self.die)) for _ in range(self.n_dice))
+                + self.ability_modifier
+            )
             match bm.get_combatant(self.actor_slot):
                 case FightCharacter() as fighter:
                     pass
@@ -128,9 +138,19 @@ class _MeleeAttackExecutor(BaseModel, Generic[SlotT]):
                     return bm
             if is_crit:
                 damage += sum(
-                    randint(1, int(self.die))
+                    randint(1, int(self.die)) + self.ability_modifier
                     for _ in range(fighter.brutal_critical_dice)
                 )
+
+            resistances = target.damage_resistance | frozenset().union(
+                *(
+                    m.get_resistances()
+                    for m in target.modifiers
+                    if isinstance(m, DamageResistanceModifier)
+                )
+            )
+            if self.damage_type in resistances:
+                damage //= 2
 
             bm = bm.emit(
                 MeleeDamageEvent(
@@ -175,6 +195,14 @@ class _MeleeAttack(Action[SlotT], Generic[SlotT]):
     def _two_handed(cls) -> bool: ...
 
     @classmethod
+    @abstractmethod
+    def _stat(cls) -> Statistic: ...
+
+    @classmethod
+    @abstractmethod
+    def _damage_type(cls) -> DamageType: ...
+
+    @classmethod
     def create(
         cls, actor_slot: SlotT, fighter: FightCharacter, battlemap: Battlemap[SlotT]
     ) -> tuple[Self, ...]:
@@ -190,13 +218,22 @@ class _MeleeAttack(Action[SlotT], Generic[SlotT]):
         else:
             if fighter.main_hand != weapon and fighter.off_hand != weapon:
                 return ()
-        fx, fy = fighter.position
+        fx, fy = fighter.position.x, fighter.position.y
         die = cls._damage_die()
+        damage_type = cls._damage_type()
+        ability_modifier = fighter.character.stats.get_modifier(cls._stat())
+        other_hand = fighter.off_hand if fighter.main_hand == weapon else fighter.main_hand
+        if (
+            fighter.character.fighting_style is FightingStyle.DUELING
+            and not cls._two_handed()
+            and other_hand in (None, WeaponName.SHIELD)
+        ):
+            ability_modifier += 2
         results: list[Self] = []
         for target_slot in battlemap.all_slots():
             match battlemap.get_combatant(target_slot):
                 case FightCharacter() as target if target.position != fighter.position:
-                    tx, ty = target.position
+                    tx, ty = target.position.x, target.position.y
                     if max(abs(tx - fx), abs(ty - fy)) <= 1:
                         results.append(
                             cls(
@@ -206,6 +243,8 @@ class _MeleeAttack(Action[SlotT], Generic[SlotT]):
                                     actor_slot=actor_slot,
                                     target_slot=target_slot,
                                     die=die,
+                                    damage_type=damage_type,
+                                    ability_modifier=ability_modifier,
                                 ),
                             )
                         )
@@ -234,6 +273,7 @@ class _MeleeAttack(Action[SlotT], Generic[SlotT]):
                     actor_slot=actor_slot,
                     target_slot=target_slot,
                     die=die,
+                    damage_type=cls._damage_type(),
                     is_oa=True,
                 ),
             ),

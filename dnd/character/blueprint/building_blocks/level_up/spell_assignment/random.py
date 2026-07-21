@@ -2,6 +2,8 @@ import random
 from typing import Literal
 
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base import (
+    DruidSpellAssigner,
+    RangerSpellAssigner,
     SorcererSpellAssigner,
     WizardSpellAssigner,
 )
@@ -34,6 +36,68 @@ class WizardRandomSpellAssigner(WizardSpellAssigner):
 
     type: Literal[BuildingBlockType.WIZARD_RANDOM_SPELL_ASSIGNER] = (
         BuildingBlockType.WIZARD_RANDOM_SPELL_ASSIGNER
+    )
+
+    model_config = ConfigDict(frozen=True)
+
+    seed: int | None = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
+
+    def select_spells(
+        self,
+        spell_level: SpellLevel,
+        count: int,
+        available_spells: list[Spell],
+        _state: _WideBlueprint,
+    ) -> tuple[Spell, ...]:
+        return _random_select(self.seed, count, available_spells)
+
+
+class DruidRandomSpellAssigner(DruidSpellAssigner):
+    """Randomly selects druid spells from the druid spell list.
+
+    Provides deterministic randomness when seed is set, useful for
+    reproducible character generation.
+
+    Example:
+        >>> assigner = DruidRandomSpellAssigner(seed=42)
+    """
+
+    type: Literal[BuildingBlockType.DRUID_RANDOM_SPELL_ASSIGNER] = (
+        BuildingBlockType.DRUID_RANDOM_SPELL_ASSIGNER
+    )
+
+    model_config = ConfigDict(frozen=True)
+
+    seed: int | None = Field(
+        default=None,
+        description="Optional seed for reproducible random selection",
+    )
+
+    def select_spells(
+        self,
+        spell_level: SpellLevel,
+        count: int,
+        available_spells: list[Spell],
+        _state: _WideBlueprint,
+    ) -> tuple[Spell, ...]:
+        return _random_select(self.seed, count, available_spells)
+
+
+class RangerRandomSpellAssigner(RangerSpellAssigner):
+    """Randomly selects ranger spells from the ranger spell list.
+
+    Provides deterministic randomness when seed is set, useful for
+    reproducible character generation.
+
+    Example:
+        >>> assigner = RangerRandomSpellAssigner(seed=42)
+    """
+
+    type: Literal[BuildingBlockType.RANGER_RANDOM_SPELL_ASSIGNER] = (
+        BuildingBlockType.RANGER_RANDOM_SPELL_ASSIGNER
     )
 
     model_config = ConfigDict(frozen=True)

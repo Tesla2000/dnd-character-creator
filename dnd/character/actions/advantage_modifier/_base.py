@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from enum import IntEnum
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict
@@ -21,9 +22,9 @@ class _AdvantageModifier(BaseModel, ABC):
         _defender: FightCharacter,
     ) -> bool: ...
 
-    def on_event(
-        self, event: AnyCombatEvent
-    ) -> tuple[Self | None, tuple[AnyCombatEvent, ...]]:
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[Self | None, tuple[AnyCombatEvent[T], ...]]:
         return self, ()
 
 
@@ -39,9 +40,9 @@ class _GrantsAdvantageModifier(BaseModel, ABC):
         _defender: FightCharacter,
     ) -> bool: ...
 
-    def on_event(
-        self, event: AnyCombatEvent
-    ) -> tuple[Self, tuple[AnyCombatEvent, ...]]:
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[Self, tuple[AnyCombatEvent[T], ...]]:
         return self, ()
 
 
@@ -55,7 +56,7 @@ class _DisadvantageModifier(BaseModel, ABC):
         _defender: FightCharacter,
     ) -> bool: ...
 
-    def on_event(
-        self, event: AnyCombatEvent
-    ) -> tuple[Self | None, tuple[AnyCombatEvent, ...]]:
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[Self | None, tuple[AnyCombatEvent[T], ...]]:
         return self, ()

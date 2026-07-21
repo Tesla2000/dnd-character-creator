@@ -1,8 +1,11 @@
-from enum import StrEnum, auto
+from enum import IntEnum, StrEnum, auto
 from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 from uuid_string import UUIDString
+
+from dnd._position import Position
+from dnd.character._ability_name import AbilityName
 
 
 class CombatEventType(StrEnum):
@@ -15,6 +18,8 @@ class CombatEventType(StrEnum):
     CREATURE_ATTACKED = auto()
     MELEE_DAMAGE = auto()
     OPPORTUNITY_ATTACK = auto()
+    MOVEMENT = auto()
+    ACTION_TAKEN = auto()
 
 
 class RageEndsEvent(BaseModel):
@@ -29,10 +34,10 @@ class TurnStartEvent(BaseModel):
     target_id: UUIDString
 
 
-class TurnEndEvent(BaseModel):
+class TurnEndEvent[SlotT: IntEnum](BaseModel):
     model_config = ConfigDict(frozen=True)
     type: Literal[CombatEventType.TURN_END] = CombatEventType.TURN_END
-    target_id: UUIDString
+    actor_slot: SlotT
 
 
 class RoundStartEvent(BaseModel):
@@ -74,36 +79,54 @@ class MeleeDamageEvent(BaseModel):
     attack_id: UUIDString
 
 
-class OpportunityAttackEvent(BaseModel):
+class OpportunityAttackEvent[SlotT: IntEnum](BaseModel):
     model_config = ConfigDict(frozen=True)
     type: Literal[CombatEventType.OPPORTUNITY_ATTACK] = (
         CombatEventType.OPPORTUNITY_ATTACK
     )
-    attacker_slot: int
-    target_slot: int
+    attacker_slot: SlotT
+    target_slot: SlotT
 
 
-AnyCombatEvent = Annotated[
+class MovementEvent[SlotT: IntEnum](BaseModel):
+    model_config = ConfigDict(frozen=True)
+    type: Literal[CombatEventType.MOVEMENT] = CombatEventType.MOVEMENT
+    mover_slot: SlotT
+    to: Position
+
+
+class ActionTakenEvent[SlotT: IntEnum](BaseModel):
+    model_config = ConfigDict(frozen=True)
+    type: Literal[CombatEventType.ACTION_TAKEN] = CombatEventType.ACTION_TAKEN
+    actor_slot: SlotT
+    action_name: AbilityName
+
+
+type AnyCombatEvent[SlotT: IntEnum] = Annotated[
     Union[
         RageEndsEvent,
         TurnStartEvent,
-        TurnEndEvent,
+        TurnEndEvent[SlotT],
         RoundStartEvent,
         RoundEndEvent,
         CreatureTargetedEvent,
         CreatureAttackedEvent,
         MeleeDamageEvent,
-        OpportunityAttackEvent,
+        OpportunityAttackEvent[SlotT],
+        MovementEvent[SlotT],
+        ActionTakenEvent[SlotT],
     ],
     Field(discriminator="type"),
 ]
 
 __all__ = [
+    "ActionTakenEvent",
     "AnyCombatEvent",
     "CombatEventType",
     "CreatureAttackedEvent",
     "CreatureTargetedEvent",
     "MeleeDamageEvent",
+    "MovementEvent",
     "OpportunityAttackEvent",
     "RageEndsEvent",
     "RoundEndEvent",

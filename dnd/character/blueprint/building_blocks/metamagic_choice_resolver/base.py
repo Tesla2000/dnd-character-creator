@@ -3,10 +3,12 @@ from abc import abstractmethod
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import AnyMetamagicChoices
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyStatChoices
 from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.sentinels import MaybeCharacterData
 from dnd.character.blueprint.states._caster_info import CasterInfo
 from dnd.character.blueprint.states.sorcerer.base import AnySorcererBlueprint
@@ -36,7 +38,7 @@ class MetamagicChoiceResolver(BuildingBlock, ABC):
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,

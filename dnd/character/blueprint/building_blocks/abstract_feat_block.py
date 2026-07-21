@@ -6,9 +6,11 @@ from abc import abstractmethod
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.sentinels import (
     AnyClassLevel,
+    AnyDruidLevel,
     AnySorcererLevel,
     AnyStatChoices,
     AnyWizardLevel,
+    DruidInfo,
     MaybeCharacterData,
     MaybeHealth,
     MaybeRace,
@@ -35,7 +37,7 @@ class AbstractFeatBlock(BuildingBlock, ABC):
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,

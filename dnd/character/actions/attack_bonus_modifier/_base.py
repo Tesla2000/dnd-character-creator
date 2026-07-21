@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from enum import IntEnum
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict
@@ -21,7 +22,7 @@ class _AttackBonusModifier(BaseModel, ABC):
         _defender: FightCharacter,
     ) -> int: ...
 
-    def on_event(
-        self, event: AnyCombatEvent
-    ) -> tuple[Self | None, tuple[AnyCombatEvent, ...]]:
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[Self | None, tuple[AnyCombatEvent[T], ...]]:
         return self, ()

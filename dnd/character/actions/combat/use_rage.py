@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Generic, Literal
 
 from dnd.character._ability_name import AbilityName
+from dnd.character._fight_resource import ResourceName
 from dnd.character.actions._any_modifier import AnyModifier
 from dnd.character.actions._base_action import BonusAction
-from dnd.character.actions._fight_resource import ResourceName
 from dnd.character.actions.attack_bonus_modifier import RageAttackBonusModifier
 from dnd.character.actions.conditional_immunity_modifier import (
     MindlessRageConditionalImmunityModifier,

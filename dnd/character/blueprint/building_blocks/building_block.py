@@ -2,9 +2,11 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 
 from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyStatChoices
 from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.sentinels import MaybeCharacterData
 from dnd.character.blueprint.sentinels import MaybeHealth
 from dnd.character.blueprint.sentinels import MaybeRace
@@ -26,7 +28,7 @@ _WideBlueprint = Blueprint[
     AnyClassLevel,
     AnyClassLevel,
     AnyClassLevel,
-    AnyClassLevel,
+    DruidInfo[AnyDruidLevel] | None,
     AnyClassLevel,
     AnyClassLevel,
     AnyClassLevel,

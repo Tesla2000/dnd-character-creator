@@ -10,12 +10,15 @@ from dnd.character.blueprint.building_blocks.building_block import (
 )
 from dnd.character.blueprint.sentinels import (
     AnyClassLevel,
+    AnyDruidLevel,
     AnyMetamagicChoices,
+    AnyNonZeroDruidLevel,
     AnyNonZeroSorcererLevel,
     AnyNonZeroWizardLevel,
     AnySorcererLevel,
     AnyStatChoices,
     AnyWizardLevel,
+    DruidInfo,
     MaybeCharacterData,
 )
 from dnd.character.blueprint.states._caster_info import CasterInfo
@@ -63,6 +66,14 @@ def _wizard_query(spell_level: SpellLevel) -> ClassSpellLevel:
 
 def _sorcerer_query(spell_level: SpellLevel) -> ClassSpellLevel:
     return (Class.SORCERER, spell_level)
+
+
+def _druid_query(spell_level: SpellLevel) -> ClassSpellLevel:
+    return (Class.DRUID, spell_level)
+
+
+def _ranger_query(spell_level: SpellLevel) -> ClassSpellLevel:
+    return (Class.RANGER, spell_level)
 
 
 def _apply_spells(
@@ -121,7 +132,7 @@ class WizardSpellAssigner(BuildingBlock, ABC):
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -235,7 +246,7 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,
@@ -306,5 +317,227 @@ class SorcererSpellAssigner(BuildingBlock, ABC):
 
         spells = _apply_spells(
             blueprint.spells, spells_to_learn, _sorcerer_query, _Selector()
+        )
+        return blueprint.model_copy(update={"spells": spells})
+
+
+class DruidSpellAssigner(BuildingBlock, ABC):
+    """Abstract base for druid spell assignment strategies."""
+
+    @abstractmethod
+    def select_spells(
+        self,
+        spell_level: SpellLevel,
+        count: int,
+        available_spells: list[Spell],
+        state: _WideBlueprint,
+    ) -> tuple[Spell, ...]: ...
+
+    def _get_spells_to_learn(
+        self,
+        class_level: int,
+        spell_slots: SpellSlots,
+    ) -> dict[SpellLevel, int]:
+        if class_level == 1:
+            return {0: 2, 1: 2}
+        max_spell_level = spell_slots.max_level()
+        n_cantrips_increase_levels = (4,)
+        return {
+            max_spell_level: 1,
+            0: int(class_level in n_cantrips_increase_levels),
+        }
+
+    def apply[
+        _DZK_: AnyNonZeroDruidLevel,
+        _StCK_: AnyStatChoices,
+        _SkCK_: AnyStatChoices,
+        _WIK_: WizardInfo[AnyWizardLevel] | None,
+        _SOK_: AnySorcererLevel,
+        _FGK_: AnyClassLevel,
+        _BAK_: AnyClassLevel,
+        _ROK_: AnyClassLevel,
+        _CLK_: AnyClassLevel,
+        _PAK_: AnyClassLevel,
+        _RAK_: AnyClassLevel,
+        _MOK_: AnyClassLevel,
+        _BDK_: AnyClassLevel,
+        _WAK_: AnyClassLevel,
+        _ARK_: AnyClassLevel,
+        _CDK_: MaybeCharacterData,
+    ](
+        self,
+        blueprint: Blueprint[
+            Race,
+            Stats,
+            PositiveInt,
+            _StCK_,
+            _SkCK_,
+            _WIK_,
+            CasterInfo,
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            DruidInfo[_DZK_],
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        PositiveInt,
+        _StCK_,
+        _SkCK_,
+        _WIK_,
+        CasterInfo,
+        _SOK_,
+        _FGK_,
+        _BAK_,
+        _ROK_,
+        _CLK_,
+        DruidInfo[_DZK_],
+        _PAK_,
+        _RAK_,
+        _MOK_,
+        _BDK_,
+        _WAK_,
+        _ARK_,
+        _CDK_,
+    ]:
+        spells_to_learn = self._get_spells_to_learn(
+            blueprint.classes.get_level(Class.DRUID),
+            blueprint.caster.spell_slots,
+        )
+        if not spells_to_learn:
+            return blueprint
+
+        assigner = self
+        druid_state = blueprint
+
+        class _Selector:
+            def select(
+                self, spell_level: SpellLevel, count: int, available: list[Spell]
+            ) -> tuple[Spell, ...]:
+                return assigner.select_spells(
+                    spell_level, count, available, druid_state
+                )
+
+        spells = _apply_spells(
+            blueprint.spells, spells_to_learn, _druid_query, _Selector()
+        )
+        return blueprint.model_copy(update={"spells": spells})
+
+
+_RANGER_SPELLS_KNOWN_TO_LEARN: dict[int, dict[SpellLevel, int]] = {
+    2: {1: 2},
+    3: {1: 1},
+    4: {},
+    5: {1: 1},
+}
+
+
+class RangerSpellAssigner(BuildingBlock, ABC):
+    """Abstract base for ranger spell assignment strategies."""
+
+    @abstractmethod
+    def select_spells(
+        self,
+        spell_level: SpellLevel,
+        count: int,
+        available_spells: list[Spell],
+        state: _WideBlueprint,
+    ) -> tuple[Spell, ...]: ...
+
+    def _get_spells_to_learn(self, class_level: int) -> dict[SpellLevel, int]:
+        return _RANGER_SPELLS_KNOWN_TO_LEARN.get(class_level, {})
+
+    def apply[
+        _StCK_: AnyStatChoices,
+        _SkCK_: AnyStatChoices,
+        _WIK_: WizardInfo[AnyWizardLevel] | None,
+        _SOK_: AnySorcererLevel,
+        _FGK_: AnyClassLevel,
+        _BAK_: AnyClassLevel,
+        _ROK_: AnyClassLevel,
+        _CLK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
+        _PAK_: AnyClassLevel,
+        _RAK_: AnyClassLevel,
+        _MOK_: AnyClassLevel,
+        _BDK_: AnyClassLevel,
+        _WAK_: AnyClassLevel,
+        _ARK_: AnyClassLevel,
+        _CDK_: MaybeCharacterData,
+    ](
+        self,
+        blueprint: Blueprint[
+            Race,
+            Stats,
+            PositiveInt,
+            _StCK_,
+            _SkCK_,
+            _WIK_,
+            CasterInfo,
+            _SOK_,
+            _FGK_,
+            _BAK_,
+            _ROK_,
+            _CLK_,
+            _DRK_,
+            _PAK_,
+            _RAK_,
+            _MOK_,
+            _BDK_,
+            _WAK_,
+            _ARK_,
+            _CDK_,
+        ],
+    ) -> Blueprint[
+        Race,
+        Stats,
+        PositiveInt,
+        _StCK_,
+        _SkCK_,
+        _WIK_,
+        CasterInfo,
+        _SOK_,
+        _FGK_,
+        _BAK_,
+        _ROK_,
+        _CLK_,
+        _DRK_,
+        _PAK_,
+        _RAK_,
+        _MOK_,
+        _BDK_,
+        _WAK_,
+        _ARK_,
+        _CDK_,
+    ]:
+        spells_to_learn = self._get_spells_to_learn(
+            blueprint.classes.get_level(Class.RANGER)
+        )
+        if not spells_to_learn:
+            return blueprint
+
+        assigner = self
+        ranger_state = blueprint
+
+        class _Selector:
+            def select(
+                self, spell_level: SpellLevel, count: int, available: list[Spell]
+            ) -> tuple[Spell, ...]:
+                return assigner.select_spells(
+                    spell_level, count, available, ranger_state
+                )
+
+        spells = _apply_spells(
+            blueprint.spells, spells_to_learn, _ranger_query, _Selector()
         )
         return blueprint.model_copy(update={"spells": spells})

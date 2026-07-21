@@ -24,6 +24,8 @@ class DropItem(FreeAction[SlotT], Generic[SlotT]):
         fighter: FightCharacter,
         battlemap: Battlemap[SlotT],
     ) -> tuple[DropItem[SlotT], ...]:
+        if not fighter.has_free_action:
+            return ()
         options: list[DropItem[SlotT]] = []
         if fighter.main_hand is not None:
             options.append(cls(actor_slot=actor_slot, which_hand="main"))
@@ -38,8 +40,10 @@ class DropItem(FreeAction[SlotT], Generic[SlotT]):
             case _:
                 return battlemap
         if fighter.main_hand == fighter.off_hand and fighter.main_hand is not None:
-            updated = fighter.model_copy(update={"main_hand": None, "off_hand": None})
+            updated = fighter.model_copy(
+                update={"main_hand": None, "off_hand": None, "has_free_action": False}
+            )
         else:
             field = "main_hand" if self.which_hand == "main" else "off_hand"
-            updated = fighter.model_copy(update={field: None})
+            updated = fighter.model_copy(update={field: None, "has_free_action": False})
         return battlemap.replace_combatant(self.actor_slot, updated)

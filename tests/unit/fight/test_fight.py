@@ -13,6 +13,10 @@ import pytest
 
 import dnd.character.actions._melee_attack as melee_attack_module
 import dnd.character.actions.combat.cast_fireball as cast_fireball_module
+import dnd.character.actions.combat.cast_ice_storm as cast_ice_storm_module
+import dnd.character.actions.combat.cast_lightning_bolt as cast_lightning_bolt_module
+import dnd.character.actions.combat.cast_magic_missile as cast_magic_missile_module
+import dnd.character.actions.combat.cast_scorching_ray as cast_scorching_ray_module
 import dnd.fight._attack as attack_module
 import dnd.fight._creature as creature_module
 import dnd.fight._saving_throw as saving_throw_module
@@ -45,27 +49,37 @@ from dnd.character.actions.advantage_modifier import (
 from dnd.character.actions.combat import (
     AttackWithAxe,
     CastFireball,
+    CastIceStorm,
+    CastLightningBolt,
+    CastMagicMissile,
+    CastScorchingRay,
     DrawItem,
     DropItem,
     UseRage,
     UseRecklessAttack,
 )
 from dnd.choices.equipment_creation.weapons import WeaponName
+from dnd._position import Position
 from dnd._combat_event import (
     CombatEventType,
     CreatureAttackedEvent,
     CreatureTargetedEvent,
     MeleeDamageEvent,
     RageEndsEvent,
+    TurnEndEvent,
     TurnStartEvent,
 )
-from dnd.character.actions.get_actions import get_actions
+from dnd.character.actions.combat.move import Move
+from dnd.character.actions.get_actions import ActionResolver
+from dnd.fight._team_id import TeamId
+from dnd.fight._terrain_type import TerrainType
 from dnd.fight.battlemap import Battlemap
 from dnd.fight.fight_character import (
     AnyActiveCombatant,
     FightCharacter,
     SpellcasterFightCharacter,
 )
+from dnd.fight.terrain_modifier import IceStormTerrainModifier
 from dnd.character.actions.combat import AttackWithGreataxe
 from scripts.fight import (
     _EncounterEntry,
@@ -398,9 +412,6 @@ class _OneSlot(IntEnum):
 class _OneBattlemap(Battlemap[_OneSlot]):
     combatants: tuple[AnyActiveCombatant]
 
-    def all_slots(self) -> tuple[_OneSlot, ...]:
-        return (_OneSlot.A,)
-
     def get_combatant(self, slot: _OneSlot) -> AnyActiveCombatant:
         match slot:
             case _OneSlot.A:
@@ -419,9 +430,6 @@ class _TwoSlot(IntEnum):
 
 class _TwoBattlemap(Battlemap[_TwoSlot]):
     combatants: tuple[AnyActiveCombatant, AnyActiveCombatant]
-
-    def all_slots(self) -> tuple[_TwoSlot, ...]:
-        return tuple(_TwoSlot)
 
     def get_combatant(self, slot: _TwoSlot) -> AnyActiveCombatant:
         match slot:
@@ -450,9 +458,6 @@ class _ThreeSlot(IntEnum):
 
 class _ThreeBattlemap(Battlemap[_ThreeSlot]):
     combatants: tuple[AnyActiveCombatant, AnyActiveCombatant, AnyActiveCombatant]
-
-    def all_slots(self) -> tuple[_ThreeSlot, ...]:
-        return tuple(_ThreeSlot)
 
     def get_combatant(self, slot: _ThreeSlot) -> AnyActiveCombatant:
         match slot:
@@ -483,6 +488,27 @@ class _ThreeBattlemap(Battlemap[_ThreeSlot]):
                         "combatants": (self.combatants[0], self.combatants[1], updated)
                     }
                 )
+
+
+class _FourSlot(IntEnum):
+    A = 0
+    B = 1
+    C = 2
+    D = 3
+
+
+class _FourBattlemap(Battlemap[_FourSlot]):
+    combatants: tuple[
+        AnyActiveCombatant, AnyActiveCombatant, AnyActiveCombatant, AnyActiveCombatant
+    ]
+
+    def get_combatant(self, slot: _FourSlot) -> AnyActiveCombatant:
+        return self.combatants[slot]
+
+    def replace_combatant(self, slot: _FourSlot, updated: AnyActiveCombatant) -> Self:
+        combatants = list(self.combatants)
+        combatants[slot] = updated
+        return self.model_copy(update={"combatants": tuple(combatants)})
 
 
 def _make_fc(**kwargs: object) -> FightCharacter:
@@ -521,7 +547,7 @@ def _make_battlemap(
 def _make_adjacent_target() -> FightCharacter:
     pc = PresentableCharacter.model_validate(_BASE_PC_DATA)
     return FightCharacter.from_presentable(pc, initiative=5).model_copy(
-        update={"position": (1, 0)}
+        update={"position": Position(x=1, y=0)}
     )
 
 
@@ -541,6 +567,30 @@ class TestFightCharacter:
         assert fc.has_reaction is True
         assert fc.has_free_action is True
 
+    def test_from_presentable_derives_resources_from_character(self) -> None:
+        pc = PresentableCharacter.model_validate(
+            {
+                **_BASE_PC_DATA,
+                "resource_max_uses": [{"name": ResourceName.RAGE, "max_uses": 2}],
+            }
+        )
+        fc = FightCharacter.from_presentable(pc, initiative=14)
+        assert fc.resources == (
+            _FightResource(name=ResourceName.RAGE, max_uses=2, remaining_uses=2),
+        )
+
+    def test_from_presentable_explicit_resources_override_derivation(self) -> None:
+        pc = PresentableCharacter.model_validate(
+            {
+                **_BASE_PC_DATA,
+                "resource_max_uses": [{"name": ResourceName.RAGE, "max_uses": 2}],
+            }
+        )
+        fc = FightCharacter.from_presentable(
+            pc, initiative=14, resources=(_RAGE_RESOURCE,)
+        )
+        assert fc.resources == (_RAGE_RESOURCE,)
+
     def test_get_actions_skips_unknown_names(self) -> None:
         fc = _make_fc(
             character=PresentableCharacter.model_validate(
@@ -548,7 +598,7 @@ class TestFightCharacter:
             )
         )
         bm = _make_battlemap(fc)
-        action_groups = get_actions(_OneSlot.A, fc, bm)
+        action_groups = ActionResolver.get_actions(_OneSlot.A, fc, bm)
         assert not any(isinstance(g[0], UseRage) for g in action_groups)
 
     def test_get_actions_returns_rage_when_resource_available(self) -> None:
@@ -559,7 +609,7 @@ class TestFightCharacter:
             resources=(_RAGE_RESOURCE,),
         )
         bm = _make_battlemap(fc)
-        action_groups = get_actions(_OneSlot.A, fc, bm)
+        action_groups = ActionResolver.get_actions(_OneSlot.A, fc, bm)
         rage_groups = [g for g in action_groups if isinstance(g[0], UseRage)]
         assert len(rage_groups) == 1
         assert len(rage_groups[0]) == 1
@@ -573,7 +623,7 @@ class TestFightCharacter:
             active_features=frozenset({AbilityName.RAGE}),
         )
         bm = _make_battlemap(fc)
-        action_groups = get_actions(_OneSlot.A, fc, bm)
+        action_groups = ActionResolver.get_actions(_OneSlot.A, fc, bm)
         assert not any(isinstance(g[0], UseRage) for g in action_groups)
 
     def test_get_actions_no_rage_when_no_resource(self) -> None:
@@ -583,7 +633,7 @@ class TestFightCharacter:
             ),
         )
         bm = _make_battlemap(fc)
-        action_groups = get_actions(_OneSlot.A, fc, bm)
+        action_groups = ActionResolver.get_actions(_OneSlot.A, fc, bm)
         assert not any(isinstance(g[0], UseRage) for g in action_groups)
 
     def test_get_actions_no_rage_when_no_bonus_action(self) -> None:
@@ -595,7 +645,7 @@ class TestFightCharacter:
             has_bonus_action=False,
         )
         bm = _make_battlemap(fc)
-        action_groups = get_actions(_OneSlot.A, fc, bm)
+        action_groups = ActionResolver.get_actions(_OneSlot.A, fc, bm)
         assert not any(isinstance(g[0], UseRage) for g in action_groups)
 
     def test_get_actions_returns_attack_when_has_action(self) -> None:
@@ -607,7 +657,7 @@ class TestFightCharacter:
         )
         target = _make_adjacent_target()
         bm = _make_battlemap(fc, target)
-        action_groups = get_actions(_TwoSlot.A, fc, bm)
+        action_groups = ActionResolver.get_actions(_TwoSlot.A, fc, bm)
         attack_groups = [g for g in action_groups if isinstance(g[0], AttackWithAxe)]
         assert len(attack_groups) == 1
         assert len(attack_groups[0]) == 1
@@ -627,7 +677,7 @@ class TestFightCharacter:
         )
         target = _make_adjacent_target()
         bm = _make_battlemap(fc, target)
-        action_groups = get_actions(_TwoSlot.A, fc, bm)
+        action_groups = ActionResolver.get_actions(_TwoSlot.A, fc, bm)
         attack_groups = [g for g in action_groups if isinstance(g[0], AttackWithAxe)]
         assert len(attack_groups) == 2
 
@@ -642,7 +692,7 @@ class TestFightCharacter:
         )
         target = _make_adjacent_target()
         bm = _make_battlemap(fc, target)
-        action_groups = get_actions(_TwoSlot.A, fc, bm)
+        action_groups = ActionResolver.get_actions(_TwoSlot.A, fc, bm)
         assert not any(isinstance(g[0], AttackWithAxe) for g in action_groups)
 
 
@@ -769,9 +819,9 @@ class TestUseRecklessAttack:
                 {**_BASE_PC_DATA, "actions": [AbilityName.RECKLESS_ATTACK]}
             ),
             modifiers=(RecklessGrantsAdvantageModifier(),),
-            position=(0, 0),
+            position=Position(x=0, y=0),
         )
-        late_attacker = _make_fc_with_attack(position=(1, 0))
+        late_attacker = _make_fc_with_attack(position=Position(x=1, y=0))
         bm = _make_battlemap(late_attacker, barbarian)
         attacks = AttackWithAxe.create(_TwoSlot.A, late_attacker, bm)
         assert len(attacks) == 1
@@ -907,6 +957,200 @@ class TestBattlemapEmit:
 
 
 @pytest.mark.unit
+class TestBattlemapTerrain:
+    def test_terrain_height_at_defaults_to_zero(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc)
+        assert bm.terrain_height_at(3, 3) == 0
+
+    def test_terrain_height_at_returns_configured_value(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc).model_copy(
+            update={"terrain_height": {(3, 3): 10}}
+        )
+        assert bm.terrain_height_at(3, 3) == 10
+        assert bm.terrain_height_at(0, 0) == 0
+
+    def test_relative_height_at_flat_ground(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc)
+        assert bm.relative_height_at(Position(x=0, y=0)) == 0
+        assert bm.relative_height_at(Position(x=0, y=0, height=5)) == 5
+
+    def test_relative_height_at_accounts_for_terrain_height(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc).model_copy(
+            update={"terrain_height": {(3, 3): 10}}
+        )
+        assert bm.relative_height_at(Position(x=3, y=3, height=10)) == 0
+        assert bm.relative_height_at(Position(x=3, y=3, height=15)) == 5
+        assert bm.relative_height_at(Position(x=3, y=3)) == -10
+
+    def test_terrain_at_normal_by_default(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc)
+        assert bm.terrain_at(Position(x=0, y=0)) == TerrainType.NORMAL
+
+    def test_terrain_at_difficult_where_modifier_covers_cell(self) -> None:
+        fc = _make_fc()
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        bm = _make_battlemap(fc).model_copy(
+            update={"terrain": {Position(x=2, y=2): (modifier,)}}
+        )
+        assert bm.terrain_at(Position(x=2, y=2)) == TerrainType.DIFFICULT
+        assert bm.terrain_at(Position(x=2, y=3)) == TerrainType.NORMAL
+
+    def test_terrain_at_ignores_ground_effect_when_airborne(self) -> None:
+        fc = _make_fc()
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        bm = _make_battlemap(fc).model_copy(
+            update={"terrain": {Position(x=2, y=2): (modifier,)}}
+        )
+        assert bm.terrain_at(Position(x=2, y=2, height=5)) == TerrainType.NORMAL
+
+    def test_emit_decrements_shared_modifier_once_per_event(self) -> None:
+        fc = _make_fc()
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        bm = _make_battlemap(fc).model_copy(
+            update={
+                "terrain": {
+                    Position(x=1, y=1): (modifier,),
+                    Position(x=1, y=2): (modifier,),
+                    Position(x=1, y=3): (modifier,),
+                }
+            }
+        )
+        new_bm = bm.emit(TurnEndEvent(actor_slot=_OneSlot.A))
+        survivors = {pos: mods[0] for pos, mods in new_bm.terrain.items()}
+        assert {m.turn_ends_remaining for m in survivors.values()} == {1}
+        assert len(new_bm.terrain) == 3
+
+    def test_emit_expires_modifier_from_all_cells_simultaneously(self) -> None:
+        fc = _make_fc()
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        bm = _make_battlemap(fc).model_copy(
+            update={
+                "terrain": {
+                    Position(x=1, y=1): (modifier,),
+                    Position(x=1, y=2): (modifier,),
+                }
+            }
+        )
+        bm = bm.emit(TurnEndEvent(actor_slot=_OneSlot.A))
+        bm = bm.emit(TurnEndEvent(actor_slot=_OneSlot.A))
+        assert bm.terrain == {}
+        assert bm.terrain_at(Position(x=1, y=1)) == TerrainType.NORMAL
+        assert bm.terrain_at(Position(x=1, y=2)) == TerrainType.NORMAL
+
+    def test_emit_ignores_turn_end_for_other_slot(self) -> None:
+        fc = _make_fc()
+        modifier = IceStormTerrainModifier(caster_slot=_TwoSlot.A)
+        bm = _make_battlemap(fc, _make_fc()).model_copy(
+            update={"terrain": {Position(x=1, y=1): (modifier,)}}
+        )
+        new_bm = bm.emit(TurnEndEvent(actor_slot=_TwoSlot.B))
+        survivors = new_bm.terrain[Position(x=1, y=1)]
+        assert survivors[0].turn_ends_remaining == 2
+
+
+@pytest.mark.unit
+class TestIceStormTerrainModifierOnEvent:
+    def test_terrain_type_is_difficult(self) -> None:
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        assert modifier.terrain_type() == TerrainType.DIFFICULT
+
+    def test_survives_first_matching_turn_end(self) -> None:
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        updated, emitted = modifier.on_event(TurnEndEvent(actor_slot=_OneSlot.A))
+        assert updated is not None
+        assert updated.turn_ends_remaining == 1
+        assert emitted == ()
+
+    def test_expires_on_second_matching_turn_end(self) -> None:
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        first, _ = modifier.on_event(TurnEndEvent(actor_slot=_OneSlot.A))
+        assert first is not None
+        second, _ = first.on_event(TurnEndEvent(actor_slot=_OneSlot.A))
+        assert second is None
+
+    def test_ignores_unrelated_events(self) -> None:
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        fc = _make_fc()
+        updated, emitted = modifier.on_event(TurnStartEvent(target_id=fc.id))
+        assert updated is not None
+        assert updated.turn_ends_remaining == 2
+        assert emitted == ()
+
+
+@pytest.mark.unit
+class TestMove:
+    def test_create_returns_empty_when_movement_remaining_below_5(self) -> None:
+        fc = _make_fc(movement_remaining=4)
+        bm = _make_battlemap(fc)
+        assert Move.create(_OneSlot.A, fc, bm) == ()
+
+    def test_normal_terrain_cost_matches_chebyshev(self) -> None:
+        fc = _make_fc(movement_remaining=30, position=Position(x=0, y=0))
+        bm = _make_battlemap(fc)
+        moves = Move.create(_OneSlot.A, fc, bm)
+        diagonal = next(m for m in moves if m.to == Position(x=1, y=1))
+        assert diagonal.movement_cost == 5
+        straight = next(m for m in moves if m.to == Position(x=1, y=0))
+        assert straight.movement_cost == 5
+
+    def test_difficult_terrain_doubles_cost_to_enter_square(self) -> None:
+        fc = _make_fc(movement_remaining=30, position=Position(x=0, y=0))
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        bm = _make_battlemap(fc).model_copy(
+            update={"terrain": {Position(x=1, y=0): (modifier,)}}
+        )
+        moves = Move.create(_OneSlot.A, fc, bm)
+        difficult = next(m for m in moves if m.to == Position(x=1, y=0))
+        assert difficult.movement_cost == 10
+
+    def test_path_through_difficult_terrain_costs_more_than_crow_flies(self) -> None:
+        # A same-cost diagonal detour exists around a single difficult square
+        # (8-directional movement, equal diagonal/orthogonal cost), so the
+        # whole x=1 column must be difficult to force the extra cost -- a
+        # partial patch would just be routed around for free.
+        fc = _make_fc(movement_remaining=30, position=Position(x=0, y=0))
+        modifier = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        bm = _make_battlemap(fc).model_copy(
+            update={
+                "terrain": {
+                    Position(x=1, y=-1): (modifier,),
+                    Position(x=1, y=0): (modifier,),
+                    Position(x=1, y=1): (modifier,),
+                }
+            }
+        )
+        moves = Move.create(_OneSlot.A, fc, bm)
+        far = next(m for m in moves if m.to == Position(x=2, y=0))
+        assert far.movement_cost == 15
+
+    def test_occupied_square_blocks_transit_not_just_landing(self) -> None:
+        fc = _make_fc(movement_remaining=10, position=Position(x=0, y=0))
+        wall_top = _make_fc().model_copy(update={"position": Position(x=1, y=-1)})
+        wall_mid = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        wall_bottom = _make_fc().model_copy(update={"position": Position(x=1, y=1)})
+        bm = _FourBattlemap(combatants=(fc, wall_top, wall_mid, wall_bottom))
+        moves = Move.create(_FourSlot.A, fc, bm)
+        assert all(m.to.x <= 1 for m in moves)
+        assert not any(m.to == wall_mid.position for m in moves)
+
+    def test_perform_deducts_movement_cost(self) -> None:
+        fc = _make_fc(movement_remaining=30, position=Position(x=0, y=0))
+        bm = _make_battlemap(fc)
+        moves = Move.create(_OneSlot.A, fc, bm)
+        diagonal = next(m for m in moves if m.to == Position(x=1, y=1))
+        new_bm = diagonal.perform(bm)
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert new_fc.position == Position(x=1, y=1)
+        assert new_fc.movement_remaining == 25
+
+
+@pytest.mark.unit
 class TestAttackWithAxe:
     def test_create_returns_empty_when_no_action(self) -> None:
         fc = _make_fc_with_attack(has_action=False, attacks_remaining=0)
@@ -932,14 +1176,14 @@ class TestAttackWithAxe:
 
     def test_create_returns_empty_when_no_adjacent_target(self) -> None:
         fc = _make_fc_with_attack()
-        far_target = _make_fc().model_copy(update={"position": (5, 5)})
+        far_target = _make_fc().model_copy(update={"position": Position(x=5, y=5)})
         bm = _make_battlemap(fc, far_target)
         assert AttackWithAxe.create(_TwoSlot.A, fc, bm) == ()
 
     def test_create_returns_one_per_adjacent_target(self) -> None:
         fc = _make_fc_with_attack()
-        t1 = _make_fc().model_copy(update={"position": (1, 0)})
-        t2 = _make_fc().model_copy(update={"position": (0, 1)})
+        t1 = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        t2 = _make_fc().model_copy(update={"position": Position(x=0, y=1)})
         bm = _make_battlemap(fc, t1, t2)
         attacks = AttackWithAxe.create(_ThreeSlot.A, fc, bm)
         assert len(attacks) == 2
@@ -1127,7 +1371,7 @@ class TestDropItem:
         new_fc = new_bm.get_combatant(_OneSlot.A)
         assert isinstance(new_fc, FightCharacter)
         assert new_fc.main_hand is None
-        assert new_fc.has_free_action is True
+        assert new_fc.has_free_action is False
 
     def test_perform_clears_both_hands_for_two_handed(self) -> None:
         fc = _make_fc(main_hand=WeaponName.GREATAXE, off_hand=WeaponName.GREATAXE)
@@ -1139,13 +1383,18 @@ class TestDropItem:
         assert new_fc.main_hand is None
         assert new_fc.off_hand is None
 
-    def test_perform_does_not_consume_free_action(self) -> None:
+    def test_perform_consumes_free_action(self) -> None:
         fc = _make_fc(main_hand=WeaponName.BATTLEAXE)
         bm = _make_battlemap(fc)
         new_bm = DropItem.create(_OneSlot.A, fc, bm)[0].perform(bm)
         new_fc = new_bm.get_combatant(_OneSlot.A)
         assert isinstance(new_fc, FightCharacter)
-        assert new_fc.has_free_action is True
+        assert new_fc.has_free_action is False
+
+    def test_create_returns_empty_when_no_free_action(self) -> None:
+        fc = _make_fc(main_hand=WeaponName.BATTLEAXE, has_free_action=False)
+        bm = _make_battlemap(fc)
+        assert DropItem.create(_OneSlot.A, fc, bm) == ()
 
 
 @pytest.mark.unit
@@ -1272,6 +1521,39 @@ _SPELL_SLOTS_NO_L3 = SpellSlots(
     level_8=0,
     level_9=0,
 )
+_SPELL_SLOTS_WITH_L4 = SpellSlots(
+    level_1=4,
+    level_2=3,
+    level_3=2,
+    level_4=1,
+    level_5=0,
+    level_6=0,
+    level_7=0,
+    level_8=0,
+    level_9=0,
+)
+_SPELL_SLOTS_NO_L1 = SpellSlots(
+    level_1=0,
+    level_2=3,
+    level_3=2,
+    level_4=1,
+    level_5=0,
+    level_6=0,
+    level_7=0,
+    level_8=0,
+    level_9=0,
+)
+_SPELL_SLOTS_NO_L2 = SpellSlots(
+    level_1=4,
+    level_2=0,
+    level_3=2,
+    level_4=1,
+    level_5=0,
+    level_6=0,
+    level_7=0,
+    level_8=0,
+    level_9=0,
+)
 
 
 def _make_sfc(**kwargs: object) -> SpellcasterFightCharacter:
@@ -1284,6 +1566,21 @@ def _make_sfc(**kwargs: object) -> SpellcasterFightCharacter:
         max_health=pc.health,
         current_health=pc.health,
         remaining_spell_slots=_SPELL_SLOTS_WITH_L3,
+    ).model_copy(update=kwargs)
+
+
+def _make_sfc_with_actions(
+    actions: list[AbilityName],
+    remaining_spell_slots: SpellSlots = _SPELL_SLOTS_WITH_L4,
+    **kwargs: object,
+) -> SpellcasterFightCharacter:
+    pc = PresentableCharacter.model_validate({**_BASE_PC_DATA, "actions": actions})
+    return SpellcasterFightCharacter(
+        character=pc,
+        initiative=14,
+        max_health=pc.health,
+        current_health=pc.health,
+        remaining_spell_slots=remaining_spell_slots,
     ).model_copy(update=kwargs)
 
 
@@ -1324,20 +1621,20 @@ class TestCastFireball:
 
     def test_create_returns_one_per_enemy(self) -> None:
         sfc = _make_sfc()
-        t1 = _make_fc().model_copy(update={"position": (1, 0)})
-        t2 = _make_fc().model_copy(update={"position": (2, 0)})
+        t1 = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        t2 = _make_fc().model_copy(update={"position": Position(x=2, y=0)})
         bm = _make_battlemap(sfc, t1, t2)
         fireballs = CastFireball.create(_ThreeSlot.A, sfc, bm)
         assert len(fireballs) == 2
         centers = {f.center_position for f in fireballs}
-        assert centers == {(1, 0), (2, 0)}
+        assert centers == {Position(x=1, y=0), Position(x=2, y=0)}
 
     def test_perform_spends_action_and_slot(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.setattr(cast_fireball_module, "randint", lambda *_: 3)
         sfc = _make_sfc()
-        target = _make_fc().model_copy(update={"position": (6, 0)})
+        target = _make_fc().model_copy(update={"position": Position(x=6, y=0)})
         bm = _make_battlemap(sfc, target)
         fireballs = CastFireball.create(_TwoSlot.A, sfc, bm)
         assert len(fireballs) == 1
@@ -1353,7 +1650,11 @@ class TestCastFireball:
         monkeypatch.setattr(cast_fireball_module, "randint", lambda *_: 1)
         sfc = _make_sfc()
         target = _make_fc().model_copy(
-            update={"position": (6, 0), "max_health": 200, "current_health": 200}
+            update={
+                "position": Position(x=6, y=0),
+                "max_health": 200,
+                "current_health": 200,
+            }
         )
         bm = _make_battlemap(sfc, target)
         fireballs = CastFireball.create(_TwoSlot.A, sfc, bm)
@@ -1368,7 +1669,11 @@ class TestCastFireball:
         monkeypatch.setattr(cast_fireball_module, "randint", lambda *_: 20)
         sfc = _make_sfc()
         target = _make_fc().model_copy(
-            update={"position": (6, 0), "max_health": 200, "current_health": 200}
+            update={
+                "position": Position(x=6, y=0),
+                "max_health": 200,
+                "current_health": 200,
+            }
         )
         bm = _make_battlemap(sfc, target)
         fireballs = CastFireball.create(_TwoSlot.A, sfc, bm)
@@ -1382,14 +1687,472 @@ class TestCastFireball:
     ) -> None:
         monkeypatch.setattr(cast_fireball_module, "randint", lambda *_: 1)
         sfc = _make_sfc()
-        close = _make_fc().model_copy(update={"position": (1, 0)})
-        far = _make_fc().model_copy(update={"position": (10, 10)})
+        close = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        far = _make_fc().model_copy(update={"position": Position(x=10, y=10)})
         bm = _make_battlemap(sfc, close, far)
         fireballs = CastFireball.create(_ThreeSlot.A, sfc, bm)
-        close_fireball = next(f for f in fireballs if f.center_position == (1, 0))
+        close_fireball = next(
+            f for f in fireballs if f.center_position == Position(x=1, y=0)
+        )
         new_bm = close_fireball.perform(bm)
         new_far = new_bm.get_combatant(_ThreeSlot.C)
         assert new_far.current_health == far.current_health
+
+    def test_create_prunes_candidate_strictly_dominated_by_friendly_fire(
+        self,
+    ) -> None:
+        sfc = _make_sfc()
+        e1 = _make_fc().model_copy(
+            update={"position": Position(x=4, y=0), "team_id": TeamId.B}
+        )
+        e2 = _make_fc().model_copy(
+            update={"position": Position(x=8, y=0), "team_id": TeamId.B}
+        )
+        ally = _make_fc().model_copy(update={"position": Position(x=0, y=4)})
+        bm = _FourBattlemap(combatants=(sfc, e1, e2, ally))
+        fireballs = CastFireball.create(_FourSlot.A, sfc, bm)
+        centers = {f.center_position for f in fireballs}
+        assert Position(x=4, y=0) not in centers
+        assert Position(x=8, y=0) in centers
+
+    def test_create_keeps_incomparable_candidates_with_fewer_enemies(self) -> None:
+        sfc = _make_sfc()
+        e1 = _make_fc().model_copy(
+            update={"position": Position(x=5, y=0), "team_id": TeamId.B}
+        )
+        e2 = _make_fc().model_copy(
+            update={"position": Position(x=0, y=20), "team_id": TeamId.B}
+        )
+        ally = _make_fc().model_copy(update={"position": Position(x=5, y=3)})
+        bm = _FourBattlemap(combatants=(sfc, e1, e2, ally))
+        fireballs = CastFireball.create(_FourSlot.A, sfc, bm)
+        centers = {f.center_position for f in fireballs}
+        assert Position(x=5, y=0) in centers
+        assert Position(x=0, y=20) in centers
+
+    def test_create_prunes_candidates_dominated_by_a_superset_of_enemies(
+        self,
+    ) -> None:
+        sfc = _make_sfc()
+        ally = _make_fc().model_copy(update={"position": Position(x=0, y=4)})
+        e1 = _make_fc().model_copy(
+            update={"position": Position(x=4, y=0), "team_id": TeamId.B}
+        )
+        e2 = _make_fc().model_copy(
+            update={"position": Position(x=4, y=8), "team_id": TeamId.B}
+        )
+        bm = _FourBattlemap(combatants=(sfc, ally, e1, e2))
+        fireballs = CastFireball.create(_FourSlot.A, sfc, bm)
+        centers = {f.center_position for f in fireballs}
+        assert centers == {Position(x=0, y=4)}
+
+    def test_perform_damages_exactly_the_hit_slots_of_the_surviving_candidate(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_fireball_module, "randint", lambda *_: 1)
+        sfc = _make_sfc()
+        e1 = _make_fc().model_copy(
+            update={
+                "position": Position(x=4, y=0),
+                "team_id": TeamId.B,
+                "max_health": 200,
+                "current_health": 200,
+            }
+        )
+        e2 = _make_fc().model_copy(
+            update={
+                "position": Position(x=8, y=0),
+                "team_id": TeamId.B,
+                "max_health": 200,
+                "current_health": 200,
+            }
+        )
+        ally = _make_fc().model_copy(update={"position": Position(x=0, y=4)})
+        bm = _FourBattlemap(combatants=(sfc, e1, e2, ally))
+        fireballs = CastFireball.create(_FourSlot.A, sfc, bm)
+        survivor = next(
+            f for f in fireballs if f.center_position == Position(x=8, y=0)
+        )
+        predicted = survivor.hit_slots(bm)
+        new_bm = survivor.perform(bm)
+        for slot in _FourSlot:
+            if slot == _FourSlot.A:
+                continue
+            original = bm.get_combatant(slot)
+            updated = new_bm.get_combatant(slot)
+            if slot in predicted:
+                assert updated.current_health < original.current_health
+            else:
+                assert updated.current_health == original.current_health
+
+
+@pytest.mark.unit
+class TestCastMagicMissile:
+    def test_create_returns_empty_for_non_spellcaster(self) -> None:
+        fc = _make_fc_with_attack()
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert CastMagicMissile.create(_TwoSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_no_action(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.MAGIC_MISSILE], has_action=False)
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastMagicMissile.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_level1_slots(self) -> None:
+        sfc = _make_sfc_with_actions(
+            [AbilityName.MAGIC_MISSILE], remaining_spell_slots=_SPELL_SLOTS_NO_L1
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastMagicMissile.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_ability(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.EXTRA_ATTACK])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastMagicMissile.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_one_per_enemy(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.MAGIC_MISSILE])
+        t1 = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        t2 = _make_fc().model_copy(update={"position": Position(x=2, y=0)})
+        bm = _make_battlemap(sfc, t1, t2)
+        missiles = CastMagicMissile.create(_ThreeSlot.A, sfc, bm)
+        assert len(missiles) == 2
+
+    def test_perform_spends_action_and_slot(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.MAGIC_MISSILE])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        missiles = CastMagicMissile.create(_TwoSlot.A, sfc, bm)
+        new_bm = missiles[0].perform(bm)
+        new_sfc = new_bm.get_combatant(_TwoSlot.A)
+        assert isinstance(new_sfc, SpellcasterFightCharacter)
+        assert not new_sfc.has_action
+        assert new_sfc.remaining_spell_slots.level_1 == _SPELL_SLOTS_WITH_L4.level_1 - 1
+
+    def test_perform_deals_fixed_damage(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(cast_magic_missile_module, "randint", lambda *_: 4)
+        sfc = _make_sfc_with_actions([AbilityName.MAGIC_MISSILE])
+        target = _make_adjacent_target().model_copy(
+            update={"max_health": 200, "current_health": 200}
+        )
+        bm = _make_battlemap(sfc, target)
+        missiles = CastMagicMissile.create(_TwoSlot.A, sfc, bm)
+        new_bm = missiles[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        expected_damage = 3 * 4 + 3
+        assert new_target.current_health == target.current_health - expected_damage
+
+
+@pytest.mark.unit
+class TestCastScorchingRay:
+    def test_create_returns_empty_for_non_spellcaster(self) -> None:
+        fc = _make_fc_with_attack()
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert CastScorchingRay.create(_TwoSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_no_action(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.SCORCHING_RAY], has_action=False)
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastScorchingRay.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_level2_slots(self) -> None:
+        sfc = _make_sfc_with_actions(
+            [AbilityName.SCORCHING_RAY], remaining_spell_slots=_SPELL_SLOTS_NO_L2
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastScorchingRay.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_ability(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.EXTRA_ATTACK])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastScorchingRay.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_perform_spends_action_and_slot(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.SCORCHING_RAY])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        rays = CastScorchingRay.create(_TwoSlot.A, sfc, bm)
+        new_bm = rays[0].perform(bm)
+        new_sfc = new_bm.get_combatant(_TwoSlot.A)
+        assert isinstance(new_sfc, SpellcasterFightCharacter)
+        assert not new_sfc.has_action
+        assert new_sfc.remaining_spell_slots.level_2 == _SPELL_SLOTS_WITH_L4.level_2 - 1
+
+    def test_perform_applies_damage_for_each_hit(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_scorching_ray_module, "randint", lambda *_: 20)
+        sfc = _make_sfc_with_actions([AbilityName.SCORCHING_RAY])
+        target = _make_adjacent_target().model_copy(
+            update={"max_health": 200, "current_health": 200}
+        )
+        bm = _make_battlemap(sfc, target)
+        rays = CastScorchingRay.create(_TwoSlot.A, sfc, bm)
+        new_bm = rays[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        expected_damage = 3 * (20 + 20)
+        assert new_target.current_health == target.current_health - expected_damage
+
+    def test_perform_deals_no_damage_on_miss(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_scorching_ray_module, "randint", lambda *_: 1)
+        sfc = _make_sfc_with_actions([AbilityName.SCORCHING_RAY])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        rays = CastScorchingRay.create(_TwoSlot.A, sfc, bm)
+        new_bm = rays[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        assert new_target.current_health == target.current_health
+
+
+@pytest.mark.unit
+class TestCastLightningBolt:
+    def test_create_returns_empty_for_non_spellcaster(self) -> None:
+        fc = _make_fc_with_attack()
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert CastLightningBolt.create(_TwoSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_no_action(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT], has_action=False)
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastLightningBolt.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_level3_slots(self) -> None:
+        sfc = _make_sfc_with_actions(
+            [AbilityName.LIGHTNING_BOLT], remaining_spell_slots=_SPELL_SLOTS_NO_L3
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastLightningBolt.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_ability(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.EXTRA_ATTACK])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastLightningBolt.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_one_per_enemy(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT])
+        t1 = _make_fc().model_copy(update={"position": Position(x=6, y=0)})
+        t2 = _make_fc().model_copy(update={"position": Position(x=0, y=6)})
+        bm = _make_battlemap(sfc, t1, t2)
+        bolts = CastLightningBolt.create(_ThreeSlot.A, sfc, bm)
+        assert len(bolts) == 2
+
+    def test_perform_spends_action_and_slot(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT])
+        target = _make_fc().model_copy(update={"position": Position(x=6, y=0)})
+        bm = _make_battlemap(sfc, target)
+        bolts = CastLightningBolt.create(_TwoSlot.A, sfc, bm)
+        new_bm = bolts[0].perform(bm)
+        new_sfc = new_bm.get_combatant(_TwoSlot.A)
+        assert isinstance(new_sfc, SpellcasterFightCharacter)
+        assert not new_sfc.has_action
+        assert new_sfc.remaining_spell_slots.level_3 == _SPELL_SLOTS_WITH_L4.level_3 - 1
+
+    def test_perform_applies_full_damage_on_failed_save(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_lightning_bolt_module, "randint", lambda *_: 1)
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT])
+        target = _make_fc().model_copy(
+            update={
+                "position": Position(x=6, y=0),
+                "max_health": 200,
+                "current_health": 200,
+            }
+        )
+        bm = _make_battlemap(sfc, target)
+        bolts = CastLightningBolt.create(_TwoSlot.A, sfc, bm)
+        new_bm = bolts[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        expected_damage = 8 * 1
+        assert new_target.current_health == target.current_health - expected_damage
+
+    def test_perform_applies_half_damage_on_successful_save(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_lightning_bolt_module, "randint", lambda *_: 20)
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT])
+        target = _make_fc().model_copy(
+            update={
+                "position": Position(x=6, y=0),
+                "max_health": 200,
+                "current_health": 200,
+            }
+        )
+        bm = _make_battlemap(sfc, target)
+        bolts = CastLightningBolt.create(_TwoSlot.A, sfc, bm)
+        new_bm = bolts[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        expected_damage = (8 * 20) // 2
+        assert new_target.current_health == target.current_health - expected_damage
+
+    def test_perform_skips_combatants_off_the_line(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_lightning_bolt_module, "randint", lambda *_: 1)
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT])
+        on_line = _make_fc().model_copy(update={"position": Position(x=6, y=0)})
+        off_line = _make_fc().model_copy(update={"position": Position(x=3, y=10)})
+        bm = _make_battlemap(sfc, on_line, off_line)
+        bolts = CastLightningBolt.create(_ThreeSlot.A, sfc, bm)
+        aimed_at_on_line = next(
+            b for b in bolts if b.end_position == Position(x=6, y=0)
+        )
+        new_bm = aimed_at_on_line.perform(bm)
+        new_off_line = new_bm.get_combatant(_ThreeSlot.C)
+        assert new_off_line.current_health == off_line.current_health
+
+    def test_create_prunes_bolt_that_also_grazes_an_ally(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT])
+        enemy = _make_fc().model_copy(
+            update={"position": Position(x=5, y=0), "team_id": TeamId.B}
+        )
+        ally = _make_fc().model_copy(update={"position": Position(x=10, y=0)})
+        bm = _make_battlemap(sfc, enemy, ally)
+        bolts = CastLightningBolt.create(_ThreeSlot.A, sfc, bm)
+        ends = {b.end_position for b in bolts}
+        assert Position(x=5, y=0) in ends
+        assert Position(x=10, y=0) not in ends
+
+
+@pytest.mark.unit
+class TestCastIceStorm:
+    def test_create_returns_empty_for_non_spellcaster(self) -> None:
+        fc = _make_fc_with_attack()
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert CastIceStorm.create(_TwoSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_no_action(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM], has_action=False)
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastIceStorm.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_level4_slots(self) -> None:
+        sfc = _make_sfc_with_actions(
+            [AbilityName.ICE_STORM], remaining_spell_slots=_SPELL_SLOTS_WITH_L3
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastIceStorm.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_ability(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.EXTRA_ATTACK])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastIceStorm.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_one_per_enemy(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        t1 = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        t2 = _make_fc().model_copy(update={"position": Position(x=2, y=0)})
+        bm = _make_battlemap(sfc, t1, t2)
+        storms = CastIceStorm.create(_ThreeSlot.A, sfc, bm)
+        assert len(storms) == 2
+
+    def test_perform_spends_action_and_slot(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        target = _make_fc().model_copy(update={"position": Position(x=6, y=0)})
+        bm = _make_battlemap(sfc, target)
+        storms = CastIceStorm.create(_TwoSlot.A, sfc, bm)
+        new_bm = storms[0].perform(bm)
+        new_sfc = new_bm.get_combatant(_TwoSlot.A)
+        assert isinstance(new_sfc, SpellcasterFightCharacter)
+        assert not new_sfc.has_action
+        assert new_sfc.remaining_spell_slots.level_4 == _SPELL_SLOTS_WITH_L4.level_4 - 1
+
+    def test_perform_applies_full_damage_on_failed_save(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_ice_storm_module, "randint", lambda *_: 1)
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        target = _make_fc().model_copy(
+            update={
+                "position": Position(x=6, y=0),
+                "max_health": 200,
+                "current_health": 200,
+            }
+        )
+        bm = _make_battlemap(sfc, target)
+        storms = CastIceStorm.create(_TwoSlot.A, sfc, bm)
+        new_bm = storms[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        expected_damage = 2 * 1 + 4 * 1
+        assert new_target.current_health == target.current_health - expected_damage
+
+    def test_perform_applies_half_damage_on_successful_save(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_ice_storm_module, "randint", lambda *_: 20)
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        target = _make_fc().model_copy(
+            update={
+                "position": Position(x=6, y=0),
+                "max_health": 200,
+                "current_health": 200,
+            }
+        )
+        bm = _make_battlemap(sfc, target)
+        storms = CastIceStorm.create(_TwoSlot.A, sfc, bm)
+        new_bm = storms[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        expected_damage = (2 * 20 + 4 * 20) // 2
+        assert new_target.current_health == target.current_health - expected_damage
+
+    def test_perform_skips_combatants_outside_radius(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_ice_storm_module, "randint", lambda *_: 1)
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        close = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        far = _make_fc().model_copy(update={"position": Position(x=10, y=10)})
+        bm = _make_battlemap(sfc, close, far)
+        storms = CastIceStorm.create(_ThreeSlot.A, sfc, bm)
+        close_storm = next(
+            s for s in storms if s.center_position == Position(x=1, y=0)
+        )
+        new_bm = close_storm.perform(bm)
+        new_far = new_bm.get_combatant(_ThreeSlot.C)
+        assert new_far.current_health == far.current_health
+
+    def test_perform_attaches_terrain_modifier_over_the_blast_radius(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        target = _make_fc().model_copy(update={"position": Position(x=6, y=0)})
+        bm = _make_battlemap(sfc, target)
+        storms = CastIceStorm.create(_TwoSlot.A, sfc, bm)
+        new_bm = storms[0].perform(bm)
+        assert new_bm.terrain_at(Position(x=6, y=0)) == TerrainType.DIFFICULT
+        assert new_bm.terrain_at(Position(x=11, y=0)) == TerrainType.NORMAL
+        modifiers = new_bm.terrain[Position(x=6, y=0)]
+        assert len(modifiers) == 1
+        assert modifiers[0].caster_slot == _TwoSlot.A
+
+    def test_perform_appends_to_existing_terrain_instead_of_clobbering(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        target = _make_fc().model_copy(update={"position": Position(x=6, y=0)})
+        existing = IceStormTerrainModifier(caster_slot=_TwoSlot.B)
+        bm = _make_battlemap(sfc, target).model_copy(
+            update={"terrain": {Position(x=6, y=0): (existing,)}}
+        )
+        storms = CastIceStorm.create(_TwoSlot.A, sfc, bm)
+        new_bm = storms[0].perform(bm)
+        modifiers = new_bm.terrain[Position(x=6, y=0)]
+        assert len(modifiers) == 2
+        assert existing in modifiers
 
 
 @pytest.mark.unit

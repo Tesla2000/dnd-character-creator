@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import IntEnum
 from typing import Literal, Self
 
 from uuid_string import UUIDString
@@ -23,9 +24,9 @@ class _MindlessRageConditionalImmunityModifier(_ConditionalImmunityModifier):
     def get_immunities(self) -> frozenset[Condition]:
         return frozenset({Condition.CHARMED, Condition.FRIGHTENED})
 
-    def on_event(
-        self, event: AnyCombatEvent
-    ) -> tuple[Self | None, tuple[AnyCombatEvent, ...]]:
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[Self | None, tuple[AnyCombatEvent[T], ...]]:
         match event:
             case RageEndsEvent() if event.target_id == self.owner_id:
                 return None, ()

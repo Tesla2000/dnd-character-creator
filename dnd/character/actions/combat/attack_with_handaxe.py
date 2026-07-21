@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import Generic, Literal
 
 from dnd.character._ability_name import AbilityName
+from dnd.character.actions._damage_type import DamageType
 from dnd.character.actions._melee_attack import _MeleeAttack
 from dnd.choices.equipment_creation.weapons import HitDieSize, WeaponName
+from dnd.choices.stats_creation.statistic import Statistic
 from dnd.fight._combatant_slot import SlotT
 
 
@@ -26,3 +28,11 @@ class AttackWithHandaxe(_MeleeAttack[SlotT], Generic[SlotT]):
     @classmethod
     def _two_handed(cls) -> bool:
         return False
+
+    @classmethod
+    def _stat(cls) -> Statistic:
+        return Statistic.STRENGTH
+
+    @classmethod
+    def _damage_type(cls) -> DamageType:
+        return DamageType.SLASHING

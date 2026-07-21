@@ -3,9 +3,11 @@ from abc import abstractmethod
 
 from dnd.character.blueprint.building_blocks.building_block import BuildingBlock
 from dnd.character.blueprint.sentinels import AnyClassLevel
+from dnd.character.blueprint.sentinels import AnyDruidLevel
 from dnd.character.blueprint.sentinels import AnySorcererLevel
 from dnd.character.blueprint.sentinels import AnyStatChoices
 from dnd.character.blueprint.sentinels import AnyWizardLevel
+from dnd.character.blueprint.sentinels import DruidInfo
 from dnd.character.blueprint.sentinels import MaybeCharacterData
 from dnd.character.blueprint.sentinels import MaybeHealth
 from dnd.character.blueprint.sentinels import MaybeRace
@@ -34,7 +36,7 @@ type AnyWizardLevel20Blueprint = Blueprint[
     AnyClassLevel,
     AnyClassLevel,
     AnyClassLevel,
-    AnyClassLevel,
+    DruidInfo[AnyDruidLevel] | None,
     AnyClassLevel,
     AnyClassLevel,
     AnyClassLevel,
@@ -62,7 +64,7 @@ class SignatureSpellChoiceResolver(BuildingBlock, ABC):
         _BAK_: AnyClassLevel,
         _ROK_: AnyClassLevel,
         _CLK_: AnyClassLevel,
-        _DRK_: AnyClassLevel,
+        _DRK_: DruidInfo[AnyDruidLevel] | None,
         _PAK_: AnyClassLevel,
         _RAK_: AnyClassLevel,
         _MOK_: AnyClassLevel,

@@ -2,9 +2,11 @@ import pytest
 
 from dnd.character.blueprint.character_data import CharacterData
 from dnd.character.blueprint.sentinels import FirstSubclassPostLevel
+from dnd.character.blueprint.states._caster_info import CasterInfo
 from dnd.character.blueprint.states.sorcerer.presentable import (
     PresentableSorcererBlueprint,
 )
+from dnd.character.blueprint.states.wizard._info import WizardLevel20Info
 from dnd.character.blueprint.states.wizard.presentable import (
     PresentableWizardLevel20Blueprint,
 )
@@ -77,7 +79,11 @@ class TestPresentableSorcererBlueprint:
 
 @pytest.mark.integration
 class TestPresentableWizardLevel20Blueprint:
-    def _make_bp(self, **extra: object) -> PresentableWizardLevel20Blueprint:
+    def _make_bp(
+        self,
+        caster: CasterInfo | None = None,
+        wizard: WizardLevel20Info | None = None,
+    ) -> PresentableWizardLevel20Blueprint:
         return PresentableWizardLevel20Blueprint.model_validate(
             {
                 "race": Race.ELF,
@@ -86,29 +92,28 @@ class TestPresentableWizardLevel20Blueprint:
                 "health_base": 80,
                 "level": _LEVEL_20,
                 "character_data": _CHARACTER_DATA,
-                "spell_slots": _SPELL_SLOTS_20,
-                "caster_level": 20,
-                "n_signature_spell_choices": 0,
-                **extra,
+                "caster": caster
+                or CasterInfo(spell_slots=_SPELL_SLOTS_20, caster_level=20),
+                "wizard": wizard or WizardLevel20Info(n_signature_spell_choices=0),
             }
         )
 
     def test_spell_slots_in_api_response(self) -> None:
         dumped = self._make_bp().to_presentable_character().model_dump(mode="json")
-        assert dumped["spell_slots"] == _SPELL_SLOTS_20_DUMP
+        assert dumped["caster"]["spell_slots"] == _SPELL_SLOTS_20_DUMP
 
     def test_caster_level_in_api_response(self) -> None:
         dumped = self._make_bp().to_presentable_character().model_dump(mode="json")
-        assert dumped["caster_level"] == 20
+        assert dumped["caster"]["caster_level"] == 20
 
     def test_signature_spells_in_api_response(self) -> None:
         sig_spells = (ThirdLevel.FIREBALL, FirstLevel.MAGIC_MISSILE)
         dumped = (
-            self._make_bp(signature_spells=sig_spells)
+            self._make_bp(wizard=WizardLevel20Info(signature_spells=sig_spells))
             .to_presentable_character()
             .model_dump(mode="json")
         )
-        assert dumped["signature_spells"] == [
+        assert dumped["wizard"]["signature_spells"] == [
             ThirdLevel.FIREBALL,
             FirstLevel.MAGIC_MISSILE,
         ]
@@ -117,12 +122,16 @@ class TestPresentableWizardLevel20Blueprint:
         prepared = (FirstLevel.MAGIC_MISSILE, ThirdLevel.FIREBALL)
         mastery = (FirstLevel.MAGIC_MISSILE,)
         dumped = (
-            self._make_bp(prepared_spells=prepared, spell_mastery_spells=mastery)
+            self._make_bp(
+                wizard=WizardLevel20Info(
+                    prepared_spells=prepared, spell_mastery_spells=mastery
+                )
+            )
             .to_presentable_character()
             .model_dump(mode="json")
         )
-        assert dumped["prepared_spells"] == [
+        assert dumped["wizard"]["prepared_spells"] == [
             FirstLevel.MAGIC_MISSILE,
             ThirdLevel.FIREBALL,
         ]
-        assert dumped["spell_mastery_spells"] == [FirstLevel.MAGIC_MISSILE]
+        assert dumped["wizard"]["spell_mastery_spells"] == [FirstLevel.MAGIC_MISSILE]
