@@ -21,7 +21,7 @@ class RevertWildShape(BonusAction[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[RevertWildShape[SlotT], ...]:
         if not (
@@ -40,7 +40,12 @@ class RevertWildShape(BonusAction[SlotT], Generic[SlotT]):
         updated = fighter.model_copy(
             update={
                 "has_bonus_action": False,
-                "active_features": fighter.active_features - {AbilityName.WILD_SHAPE},
+                "active_features": fighter.active_features
+                - {
+                    AbilityName.WILD_SHAPE,
+                    AbilityName.ATTACK_WITH_BROWN_BEAR_CLAW,
+                    AbilityName.ATTACK_WITH_POLAR_BEAR_CLAW,
+                },
                 "temporary_health": 0,
             }
         )

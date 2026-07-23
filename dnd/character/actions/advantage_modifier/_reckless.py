@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import IntEnum
 from typing import TYPE_CHECKING, Literal
 
 from dnd.character.actions.advantage_modifier._base import (
@@ -15,10 +16,10 @@ if TYPE_CHECKING:
 class _RecklessAdvantageModifier(_AdvantageModifier):
     type: Literal[AdvantageModifierType.RECKLESS] = AdvantageModifierType.RECKLESS
 
-    def apply(
+    def apply[SlotT: IntEnum](
         self,
-        attacker: FightCharacter,
-        _defender: FightCharacter,
+        attacker: FightCharacter[SlotT],
+        _defender: FightCharacter[SlotT],
     ) -> bool:
         return True
 
@@ -28,9 +29,9 @@ class _RecklessGrantsAdvantageModifier(_GrantsAdvantageModifier):
         AdvantageModifierType.RECKLESS_GRANTS
     )
 
-    def apply(
+    def apply[SlotT: IntEnum](
         self,
-        attacker: FightCharacter,
-        _defender: FightCharacter,
+        attacker: FightCharacter[SlotT],
+        _defender: FightCharacter[SlotT],
     ) -> bool:
         return True

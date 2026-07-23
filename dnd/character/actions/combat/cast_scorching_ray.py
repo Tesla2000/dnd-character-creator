@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Generic, Literal
 
 from dnd.character._ability_name import AbilityName
 from dnd.character.actions._base_action import Action
+from dnd.character.actions._damage_type import DamageType
 from dnd.fight._combatant_slot import SlotT
 from dnd.fight.fight_character import FightCharacter, SpellcasterFightCharacter
 
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 class CastScorchingRay(Action[SlotT], Generic[SlotT]):
     name: Literal[AbilityName.SCORCHING_RAY] = AbilityName.SCORCHING_RAY
     range_tails: Literal[120] = 120
+    damage_type: Literal[DamageType.FIRE] = DamageType.FIRE
     actor_slot: SlotT
     target_slot: SlotT
     spell_attack_bonus: int
@@ -23,7 +25,7 @@ class CastScorchingRay(Action[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[CastScorchingRay[SlotT], ...]:
         if not isinstance(fighter, SpellcasterFightCharacter):
@@ -70,7 +72,7 @@ class CastScorchingRay(Action[SlotT], Generic[SlotT]):
             if roll < target.ac:
                 continue
             damage = sum(randint(1, 6) for _ in range(2))
-            battlemap = battlemap.replace_combatant(
-                self.target_slot, target.take_damage(damage)
-            )
+            if self.damage_type in target.all_resistances():
+                damage //= 2
+            battlemap = battlemap.deal_damage(self.target_slot, damage)
         return battlemap

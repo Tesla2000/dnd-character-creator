@@ -118,6 +118,9 @@ class CompositeStrategy(BaseModel, Generic[SlotT]):
         ]
         best_score = max(score for score, _ in scored)
         best_actions = [action for score, action in scored if score == best_score]
+        best_moves = [action for action in best_actions if isinstance(action, Move)]
+        if best_moves:
+            return min(best_moves, key=lambda move: move.movement_cost)
         return random.choice(best_actions)
 
     def _score(

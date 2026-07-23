@@ -24,7 +24,7 @@ class UseRecklessAttack(FreeAction[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[UseRecklessAttack[SlotT], ...]:
         if AbilityName.RECKLESS_ATTACK not in fighter.character.actions:

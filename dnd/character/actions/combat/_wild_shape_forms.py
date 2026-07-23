@@ -49,11 +49,31 @@ _POLAR_BEAR = _Creature(
 )
 
 
+_WOLF_BITE = _Attack(name="Bite", n_dice=2, dice_size=4, attack_bonus=4, damage_bonus=2)
+
+_WOLF = _Creature(
+    name="Wolf",
+    stats=Stats(
+        strength=12,
+        dexterity=15,
+        constitution=12,
+        intelligence=3,
+        wisdom=12,
+        charisma=6,
+    ),
+    speed=40,
+    ac_bonus=1,
+    dark_vision_range=0,
+    saving_throw_proficiencies=(),
+    other_active_abilities=(),
+    initiative=10,
+    n_hit_dice=2,
+    hit_die_size=8,
+    hp=11,
+    attacks=(_WOLF_BITE,),
+)
+
+
 def beast_form_for_druid_level(level: int) -> _Creature:
     """Circle Forms: CR<=1 from level 2, CR<=druid_level//3 from level 6."""
     return _POLAR_BEAR if level >= 6 else _BROWN_BEAR
-
-
-def primary_attack_for_druid_level(level: int) -> _Attack:
-    """The creature's headline attack, used to parametrize BeastAttack."""
-    return _POLAR_BEAR_CLAW if level >= 6 else _BROWN_BEAR_CLAW

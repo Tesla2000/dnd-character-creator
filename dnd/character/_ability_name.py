@@ -4,8 +4,18 @@ from enum import StrEnum, auto
 class AbilityName(StrEnum):
     ATTACK_WITH_AXE = auto()
     ATTACK_WITH_BATTLEAXE = auto()
+    ATTACK_WITH_BROWN_BEAR_CLAW = "Attack with Brown Bear Claw"
+    ATTACK_WITH_DAGGER = auto()
     ATTACK_WITH_GREATAXE = auto()
+    ATTACK_WITH_HAND_CROSSBOW = auto()
     ATTACK_WITH_HANDAXE = auto()
+    ATTACK_WITH_POLAR_BEAR_CLAW = "Attack with Polar Bear Claw"
+    ATTACK_WITH_RAPIER = auto()
+    ATTACK_WITH_SHORTBOW = auto()
+    ATTACK_WITH_SHORTSWORD = auto()
+    ATTACK_WITH_WOLF_BITE = "Attack with Wolf Bite"
+    DASH = auto()
+    DISENGAGE = auto()
     DRAW_ITEM = "Draw Item"
     DROP_ITEM = "Drop Item"
     MOVE = auto()
@@ -38,10 +48,12 @@ class AbilityName(StrEnum):
     CLOCKWORK_CAVALCADE = "Clockwork Cavalcade"
     COMMAND_UNDEAD = "Command Undead"
     CONJURATION_SAVANT = "Conjuration Savant"
+    CONJURE_ANIMALS = "Conjure Animals"
     CONSULT_THE_SPIRITS = "Consult the Spirits"
     CONTROLLED_CHAOS = "Controlled Chaos"
     CONTROLLED_SURGE = "Controlled Surge"
     CONVERGENT_FUTURE = "Convergent Future"
+    CUNNING_ACTION = "Cunning Action"
     DANGER_SENSE = "Danger Sense"
     DEFLECTING_SHROUD = "Deflecting Shroud"
     DEMIURGIC_COLOSSUS = "Demiurgic Colossus"
@@ -69,6 +81,7 @@ class AbilityName(StrEnum):
     FAVORED_ENEMY = "Favored Enemy"
     FERAL_INSTINCT = "Feral Instinct"
     FIREBALL = "Fireball"
+    FIRE_BOLT = "Fire Bolt"
     FLEXIBLE_CASTING = "Flexible Casting"
     FOCUSED_CONJURATION = "Focused Conjuration"
     FONT_OF_MAGIC = "Font of Magic"
@@ -136,6 +149,7 @@ class AbilityName(StrEnum):
     SHADOW_WALK = "Shadow Walk"
     SHAPECHANGER = "Shapechanger"
     SHIELDING_STORM = "Shielding Storm"
+    SNEAK_ATTACK = "Sneak Attack"
     SONG_OF_DEFENSE = "Song of Defense"
     SONG_OF_VICTORY = "Song of Victory"
     SORCEROUS_RESTORATION = "Sorcerous Restoration"

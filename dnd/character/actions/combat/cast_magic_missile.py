@@ -22,7 +22,7 @@ class CastMagicMissile(Action[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[CastMagicMissile[SlotT], ...]:
         if not isinstance(fighter, SpellcasterFightCharacter):
@@ -50,9 +50,9 @@ class CastMagicMissile(Action[SlotT], Generic[SlotT]):
             self.actor_slot, fighter.spend_action().spend_level_1_slot()
         )
         match battlemap.get_combatant(self.target_slot):
-            case FightCharacter() as target:
+            case FightCharacter():
                 pass
             case _:
                 return battlemap
         damage = sum(randint(1, 4) for _ in range(3)) + 3
-        return battlemap.replace_combatant(self.target_slot, target.take_damage(damage))
+        return battlemap.deal_damage(self.target_slot, damage)

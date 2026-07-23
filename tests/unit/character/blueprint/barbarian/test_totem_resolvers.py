@@ -1,5 +1,10 @@
+from unittest.mock import MagicMock
+
 import pytest
 
+from dnd.character.blueprint.building_blocks.totem_choice_resolver.ai import (
+    AITotemChoiceResolver,
+)
 from dnd.character.blueprint.building_blocks.totem_choice_resolver.random import (
     RandomTotemChoiceResolver,
 )
@@ -31,3 +36,19 @@ def test_random_totem_resolver_no_seed() -> None:
     resolver = RandomTotemChoiceResolver(seed=None)
     result = resolver.resolve()
     assert result in list(TotemAnimal)
+
+
+@pytest.mark.unit
+class TestAITotemChoiceResolver:
+    def test_resolve_calls_llm_and_returns_totem(self) -> None:
+        mock_llm = MagicMock()
+        mock_llm.create_structured_output.return_value.totem = TotemAnimal.BEAR
+
+        resolver = AITotemChoiceResolver.model_construct(llm=mock_llm)
+        result = resolver.resolve()
+
+        assert result == TotemAnimal.BEAR
+        mock_llm.create_structured_output.assert_called_once()
+        prompt = mock_llm.create_structured_output.call_args.args[0]
+        assert "Barbarian" in prompt
+        assert TotemAnimal.WOLF.value in prompt

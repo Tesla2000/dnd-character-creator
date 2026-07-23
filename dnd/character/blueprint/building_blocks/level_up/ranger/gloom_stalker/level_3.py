@@ -10,6 +10,7 @@ from dnd.character.blueprint.building_blocks.level_up.ranger.base import (
 from dnd.character.blueprint.states.state import _BPT
 from dnd.character.spells.spell_slots import WizardFirstLevel
 from dnd.choices.class_creation.character_class import RangerSubclass
+from dnd.choices.stats_creation.statistic import Statistic
 
 
 class RangerLevel3GloomStalker(
@@ -32,6 +33,8 @@ class RangerLevel3GloomStalker(
                     AbilityName.DREAD_AMBUSHER,
                     AbilityName.UMBRAL_SIGHT,
                 ),
+                "initiative_bonus": blueprint.initiative_bonus
+                + blueprint.stats.get_modifier(Statistic.WISDOM),
                 "spells": blueprint.spells.model_copy(
                     update={
                         "first_level_spells": blueprint.spells.first_level_spells

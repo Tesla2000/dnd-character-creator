@@ -49,10 +49,12 @@ A Preact + TypeScript SPA (`frontend/src/`) lets users compose a pipeline by dra
 - Never ignore mypy errors -- report them immediately.
 - Never use local imports unless explicitly allowed.
 - Never use `Any` in type hints -- narrow to a specific type, `object`, or `Union`.
+- Prefer Enum over `Literal` with more than one element; only use a multi-element `Literal` when Enum is not viable (e.g. matching an external API's exact string constants, or a Pydantic discriminator field).
+- Avoid a generic method whose type parameter isn't reflected in its return type, unless there's a valid reason (e.g. constraining two or more parameters to agree with each other); otherwise use the bound type directly instead of a TypeVar.
 - Never use # type: ignore[import-not-found] -- add package or create stubs.
 - Never use # pragma: no cover unless user explicitly allows it.
 - Never commit or git add unless asked.
-- Never run mypy or pre-commit unless asked.
+- Run mypy (and pre-commit) after non-trivial changes to `dnd/` as standard validation -- no need to wait to be asked.
 - Use uv add to add dependencies. Never edit pyproject.toml or .pre-commit-config.yaml manually.
 - Always type hint arguments and return type.
 - Use only ASCII punctuation. No em dashes, curly quotes, ellipsis characters.

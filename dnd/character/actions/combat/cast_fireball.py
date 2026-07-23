@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Generic, Literal, Self
 
 from dnd._position import Position
 from dnd.character._ability_name import AbilityName
+from dnd.character.actions._damage_type import DamageType
 from dnd.character.actions.combat._negative_aoe import NegativeAoeAction
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.fight._combatant_slot import SlotT
@@ -18,6 +19,7 @@ class CastFireball(NegativeAoeAction[SlotT], Generic[SlotT]):
     name: Literal[AbilityName.FIREBALL] = AbilityName.FIREBALL
     range_tails: Literal[30] = 30
     radius_tails: Literal[4] = 4
+    damage_type: Literal[DamageType.FIRE] = DamageType.FIRE
     center_position: Position
 
     @classmethod
@@ -49,7 +51,7 @@ class CastFireball(NegativeAoeAction[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[CastFireball[SlotT], ...]:
         if not isinstance(fighter, SpellcasterFightCharacter):
@@ -86,9 +88,9 @@ class CastFireball(NegativeAoeAction[SlotT], Generic[SlotT]):
                         ]
                     )
                     hit_damage = damage if roll < self.spell_save_dc else damage // 2
-                    battlemap = battlemap.replace_combatant(
-                        slot, combatant.take_damage(hit_damage)
-                    )
+                    if self.damage_type in combatant.all_resistances():
+                        hit_damage //= 2
+                    battlemap = battlemap.deal_damage(slot, hit_damage)
                 case _:
                     pass
         return battlemap

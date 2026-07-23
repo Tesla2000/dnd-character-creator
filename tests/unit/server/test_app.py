@@ -25,7 +25,14 @@ from dnd.character.blueprint.building_blocks.race_assigner import HumanRaceAssig
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
+from dnd.character.blueprint.character_data import CharacterData
+from dnd.character.presentable_character import PresentableCharacter
+from dnd.character.race.race import Race
 from dnd.character.race.subraces import SubraceName
+from dnd.character.stats import Stats
+from dnd.choices.alignment import Alignment
+from dnd.choices.background_creatrion.background import Background
+from dnd.choices.sex import Sex
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.server.app import create_app
 
@@ -96,6 +103,57 @@ class TestServerApp:
             json={"building_blocks": []},
         )
         assert response.status_code == 422
+
+    def test_convert_character_json_returns_serialized_character(
+        self, client: TestClient
+    ) -> None:
+        character = PresentableCharacter(
+            character_data=CharacterData(),
+            name="TestChar",
+            stats=Stats(
+                strength=10,
+                dexterity=10,
+                constitution=10,
+                intelligence=18,
+                wisdom=10,
+                charisma=10,
+            ),
+            speed=30,
+            dark_vision_range=0,
+            saving_throw_proficiencies=(),
+            other_active_abilities=(),
+            sex=Sex.FEMALE,
+            backstory="A test character.",
+            age=25,
+            race=Race.HUMAN,
+            subrace=SubraceName.HUMAN_STANDARD_HUMAN_PLAYERSHANDBOOK,
+            background=Background.SAGE,
+            alignment=Alignment.CHAOTIC_GOOD,
+            health_base=12,
+            height=65,
+            weight=130,
+            eye_color="blue",
+            skin_color="fair",
+            hairstyle="long",
+            appearance="slender",
+            character_traits="curious",
+            ideals="knowledge",
+            bonds="books",
+            weaknesses="overconfident",
+        )
+        response = client.post(
+            "/convert_character_json",
+            json=character.model_dump(mode="json"),
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert list(data.keys())[:5] == [
+            "health",
+            "ac",
+            "speed",
+            "stats",
+            "saving_throw_modifiers",
+        ]
 
     def test_create_character_invalid_pipeline_sequence_returns_422(
         self, client: TestClient

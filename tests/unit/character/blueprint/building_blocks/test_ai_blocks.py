@@ -32,6 +32,9 @@ from dnd.character.blueprint.building_blocks.initial_data_filler.ai_partial_buil
 from dnd.character.blueprint.building_blocks.equipment_chooser.base import (
     EquipmentChooser,
 )
+from dnd.character.blueprint.building_blocks.expertise_choice_resolver.ai import (
+    AIExpertiseChoiceResolver,
+)
 from dnd.character.blueprint.building_blocks.level_up.spell_assignment.base import (
     SorcererSpellAssigner,
     WizardSpellAssigner,
@@ -236,6 +239,53 @@ class TestAISkillChoiceResolver:
         result = block.apply(state)
         assert result is not None
         mock_llm.create_structured_output.assert_called_once()
+
+
+@pytest.mark.unit
+class TestAIExpertiseChoiceResolver:
+    def test_no_expertise_choices_skips_llm(self) -> None:
+        mock_llm = MagicMock()
+        block = AIExpertiseChoiceResolver.model_construct(
+            llm=mock_llm,
+        )
+        result = block.apply(Blueprint())
+        assert result is not None
+        mock_llm.create_structured_output.assert_not_called()
+
+    def test_with_expertise_choices_calls_llm(self) -> None:
+        mock_llm = MagicMock()
+        mock_llm.create_structured_output.return_value = SkillSelection(
+            selected_skills=(Skill.STEALTH, Skill.PERCEPTION)
+        )
+
+        block = AIExpertiseChoiceResolver.model_construct(
+            llm=mock_llm,
+        )
+        state = Blueprint(
+            n_expertise_choices=2,
+            expertise_choices_from=frozenset(
+                {Skill.STEALTH, Skill.PERCEPTION, Skill.ACROBATICS}
+            ),
+        )
+        result = block.apply(state)
+        assert result is not None
+        mock_llm.create_structured_output.assert_called_once()
+
+    def test_invalid_skill_raises_value_error(self) -> None:
+        mock_llm = MagicMock()
+        mock_llm.create_structured_output.return_value = SkillSelection(
+            selected_skills=(Skill.ATHLETICS, Skill.DECEPTION)
+        )
+
+        block = AIExpertiseChoiceResolver.model_construct(
+            llm=mock_llm,
+        )
+        state = Blueprint(
+            n_expertise_choices=2,
+            expertise_choices_from=frozenset({Skill.ARCANA, Skill.HISTORY}),
+        )
+        with pytest.raises(ValueError, match="not in available skills"):
+            block.apply(state)
 
 
 @pytest.mark.unit

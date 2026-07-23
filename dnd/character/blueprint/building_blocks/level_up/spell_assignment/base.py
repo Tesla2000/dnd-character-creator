@@ -414,8 +414,6 @@ class DruidSpellAssigner(BuildingBlock, ABC):
             blueprint.classes.get_level(Class.DRUID),
             blueprint.caster.spell_slots,
         )
-        if not spells_to_learn:
-            return blueprint
 
         assigner = self
         druid_state = blueprint

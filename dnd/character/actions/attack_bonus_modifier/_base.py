@@ -16,10 +16,10 @@ class _AttackBonusModifier(BaseModel, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def apply(
+    def apply[SlotT: IntEnum](
         self,
-        attacker: FightCharacter,
-        _defender: FightCharacter,
+        attacker: FightCharacter[SlotT],
+        _defender: FightCharacter[SlotT],
     ) -> int: ...
 
     def on_event[T: IntEnum](

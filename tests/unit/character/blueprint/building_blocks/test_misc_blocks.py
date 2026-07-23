@@ -9,6 +9,9 @@ from dnd.character.armor.names import ArmorName
 from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_if_not_maxed import (
     MaxIfNotMaxedResolver,
 )
+from dnd.character.blueprint.building_blocks.character_converter import (
+    CharacterConverter,
+)
 from dnd.character.blueprint.building_blocks.equipment_chooser.random import (
     RandomEquipmentChooser,
 )
@@ -38,7 +41,14 @@ from dnd.character.spells.spells import Spells
 from dnd.character.blueprint.building_blocks.magical_item_chooser.random import (
     RandomMagicalItemChooser,
 )
+from dnd.character.blueprint.building_blocks.fighting_style_choice_resolver.random import (
+    RandomFightingStyleChoiceResolver,
+)
 from dnd.character.blueprint.building_blocks.null_block import NullBlock
+from dnd.character.blueprint.character_data import CharacterData
+from dnd.character.blueprint.states.basic_presentable import PresentableBasicBlueprint
+from dnd.character.presentable_character import PresentableCharacter
+from dnd.choices.equipment_creation.weapons import WeaponName
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
 )
@@ -192,6 +202,48 @@ class TestRandomEquipmentChooserOtherBranch:
         chooser = RandomEquipmentChooser()
         result = chooser.apply(state)
         assert ArmorName.LEATHER in result.armors
+
+    def test_weapon_equipment_goes_to_weapons(self) -> None:
+        BlueprintWithChoices = create_model(
+            "BlueprintWithWeaponEquipment",
+            equipment_choices=(tuple[tuple[object, ...], ...], ...),
+            __base__=Blueprint,
+        )
+        state = BlueprintWithChoices(equipment_choices=((WeaponName.DAGGER,),))
+        chooser = RandomEquipmentChooser()
+        result = chooser.apply(state)
+        assert WeaponName.DAGGER in result.weapons
+
+
+@pytest.mark.unit
+class TestFightingStyleChoiceResolverNoChoices:
+    def test_apply_is_noop_when_no_choices_pending(self) -> None:
+        state = Blueprint()
+        resolver = RandomFightingStyleChoiceResolver()
+        result = resolver.apply(state)
+        assert result is state
+
+
+@pytest.mark.unit
+class TestCharacterConverter:
+    def test_apply_seals_blueprint_into_presentable_character(self) -> None:
+        bp = PresentableBasicBlueprint(
+            race=Race.HUMAN,
+            stats=Stats(
+                strength=10,
+                dexterity=10,
+                constitution=10,
+                intelligence=10,
+                wisdom=10,
+                charisma=10,
+            ),
+            health_base=10,
+            character_data=CharacterData(name="Converter Test"),
+        )
+        converter = CharacterConverter()
+        result = converter.apply(bp)
+        assert isinstance(result, PresentableCharacter)
+        assert result.race is Race.HUMAN
 
 
 @pytest.mark.unit

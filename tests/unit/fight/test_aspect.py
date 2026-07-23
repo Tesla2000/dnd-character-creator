@@ -7,7 +7,7 @@ from dnd._position import Position
 from dnd.character.presentable_character import PresentableCharacter
 from dnd.character.stats import Stats
 from dnd.fight._team_id import TeamId
-from dnd.fight.aspect import AoeVulnerabilityAspect
+from dnd.fight.aspect import AoeVulnerabilityAspect, EnemyClusterAspect
 from dnd.fight.battlemap import Battlemap
 from dnd.fight.fight_character import (
     AnyActiveCombatant,
@@ -156,4 +156,45 @@ class TestAoeVulnerabilityAspect:
         bm = _ThreeFightBattlemap(combatants=(a0, a1, dead_b0))
 
         aspect: AoeVulnerabilityAspect[_ThreeSlot] = AoeVulnerabilityAspect()
+        assert aspect.value(bm, bm, _ThreeSlot.B0) == 0.0
+
+
+@pytest.mark.unit
+class TestEnemyClusterAspect:
+    def test_counts_enemies_whose_health_decreased(self) -> None:
+        a0 = _make_fc("A0", TeamId.A, Position(x=0, y=0))
+        a1 = _make_fc("A1", TeamId.A, Position(x=1, y=0))
+        b0 = _make_fc("B0", TeamId.B, Position(x=20, y=20))
+        before = _ThreeFightBattlemap(combatants=(a0, a1, b0))
+
+        aspect: EnemyClusterAspect[_ThreeSlot] = EnemyClusterAspect()
+
+        no_change = before
+        assert aspect.value(before, no_change, _ThreeSlot.B0) == 0.0
+
+        one_hit = before.replace_combatant(
+            _ThreeSlot.A0, a0.model_copy(update={"current_health": 15})
+        )
+        assert aspect.value(before, one_hit, _ThreeSlot.B0) == 1.0
+
+        both_hit = one_hit.replace_combatant(
+            _ThreeSlot.A1, a1.model_copy(update={"current_health": 10})
+        )
+        assert aspect.value(before, both_hit, _ThreeSlot.B0) == 2.0
+
+    def test_returns_zero_when_actor_slot_is_not_a_fight_character(self) -> None:
+        a0 = _make_fc("A0", TeamId.A, Position(x=0, y=0))
+        a1 = _make_fc("A1", TeamId.A, Position(x=1, y=0))
+        dead_b0 = DeadFightCharacter(
+            character=a0.character,
+            initiative=10,
+            max_health=20,
+            current_health=0,
+            team_id=TeamId.B,
+            speed=30,
+            position=Position(x=20, y=20),
+        )
+        bm = _ThreeFightBattlemap(combatants=(a0, a1, dead_b0))
+
+        aspect: EnemyClusterAspect[_ThreeSlot] = EnemyClusterAspect()
         assert aspect.value(bm, bm, _ThreeSlot.B0) == 0.0

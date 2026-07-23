@@ -28,13 +28,14 @@ class Move(MovementAction[SlotT], Generic[SlotT]):
     def create(
         cls,
         mover_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[Move[SlotT], ...]:
-        if fighter.movement_remaining < 5:
-            return ()
-        max_steps = fighter.movement_remaining // 5
         start = fighter.position
+        stay = cls(to=start, mover_slot=mover_slot, movement_cost=0)
+        if fighter.movement_remaining < 5:
+            return (stay,)
+        max_steps = fighter.movement_remaining // 5
         blocked: frozenset[tuple[int, int]] = frozenset(
             (p.x, p.y)
             for p in (
@@ -49,9 +50,7 @@ class Move(MovementAction[SlotT], Generic[SlotT]):
             if cost > fighter.movement_remaining:
                 continue
             dest = Position(x=x, y=y, height=start.height)
-            oa_attackers = cls._find_oa_attackers(
-                mover_slot, fighter, dest, battlemap
-            )
+            oa_attackers = cls._find_oa_attackers(mover_slot, fighter, dest, battlemap)
             results.append(
                 cls(
                     to=dest,
@@ -60,6 +59,7 @@ class Move(MovementAction[SlotT], Generic[SlotT]):
                     triggered_oa_from=oa_attackers,
                 )
             )
+        results.append(stay)
         return tuple(results)
 
     @staticmethod
@@ -73,8 +73,6 @@ class Move(MovementAction[SlotT], Generic[SlotT]):
         heap: list[tuple[int, int, int]] = [(0, start.x, start.y)]
         while heap:
             cost, x, y = heapq.heappop(heap)
-            if cost > best[(x, y)]:
-                continue
             for dx in (-1, 0, 1):
                 for dy in (-1, 0, 1):
                     if dx == 0 and dy == 0:
@@ -101,10 +99,12 @@ class Move(MovementAction[SlotT], Generic[SlotT]):
     def _find_oa_attackers(
         cls,
         mover_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         dest: Position,
         battlemap: Battlemap[SlotT],
     ) -> tuple[SlotT, ...]:
+        if fighter.disengaging:
+            return ()
         fx, fy = fighter.position.x, fighter.position.y
         tx, ty = dest.x, dest.y
         result: list[SlotT] = []
@@ -130,6 +130,8 @@ class Move(MovementAction[SlotT], Generic[SlotT]):
                 pass
             case _:
                 return battlemap
+        if self.to == fighter.position:
+            return battlemap
         moved = fighter.model_copy(
             update={
                 "position": self.to,

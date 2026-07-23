@@ -104,6 +104,9 @@ from dnd.character.blueprint.building_blocks.level_up.wizard.divination.level_14
 from dnd.character.blueprint.building_blocks.level_up.wizard.enchantment.level_2 import (
     WizardLevel2Enchantment,
 )
+from dnd.character.blueprint.building_blocks.level_up.wizard.evocation.level_2 import (
+    WizardLevel2Evocation,
+)
 from dnd.character.blueprint.building_blocks.level_up.wizard.enchantment.level_6 import (
     WizardLevel6Enchantment,
 )
@@ -390,6 +393,9 @@ _SORC_BP = SorcererBlueprint(
     caster_level=19,
 )
 _SORC_INPUT_BP = Blueprint(race=Race.HUMAN, stats=_STATS, health_base=6)
+_SORC_MULTICLASS_BP = _SORC_INPUT_BP.model_copy(
+    update={"classes": _SORC_INPUT_BP.classes.model_copy(update={"barbarian": 1})}
+)
 
 
 @pytest.mark.unit
@@ -455,6 +461,7 @@ def test_wizard_level20_apply() -> None:
             health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS
         ),
         WizardLevel2Divination(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
+        WizardLevel2Evocation(health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS),
         WizardLevel2Enchantment(
             health_increase=_WIZ_HEALTH, spell_assigner=_WIZ_SPELLS
         ),
@@ -595,6 +602,41 @@ def test_wizard_subclass_feature_level_apply(block: BuildingBlock) -> None:
 )
 def test_sorcerer_level1_subclass_apply(block: BuildingBlock) -> None:
     result = block.apply(_SORC_INPUT_BP)
+    assert result is not None
+    assert isinstance(result, SorcererBlueprint)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "block",
+    [
+        SorcererLevel1AberrantMind(
+            health_increase=_SORC_HEALTH, spell_assigner=_SORC_SPELLS
+        ),
+        SorcererLevel1ClockworkSoul(
+            health_increase=_SORC_HEALTH, spell_assigner=_SORC_SPELLS
+        ),
+        SorcererLevel1DivineSoul(
+            health_increase=_SORC_HEALTH, spell_assigner=_SORC_SPELLS
+        ),
+        SorcererLevel1LunarSorcery(
+            health_increase=_SORC_HEALTH, spell_assigner=_SORC_SPELLS
+        ),
+        SorcererLevel1ShadowMagic(
+            health_increase=_SORC_HEALTH, spell_assigner=_SORC_SPELLS
+        ),
+        SorcererLevel1StormSorcery(
+            health_increase=_SORC_HEALTH, spell_assigner=_SORC_SPELLS
+        ),
+        SorcererLevel1WildMagic(
+            health_increase=_SORC_HEALTH, spell_assigner=_SORC_SPELLS
+        ),
+    ],
+)
+def test_sorcerer_level1_subclass_apply_as_multiclass(block: BuildingBlock) -> None:
+    """Covers the is_first_class=False branch: character already has levels
+    in another class, so skill/save-proficiency choices are skipped."""
+    result = block.apply(_SORC_MULTICLASS_BP)
     assert result is not None
     assert isinstance(result, SorcererBlueprint)
 

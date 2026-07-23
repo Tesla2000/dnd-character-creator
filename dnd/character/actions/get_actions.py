@@ -7,15 +7,26 @@ from dnd.character.actions.combat import (
     AnyCombatAction,
     AttackWithAxe,
     AttackWithBattleaxe,
+    AttackWithBrownBearClaw,
+    AttackWithDagger,
     AttackWithGreataxe,
+    AttackWithHandCrossbow,
     AttackWithHandaxe,
-    BeastAttack,
+    AttackWithPolarBearClaw,
+    AttackWithRapier,
+    AttackWithShortbow,
+    AttackWithShortsword,
     CastChromaticOrb,
+    CastConjureAnimals,
+    CastFireBolt,
     CastFireball,
     CastIceStorm,
     CastLightningBolt,
     CastMagicMissile,
     CastScorchingRay,
+    CommandSummonedBeast,
+    Dash,
+    Disengage,
     DrawItem,
     DropItem,
     Pass,
@@ -32,7 +43,7 @@ class ActionResolver:
     @staticmethod
     def get_actions[T: IntEnum](
         actor_slot: T,
-        fighter: FightCharacter,
+        fighter: FightCharacter[T],
         battlemap: Battlemap[T],
     ) -> tuple[tuple[AnyCombatAction[T], ...], ...]:
         candidates: list[tuple[AnyCombatAction[T], ...]] = []
@@ -60,6 +71,36 @@ class ActionResolver:
                     )
                     if handaxe_options:
                         candidates.append(handaxe_options)
+                case AbilityName.ATTACK_WITH_DAGGER:
+                    dagger_options = AttackWithDagger.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if dagger_options:
+                        candidates.append(dagger_options)
+                case AbilityName.ATTACK_WITH_SHORTSWORD:
+                    shortsword_options = AttackWithShortsword.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if shortsword_options:
+                        candidates.append(shortsword_options)
+                case AbilityName.ATTACK_WITH_RAPIER:
+                    rapier_options = AttackWithRapier.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if rapier_options:
+                        candidates.append(rapier_options)
+                case AbilityName.ATTACK_WITH_SHORTBOW:
+                    shortbow_options = AttackWithShortbow.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if shortbow_options:
+                        candidates.append(shortbow_options)
+                case AbilityName.ATTACK_WITH_HAND_CROSSBOW:
+                    hand_crossbow_options = AttackWithHandCrossbow.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if hand_crossbow_options:
+                        candidates.append(hand_crossbow_options)
                 case AbilityName.CHROMATIC_ORB:
                     orb_options = CastChromaticOrb.create(
                         actor_slot, fighter, battlemap
@@ -72,6 +113,12 @@ class ActionResolver:
                     )
                     if fireball_options:
                         candidates.append(fireball_options)
+                case AbilityName.FIRE_BOLT:
+                    fire_bolt_options = CastFireBolt.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if fire_bolt_options:
+                        candidates.append(fire_bolt_options)
                 case AbilityName.MAGIC_MISSILE:
                     magic_missile_options = CastMagicMissile.create(
                         actor_slot, fighter, battlemap
@@ -113,11 +160,34 @@ class ActionResolver:
                     if wild_shape_options:
                         candidates.append(wild_shape_options)
                 case AbilityName.BEAST_ATTACK:
-                    beast_attack_options = BeastAttack.create(
+                    brown_bear_claw_options = AttackWithBrownBearClaw.create(
                         actor_slot, fighter, battlemap
                     )
-                    if beast_attack_options:
-                        candidates.append(beast_attack_options)
+                    if brown_bear_claw_options:
+                        candidates.append(brown_bear_claw_options)
+                    polar_bear_claw_options = AttackWithPolarBearClaw.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if polar_bear_claw_options:
+                        candidates.append(polar_bear_claw_options)
+                case AbilityName.CONJURE_ANIMALS:
+                    conjure_animals_options = CastConjureAnimals.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if conjure_animals_options:
+                        candidates.append(conjure_animals_options)
+                    command_summoned_beast_options = CommandSummonedBeast.create(
+                        actor_slot, fighter, battlemap
+                    )
+                    if command_summoned_beast_options:
+                        candidates.append(command_summoned_beast_options)
+                case AbilityName.CUNNING_ACTION:
+                    dash_options = Dash.create(actor_slot, fighter, battlemap)
+                    if dash_options:
+                        candidates.append(dash_options)
+                    disengage_options = Disengage.create(actor_slot, fighter, battlemap)
+                    if disengage_options:
+                        candidates.append(disengage_options)
                 case _:
                     pass
         pass_options = Pass.create(actor_slot, fighter, battlemap)

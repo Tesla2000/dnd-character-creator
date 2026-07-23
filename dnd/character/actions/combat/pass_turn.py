@@ -18,7 +18,7 @@ class Pass(Action[SlotT], Generic[SlotT]):
 
     @classmethod
     def create(
-        cls, actor_slot: SlotT, fighter: FightCharacter, battlemap: Battlemap[SlotT]
+        cls, actor_slot: SlotT, fighter: FightCharacter[SlotT], battlemap: Battlemap[SlotT]
     ) -> tuple[Pass[SlotT], ...]:
         if not fighter.has_action:
             return ()

@@ -41,6 +41,9 @@ _STATS = Stats(
     charisma=10,
 )
 _INPUT_BP = Blueprint(race=Race.HUMAN, stats=_STATS, health_base=6)
+_MULTICLASS_INPUT_BP = _INPUT_BP.model_copy(
+    update={"classes": _INPUT_BP.classes.model_copy(update={"barbarian": 1})}
+)
 _DRUID_L1_BP = Blueprint(
     race=Race.HUMAN,
     stats=_STATS,
@@ -64,6 +67,17 @@ def test_druid_level1_apply() -> None:
     result = block.apply(_INPUT_BP)
     assert result is not None
     assert isinstance(result.druid, DruidInfo)
+    assert Language.DRUIDIC in result.languages
+    assert result.classes.druid == 1
+
+
+@pytest.mark.unit
+def test_druid_level1_apply_as_multiclass() -> None:
+    """Covers the is_first_class=False branch: character already has levels
+    in another class, so skill/save-proficiency choices are skipped."""
+    block = DruidLevel1(health_increase=_DRUID_HEALTH, spell_assigner=_DRUID_SPELLS)
+    result = block.apply(_MULTICLASS_INPUT_BP)
+    assert result is not None
     assert Language.DRUIDIC in result.languages
     assert result.classes.druid == 1
 

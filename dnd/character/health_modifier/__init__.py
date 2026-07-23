@@ -3,6 +3,9 @@ from typing import Union
 
 from pydantic import Field
 
+from dnd.character.health_modifier._amulet_of_health import (
+    _AmuletOfHealthModifier as AmuletOfHealthModifier,
+)
 from dnd.character.health_modifier._base import _HealthModifier as HealthModifier
 from dnd.character.health_modifier._base import (
     _HealthModifierContext as HealthModifierContext,
@@ -16,11 +19,12 @@ from dnd.character.health_modifier._tough import (
 from dnd.character.health_modifier._type import HealthModifierType
 
 AnyHealthModifier = Annotated[
-    Union[DwarfHealthModifier, ToughHealthModifier],
+    Union[AmuletOfHealthModifier, DwarfHealthModifier, ToughHealthModifier],
     Field(discriminator="type"),
 ]
 
 __all__ = [
+    "AmuletOfHealthModifier",
     "AnyHealthModifier",
     "DwarfHealthModifier",
     "HealthModifier",

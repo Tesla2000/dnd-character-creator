@@ -5,6 +5,7 @@ from enum import StrEnum
 class BuildingBlockType(StrEnum):
     AI_BASE_BUILDER_ASSIGNER = auto()
     AI_EQUIPMENT_CHOOSER = auto()
+    AI_EXPERTISE_CHOICE_RESOLVER = auto()
     AI_FEAT_CHOICE_RESOLVER = auto()
     AI_LANGUAGE_CHOICE_RESOLVER = auto()
     AI_MAGICAL_ITEM_CHOOSER = auto()
@@ -286,6 +287,9 @@ class BuildingBlockType(StrEnum):
     BARBARIAN_LEVEL_14_TOTEM_WARRIOR = auto()
     BARBARIAN_LEVEL_14_WILD_MAGIC = auto()
     BARBARIAN_LEVEL_14_ZEALOT = auto()
+    # Rogue shared levels
+    ROGUE_LEVEL_1 = auto()
+    ROGUE_LEVEL_2 = auto()
     # Totem choice resolvers
     RANDOM_TOTEM_CHOICE_RESOLVER = auto()
     AI_TOTEM_CHOICE_RESOLVER = auto()
@@ -336,6 +340,7 @@ class BuildingBlockType(StrEnum):
     WARFORGED_RACE_ASSIGNER = auto()
     YUAN_TI_PUREBLOOD_RACE_ASSIGNER = auto()
     RANDOM_EQUIPMENT_CHOOSER = auto()
+    RANDOM_EXPERTISE_CHOICE_RESOLVER = auto()
     RANDOM_FEAT_CHOICE_RESOLVER = auto()
     RANDOM_INITIAL_DATA_FILLER = auto()
     RANDOM_LANGUAGE_CHOICE_RESOLVER = auto()

@@ -16,10 +16,10 @@ class _AdvantageModifier(BaseModel, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def apply(
+    def apply[SlotT: IntEnum](
         self,
-        attacker: FightCharacter,
-        _defender: FightCharacter,
+        attacker: FightCharacter[SlotT],
+        _defender: FightCharacter[SlotT],
     ) -> bool: ...
 
     def on_event[T: IntEnum](
@@ -34,10 +34,10 @@ class _GrantsAdvantageModifier(BaseModel, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def apply(
+    def apply[SlotT: IntEnum](
         self,
-        attacker: FightCharacter,
-        _defender: FightCharacter,
+        attacker: FightCharacter[SlotT],
+        _defender: FightCharacter[SlotT],
     ) -> bool: ...
 
     def on_event[T: IntEnum](
@@ -50,10 +50,10 @@ class _DisadvantageModifier(BaseModel, ABC):
     model_config = ConfigDict(frozen=True)
 
     @abstractmethod
-    def apply(
+    def apply[SlotT: IntEnum](
         self,
-        attacker: FightCharacter,
-        _defender: FightCharacter,
+        attacker: FightCharacter[SlotT],
+        _defender: FightCharacter[SlotT],
     ) -> bool: ...
 
     def on_event[T: IntEnum](

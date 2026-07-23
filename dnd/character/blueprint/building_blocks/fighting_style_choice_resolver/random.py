@@ -37,4 +37,4 @@ class RandomFightingStyleChoiceResolver(FightingStyleChoiceResolver):
 
     def _select_style(self, state: _WideBlueprint) -> FightingStyle:
         random.seed(self.seed)
-        return random.choice(tuple(state.fighting_styles_to_choose_from))
+        return random.choice(sorted(state.fighting_styles_to_choose_from))

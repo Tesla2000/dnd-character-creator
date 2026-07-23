@@ -67,14 +67,17 @@ class PresentableCharacter(
         return {
             s: self._get_modifier(skill2ability[s])
             + (s in self.skill_proficiencies) * self.proficiency_bonus
+            + (s in self.skill_expertise) * self.proficiency_bonus
             for s in Skill
             if s != Skill.ANY_OF_YOUR_CHOICE
         }
 
     @_cf
     def initiative(self) -> int:
-        return self._get_modifier(Statistic.DEXTERITY) + 5 * (
-            FeatName.ALERT in self.feats
+        return (
+            self._get_modifier(Statistic.DEXTERITY)
+            + 5 * (FeatName.ALERT in self.feats)
+            + self.initiative_bonus
         )
 
     @_cf
@@ -146,9 +149,12 @@ class PresentableCharacter(
         return self.level + max(0, self._get_spellcasting_modifier())
 
     @_cf
+    def constitution_modifier(self) -> int:
+        return self._get_modifier(Statistic.CONSTITUTION)
+
+    @_cf
     def health(self) -> int:
-        constitution_modifier = self._get_modifier(Statistic.CONSTITUTION)
-        base = self.health_base + self.level * constitution_modifier
+        base = self.health_base + self.level * self.constitution_modifier
         return base + sum(modifier.apply(self) for modifier in self.health_modifiers)
 
     def _get_spellcasting_modifier(self) -> int:

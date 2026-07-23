@@ -50,7 +50,7 @@ class CastIceStorm(NegativeAoeAction[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[CastIceStorm[SlotT], ...]:
         if not isinstance(fighter, SpellcasterFightCharacter):
@@ -89,9 +89,7 @@ class CastIceStorm(NegativeAoeAction[SlotT], Generic[SlotT]):
                         ]
                     )
                     hit_damage = damage if roll < self.spell_save_dc else damage // 2
-                    battlemap = battlemap.replace_combatant(
-                        slot, combatant.take_damage(hit_damage)
-                    )
+                    battlemap = battlemap.deal_damage(slot, hit_damage)
                 case _:
                     pass
         new_cells = IceStormTerrainModifier.sphere(

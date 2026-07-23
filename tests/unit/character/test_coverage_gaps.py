@@ -224,6 +224,21 @@ class TestClassLevelsGetItem:
 
 
 @pytest.mark.unit
+class TestClassLevelsContains:
+    def test_contains_true_for_class_with_level(self) -> None:
+        levels = ClassLevels(wizard=1)
+        assert Class.WIZARD in levels
+
+    def test_contains_false_for_class_without_level(self) -> None:
+        levels = ClassLevels()
+        assert Class.WIZARD not in levels
+
+    def test_contains_false_for_non_class_object(self) -> None:
+        levels = ClassLevels()
+        assert "not a class" not in levels
+
+
+@pytest.mark.unit
 class TestRobeOfTheArchmagiApply:
     def test_apply_returns_base_plus_dex(self) -> None:
         robe = robe_of_the_archmagi

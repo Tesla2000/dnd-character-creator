@@ -5,7 +5,10 @@ from dnd.character.blueprint.building_blocks.initial_data_filler.random_filler i
 )
 from dnd.character.blueprint.building_blocks.equipment_adder import EquipmentAdder
 from dnd.character.blueprint.building_blocks.feat_adder import FeatAdder
-from dnd.character.blueprint.building_blocks.feat_block.feats import ToughFeatBlock
+from dnd.character.blueprint.building_blocks.feat_block.feats import (
+    SimpleFeatBlock,
+    ToughFeatBlock,
+)
 from dnd.character.blueprint.building_blocks.magical_item_chooser.random import (
     RandomMagicalItemChooser,
 )
@@ -86,6 +89,19 @@ class TestEquipmentBlocks:
         assert FeatName.TOUGH in result.feats
         assert len(result.health_modifiers) == 1
         assert isinstance(result.health_modifiers[0], ToughHealthModifier)
+
+
+@pytest.mark.unit
+class TestSimpleFeatBlockSubclasses:
+    def test_every_simple_feat_block_adds_its_feat_name(self) -> None:
+        subclasses: tuple[type[SimpleFeatBlock], ...] = tuple(
+            SimpleFeatBlock.__subclasses__()
+        )
+        assert len(subclasses) > 0
+        for block_cls in subclasses:
+            block = block_cls()
+            result = block.apply(Blueprint())
+            assert block._feat_name() in result.feats
 
 
 @pytest.mark.unit

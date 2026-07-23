@@ -171,6 +171,9 @@ class Blueprint(
     n_stat_choices: _StCK_co = Field(default=cast(_StCK_co, 0))
     n_skill_choices: _SkCK_co = Field(default=cast(_SkCK_co, 0))
     skills_to_choose_from: frozenset[Skill] = Field(default_factory=frozenset)
+    n_expertise_choices: NonNegativeInt = Field(default=0)
+    expertise_choices_from: frozenset[Skill] = Field(default_factory=frozenset)
+    skill_expertise: tuple[Skill, ...] = Field(default=())
     fighting_style: FightingStyle | None = Field(default=None)
     n_fighting_style_choices: NonNegativeInt = Field(default=0)
     fighting_styles_to_choose_from: frozenset[FightingStyle] = Field(

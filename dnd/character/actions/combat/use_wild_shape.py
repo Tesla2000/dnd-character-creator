@@ -23,7 +23,7 @@ class UseWildShape(BonusAction[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[UseWildShape[SlotT], ...]:
         if not (
@@ -44,11 +44,17 @@ class UseWildShape(BonusAction[SlotT], Generic[SlotT]):
             case _:
                 return battlemap
         beast_form = beast_form_for_druid_level(fighter.character.classes.druid)
+        beast_attack_ability = (
+            AbilityName.ATTACK_WITH_POLAR_BEAR_CLAW
+            if fighter.character.classes.druid >= 6
+            else AbilityName.ATTACK_WITH_BROWN_BEAR_CLAW
+        )
         updated = (
             fighter.model_copy(
                 update={
                     "has_bonus_action": False,
-                    "active_features": fighter.active_features | {AbilityName.WILD_SHAPE},
+                    "active_features": fighter.active_features
+                    | {AbilityName.WILD_SHAPE, beast_attack_ability},
                 }
             )
             .use_resource(ResourceName.WILD_SHAPE)

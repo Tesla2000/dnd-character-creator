@@ -255,6 +255,12 @@ from dnd.character.blueprint.building_blocks.level_up.druid.moon.level_2 import 
 from dnd.character.blueprint.building_blocks.level_up.druid.moon.level_6 import (
     DruidLevel6Moon,
 )
+from dnd.character.blueprint.building_blocks.level_up.rogue.level_1 import (
+    RogueLevel1,
+)
+from dnd.character.blueprint.building_blocks.level_up.rogue.level_2 import (
+    RogueLevel2,
+)
 from dnd.character.blueprint.building_blocks.level_up.ranger.level_1 import (
     RangerLevel1,
 )
@@ -810,6 +816,8 @@ AnyBuildingBlock = Annotated[
         RangerLevel3GloomStalker,
         RangerLevel4,
         RangerLevel5,
+        RogueLevel1,
+        RogueLevel2,
         BarbarianLevel1,
         BarbarianLevel2,
         BarbarianLevel4,
@@ -1053,6 +1061,8 @@ __all__ = [
     "RangerLevel3GloomStalker",
     "RangerLevel4",
     "RangerLevel5",
+    "RogueLevel1",
+    "RogueLevel2",
     "BarbarianLevel1",
     "BarbarianLevel2",
     "BarbarianLevel4",

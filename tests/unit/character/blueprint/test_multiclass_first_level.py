@@ -4,8 +4,12 @@ from dnd.character.blueprint.building_blocks.level_up.barbarian.level_1 import (
     BarbarianLevel1,
 )
 from dnd.character.blueprint.building_blocks.level_up.health_increase import (
+    D8HealthIncreaseAverage,
     D12HealthIncreaseAverage,
     D6HealthIncreaseAverage,
+)
+from dnd.character.blueprint.building_blocks.level_up.rogue.level_1 import (
+    RogueLevel1,
 )
 from dnd.character.blueprint.building_blocks.level_up.sorcerer.draconic_bloodline.level_1 import (
     SorcererLevel1DraconicBloodline,
@@ -20,6 +24,7 @@ from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import ArmorProficiency
 from dnd.other_profficiencies import WeaponProficiency
+from dnd.skill_proficiency import Skill
 
 _STATS = Stats(
     strength=15,
@@ -37,6 +42,15 @@ _BARB_1_BP = _EMPTY_BP.model_copy(update={"classes": ClassLevels(barbarian=1)})
 _BARB_HEALTH = D12HealthIncreaseAverage()
 _WIZ_HEALTH = D6HealthIncreaseAverage()
 _SOR_HEALTH = D6HealthIncreaseAverage()
+_ROGUE_HEALTH = D8HealthIncreaseAverage()
+
+# Rogue's expertise step reads skill_proficiencies unconditionally (even when
+# multiclassing), unlike saving throws/skill choices which are first-class-only.
+# _WIZARD_1_BP never ran a real skill-choice resolver, so it has zero skills --
+# Rogue tests need a variant that actually has some to choose expertise from.
+_WIZARD_1_BP_WITH_SKILLS = _WIZARD_1_BP.model_copy(
+    update={"skill_proficiencies": (Skill.ARCANA, Skill.HISTORY)}
+)
 
 
 # ---------------------------------------------------------------------------
@@ -97,6 +111,71 @@ def test_barbarian_first_class_grants_skills() -> None:
 def test_barbarian_multiclass_no_skills() -> None:
     result = BarbarianLevel1(health_increase=_BARB_HEALTH).apply(_WIZARD_1_BP)
     assert result.skill_proficiencies == _WIZARD_1_BP.skill_proficiencies
+
+
+# ---------------------------------------------------------------------------
+# Rogue multiclass (character already has wizard 1)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_rogue_multiclass_no_dexterity_saving_throw() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_WIZARD_1_BP_WITH_SKILLS)
+    assert Statistic.DEXTERITY not in result.saving_throw_proficiencies
+
+
+@pytest.mark.unit
+def test_rogue_multiclass_no_intelligence_saving_throw() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_WIZARD_1_BP_WITH_SKILLS)
+    assert Statistic.INTELLIGENCE not in result.saving_throw_proficiencies
+
+
+@pytest.mark.unit
+def test_rogue_multiclass_no_skills() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_WIZARD_1_BP_WITH_SKILLS)
+    assert result.skill_proficiencies == _WIZARD_1_BP_WITH_SKILLS.skill_proficiencies
+
+
+@pytest.mark.unit
+def test_rogue_multiclass_keeps_armor_proficiencies() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_WIZARD_1_BP_WITH_SKILLS)
+    assert ArmorProficiency.LIGHT_ARMOR in result.armor_proficiencies
+
+
+@pytest.mark.unit
+def test_rogue_multiclass_keeps_weapon_proficiencies() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_WIZARD_1_BP_WITH_SKILLS)
+    assert WeaponProficiency.RAPIER in result.weapon_proficiencies
+    assert WeaponProficiency.SIMPLE_WEAPON in result.weapon_proficiencies
+
+
+@pytest.mark.unit
+def test_rogue_multiclass_still_grants_expertise() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_WIZARD_1_BP_WITH_SKILLS)
+    assert len(result.skill_expertise) == 2
+
+
+# ---------------------------------------------------------------------------
+# Rogue as first class (positive control)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_rogue_first_class_grants_dexterity_saving_throw() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_EMPTY_BP)
+    assert Statistic.DEXTERITY in result.saving_throw_proficiencies
+
+
+@pytest.mark.unit
+def test_rogue_first_class_grants_intelligence_saving_throw() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_EMPTY_BP)
+    assert Statistic.INTELLIGENCE in result.saving_throw_proficiencies
+
+
+@pytest.mark.unit
+def test_rogue_first_class_grants_skills() -> None:
+    result = RogueLevel1(health_increase=_ROGUE_HEALTH).apply(_EMPTY_BP)
+    assert len(result.skill_proficiencies) == len(_EMPTY_BP.skill_proficiencies) + 4
 
 
 # ---------------------------------------------------------------------------

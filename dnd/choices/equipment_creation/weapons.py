@@ -64,5 +64,6 @@ TWO_HANDED_WEAPONS: frozenset[WeaponName] = frozenset(
         WeaponName.GREATCLUB,
         WeaponName.CROSSBOW_HEAVY,
         WeaponName.LONGBOW,
+        WeaponName.SHORTBOW,
     }
 )

@@ -20,6 +20,7 @@ class CombatEventType(StrEnum):
     OPPORTUNITY_ATTACK = auto()
     MOVEMENT = auto()
     ACTION_TAKEN = auto()
+    CONCENTRATION_BROKEN = auto()
 
 
 class RageEndsEvent(BaseModel):
@@ -102,6 +103,14 @@ class ActionTakenEvent[SlotT: IntEnum](BaseModel):
     action_name: AbilityName
 
 
+class ConcentrationBrokenEvent[SlotT: IntEnum](BaseModel):
+    model_config = ConfigDict(frozen=True)
+    type: Literal[CombatEventType.CONCENTRATION_BROKEN] = (
+        CombatEventType.CONCENTRATION_BROKEN
+    )
+    caster_slot: SlotT
+
+
 type AnyCombatEvent[SlotT: IntEnum] = Annotated[
     Union[
         RageEndsEvent,
@@ -115,6 +124,7 @@ type AnyCombatEvent[SlotT: IntEnum] = Annotated[
         OpportunityAttackEvent[SlotT],
         MovementEvent[SlotT],
         ActionTakenEvent[SlotT],
+        ConcentrationBrokenEvent[SlotT],
     ],
     Field(discriminator="type"),
 ]
@@ -123,6 +133,7 @@ __all__ = [
     "ActionTakenEvent",
     "AnyCombatEvent",
     "CombatEventType",
+    "ConcentrationBrokenEvent",
     "CreatureAttackedEvent",
     "CreatureTargetedEvent",
     "MeleeDamageEvent",

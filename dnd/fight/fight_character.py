@@ -6,6 +6,7 @@ from typing import (
     TYPE_CHECKING,
     Annotated,
     ClassVar,
+    Generic,
 )
 from uuid import uuid4
 
@@ -32,16 +33,21 @@ from dnd.character.actions.advantage_modifier import (
     DisadvantageModifier,
     GrantsAdvantageModifier,
 )
+from dnd.character.actions.damage_resistance_modifier import DamageResistanceModifier
 from dnd.fight._combat_event import (
     AnyCombatEvent,
     RageEndsEvent,
     TurnStartEvent,
 )
 from dnd.fight._team_id import TeamId
+from dnd.character.actions.magical_damage_modifier import (
+    PrimalStrikeMagicalDamageModifier,
+)
 from dnd.character.presentable_character import PresentableCharacter
 from dnd.character.spells.max_spell_levels import SpellSlots
 from dnd.choices.equipment_creation.weapons import TWO_HANDED_WEAPONS, WeaponName
 from dnd.choices.stats_creation.statistic import Statistic
+from dnd.fight._combatant_slot import SlotT
 from dnd.fight._condition import Condition
 from dnd.fight._fight_resource import _FightResource, ResourceName
 from dnd.other_profficiencies import ArmorProficiency
@@ -91,7 +97,7 @@ class _CombatantBase[HealthType: NonNegativeInt](BaseModel):
         return self, ()
 
 
-class FightCharacter(_CombatantBase[PositiveInt]):
+class FightCharacter(_CombatantBase[PositiveInt], Generic[SlotT]):
     has_action: bool = True
     has_bonus_action: bool = True
     has_reaction: bool = True
@@ -108,6 +114,10 @@ class FightCharacter(_CombatantBase[PositiveInt]):
     con_save_bonus: int = 0
     main_hand: WeaponName | None = None
     off_hand: WeaponName | None = None
+    summoned_by: SlotT | None = None
+    sneak_attack_dice: NonNegativeInt = 0
+    sneak_attack_used_this_turn: bool = False
+    disengaging: bool = False
 
     @property
     def ac(self) -> int:
@@ -116,6 +126,15 @@ class FightCharacter(_CombatantBase[PositiveInt]):
         )
         shield_prof = ArmorProficiency.SHIELDS in self.character.armor_proficiencies
         return self.base_ac + (2 if shield_held and shield_prof else 0)
+
+    def all_resistances(self) -> frozenset[DamageType]:
+        return self.damage_resistance | frozenset[DamageType]().union(
+            *(
+                m.get_resistances()
+                for m in self.modifiers
+                if isinstance(m, DamageResistanceModifier)
+            )
+        )
 
     @staticmethod
     def _resources_from_character(
@@ -133,7 +152,7 @@ class FightCharacter(_CombatantBase[PositiveInt]):
         initiative: int,
         resources: tuple[_FightResource, ...] | None = None,
         team_id: TeamId = TeamId.A,
-    ) -> FightCharacter:
+    ) -> FightCharacter[SlotT]:
         if resources is None:
             resources = cls._resources_from_character(character)
         number_of_attacks = 2 if AbilityName.EXTRA_ATTACK in character.actions else 1
@@ -163,6 +182,16 @@ class FightCharacter(_CombatantBase[PositiveInt]):
                 break
         if has_shield and off_hand is None:
             off_hand = WeaponName.SHIELD
+        modifiers: tuple[AnyModifier, ...] = (
+            (PrimalStrikeMagicalDamageModifier(),)
+            if AbilityName.PRIMAL_STRIKE in character.actions
+            else ()
+        )
+        sneak_attack_dice = (
+            (character.classes.rogue + 1) // 2
+            if AbilityName.SNEAK_ATTACK in character.actions
+            else 0
+        )
         return cls(
             character=character,
             initiative=initiative,
@@ -178,6 +207,8 @@ class FightCharacter(_CombatantBase[PositiveInt]):
             con_save_bonus=con_save_bonus,
             main_hand=main_hand,
             off_hand=off_hand,
+            modifiers=modifiers,
+            sneak_attack_dice=sneak_attack_dice,
         )
 
     def on_event[T: IntEnum](
@@ -201,6 +232,8 @@ class FightCharacter(_CombatantBase[PositiveInt]):
                 update["has_free_action"] = True
                 update["attacks_remaining"] = self.number_of_attacks
                 update["movement_remaining"] = self.speed
+                update["sneak_attack_used_this_turn"] = False
+                update["disengaging"] = False
                 surviving = [
                     m
                     for m in surviving
@@ -241,7 +274,7 @@ class FightCharacter(_CombatantBase[PositiveInt]):
     def spend_free_action(self) -> Self:
         return self.model_copy(update={"has_free_action": False})
 
-    def take_damage(self, amount: int) -> FightCharacter | DownedFightCharacter:
+    def take_damage(self, amount: int) -> FightCharacter[SlotT] | DownedFightCharacter:
         remaining = amount
         new_temp = self.temporary_health
         if new_temp > 0:
@@ -284,7 +317,7 @@ class FightCharacter(_CombatantBase[PositiveInt]):
         return self.model_copy(update={"current_health": new_hp})
 
 
-class SpellcasterFightCharacter(FightCharacter):
+class SpellcasterFightCharacter(FightCharacter[SlotT], Generic[SlotT]):
     remaining_spell_slots: SpellSlots
 
     @classmethod
@@ -294,7 +327,7 @@ class SpellcasterFightCharacter(FightCharacter):
         initiative: int,
         resources: tuple[_FightResource, ...] | None = None,
         team_id: TeamId = TeamId.A,
-    ) -> SpellcasterFightCharacter:
+    ) -> SpellcasterFightCharacter[SlotT]:
         if resources is None:
             resources = cls._resources_from_character(character)
         number_of_attacks = 2 if AbilityName.EXTRA_ATTACK in character.actions else 1
@@ -326,6 +359,16 @@ class SpellcasterFightCharacter(FightCharacter):
             off_hand = WeaponName.SHIELD
         caster_info = character.caster
         assert caster_info is not None
+        modifiers: tuple[AnyModifier, ...] = (
+            (PrimalStrikeMagicalDamageModifier(),)
+            if AbilityName.PRIMAL_STRIKE in character.actions
+            else ()
+        )
+        sneak_attack_dice = (
+            (character.classes.rogue + 1) // 2
+            if AbilityName.SNEAK_ATTACK in character.actions
+            else 0
+        )
         return cls(
             character=character,
             initiative=initiative,
@@ -342,6 +385,8 @@ class SpellcasterFightCharacter(FightCharacter):
             con_save_bonus=con_save_bonus,
             main_hand=main_hand,
             off_hand=off_hand,
+            modifiers=modifiers,
+            sneak_attack_dice=sneak_attack_dice,
         )
 
     def spend_level_1_slot(self) -> Self:
@@ -379,7 +424,7 @@ class DownedFightCharacter(_CombatantBase[NonNegativeInt]):
     death_save_failures: Annotated[int, Field(ge=0, le=3)] = 0
 
     @classmethod
-    def from_active(cls, fc: FightCharacter) -> DownedFightCharacter:
+    def from_active[T: IntEnum](cls, fc: FightCharacter[T]) -> DownedFightCharacter:
         return cls(
             character=fc.character,
             initiative=fc.initiative,
@@ -410,7 +455,7 @@ class DownedFightCharacter(_CombatantBase[NonNegativeInt]):
         new_failures = min(3, self.death_save_failures + 1)
         return self.model_copy(update={"death_save_failures": new_failures})
 
-    def heal(self, amount: int) -> FightCharacter:
+    def heal[T: IntEnum](self, amount: int) -> FightCharacter[T]:
         new_hp = min(amount, self.max_health)
         return FightCharacter(
             character=self.character,
@@ -444,7 +489,7 @@ class StabilizedFightCharacter(_CombatantBase[NonNegativeInt]):
             position=fc.position,
         )
 
-    def heal(self, amount: int) -> FightCharacter:
+    def heal[T: IntEnum](self, amount: int) -> FightCharacter[T]:
         new_hp = min(amount, self.max_health)
         return FightCharacter(
             character=self.character,
@@ -478,7 +523,7 @@ class DeadFightCharacter(_CombatantBase[NonNegativeInt]):
             position=fc.position,
         )
 
-    def revive(self, amount: int) -> FightCharacter:
+    def revive[T: IntEnum](self, amount: int) -> FightCharacter[T]:
         new_hp = min(max(1, amount), self.max_health)
         return FightCharacter(
             character=self.character,
@@ -494,10 +539,43 @@ class DeadFightCharacter(_CombatantBase[NonNegativeInt]):
         )
 
 
-AnyActiveCombatant = (
-    FightCharacter
-    | SpellcasterFightCharacter
-    | DownedFightCharacter
-    | StabilizedFightCharacter
-    | DeadFightCharacter
+class UnsummonedFightCharacter(_CombatantBase[NonNegativeInt]):
+    current_health: NonNegativeInt = 0
+
+    @classmethod
+    def reserved_for_summon(
+        cls,
+        presentable: PresentableCharacter,
+        initiative: int,
+        team_id: TeamId,
+        position: Position,
+    ) -> UnsummonedFightCharacter:
+        return cls(
+            character=presentable,
+            initiative=initiative,
+            max_health=presentable.health,
+            current_health=0,
+            team_id=team_id,
+            position=position,
+        )
+
+    @classmethod
+    def from_vanished[T: IntEnum](cls, fc: FightCharacter[T]) -> UnsummonedFightCharacter:
+        return cls(
+            character=fc.character,
+            initiative=fc.initiative,
+            max_health=fc.max_health,
+            current_health=0,
+            team_id=fc.team_id,
+            position=fc.position,
+        )
+
+
+type AnyActiveCombatant[SlotT: IntEnum] = (
+    InstanceOf[FightCharacter[SlotT]]
+    | InstanceOf[SpellcasterFightCharacter[SlotT]]
+    | InstanceOf[DownedFightCharacter]
+    | InstanceOf[StabilizedFightCharacter]
+    | InstanceOf[DeadFightCharacter]
+    | InstanceOf[UnsummonedFightCharacter]
 )

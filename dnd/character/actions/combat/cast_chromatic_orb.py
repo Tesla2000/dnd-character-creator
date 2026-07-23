@@ -23,7 +23,7 @@ class CastChromaticOrb(Action[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[CastChromaticOrb[SlotT], ...]:
         if not isinstance(fighter, SpellcasterFightCharacter):
@@ -69,4 +69,4 @@ class CastChromaticOrb(Action[SlotT], Generic[SlotT]):
         if roll < target.ac:
             return battlemap
         damage = sum(randint(1, 8) for _ in range(3))
-        return battlemap.replace_combatant(self.target_slot, target.take_damage(damage))
+        return battlemap.deal_damage(self.target_slot, damage)

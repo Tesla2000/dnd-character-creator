@@ -10,6 +10,9 @@ from dnd.choices.background_creatrion.background import Background
 from dnd.choices.sex import Sex
 from dnd.character.health_modifier import DwarfHealthModifier
 from dnd.character.health_modifier import ToughHealthModifier
+from dnd.character.spell_attack_bonus_modifier import FlatSpellAttackBonus
+from dnd.choices.stats_creation.statistic import Statistic
+from dnd.skill_proficiency import Skill
 
 _STATS = Stats(
     strength=10,
@@ -62,6 +65,16 @@ class TestPresentableCharacterNonCaster:
         char = PresentableCharacter(**_BASE_KWARGS)
         assert char.n_prepared_spells == char.level
 
+    def test_spell_attack_bonus_sums_modifiers(self) -> None:
+        char = PresentableCharacter(
+            **_BASE_KWARGS,
+            spell_attack_bonus_modifiers=(
+                FlatSpellAttackBonus(bonus=2),
+                FlatSpellAttackBonus(bonus=3),
+            ),
+        )
+        assert char.spell_attack_bonus == 5
+
 
 _LEVELED_KWARGS: dict[str, object] = {**_BASE_KWARGS, "classes": ClassLevels(fighter=2)}
 
@@ -83,3 +96,31 @@ class TestPresentableCharacterHealth:
             health_modifiers=(DwarfHealthModifier(),),
         )
         assert dwarf_char.health == base_char.health + base_char.level
+
+
+@pytest.mark.unit
+class TestPresentableCharacterInitiative:
+    def test_initiative_includes_initiative_bonus(self) -> None:
+        base_char = PresentableCharacter(**_BASE_KWARGS)
+        boosted_char = PresentableCharacter(**_BASE_KWARGS, initiative_bonus=3)
+        assert boosted_char.initiative == base_char.initiative + 3
+
+
+@pytest.mark.unit
+class TestPresentableCharacterAbilities:
+    def test_expertise_doubles_proficiency_bonus(self) -> None:
+        char = PresentableCharacter(
+            **_BASE_KWARGS,
+            skill_proficiencies=(Skill.STEALTH,),
+            skill_expertise=(Skill.STEALTH,),
+        )
+        dex_mod = char.stats.get_modifier(Statistic.DEXTERITY)
+        assert char.abilities[Skill.STEALTH] == dex_mod + 2 * char.proficiency_bonus
+
+    def test_proficiency_without_expertise_is_not_doubled(self) -> None:
+        char = PresentableCharacter(
+            **_BASE_KWARGS,
+            skill_proficiencies=(Skill.STEALTH,),
+        )
+        dex_mod = char.stats.get_modifier(Statistic.DEXTERITY)
+        assert char.abilities[Skill.STEALTH] == dex_mod + char.proficiency_bonus

@@ -19,10 +19,10 @@ class _RageAttackBonusModifier(_AttackBonusModifier):
     type: Literal[AttackBonusModifierType.RAGE] = AttackBonusModifierType.RAGE
     owner_id: UUIDString
 
-    def apply(
+    def apply[SlotT: IntEnum](
         self,
-        attacker: FightCharacter,
-        _defender: FightCharacter,
+        attacker: FightCharacter[SlotT],
+        _defender: FightCharacter[SlotT],
     ) -> int:
         return 2 if AbilityName.RAGE in attacker.active_features else 0
 

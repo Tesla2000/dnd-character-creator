@@ -13,6 +13,10 @@ from dnd.character.actions.conditional_immunity_modifier import (
 from dnd.character.actions.damage_resistance_modifier import (
     RageDamageResistanceModifier,
 )
+from dnd.character.actions.duration_modifier import RageRoundCounterModifier
+from dnd.character.actions.magical_damage_modifier import (
+    PrimalStrikeMagicalDamageModifier,
+)
 
 AnyModifier = Annotated[
     Union[
@@ -21,6 +25,8 @@ AnyModifier = Annotated[
         RecklessGrantsAdvantageModifier,
         RageDamageResistanceModifier,
         MindlessRageConditionalImmunityModifier,
+        RageRoundCounterModifier,
+        PrimalStrikeMagicalDamageModifier,
     ],
     Field(discriminator="type"),
 ]

@@ -13,6 +13,7 @@ from dnd.character.actions.conditional_immunity_modifier import (
 from dnd.character.actions.damage_resistance_modifier import (
     RageDamageResistanceModifier,
 )
+from dnd.character.actions.duration_modifier import RageRoundCounterModifier
 from dnd.fight._combatant_slot import SlotT
 from dnd.fight.fight_character import FightCharacter
 
@@ -30,7 +31,7 @@ class UseRage(BonusAction[SlotT], Generic[SlotT]):
     def create(
         cls,
         actor_slot: SlotT,
-        fighter: FightCharacter,
+        fighter: FightCharacter[SlotT],
         battlemap: Battlemap[SlotT],
     ) -> tuple[UseRage[SlotT], ...]:
         if not (
@@ -53,6 +54,7 @@ class UseRage(BonusAction[SlotT], Generic[SlotT]):
         rage_mods: tuple[AnyModifier, ...] = (
             RageAttackBonusModifier(owner_id=fighter.id),
             RageDamageResistanceModifier(owner_id=fighter.id),
+            RageRoundCounterModifier(owner_id=fighter.id),
         )
         if AbilityName.MINDLESS_RAGE in fighter.character.actions:
             rage_mods = rage_mods + (

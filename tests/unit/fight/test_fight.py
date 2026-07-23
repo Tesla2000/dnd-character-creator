@@ -10,8 +10,10 @@ from pathlib import Path
 from typing import Self, overload
 
 import pytest
+from uuid_string import UUIDString
 
 import dnd.character.actions._melee_attack as melee_attack_module
+import dnd.character.actions.combat.cast_chromatic_orb as cast_chromatic_orb_module
 import dnd.character.actions.combat.cast_fireball as cast_fireball_module
 import dnd.character.actions.combat.cast_ice_storm as cast_ice_storm_module
 import dnd.character.actions.combat.cast_lightning_bolt as cast_lightning_bolt_module
@@ -19,12 +21,14 @@ import dnd.character.actions.combat.cast_magic_missile as cast_magic_missile_mod
 import dnd.character.actions.combat.cast_scorching_ray as cast_scorching_ray_module
 import dnd.fight._attack as attack_module
 import dnd.fight._creature as creature_module
+import dnd.fight.fight_character as fight_character_module
 import dnd.fight._saving_throw as saving_throw_module
 import dnd.fight._spell_attack as spell_attack_module
 import scripts.fight as fight_module
 from dnd.character.presentable_character import PresentableCharacter
 from dnd.character.spells.max_spell_levels import SpellSlots
 from dnd.character.stats import Stats
+from dnd.choices.abilities.fighting_style import FightingStyle
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.character._ability_name import AbilityName
 from dnd.fight._action_group import _And, _Or
@@ -32,6 +36,7 @@ from dnd.fight._attack import _Attack
 from dnd.fight._attack_result import _AttackResult
 from dnd.fight._creature import _Creature
 from dnd.character.actions._damage_type import DamageType
+from dnd.fight._damage_type import DamageType as FightDamageType
 from dnd.fight._fight_resource import _FightResource, ResourceName
 from dnd.fight._multi_attack import _MultiAttack
 from dnd.fight._non_attack import _NonAttack
@@ -39,15 +44,27 @@ from dnd.fight._saving_throw import _SavingThrow
 from dnd.fight._saving_throw_result import _SavingThrowResult
 from dnd.fight._spell_attack import _SpellAttack
 from dnd.character.actions.attack_bonus_modifier import RageAttackBonusModifier
+from dnd.character.actions.conditional_immunity_modifier import (
+    MindlessRageConditionalImmunityModifier,
+)
 from dnd.character.actions.damage_resistance_modifier import (
     RageDamageResistanceModifier,
 )
+from dnd.character.actions.duration_modifier import RageRoundCounterModifier
 from dnd.character.actions.advantage_modifier import (
+    DisadvantageModifier,
     RecklessAdvantageModifier,
     RecklessGrantsAdvantageModifier,
 )
+from dnd.character.actions._melee_attack import _MeleeAttackExecutor
+from dnd.character.actions.magical_damage_modifier import (
+    PrimalStrikeMagicalDamageModifier,
+)
 from dnd.character.actions.combat import (
     AttackWithAxe,
+    AttackWithBrownBearClaw,
+    AttackWithPolarBearClaw,
+    CastChromaticOrb,
     CastFireball,
     CastIceStorm,
     CastLightningBolt,
@@ -55,32 +72,41 @@ from dnd.character.actions.combat import (
     CastScorchingRay,
     DrawItem,
     DropItem,
+    RevertWildShape,
     UseRage,
     UseRecklessAttack,
+    UseWildShape,
 )
-from dnd.choices.equipment_creation.weapons import WeaponName
+from dnd.choices.equipment_creation.weapons import HitDieSize, WeaponName
 from dnd._position import Position
 from dnd._combat_event import (
+    AnyCombatEvent,
     CombatEventType,
     CreatureAttackedEvent,
     CreatureTargetedEvent,
     MeleeDamageEvent,
     RageEndsEvent,
+    RoundStartEvent,
     TurnEndEvent,
     TurnStartEvent,
 )
 from dnd.character.actions.combat.move import Move
+from dnd.character.actions.combat.pass_turn import Pass
 from dnd.character.actions.get_actions import ActionResolver
 from dnd.fight._team_id import TeamId
 from dnd.fight._terrain_type import TerrainType
+from dnd.fight._condition import Condition
 from dnd.fight.battlemap import Battlemap
 from dnd.fight.fight_character import (
     AnyActiveCombatant,
+    DeadFightCharacter,
+    DownedFightCharacter,
     FightCharacter,
     SpellcasterFightCharacter,
+    StabilizedFightCharacter,
 )
-from dnd.fight.terrain_modifier import IceStormTerrainModifier
-from dnd.character.actions.combat import AttackWithGreataxe
+from dnd.fight.terrain_modifier import IceStormTerrainModifier, TerrainModifier
+from dnd.character.actions.combat import AttackWithGreataxe, AttackWithHandaxe
 from scripts.fight import (
     _EncounterEntry,
     _FightCli,
@@ -450,6 +476,129 @@ class _TwoBattlemap(Battlemap[_TwoSlot]):
                 )
 
 
+class _ScriptedBattlemap(Battlemap[_TwoSlot]):
+    """Returns queued combatants in call order per slot; used to drive
+    _MeleeAttackExecutor's defensive `case _:` branches, which real combat
+    flow can never reach since FightCharacter.on_event never changes type."""
+
+    actor_queue: list[AnyActiveCombatant]
+    target_queue: list[AnyActiveCombatant]
+
+    def get_combatant(self, slot: _TwoSlot) -> AnyActiveCombatant:
+        match slot:
+            case _TwoSlot.A:
+                return self.actor_queue.pop(0)
+            case _TwoSlot.B:
+                return self.target_queue.pop(0)
+
+    def replace_combatant(self, slot: _TwoSlot, updated: AnyActiveCombatant) -> Self:
+        return self
+
+    def emit(self, event: AnyCombatEvent[_TwoSlot]) -> Self:
+        return self
+
+
+class _AlwaysDisadvantageModifier(DisadvantageModifier):
+    def apply(self, attacker: FightCharacter, _defender: FightCharacter) -> bool:
+        return True
+
+
+class _NormalTerrainModifier(TerrainModifier):
+    def terrain_type(self) -> TerrainType:
+        return TerrainType.NORMAL
+
+
+class _EmitsRageEndsOnRoundStartTerrainModifier(TerrainModifier):
+    """Emits RageEndsEvent(target_id=target_id) as a follow-up when it sees
+    RoundStartEvent -- exercises Battlemap.emit's cascade for terrain
+    modifiers, mirroring _EmitsRageEndsOnRoundStart on the combatant side."""
+
+    target_id: UUIDString
+
+    def terrain_type(self) -> TerrainType:
+        return TerrainType.NORMAL
+
+    def on_event(
+        self, event: AnyCombatEvent[IntEnum]
+    ) -> tuple[Self, tuple[AnyCombatEvent[IntEnum], ...]]:
+        if isinstance(event, RoundStartEvent):
+            return self, (RageEndsEvent(target_id=self.target_id),)
+        return self, ()
+
+
+class _CascadingFightCharacter(FightCharacter):
+    """Emits a synthetic follow-up event on RoundStartEvent, to exercise
+    Battlemap.emit's recursive cascade -- no production on_event() ever
+    actually emits anything, so this is otherwise unreachable."""
+
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[FightCharacter, tuple[AnyCombatEvent[T], ...]]:
+        updated, emitted = super().on_event(event)
+        if isinstance(event, RoundStartEvent):
+            emitted = emitted + (RageEndsEvent(target_id=self.id),)
+        return updated, emitted
+
+
+class _EmitsRageEndsOnRoundStart(FightCharacter):
+    """Emits RageEndsEvent(target_id=rage_end_target_id) as a follow-up when
+    it sees RoundStartEvent -- used to prove eager (not batched) cascade
+    resolution: the target should already have lost rage by the time it
+    reacts to the same RoundStartEvent, not just by the time emit() returns."""
+
+    rage_end_target_id: UUIDString
+
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[FightCharacter, tuple[AnyCombatEvent[T], ...]]:
+        updated, emitted = super().on_event(event)
+        if isinstance(event, RoundStartEvent):
+            emitted = emitted + (RageEndsEvent(target_id=self.rage_end_target_id),)
+        return updated, emitted
+
+
+class _RecordsRageStateOnRoundStart(FightCharacter):
+    """Records whether AbilityName.RAGE was present in active_features at the
+    moment it reacts to RoundStartEvent -- see _EmitsRageEndsOnRoundStart."""
+
+    rage_present_when_round_started: bool | None = None
+
+    def on_event[T: IntEnum](
+        self, event: AnyCombatEvent[T]
+    ) -> tuple[FightCharacter, tuple[AnyCombatEvent[T], ...]]:
+        updated, emitted = super().on_event(event)
+        if isinstance(event, RoundStartEvent):
+            updated = updated.model_copy(
+                update={
+                    "rage_present_when_round_started": (
+                        AbilityName.RAGE in self.active_features
+                    )
+                }
+            )
+        return updated, emitted
+
+
+class _QueuedTargetBattlemap(Battlemap[_TwoSlot]):
+    """Fixed actor at slot A; slot B pops the next queued combatant on each
+    call. Used to make a target look present during an AOE spell's hit-scan
+    pass but vanished (e.g. downed) by the time damage is applied -- real
+    combat flow can't produce that within one perform() call since nothing
+    else mutates a target between those two reads of the same battlemap."""
+
+    actor: AnyActiveCombatant
+    target_queue: list[AnyActiveCombatant]
+
+    def get_combatant(self, slot: _TwoSlot) -> AnyActiveCombatant:
+        match slot:
+            case _TwoSlot.A:
+                return self.actor
+            case _TwoSlot.B:
+                return self.target_queue.pop(0)
+
+    def replace_combatant(self, slot: _TwoSlot, updated: AnyActiveCombatant) -> Self:
+        return self
+
+
 class _ThreeSlot(IntEnum):
     A = 0
     B = 1
@@ -552,6 +701,19 @@ def _make_adjacent_target() -> FightCharacter:
 
 
 _RAGE_RESOURCE = _FightResource(name=ResourceName.RAGE, max_uses=3, remaining_uses=2)
+_WILD_SHAPE_RESOURCE = _FightResource(
+    name=ResourceName.WILD_SHAPE, max_uses=2, remaining_uses=2
+)
+
+
+def _druid_pc_data(level: int, actions: list[AbilityName]) -> dict[str, object]:
+    classes = _BASE_PC_DATA["classes"]
+    assert isinstance(classes, dict)
+    return {
+        **_BASE_PC_DATA,
+        "classes": {**classes, "druid": level},
+        "actions": actions,
+    }
 
 
 @pytest.mark.unit
@@ -697,6 +859,225 @@ class TestFightCharacter:
 
 
 @pytest.mark.unit
+class TestFightCharacterLifecycle:
+    def test_add_condition(self) -> None:
+        fc = _make_fc()
+        updated = fc.add_condition(Condition.PRONE)
+        assert Condition.PRONE in updated.conditions
+
+    def test_remove_condition(self) -> None:
+        fc = _make_fc(conditions=frozenset({Condition.PRONE}))
+        updated = fc.remove_condition(Condition.PRONE)
+        assert Condition.PRONE not in updated.conditions
+
+    def test_spend_bonus_action(self) -> None:
+        fc = _make_fc()
+        assert not fc.spend_bonus_action().has_bonus_action
+
+    def test_spend_free_action(self) -> None:
+        fc = _make_fc()
+        assert not fc.spend_free_action().has_free_action
+
+    def test_heal_caps_at_max_health(self) -> None:
+        fc = _make_fc(current_health=1)
+        healed = fc.heal(1000)
+        assert healed.current_health == fc.max_health
+
+    def test_take_damage_partially_absorbed_by_temporary_health(self) -> None:
+        fc = _make_fc(temporary_health=10)
+        updated = fc.take_damage(4)
+        assert isinstance(updated, FightCharacter)
+        assert updated.temporary_health == 6
+        assert updated.current_health == fc.current_health
+
+    def test_take_damage_clears_wild_shape_when_temp_health_depleted(self) -> None:
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.WILD_SHAPE}),
+            temporary_health=5,
+        )
+        updated = fc.take_damage(5)
+        assert isinstance(updated, FightCharacter)
+        assert AbilityName.WILD_SHAPE not in updated.active_features
+
+    def test_take_damage_keeps_wild_shape_when_temp_health_remains(self) -> None:
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.WILD_SHAPE}),
+            temporary_health=10,
+        )
+        updated = fc.take_damage(4)
+        assert isinstance(updated, FightCharacter)
+        assert AbilityName.WILD_SHAPE in updated.active_features
+
+    def test_take_damage_relentless_rage_saves_at_1_hp(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(fight_character_module, "randint", lambda *a: 20)
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                {**_BASE_PC_DATA, "actions": [AbilityName.RELENTLESS_RAGE]}
+            ),
+            current_health=5,
+        )
+        updated = fc.take_damage(100)
+        assert isinstance(updated, FightCharacter)
+        assert updated.current_health == 1
+        assert not updated.has_reaction
+
+    def test_take_damage_downs_when_no_relentless_rage_save(self) -> None:
+        fc = _make_fc(current_health=5)
+        updated = fc.take_damage(100)
+        assert isinstance(updated, DownedFightCharacter)
+
+    def test_downed_take_damage_increments_death_save_failures(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        updated = downed.take_damage(3)
+        assert updated.death_save_failures == 1
+
+    def test_downed_make_death_save_success_increments(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        updated = downed.make_death_save(True)
+        assert isinstance(updated, DownedFightCharacter)
+        assert updated.death_save_successes == 1
+
+    def test_downed_make_death_save_third_success_stabilizes(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc()).model_copy(
+            update={"death_save_successes": 2}
+        )
+        updated = downed.make_death_save(True)
+        assert isinstance(updated, StabilizedFightCharacter)
+
+    def test_downed_make_death_save_failure_increments(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        updated = downed.make_death_save(False)
+        assert isinstance(updated, DownedFightCharacter)
+        assert updated.death_save_failures == 1
+
+    def test_downed_make_death_save_third_failure_dies(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc()).model_copy(
+            update={"death_save_failures": 2}
+        )
+        updated = downed.make_death_save(False)
+        assert isinstance(updated, DeadFightCharacter)
+
+    def test_downed_heal_revives_to_active(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        revived = downed.heal(1)
+        assert isinstance(revived, FightCharacter)
+        assert revived.current_health == 1
+        assert Condition.UNCONSCIOUS not in revived.conditions
+
+    def test_downed_heal_revives_to_at_least_1_hp(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        revived = downed.heal(0)
+        assert revived.current_health == 1
+
+    def test_stabilized_from_downed(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        stabilized = StabilizedFightCharacter.from_downed(downed)
+        assert stabilized.current_health == 0
+
+    def test_stabilized_heal_revives_to_active(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        stabilized = StabilizedFightCharacter.from_downed(downed)
+        revived = stabilized.heal(1)
+        assert isinstance(revived, FightCharacter)
+        assert revived.current_health == 1
+
+    def test_dead_from_downed(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        dead = DeadFightCharacter.from_downed(downed)
+        assert Condition.UNCONSCIOUS in dead.conditions
+
+    def test_dead_revive(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        dead = DeadFightCharacter.from_downed(downed)
+        revived = dead.revive(1)
+        assert isinstance(revived, FightCharacter)
+        assert revived.current_health == 1
+        assert Condition.UNCONSCIOUS not in revived.conditions
+
+
+@pytest.mark.unit
+class TestModifierDirectCalls:
+    def test_rage_attack_bonus_modifier_applies_bonus_while_raging(self) -> None:
+        fc = _make_fc(active_features=frozenset({AbilityName.RAGE}))
+        modifier = RageAttackBonusModifier(owner_id=fc.id)
+        assert modifier.apply(fc, fc) == 2
+
+    def test_rage_attack_bonus_modifier_no_bonus_without_rage(self) -> None:
+        fc = _make_fc()
+        modifier = RageAttackBonusModifier(owner_id=fc.id)
+        assert modifier.apply(fc, fc) == 0
+
+    def test_reckless_advantage_modifier_apply(self) -> None:
+        fc = _make_fc()
+        modifier = RecklessAdvantageModifier()
+        assert modifier.apply(fc, fc) is True
+
+    def test_reckless_grants_advantage_modifier_apply(self) -> None:
+        fc = _make_fc()
+        modifier = RecklessGrantsAdvantageModifier()
+        assert modifier.apply(fc, fc) is True
+
+    def test_mindless_rage_immunities(self) -> None:
+        fc = _make_fc()
+        modifier = MindlessRageConditionalImmunityModifier(owner_id=fc.id)
+        assert modifier.get_immunities() == frozenset(
+            {Condition.CHARMED, Condition.FRIGHTENED}
+        )
+
+
+@pytest.mark.unit
+class TestRageRoundCounterModifier:
+    def test_survives_nine_turn_starts_decrementing_each_time(self) -> None:
+        fc = _make_fc()
+        modifier: RageRoundCounterModifier = RageRoundCounterModifier(owner_id=fc.id)
+        for expected_remaining in range(9, 0, -1):
+            modifier_or_none, emitted = modifier.on_event(
+                TurnStartEvent(target_id=fc.id)
+            )
+            assert modifier_or_none is not None
+            modifier = modifier_or_none
+            assert modifier.rounds_remaining == expected_remaining
+            assert emitted == ()
+
+    def test_tenth_turn_start_emits_rage_ends_and_self_removes(self) -> None:
+        fc = _make_fc()
+        modifier: RageRoundCounterModifier = RageRoundCounterModifier(owner_id=fc.id)
+        for _ in range(9):
+            modifier_or_none, _ = modifier.on_event(TurnStartEvent(target_id=fc.id))
+            assert modifier_or_none is not None
+            modifier = modifier_or_none
+        result, emitted = modifier.on_event(TurnStartEvent(target_id=fc.id))
+        assert result is None
+        assert emitted == (RageEndsEvent(target_id=fc.id),)
+
+    def test_self_removes_when_rage_ends_for_another_reason(self) -> None:
+        fc = _make_fc()
+        modifier = RageRoundCounterModifier(owner_id=fc.id)
+        result, emitted = modifier.on_event(RageEndsEvent(target_id=fc.id))
+        assert result is None
+        assert emitted == ()
+
+    def test_ignores_events_for_a_different_owner(self) -> None:
+        fc = _make_fc()
+        other_id = _make_fc().id
+        modifier = RageRoundCounterModifier(owner_id=fc.id)
+        result, emitted = modifier.on_event(TurnStartEvent(target_id=other_id))
+        assert result == modifier
+        assert emitted == ()
+        result, emitted = modifier.on_event(RageEndsEvent(target_id=other_id))
+        assert result == modifier
+        assert emitted == ()
+
+
+@pytest.mark.unit
+class TestFightDamageTypeReexport:
+    def test_reexports_damage_type(self) -> None:
+        assert FightDamageType is DamageType
+
+
+@pytest.mark.unit
 class TestUseRage:
     def test_perform_sets_resistance_and_bonus(self) -> None:
         fc = _make_fc(resources=(_RAGE_RESOURCE,))
@@ -710,6 +1091,9 @@ class TestUseRage:
             isinstance(m, RageDamageResistanceModifier) for m in new_fc.modifiers
         )
         assert any(isinstance(m, RageAttackBonusModifier) for m in new_fc.modifiers)
+        assert any(
+            isinstance(m, RageRoundCounterModifier) for m in new_fc.modifiers
+        )
         assert AbilityName.RAGE in new_fc.active_features
         assert not new_fc.has_bonus_action
 
@@ -737,8 +1121,337 @@ class TestUseRage:
         new_fc = new_bm.get_combatant(_OneSlot.A)
         assert isinstance(new_fc, FightCharacter)
         # existing + RageAttackBonusModifier + RageDamageResistanceModifier
-        assert len(new_fc.modifiers) == 3
+        # + RageRoundCounterModifier
+        assert len(new_fc.modifiers) == 4
         assert new_fc.modifiers[0] is existing
+        assert any(
+            isinstance(m, RageRoundCounterModifier) for m in new_fc.modifiers
+        )
+
+    def test_perform_returns_unchanged_when_actor_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        action = UseRage(actor_slot=_OneSlot.A)
+        assert action.perform(bm) is bm
+
+    def test_perform_adds_mindless_rage_modifier_when_ability_present(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                {**_BASE_PC_DATA, "actions": [AbilityName.MINDLESS_RAGE]}
+            ),
+            resources=(_RAGE_RESOURCE,),
+        )
+        bm = _make_battlemap(fc)
+        rages = UseRage.create(_OneSlot.A, fc, bm)
+        assert len(rages) == 1
+        new_bm = rages[0].perform(bm)
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert any(
+            isinstance(m, MindlessRageConditionalImmunityModifier)
+            for m in new_fc.modifiers
+        )
+
+
+@pytest.mark.unit
+class TestUseWildShape:
+    def test_create_returns_empty_when_no_bonus_action(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                _druid_pc_data(2, [AbilityName.WILD_SHAPE])
+            ),
+            resources=(_WILD_SHAPE_RESOURCE,),
+            has_bonus_action=False,
+        )
+        bm = _make_battlemap(fc)
+        assert UseWildShape.create(_OneSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_already_shaped(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                _druid_pc_data(2, [AbilityName.WILD_SHAPE])
+            ),
+            resources=(_WILD_SHAPE_RESOURCE,),
+            active_features=frozenset({AbilityName.WILD_SHAPE}),
+        )
+        bm = _make_battlemap(fc)
+        assert UseWildShape.create(_OneSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_no_resource(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                _druid_pc_data(2, [AbilityName.WILD_SHAPE])
+            ),
+        )
+        bm = _make_battlemap(fc)
+        assert UseWildShape.create(_OneSlot.A, fc, bm) == ()
+
+    def test_create_returns_one_action(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                _druid_pc_data(2, [AbilityName.WILD_SHAPE])
+            ),
+            resources=(_WILD_SHAPE_RESOURCE,),
+        )
+        bm = _make_battlemap(fc)
+        assert len(UseWildShape.create(_OneSlot.A, fc, bm)) == 1
+
+    def test_perform_sets_active_feature_and_consumes_resource(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                _druid_pc_data(2, [AbilityName.WILD_SHAPE])
+            ),
+            resources=(_WILD_SHAPE_RESOURCE,),
+        )
+        bm = _make_battlemap(fc)
+        shapes = UseWildShape.create(_OneSlot.A, fc, bm)
+        new_bm = shapes[0].perform(bm)
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert AbilityName.WILD_SHAPE in new_fc.active_features
+        assert not new_fc.has_bonus_action
+        remaining = next(
+            r for r in new_fc.resources if r.name == ResourceName.WILD_SHAPE
+        )
+        assert remaining.remaining_uses == _WILD_SHAPE_RESOURCE.remaining_uses - 1
+
+    def test_perform_grants_brown_bear_hp_below_level_6(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                _druid_pc_data(2, [AbilityName.WILD_SHAPE])
+            ),
+            resources=(_WILD_SHAPE_RESOURCE,),
+        )
+        bm = _make_battlemap(fc)
+        shapes = UseWildShape.create(_OneSlot.A, fc, bm)
+        new_bm = shapes[0].perform(bm)
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert new_fc.temporary_health == 34
+
+    def test_perform_grants_polar_bear_hp_at_level_6(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                _druid_pc_data(6, [AbilityName.WILD_SHAPE])
+            ),
+            resources=(_WILD_SHAPE_RESOURCE,),
+        )
+        bm = _make_battlemap(fc)
+        shapes = UseWildShape.create(_OneSlot.A, fc, bm)
+        new_bm = shapes[0].perform(bm)
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert new_fc.temporary_health == 42
+
+    def test_perform_returns_unchanged_when_actor_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        action = UseWildShape(actor_slot=_OneSlot.A)
+        assert action.perform(bm) is bm
+
+
+@pytest.mark.unit
+class TestRevertWildShape:
+    def test_create_returns_empty_when_not_shaped(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc)
+        assert RevertWildShape.create(_OneSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_no_bonus_action(self) -> None:
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.WILD_SHAPE}),
+            has_bonus_action=False,
+        )
+        bm = _make_battlemap(fc)
+        assert RevertWildShape.create(_OneSlot.A, fc, bm) == ()
+
+    def test_create_returns_one_action(self) -> None:
+        fc = _make_fc(active_features=frozenset({AbilityName.WILD_SHAPE}))
+        bm = _make_battlemap(fc)
+        assert len(RevertWildShape.create(_OneSlot.A, fc, bm)) == 1
+
+    def test_perform_clears_active_feature_and_temp_health(self) -> None:
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.WILD_SHAPE}),
+            temporary_health=34,
+        )
+        bm = _make_battlemap(fc)
+        reverts = RevertWildShape.create(_OneSlot.A, fc, bm)
+        new_bm = reverts[0].perform(bm)
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert AbilityName.WILD_SHAPE not in new_fc.active_features
+        assert new_fc.temporary_health == 0
+        assert not new_fc.has_bonus_action
+
+    def test_perform_returns_unchanged_when_actor_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        action = RevertWildShape(actor_slot=_OneSlot.A)
+        assert action.perform(bm) is bm
+
+
+@pytest.mark.unit
+class TestBeastAttack:
+    def test_create_returns_empty_when_not_shaped(self) -> None:
+        fc = _make_fc()
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert AttackWithBrownBearClaw.create(_TwoSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_no_attacks_remaining(self) -> None:
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.ATTACK_WITH_BROWN_BEAR_CLAW}),
+            attacks_remaining=0,
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert AttackWithBrownBearClaw.create(_TwoSlot.A, fc, bm) == ()
+
+    def test_create_returns_one_action_per_adjacent_target(self) -> None:
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.ATTACK_WITH_BROWN_BEAR_CLAW}),
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert len(AttackWithBrownBearClaw.create(_TwoSlot.A, fc, bm)) == 1
+
+    def test_perform_deals_damage_on_hit(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        rec = _Rec(15, 1, 1)
+        monkeypatch.setattr(melee_attack_module, "randint", rec)
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.ATTACK_WITH_BROWN_BEAR_CLAW}),
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithBrownBearClaw.create(_TwoSlot.A, fc, bm)
+        new_bm = attacks[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        assert isinstance(new_target, FightCharacter)
+        assert new_target.current_health < target.current_health
+
+    def test_without_primal_strike_damage_type_is_slashing(self) -> None:
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.ATTACK_WITH_BROWN_BEAR_CLAW}),
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithBrownBearClaw.create(_TwoSlot.A, fc, bm)
+        assert attacks[0].executor.damage_type == DamageType.SLASHING
+
+    def test_unrelated_modifiers_do_not_upgrade_damage_type(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(melee_attack_module, "randint", lambda *a: 15)
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.ATTACK_WITH_BROWN_BEAR_CLAW}),
+            modifiers=(
+                RageAttackBonusModifier(owner_id=_make_fc().id),
+                RageDamageResistanceModifier(owner_id=_make_fc().id),
+            ),
+        )
+        target = _make_adjacent_target().model_copy(
+            update={
+                "damage_resistance": frozenset({DamageType.SLASHING}),
+                "max_health": 100,
+                "current_health": 100,
+            }
+        )
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithBrownBearClaw.create(_TwoSlot.A, fc, bm)
+        new_bm = attacks[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        assert isinstance(new_target, FightCharacter)
+        expected_damage = (2 * 15 + 4) // 2
+        assert target.current_health - new_target.current_health == expected_damage
+
+    def test_primal_strike_bypasses_mundane_slashing_resistance(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(melee_attack_module, "randint", lambda *a: 15)
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.ATTACK_WITH_POLAR_BEAR_CLAW}),
+            modifiers=(PrimalStrikeMagicalDamageModifier(),),
+        )
+        target = _make_adjacent_target().model_copy(
+            update={
+                "damage_resistance": frozenset({DamageType.SLASHING}),
+                "max_health": 100,
+                "current_health": 100,
+            }
+        )
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithPolarBearClaw.create(_TwoSlot.A, fc, bm)
+        new_bm = attacks[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        assert isinstance(new_target, FightCharacter)
+        expected_damage = 2 * 15 + 5
+        assert target.current_health - new_target.current_health == expected_damage
+
+    def test_without_primal_strike_mundane_slashing_resistance_halves_damage(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(melee_attack_module, "randint", lambda *a: 15)
+        fc = _make_fc(
+            active_features=frozenset({AbilityName.ATTACK_WITH_POLAR_BEAR_CLAW}),
+        )
+        target = _make_adjacent_target().model_copy(
+            update={
+                "damage_resistance": frozenset({DamageType.SLASHING}),
+                "max_health": 100,
+                "current_health": 100,
+            }
+        )
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithPolarBearClaw.create(_TwoSlot.A, fc, bm)
+        new_bm = attacks[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        assert isinstance(new_target, FightCharacter)
+        expected_damage = (2 * 15 + 5) // 2
+        assert target.current_health - new_target.current_health == expected_damage
+
+    def test_tier_2_at_druid_level_6_uses_stronger_modifier(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                _druid_pc_data(6, [AbilityName.WILD_SHAPE])
+            ),
+            active_features=frozenset({AbilityName.ATTACK_WITH_POLAR_BEAR_CLAW}),
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithPolarBearClaw.create(_TwoSlot.A, fc, bm)
+        assert attacks[0].executor.die == HitDieSize.SIX
+        assert attacks[0].executor.ability_modifier == 5
+
+
+@pytest.mark.unit
+class TestMagicalDamageModifier:
+    def test_upgrade_converts_mundane_types(self) -> None:
+        modifier = PrimalStrikeMagicalDamageModifier()
+        assert modifier.upgrade(DamageType.SLASHING) == DamageType.MAGICAL_SLASHING
+        assert modifier.upgrade(DamageType.PIERCING) == DamageType.MAGICAL_PIERCING
+        assert modifier.upgrade(DamageType.BLUDGEONING) == DamageType.MAGICAL_BLUDGEONING
+
+    def test_upgrade_leaves_other_types_unchanged(self) -> None:
+        modifier = PrimalStrikeMagicalDamageModifier()
+        assert modifier.upgrade(DamageType.FIRE) == DamageType.FIRE
+
+    def test_from_presentable_grants_modifier_when_primal_strike_present(self) -> None:
+        pc = PresentableCharacter.model_validate(
+            {**_BASE_PC_DATA, "actions": [AbilityName.PRIMAL_STRIKE]}
+        )
+        fc = FightCharacter.from_presentable(pc, initiative=14)
+        assert any(
+            isinstance(m, PrimalStrikeMagicalDamageModifier) for m in fc.modifiers
+        )
+
+    def test_from_presentable_no_modifier_without_primal_strike(self) -> None:
+        fc = _make_fc()
+        assert not any(
+            isinstance(m, PrimalStrikeMagicalDamageModifier) for m in fc.modifiers
+        )
 
 
 @pytest.mark.unit
@@ -777,6 +1490,12 @@ class TestUseRecklessAttack:
         bm = _make_battlemap(fc)
         actions = UseRecklessAttack.create(_OneSlot.A, fc, bm)
         assert len(actions) == 1
+
+    def test_perform_returns_unchanged_when_actor_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        action = UseRecklessAttack(actor_slot=_OneSlot.A)
+        assert action.perform(bm) is bm
 
     def test_perform_adds_both_modifiers_to_barbarian(self) -> None:
         fc = _make_fc(
@@ -857,6 +1576,27 @@ class TestUseRecklessAttack:
 
 @pytest.mark.unit
 class TestBattlemapEmit:
+    def test_emit_resolves_cascades_before_the_next_combatants_reaction(self) -> None:
+        b_base = _make_fc(active_features=frozenset({AbilityName.RAGE}))
+        b = _RecordsRageStateOnRoundStart(**b_base.__dict__)
+        a_base = _make_fc()
+        a = _EmitsRageEndsOnRoundStart(**{**a_base.__dict__, "rage_end_target_id": b.id})
+        bm = _make_battlemap(a, b)
+        new_bm = bm.emit(RoundStartEvent())
+        new_b = new_bm.get_combatant(_TwoSlot.B)
+        assert isinstance(new_b, _RecordsRageStateOnRoundStart)
+        assert new_b.rage_present_when_round_started is False
+        assert AbilityName.RAGE not in new_b.active_features
+
+    def test_emit_processes_cascaded_events(self) -> None:
+        base = _make_fc(active_features=frozenset({AbilityName.RAGE}))
+        fc = _CascadingFightCharacter(**base.__dict__)
+        bm = _make_battlemap(fc)
+        new_bm = bm.emit(RoundStartEvent())
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert AbilityName.RAGE not in new_fc.active_features
+
     def test_emit_turn_start_resets_actions(self) -> None:
         fc = _make_fc(
             has_action=False,
@@ -955,6 +1695,51 @@ class TestBattlemapEmit:
         assert len(result_fc1.modifiers) == 0
         assert len(result_fc2.modifiers) == 1
 
+    def test_ten_turn_starts_auto_expire_rage_through_production_cascade(
+        self,
+    ) -> None:
+        fc = _make_fc(resources=(_RAGE_RESOURCE,))
+        bm = _make_battlemap(fc)
+        rages = UseRage.create(_OneSlot.A, fc, bm)
+        assert len(rages) == 1
+        bm = rages[0].perform(bm)
+        raging_fc = bm.get_combatant(_OneSlot.A)
+        assert isinstance(raging_fc, FightCharacter)
+        assert AbilityName.RAGE in raging_fc.active_features
+
+        for _ in range(10):
+            bm = bm.emit(TurnStartEvent(target_id=raging_fc.id))
+
+        new_fc = bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert AbilityName.RAGE not in new_fc.active_features
+        assert not any(isinstance(m, RageAttackBonusModifier) for m in new_fc.modifiers)
+        assert not any(
+            isinstance(m, RageDamageResistanceModifier) for m in new_fc.modifiers
+        )
+        assert not any(
+            isinstance(m, RageRoundCounterModifier) for m in new_fc.modifiers
+        )
+
+    def test_emit_processes_cascaded_events_from_terrain_modifiers(self) -> None:
+        fc_base = _make_fc()
+        fc = fc_base.model_copy(
+            update={"active_features": frozenset({AbilityName.RAGE})}
+        )
+        bm = _make_battlemap(fc).model_copy(
+            update={
+                "terrain": {
+                    Position(x=5, y=5): (
+                        _EmitsRageEndsOnRoundStartTerrainModifier(target_id=fc.id),
+                    )
+                }
+            }
+        )
+        new_bm = bm.emit(RoundStartEvent())
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert AbilityName.RAGE not in new_fc.active_features
+
 
 @pytest.mark.unit
 class TestBattlemapTerrain:
@@ -1052,6 +1837,29 @@ class TestBattlemapTerrain:
         survivors = new_bm.terrain[Position(x=1, y=1)]
         assert survivors[0].turn_ends_remaining == 2
 
+    def test_terrain_at_skips_normal_modifiers_before_finding_difficult(self) -> None:
+        fc = _make_fc()
+        normal = _NormalTerrainModifier()
+        difficult = IceStormTerrainModifier(caster_slot=_OneSlot.A)
+        bm = _make_battlemap(fc).model_copy(
+            update={"terrain": {Position(x=0, y=0): (normal, difficult)}}
+        )
+        assert bm.terrain_at(Position(x=0, y=0)) == TerrainType.DIFFICULT
+
+    def test_has_progress_since_true_for_non_bookkeeping_event(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc).model_copy(
+            update={"event_log": (TurnStartEvent(target_id=fc.id), RageEndsEvent(target_id=fc.id))}
+        )
+        assert bm.has_progress_since(0) is True
+
+    def test_has_progress_since_false_for_only_bookkeeping_events(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc).model_copy(
+            update={"event_log": (TurnStartEvent(target_id=fc.id),)}
+        )
+        assert bm.has_progress_since(0) is False
+
 
 @pytest.mark.unit
 class TestIceStormTerrainModifierOnEvent:
@@ -1084,10 +1892,12 @@ class TestIceStormTerrainModifierOnEvent:
 
 @pytest.mark.unit
 class TestMove:
-    def test_create_returns_empty_when_movement_remaining_below_5(self) -> None:
+    def test_create_returns_only_stay_when_movement_remaining_below_5(self) -> None:
         fc = _make_fc(movement_remaining=4)
         bm = _make_battlemap(fc)
-        assert Move.create(_OneSlot.A, fc, bm) == ()
+        assert Move.create(_OneSlot.A, fc, bm) == (
+            Move(to=fc.position, mover_slot=_OneSlot.A, movement_cost=0),
+        )
 
     def test_normal_terrain_cost_matches_chebyshev(self) -> None:
         fc = _make_fc(movement_remaining=30, position=Position(x=0, y=0))
@@ -1148,6 +1958,12 @@ class TestMove:
         assert isinstance(new_fc, FightCharacter)
         assert new_fc.position == Position(x=1, y=1)
         assert new_fc.movement_remaining == 25
+
+    def test_perform_returns_unchanged_when_mover_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        move = Move(to=Position(x=1, y=0), mover_slot=_OneSlot.A, movement_cost=5)
+        assert move.perform(bm) is bm
 
 
 @pytest.mark.unit
@@ -1217,6 +2033,314 @@ class TestAttackWithAxe:
         assert len(attacks) == 1
         attacks[0].perform(bm)
         assert len(rolls) > 0
+
+
+@pytest.mark.unit
+class TestAttackWithHandaxe:
+    def test_create_returns_empty_when_no_weapon_in_hand(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                {**_BASE_PC_DATA, "actions": [AbilityName.ATTACK_WITH_HANDAXE]}
+            ),
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert AttackWithHandaxe.create(_TwoSlot.A, fc, bm) == ()
+
+    def test_create_returns_one_action(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                {**_BASE_PC_DATA, "actions": [AbilityName.ATTACK_WITH_HANDAXE]}
+            ),
+            main_hand=WeaponName.HANDAXE,
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithHandaxe.create(_TwoSlot.A, fc, bm)
+        assert len(attacks) == 1
+        assert attacks[0].executor.damage_type == DamageType.SLASHING
+        assert attacks[0].executor.die == HitDieSize.SIX
+
+    def test_perform_deals_damage_on_hit(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(melee_attack_module, "randint", lambda *a: 20)
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                {**_BASE_PC_DATA, "actions": [AbilityName.ATTACK_WITH_HANDAXE]}
+            ),
+            main_hand=WeaponName.HANDAXE,
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithHandaxe.create(_TwoSlot.A, fc, bm)
+        new_bm = attacks[0].perform(bm)
+        event_types = [e.type for e in new_bm.event_log]
+        assert CombatEventType.MELEE_DAMAGE in event_types
+
+
+@pytest.mark.unit
+class TestMeleeAttackExecutorEdgeCases:
+    def test_disadvantage_only_uses_lower_roll(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        rec = _Rec(15, 3, 5)
+        monkeypatch.setattr(melee_attack_module, "randint", rec)
+        fc = _make_fc_with_attack(modifiers=(_AlwaysDisadvantageModifier(),))
+        target = _make_adjacent_target().model_copy(update={"base_ac": 5})
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithAxe.create(_TwoSlot.A, fc, bm)
+        assert len(attacks) == 1
+        new_bm = attacks[0].perform(bm)
+        event_types = [e.type for e in new_bm.event_log]
+        assert CombatEventType.MELEE_DAMAGE not in event_types
+
+    def test_resistance_halves_damage(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        rec = _Rec(20, 4)
+        monkeypatch.setattr(melee_attack_module, "randint", rec)
+        fc = _make_fc_with_attack()
+        target = _make_adjacent_target().model_copy(
+            update={"damage_resistance": frozenset({DamageType.SLASHING})}
+        )
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithAxe.create(_TwoSlot.A, fc, bm)
+        new_bm = attacks[0].perform(bm)
+        damage_event = next(
+            e for e in new_bm.event_log if isinstance(e, MeleeDamageEvent)
+        )
+        assert damage_event.damage == 2
+
+    def test_resistance_via_modifier_halves_damage(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        rec = _Rec(20, 4)
+        monkeypatch.setattr(melee_attack_module, "randint", rec)
+        fc = _make_fc_with_attack()
+        target = _make_adjacent_target().model_copy(
+            update={
+                "modifiers": (RageDamageResistanceModifier(owner_id=fc.id),),
+            }
+        )
+        bm = _make_battlemap(fc, target)
+        attacks = AttackWithAxe.create(_TwoSlot.A, fc, bm)
+        new_bm = attacks[0].perform(bm)
+        damage_event = next(
+            e for e in new_bm.event_log if isinstance(e, MeleeDamageEvent)
+        )
+        assert damage_event.damage == 2
+
+    def test_magical_damage_bypasses_resistance(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        rec = _Rec(20, 4)
+        monkeypatch.setattr(melee_attack_module, "randint", rec)
+        fc = _make_fc()
+        target = _make_adjacent_target().model_copy(
+            update={"damage_resistance": frozenset({DamageType.SLASHING})}
+        )
+        bm = _make_battlemap(fc, target)
+        executor = _MeleeAttackExecutor(
+            actor_slot=_TwoSlot.A,
+            target_slot=_TwoSlot.B,
+            die=HitDieSize.SIX,
+            damage_type=DamageType.MAGICAL_SLASHING,
+        )
+        new_bm = executor.attack(bm)
+        damage_event = next(
+            e for e in new_bm.event_log if isinstance(e, MeleeDamageEvent)
+        )
+        assert damage_event.damage == 4
+
+    def test_returns_unchanged_when_actor_not_fight_character(self) -> None:
+        bm = _ScriptedBattlemap(
+            actor_queue=[DownedFightCharacter.from_active(_make_fc())],
+            target_queue=[],
+        )
+        executor = _MeleeAttackExecutor(
+            actor_slot=_TwoSlot.A,
+            target_slot=_TwoSlot.B,
+            die=HitDieSize.SIX,
+            damage_type=DamageType.SLASHING,
+        )
+        assert executor.attack(bm) is bm
+
+    def test_returns_unchanged_when_initial_target_not_fight_character(self) -> None:
+        bm = _ScriptedBattlemap(
+            actor_queue=[_make_fc()],
+            target_queue=[DownedFightCharacter.from_active(_make_fc())],
+        )
+        executor = _MeleeAttackExecutor(
+            actor_slot=_TwoSlot.A,
+            target_slot=_TwoSlot.B,
+            die=HitDieSize.SIX,
+            damage_type=DamageType.SLASHING,
+        )
+        assert executor.attack(bm) is bm
+
+    def test_returns_unchanged_when_actor_vanishes_after_first_emit(self) -> None:
+        bm = _ScriptedBattlemap(
+            actor_queue=[_make_fc(), DownedFightCharacter.from_active(_make_fc())],
+            target_queue=[_make_fc()],
+        )
+        executor = _MeleeAttackExecutor(
+            actor_slot=_TwoSlot.A,
+            target_slot=_TwoSlot.B,
+            die=HitDieSize.SIX,
+            damage_type=DamageType.SLASHING,
+        )
+        assert executor.attack(bm) is bm
+
+    def test_returns_unchanged_when_target_vanishes_after_first_emit(self) -> None:
+        bm = _ScriptedBattlemap(
+            actor_queue=[_make_fc(), _make_fc()],
+            target_queue=[_make_fc(), DownedFightCharacter.from_active(_make_fc())],
+        )
+        executor = _MeleeAttackExecutor(
+            actor_slot=_TwoSlot.A,
+            target_slot=_TwoSlot.B,
+            die=HitDieSize.SIX,
+            damage_type=DamageType.SLASHING,
+        )
+        assert executor.attack(bm) is bm
+
+    def test_returns_unchanged_when_target_vanishes_after_second_emit(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(melee_attack_module, "randint", lambda *a: 20)
+        bm = _ScriptedBattlemap(
+            actor_queue=[_make_fc(), _make_fc()],
+            target_queue=[
+                _make_fc(),
+                _make_fc(),
+                DownedFightCharacter.from_active(_make_fc()),
+            ],
+        )
+        executor = _MeleeAttackExecutor(
+            actor_slot=_TwoSlot.A,
+            target_slot=_TwoSlot.B,
+            die=HitDieSize.SIX,
+            damage_type=DamageType.SLASHING,
+        )
+        assert executor.attack(bm) is bm
+
+    def test_returns_unchanged_when_actor_vanishes_before_damage_calc(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(melee_attack_module, "randint", lambda *a: 20)
+        bm = _ScriptedBattlemap(
+            actor_queue=[
+                _make_fc(),
+                _make_fc(),
+                DownedFightCharacter.from_active(_make_fc()),
+            ],
+            target_queue=[_make_fc(), _make_fc(), _make_fc()],
+        )
+        executor = _MeleeAttackExecutor(
+            actor_slot=_TwoSlot.A,
+            target_slot=_TwoSlot.B,
+            die=HitDieSize.SIX,
+            damage_type=DamageType.SLASHING,
+        )
+        assert executor.attack(bm) is bm
+
+    def test_skips_take_damage_when_target_vanishes_before_application(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(melee_attack_module, "randint", lambda *a: 20)
+        bm = _ScriptedBattlemap(
+            actor_queue=[_make_fc(), _make_fc(), _make_fc()],
+            target_queue=[
+                _make_fc(),
+                _make_fc(),
+                _make_fc(),
+                DownedFightCharacter.from_active(_make_fc()),
+            ],
+        )
+        executor = _MeleeAttackExecutor(
+            actor_slot=_TwoSlot.A,
+            target_slot=_TwoSlot.B,
+            die=HitDieSize.SIX,
+            damage_type=DamageType.SLASHING,
+        )
+        result = executor.attack(bm)
+        assert isinstance(result, _ScriptedBattlemap)
+
+
+@pytest.mark.unit
+class TestFightingStyleDueling:
+    def test_dueling_adds_damage_bonus_to_one_handed_attack(self) -> None:
+        fc = _make_fc_with_attack(
+            character=PresentableCharacter.model_validate(
+                {
+                    **_BASE_PC_DATA,
+                    "actions": [AbilityName.ATTACK_WITH_AXE],
+                    "fighting_style": FightingStyle.DUELING,
+                }
+            ),
+        )
+        baseline_fc = _make_fc_with_attack()
+        target = _make_adjacent_target()
+        attacks = AttackWithAxe.create(_TwoSlot.A, fc, _make_battlemap(fc, target))
+        baseline_attacks = AttackWithAxe.create(
+            _TwoSlot.A, baseline_fc, _make_battlemap(baseline_fc, target)
+        )
+        assert len(attacks) == 1
+        assert len(baseline_attacks) == 1
+        assert (
+            attacks[0].executor.ability_modifier
+            == baseline_attacks[0].executor.ability_modifier + 2
+        )
+
+    def test_dueling_no_bonus_when_off_hand_holds_another_weapon(self) -> None:
+        fc = _make_fc_with_attack(
+            character=PresentableCharacter.model_validate(
+                {
+                    **_BASE_PC_DATA,
+                    "actions": [AbilityName.ATTACK_WITH_AXE],
+                    "fighting_style": FightingStyle.DUELING,
+                }
+            ),
+            off_hand=WeaponName.HANDAXE,
+        )
+        baseline_fc = _make_fc_with_attack()
+        target = _make_adjacent_target()
+        attacks = AttackWithAxe.create(_TwoSlot.A, fc, _make_battlemap(fc, target))
+        baseline_attacks = AttackWithAxe.create(
+            _TwoSlot.A, baseline_fc, _make_battlemap(baseline_fc, target)
+        )
+        assert (
+            attacks[0].executor.ability_modifier
+            == baseline_attacks[0].executor.ability_modifier
+        )
+
+    def test_dueling_no_bonus_for_two_handed_attack(self) -> None:
+        fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                {
+                    **_BASE_PC_DATA,
+                    "actions": [AbilityName.ATTACK_WITH_GREATAXE],
+                    "fighting_style": FightingStyle.DUELING,
+                }
+            ),
+            main_hand=WeaponName.GREATAXE,
+            off_hand=WeaponName.GREATAXE,
+        )
+        baseline_fc = _make_fc(
+            character=PresentableCharacter.model_validate(
+                {**_BASE_PC_DATA, "actions": [AbilityName.ATTACK_WITH_GREATAXE]}
+            ),
+            main_hand=WeaponName.GREATAXE,
+            off_hand=WeaponName.GREATAXE,
+        )
+        target = _make_adjacent_target()
+        attacks = AttackWithGreataxe.create(_TwoSlot.A, fc, _make_battlemap(fc, target))
+        baseline_attacks = AttackWithGreataxe.create(
+            _TwoSlot.A, baseline_fc, _make_battlemap(baseline_fc, target)
+        )
+        assert (
+            attacks[0].executor.ability_modifier
+            == baseline_attacks[0].executor.ability_modifier
+        )
 
 
 @pytest.mark.unit
@@ -1396,6 +2520,12 @@ class TestDropItem:
         bm = _make_battlemap(fc)
         assert DropItem.create(_OneSlot.A, fc, bm) == ()
 
+    def test_perform_returns_unchanged_when_actor_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        action = DropItem(actor_slot=_OneSlot.A, which_hand="main")
+        assert action.perform(bm) is bm
+
 
 @pytest.mark.unit
 class TestDrawItem:
@@ -1463,6 +2593,44 @@ class TestDrawItem:
         assert isinstance(new_fc, FightCharacter)
         assert new_fc.main_hand == WeaponName.GREATAXE
         assert new_fc.off_hand == WeaponName.GREATAXE
+
+    def test_perform_returns_unchanged_when_actor_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        action = DrawItem(
+            actor_slot=_OneSlot.A, item=WeaponName.BATTLEAXE, which_hand="main"
+        )
+        assert action.perform(bm) is bm
+
+
+@pytest.mark.unit
+class TestPass:
+    def test_create_returns_empty_when_no_action(self) -> None:
+        fc = _make_fc(has_action=False)
+        bm = _make_battlemap(fc)
+        assert Pass.create(_OneSlot.A, fc, bm) == ()
+
+    def test_create_returns_one_action(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc)
+        assert len(Pass.create(_OneSlot.A, fc, bm)) == 1
+
+    def test_perform_ends_turn(self) -> None:
+        fc = _make_fc()
+        bm = _make_battlemap(fc)
+        passes = Pass.create(_OneSlot.A, fc, bm)
+        new_bm = passes[0].perform(bm)
+        new_fc = new_bm.get_combatant(_OneSlot.A)
+        assert isinstance(new_fc, FightCharacter)
+        assert not new_fc.has_action
+        assert not new_fc.has_bonus_action
+        assert new_fc.attacks_remaining == 0
+
+    def test_perform_returns_unchanged_when_actor_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        action = Pass(actor_slot=_OneSlot.A)
+        assert action.perform(bm) is bm
 
 
 @pytest.mark.unit
@@ -1585,6 +2753,94 @@ def _make_sfc_with_actions(
 
 
 @pytest.mark.unit
+class TestCastChromaticOrb:
+    def test_create_returns_empty_for_non_spellcaster(self) -> None:
+        fc = _make_fc_with_attack()
+        target = _make_adjacent_target()
+        bm = _make_battlemap(fc, target)
+        assert CastChromaticOrb.create(_TwoSlot.A, fc, bm) == ()
+
+    def test_create_returns_empty_when_no_action(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.CHROMATIC_ORB], has_action=False)
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastChromaticOrb.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_level1_slots(self) -> None:
+        sfc = _make_sfc_with_actions(
+            [AbilityName.CHROMATIC_ORB], remaining_spell_slots=_SPELL_SLOTS_NO_L1
+        )
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastChromaticOrb.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_empty_when_no_ability(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.EXTRA_ATTACK])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        assert CastChromaticOrb.create(_TwoSlot.A, sfc, bm) == ()
+
+    def test_create_returns_one_per_target(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.CHROMATIC_ORB])
+        t1 = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        t2 = _make_fc().model_copy(update={"position": Position(x=2, y=0)})
+        bm = _make_battlemap(sfc, t1, t2)
+        orbs = CastChromaticOrb.create(_ThreeSlot.A, sfc, bm)
+        assert len(orbs) == 2
+
+    def test_perform_spends_action_and_slot(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.CHROMATIC_ORB])
+        target = _make_adjacent_target()
+        bm = _make_battlemap(sfc, target)
+        orbs = CastChromaticOrb.create(_TwoSlot.A, sfc, bm)
+        new_bm = orbs[0].perform(bm)
+        new_sfc = new_bm.get_combatant(_TwoSlot.A)
+        assert isinstance(new_sfc, SpellcasterFightCharacter)
+        assert not new_sfc.has_action
+        assert new_sfc.remaining_spell_slots.level_1 == _SPELL_SLOTS_WITH_L4.level_1 - 1
+
+    def test_perform_deals_damage_on_hit(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_chromatic_orb_module, "randint", lambda *a: 20)
+        sfc = _make_sfc_with_actions([AbilityName.CHROMATIC_ORB])
+        target = _make_adjacent_target().model_copy(
+            update={"max_health": 200, "current_health": 200}
+        )
+        bm = _make_battlemap(sfc, target)
+        orbs = CastChromaticOrb.create(_TwoSlot.A, sfc, bm)
+        new_bm = orbs[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        assert isinstance(new_target, FightCharacter)
+        assert new_target.current_health < target.current_health
+
+    def test_perform_no_damage_on_miss(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(cast_chromatic_orb_module, "randint", lambda *a: 1)
+        sfc = _make_sfc_with_actions([AbilityName.CHROMATIC_ORB])
+        target = _make_adjacent_target().model_copy(update={"base_ac": 30})
+        bm = _make_battlemap(sfc, target)
+        orbs = CastChromaticOrb.create(_TwoSlot.A, sfc, bm)
+        new_bm = orbs[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        assert isinstance(new_target, FightCharacter)
+        assert new_target.current_health == target.current_health
+
+    def test_perform_returns_unchanged_when_actor_not_spellcaster(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        orb = CastChromaticOrb(actor_slot=_OneSlot.A, target_slot=_OneSlot.A, spell_attack_bonus=0)
+        assert orb.perform(bm) is bm
+
+    def test_perform_leaves_non_fight_character_target_untouched(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.CHROMATIC_ORB])
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(sfc, downed)
+        orbs = CastChromaticOrb.create(_TwoSlot.A, sfc, bm)
+        new_bm = orbs[0].perform(bm)
+        assert new_bm.get_combatant(_TwoSlot.B) is downed
+
+
+@pytest.mark.unit
 class TestCastFireball:
     def test_create_returns_empty_for_non_spellcaster(self) -> None:
         fc = _make_fc_with_attack()
@@ -1680,6 +2936,26 @@ class TestCastFireball:
         new_bm = fireballs[0].perform(bm)
         new_target = new_bm.get_combatant(_TwoSlot.B)
         expected_damage = (8 * 20) // 2
+        assert new_target.current_health == target.current_health - expected_damage
+
+    def test_perform_halves_damage_when_target_resists_fire(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_fireball_module, "randint", lambda *_: 3)
+        sfc = _make_sfc()
+        target = _make_fc().model_copy(
+            update={
+                "position": Position(x=6, y=0),
+                "max_health": 200,
+                "current_health": 200,
+                "damage_resistance": frozenset({DamageType.FIRE}),
+            }
+        )
+        bm = _make_battlemap(sfc, target)
+        fireballs = CastFireball.create(_TwoSlot.A, sfc, bm)
+        new_bm = fireballs[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        expected_damage = (8 * 3) // 2
         assert new_target.current_health == target.current_health - expected_damage
 
     def test_perform_skips_combatants_outside_radius(
@@ -1785,6 +3061,38 @@ class TestCastFireball:
             else:
                 assert updated.current_health == original.current_health
 
+    def test_hit_slots_skips_non_fight_character_bystander(self) -> None:
+        sfc = _make_sfc()
+        live = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        downed = DownedFightCharacter.from_active(
+            _make_fc().model_copy(update={"position": Position(x=1, y=1)})
+        )
+        bm = _ThreeBattlemap(combatants=(sfc, live, downed))
+        fireball = CastFireball._for_position(
+            _ThreeSlot.A, Position(x=1, y=0), spell_save_dc=10
+        )
+        hit = fireball.hit_slots(bm)
+        assert hit == {_ThreeSlot.B}
+
+    def test_perform_returns_unchanged_when_actor_not_spellcaster(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        fireball = CastFireball._for_position(
+            _OneSlot.A, Position(x=0, y=0), spell_save_dc=10
+        )
+        assert fireball.perform(bm) is bm
+
+    def test_perform_skips_target_that_vanishes_before_damage(self) -> None:
+        sfc = _make_sfc()
+        live_target = _make_fc().model_copy(update={"position": Position(x=0, y=0)})
+        downed_target = DownedFightCharacter.from_active(_make_fc())
+        bm = _QueuedTargetBattlemap(actor=sfc, target_queue=[live_target, downed_target])
+        fireball = CastFireball._for_position(
+            _TwoSlot.A, Position(x=0, y=0), spell_save_dc=10
+        )
+        result = fireball.perform(bm)
+        assert isinstance(result, _QueuedTargetBattlemap)
+
 
 @pytest.mark.unit
 class TestCastMagicMissile:
@@ -1845,6 +3153,20 @@ class TestCastMagicMissile:
         new_target = new_bm.get_combatant(_TwoSlot.B)
         expected_damage = 3 * 4 + 3
         assert new_target.current_health == target.current_health - expected_damage
+
+    def test_perform_returns_unchanged_when_actor_not_spellcaster(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        missile = CastMagicMissile(actor_slot=_OneSlot.A, target_slot=_OneSlot.A)
+        assert missile.perform(bm) is bm
+
+    def test_perform_returns_unchanged_when_target_not_fight_character(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.MAGIC_MISSILE])
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(sfc, downed)
+        missiles = CastMagicMissile.create(_TwoSlot.A, sfc, bm)
+        new_bm = missiles[0].perform(bm)
+        assert new_bm.get_combatant(_TwoSlot.B) is downed
 
 
 @pytest.mark.unit
@@ -1912,6 +3234,41 @@ class TestCastScorchingRay:
         new_bm = rays[0].perform(bm)
         new_target = new_bm.get_combatant(_TwoSlot.B)
         assert new_target.current_health == target.current_health
+
+    def test_perform_halves_damage_when_target_resists_fire(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(cast_scorching_ray_module, "randint", lambda *_: 20)
+        sfc = _make_sfc_with_actions([AbilityName.SCORCHING_RAY])
+        target = _make_adjacent_target().model_copy(
+            update={
+                "max_health": 200,
+                "current_health": 200,
+                "damage_resistance": frozenset({DamageType.FIRE}),
+            }
+        )
+        bm = _make_battlemap(sfc, target)
+        rays = CastScorchingRay.create(_TwoSlot.A, sfc, bm)
+        new_bm = rays[0].perform(bm)
+        new_target = new_bm.get_combatant(_TwoSlot.B)
+        expected_damage = 3 * ((20 + 20) // 2)
+        assert new_target.current_health == target.current_health - expected_damage
+
+    def test_perform_returns_unchanged_when_actor_not_spellcaster(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        ray = CastScorchingRay(
+            actor_slot=_OneSlot.A, target_slot=_OneSlot.A, spell_attack_bonus=0
+        )
+        assert ray.perform(bm) is bm
+
+    def test_perform_stops_when_target_not_fight_character(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.SCORCHING_RAY])
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(sfc, downed)
+        rays = CastScorchingRay.create(_TwoSlot.A, sfc, bm)
+        new_bm = rays[0].perform(bm)
+        assert new_bm.get_combatant(_TwoSlot.B) is downed
 
 
 @pytest.mark.unit
@@ -2026,6 +3383,53 @@ class TestCastLightningBolt:
         ends = {b.end_position for b in bolts}
         assert Position(x=5, y=0) in ends
         assert Position(x=10, y=0) not in ends
+
+    def test_distance_to_segment_handles_zero_length_segment(self) -> None:
+        distance = CastLightningBolt._distance_to_segment(3, 4, 0, 0, 0, 0)
+        assert distance == 5
+
+    def test_clamp_endpoint_shortens_overlong_target(self) -> None:
+        x, y = CastLightningBolt._clamp_endpoint(0, 0, 40, 0, 20)
+        assert (x, y) == (20, 0)
+
+    def test_hit_slots_returns_empty_when_actor_not_fight_character(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        bolt = CastLightningBolt._for_position(
+            _OneSlot.A, Position(x=1, y=0), spell_save_dc=10
+        )
+        assert bolt.hit_slots(bm) == frozenset()
+
+    def test_hit_slots_skips_non_fight_character_bystander(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT])
+        on_line = _make_fc().model_copy(update={"position": Position(x=6, y=0)})
+        downed = DownedFightCharacter.from_active(
+            _make_fc().model_copy(update={"position": Position(x=3, y=0)})
+        )
+        bm = _ThreeBattlemap(combatants=(sfc, on_line, downed))
+        bolt = CastLightningBolt._for_position(
+            _ThreeSlot.A, Position(x=6, y=0), spell_save_dc=10
+        )
+        assert bolt.hit_slots(bm) == {_ThreeSlot.B}
+
+    def test_perform_returns_unchanged_when_actor_not_spellcaster(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        bolt = CastLightningBolt._for_position(
+            _OneSlot.A, Position(x=1, y=0), spell_save_dc=10
+        )
+        assert bolt.perform(bm) is bm
+
+    def test_perform_skips_target_that_vanishes_before_damage(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.LIGHTNING_BOLT])
+        live_target = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        downed_target = DownedFightCharacter.from_active(_make_fc())
+        bm = _QueuedTargetBattlemap(actor=sfc, target_queue=[live_target, downed_target])
+        bolt = CastLightningBolt._for_position(
+            _TwoSlot.A, Position(x=1, y=0), spell_save_dc=10
+        )
+        result = bolt.perform(bm)
+        assert isinstance(result, _QueuedTargetBattlemap)
 
 
 @pytest.mark.unit
@@ -2153,6 +3557,37 @@ class TestCastIceStorm:
         modifiers = new_bm.terrain[Position(x=6, y=0)]
         assert len(modifiers) == 2
         assert existing in modifiers
+
+    def test_hit_slots_skips_non_fight_character_bystander(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        live = _make_fc().model_copy(update={"position": Position(x=1, y=0)})
+        downed = DownedFightCharacter.from_active(
+            _make_fc().model_copy(update={"position": Position(x=1, y=1)})
+        )
+        bm = _ThreeBattlemap(combatants=(sfc, live, downed))
+        storm = CastIceStorm._for_position(
+            _ThreeSlot.A, Position(x=1, y=0), spell_save_dc=10
+        )
+        assert storm.hit_slots(bm) == {_ThreeSlot.B}
+
+    def test_perform_returns_unchanged_when_actor_not_spellcaster(self) -> None:
+        downed = DownedFightCharacter.from_active(_make_fc())
+        bm = _make_battlemap(downed)
+        storm = CastIceStorm._for_position(
+            _OneSlot.A, Position(x=0, y=0), spell_save_dc=10
+        )
+        assert storm.perform(bm) is bm
+
+    def test_perform_skips_target_that_vanishes_before_damage(self) -> None:
+        sfc = _make_sfc_with_actions([AbilityName.ICE_STORM])
+        live_target = _make_fc().model_copy(update={"position": Position(x=0, y=0)})
+        downed_target = DownedFightCharacter.from_active(_make_fc())
+        bm = _QueuedTargetBattlemap(actor=sfc, target_queue=[live_target, downed_target])
+        storm = CastIceStorm._for_position(
+            _TwoSlot.A, Position(x=0, y=0), spell_save_dc=10
+        )
+        result = storm.perform(bm)
+        assert isinstance(result, _QueuedTargetBattlemap)
 
 
 @pytest.mark.unit

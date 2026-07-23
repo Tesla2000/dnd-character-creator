@@ -1,5 +1,8 @@
 import pytest
 
+from dnd.character.blueprint.building_blocks.expertise_choice_resolver.random import (
+    RandomExpertiseChoiceResolver,
+)
 from dnd.character.blueprint.building_blocks.metamagic_choice_resolver.random import (
     RandomMetamagicChoiceResolver,
 )
@@ -7,14 +10,23 @@ from dnd.character.blueprint.building_blocks.signature_spell_choice_resolver.ran
     RandomSignatureSpellChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.feat_adder import FeatAdder
+from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_first import (
+    MaxFirstResolver,
+)
 from dnd.character.blueprint.building_blocks.feat_choice_resolver.max_if_not_maxed import (
     MaxIfNotMaxedResolver,
 )
 from dnd.character.blueprint.building_blocks.feat_choice_resolver.random import (
     RandomFeatChoiceResolver,
 )
+from dnd.character.blueprint.building_blocks.stat_choice_resolver.max import (
+    MaxStatChoiceResolver,
+)
 from dnd.character.blueprint.building_blocks.stat_choice_resolver.priority import (
     PriorityStatChoiceResolver,
+)
+from dnd.character.blueprint.building_blocks.stat_choice_resolver.random import (
+    RandomStatChoiceResolver,
 )
 from dnd.character.blueprint.building_blocks.stats_builder.standard_array import (
     StandardArray,
@@ -37,6 +49,7 @@ from dnd.character.feature.feats import FeatName
 from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import GamingSet, MusicalInstrument, ToolProficiency
+from dnd.skill_proficiency import Skill
 from pydantic import create_model
 
 
@@ -136,6 +149,77 @@ class TestMaxIfNotMaxedResolverASI:
 
 
 @pytest.mark.unit
+class TestMaxFirstResolverSelectFromAvailable:
+    _BELOW_CAP = Stats(
+        strength=10,
+        dexterity=10,
+        constitution=10,
+        intelligence=10,
+        wisdom=10,
+        charisma=10,
+    )
+    _STRENGTH_AT_CAP = Stats(
+        strength=20,
+        dexterity=10,
+        constitution=10,
+        intelligence=10,
+        wisdom=10,
+        charisma=10,
+    )
+    _ALL_AT_CAP = Stats(
+        strength=20,
+        dexterity=20,
+        constitution=20,
+        intelligence=20,
+        wisdom=20,
+        charisma=20,
+    )
+
+    def test_asi_not_in_available_returns_none(self) -> None:
+        resolver = MaxFirstResolver()
+        result = resolver._select_from_available(
+            [FeatName.TOUGH], self._BELOW_CAP, self._ALL_AT_CAP
+        )
+        assert result is None
+
+    def test_priority_stat_below_cap_returns_asi(self) -> None:
+        resolver = MaxFirstResolver(priority=_PRIORITY)
+        result = resolver._select_from_available(
+            [FeatName.ABILITY_SCORE_IMPROVEMENT, FeatName.TOUGH],
+            self._BELOW_CAP,
+            self._ALL_AT_CAP,
+        )
+        assert result == FeatName.ABILITY_SCORE_IMPROVEMENT
+
+    def test_priority_stat_at_cap_returns_none(self) -> None:
+        resolver = MaxFirstResolver(priority=_PRIORITY)
+        result = resolver._select_from_available(
+            [FeatName.ABILITY_SCORE_IMPROVEMENT, FeatName.TOUGH],
+            self._STRENGTH_AT_CAP,
+            self._ALL_AT_CAP,
+        )
+        assert result is None
+
+    def test_no_priority_top_stat_below_cap_returns_asi(self) -> None:
+        resolver = MaxFirstResolver()
+        result = resolver._select_from_available(
+            [FeatName.ABILITY_SCORE_IMPROVEMENT, FeatName.TOUGH],
+            self._BELOW_CAP,
+            self._ALL_AT_CAP,
+        )
+        assert result == FeatName.ABILITY_SCORE_IMPROVEMENT
+
+    def test_no_priority_top_stat_at_cap_returns_none(self) -> None:
+        resolver = MaxFirstResolver()
+        result = resolver._select_from_available(
+            [FeatName.ABILITY_SCORE_IMPROVEMENT, FeatName.TOUGH],
+            self._ALL_AT_CAP,
+            self._ALL_AT_CAP,
+        )
+        assert result is None
+
+
+@pytest.mark.unit
 class TestPriorityStatChoiceResolverBranches:
     def _make_state_with_stats_and_choices(
         self, stats: Stats, n_stat_choices: int
@@ -175,6 +259,92 @@ class TestPriorityStatChoiceResolverBranches:
         resolver = PriorityStatChoiceResolver(priority=_PRIORITY)
         result = resolver.select_stats_to_increase(state)
         assert sum(result.values()) >= 1
+
+    def test_even_stat_skips_odd_branch_and_uses_while_loop(self) -> None:
+        even_stats = Stats(
+            strength=8,
+            dexterity=8,
+            constitution=8,
+            intelligence=8,
+            wisdom=8,
+            charisma=8,
+        )
+        state = self._make_state_with_stats_and_choices(even_stats, 4)
+        resolver = PriorityStatChoiceResolver(priority=_PRIORITY)
+        result = resolver.select_stats_to_increase(state)
+        assert result[Statistic.STRENGTH] == 4
+        assert sum(result.values()) == 4
+
+
+@pytest.mark.unit
+class TestMaxStatChoiceResolverBranches:
+    def test_returns_zero_increases_when_stats_is_none(self) -> None:
+        resolver = MaxStatChoiceResolver()
+        result = resolver.select_stats_to_increase(Blueprint())
+        assert all(v == 0 for v in result.values())
+
+    def test_breaks_when_all_stats_at_cap(self) -> None:
+        all_capped = Stats(
+            strength=20,
+            dexterity=20,
+            constitution=20,
+            intelligence=20,
+            wisdom=20,
+            charisma=20,
+        )
+        BlueprintWithChoices = create_model(
+            "BlueprintMaxAllCapped",
+            stats=(Stats, ...),
+            n_stat_choices=(int, ...),
+            __base__=Blueprint,
+        )
+        state = BlueprintWithChoices(stats=all_capped, n_stat_choices=1)
+        resolver = MaxStatChoiceResolver()
+        result = resolver.select_stats_to_increase(state)
+        assert sum(result.values()) == 0
+
+
+@pytest.mark.unit
+class TestRandomStatChoiceResolver:
+    def test_distributes_exactly_n_stat_choices(self) -> None:
+        BlueprintWithChoices = create_model(
+            "BlueprintRandomStats",
+            stats=(Stats, ...),
+            n_stat_choices=(int, ...),
+            __base__=Blueprint,
+        )
+        even_stats = Stats(
+            strength=10,
+            dexterity=10,
+            constitution=10,
+            intelligence=10,
+            wisdom=10,
+            charisma=10,
+        )
+        state = BlueprintWithChoices(stats=even_stats, n_stat_choices=3)
+        resolver = RandomStatChoiceResolver(seed=0)
+        result = resolver.select_stats_to_increase(state)
+        assert sum(result.values()) == 3
+
+    def test_skips_when_all_stats_at_cap(self) -> None:
+        BlueprintWithChoices = create_model(
+            "BlueprintRandomStatsAtCap",
+            stats=(Stats, ...),
+            n_stat_choices=(int, ...),
+            __base__=Blueprint,
+        )
+        all_capped = Stats(
+            strength=20,
+            dexterity=20,
+            constitution=20,
+            intelligence=20,
+            wisdom=20,
+            charisma=20,
+        )
+        state = BlueprintWithChoices(stats=all_capped, n_stat_choices=2)
+        resolver = RandomStatChoiceResolver(seed=0)
+        result = resolver.select_stats_to_increase(state)
+        assert sum(result.values()) == 0
 
 
 _SORC_STATS = Stats(
@@ -285,3 +455,32 @@ class TestSignatureSpellChoiceResolver:
         result = resolver.apply(bp)
         assert result.wizard.n_signature_spell_choices == 0
         assert result.wizard.signature_spells == bp.wizard.signature_spells
+
+
+@pytest.mark.unit
+class TestRandomExpertiseChoiceResolver:
+    def test_selects_n_skills(self) -> None:
+        state = Blueprint(
+            n_expertise_choices=2,
+            skill_proficiencies=(Skill.STEALTH, Skill.PERCEPTION, Skill.ACROBATICS),
+            expertise_choices_from=frozenset(
+                {Skill.STEALTH, Skill.PERCEPTION, Skill.ACROBATICS}
+            ),
+        )
+        resolver = RandomExpertiseChoiceResolver(seed=0)
+        result = resolver.apply(state)
+        assert len(result.skill_expertise) == 2
+        assert set(result.skill_expertise) <= {
+            Skill.STEALTH,
+            Skill.PERCEPTION,
+            Skill.ACROBATICS,
+        }
+        assert result.n_expertise_choices == 0
+        assert result.expertise_choices_from == frozenset()
+
+    def test_skips_when_no_choices(self) -> None:
+        state = Blueprint(skill_expertise=(Skill.STEALTH,))
+        resolver = RandomExpertiseChoiceResolver()
+        result = resolver.apply(state)
+        assert result.skill_expertise == (Skill.STEALTH,)
+        assert result.n_expertise_choices == 0
