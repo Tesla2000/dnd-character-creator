@@ -103,19 +103,7 @@
       ]
     },
     {
-      "kind": "generic",
-      "origin": "ClassPreSubclassLevel",
-      "args": [
-        {
-          "kind": "literal",
-          "values": [
-            0
-          ]
-        },
-        {
-          "kind": "none"
-        }
-      ]
+      "kind": "none"
     },
     {
       "kind": "generic",
@@ -248,8 +236,21 @@
       "kind": "union",
       "members": [
         {
-          "kind": "type",
-          "name": "WizardInfo[AnyWizardLevel]"
+          "kind": "union",
+          "members": [
+            {
+              "kind": "type",
+              "name": "WizardInfo[AnyWizardLevel]"
+            },
+            {
+              "kind": "type",
+              "name": "WizardLevel18Info[AnyWizardLevel]"
+            },
+            {
+              "kind": "type",
+              "name": "WizardLevel20Info[AnyWizardLevel]"
+            }
+          ]
         },
         {
           "kind": "none"
@@ -644,84 +645,11 @@
       "kind": "union",
       "members": [
         {
-          "kind": "generic",
-          "origin": "ClassPreSubclassLevel",
-          "args": [
-            {
-              "kind": "type",
-              "name": "ThirdSubclassPreLevel"
-            },
-            {
-              "kind": "none"
-            }
-          ]
+          "kind": "type",
+          "name": "DruidInfo[AnyDruidLevel]"
         },
         {
-          "kind": "generic",
-          "origin": "ClassSubclassLevel",
-          "args": [
-            {
-              "kind": "type",
-              "name": "ThirdSubclassPostLevel"
-            },
-            {
-              "kind": "union",
-              "members": [
-                {
-                  "kind": "type",
-                  "name": "ArtificerSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "BardSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "BarbarianSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "ClericSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "DruidSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "FighterSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "MonkSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "PaladinSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "RangerSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "RogueSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "SorcererSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "WarlockSubclass"
-                },
-                {
-                  "kind": "type",
-                  "name": "WizardSubclass"
-                }
-              ]
-            }
-          ]
+          "kind": "none"
         }
       ]
     },

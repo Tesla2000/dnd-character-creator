@@ -29713,6 +29713,2797 @@
     }
   },
   {
+    "type": "druid_level_1",
+    "type_name": "DRUID_LEVEL_1",
+    "label": "Druid Level 1",
+    "class_name": "DruidLevel1",
+    "category": "Leveling",
+    "description": "Increments druid to level 1 and grants first-level proficiencies and choices.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      },
+      "skill_choice_resolver": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "random_skill_choice_resolver",
+            "label": "Random Skill Choice Resolver",
+            "fields": {
+              "seed": {
+                "description": "Optional seed for reproducible random selection",
+                "type": "integer",
+                "required": false
+              }
+            }
+          },
+          {
+            "type_value": "ai_skill_choice_resolver",
+            "label": "Ai Skill Choice Resolver",
+            "fields": {}
+          }
+        ],
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      },
+      "skill_choice_resolver": {
+        "type": "random_skill_choice_resolver",
+        "seed": null
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "none"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "none"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[TypeVar]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "druid_level_3",
+    "type_name": "DRUID_LEVEL_3",
+    "label": "Druid Level 3",
+    "class_name": "DruidLevel3",
+    "category": "Leveling",
+    "description": "Increments druid to level 3.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[DruidSubclassLevel[TypeVar, TypeVar]]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[DruidSubclassLevel[TypeVar, TypeVar]]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "druid_level_4",
+    "type_name": "DRUID_LEVEL_4",
+    "label": "Druid Level 4",
+    "class_name": "DruidLevel4",
+    "category": "Leveling",
+    "description": "Increments druid to level 4 and grants a feat or Ability Score Improvement.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      },
+      "feat_block": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "any_feat_selection_block",
+            "label": "Any Feat Selection Block",
+            "fields": {
+              "feat_resolver": {
+                "type": "sub_block",
+                "sub_block_types": [
+                  {
+                    "type_value": "random_feat_choice_resolver",
+                    "label": "Random Feat Choice Resolver",
+                    "fields": {
+                      "seed": {
+                        "description": "Optional seed for reproducible random selection",
+                        "type": "integer",
+                        "required": false
+                      }
+                    }
+                  },
+                  {
+                    "type_value": "ai_feat_choice_resolver",
+                    "label": "Ai Feat Choice Resolver",
+                    "fields": {}
+                  },
+                  {
+                    "type_value": "max_first_resolver",
+                    "label": "Max First Resolver",
+                    "fields": {
+                      "priority": {
+                        "type": "string",
+                        "note": "serialized as: typing.Annotated[tuple[dnd.choices.stats_creation.statistic.Statistic, dnd.choic",
+                        "required": false
+                      },
+                      "then": {
+                        "type": "nested_model",
+                        "properties": {
+                          "seed": {
+                            "description": "Optional seed for reproducible random selection",
+                            "type": "integer",
+                            "required": false
+                          }
+                        },
+                        "required": false
+                      }
+                    }
+                  },
+                  {
+                    "type_value": "max_if_not_maxed_resolver",
+                    "label": "Max If Not Maxed Resolver",
+                    "fields": {
+                      "priority": {
+                        "description": "Ability score priority order",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "strength",
+                            "dexterity",
+                            "constitution",
+                            "intelligence",
+                            "wisdom",
+                            "charisma"
+                          ]
+                        },
+                        "required": true
+                      }
+                    }
+                  }
+                ],
+                "required": false
+              }
+            }
+          },
+          {
+            "type_value": "ability_score_improvement_feat_block",
+            "label": "Ability Score Improvement Feat Block",
+            "fields": {
+              "stat_resolver": {
+                "type": "sub_block",
+                "sub_block_types": [
+                  {
+                    "type_value": "priority_stat_choice_resolver",
+                    "label": "Priority Stat Choice Resolver",
+                    "fields": {
+                      "priority": {
+                        "description": "Ability scores ranked by priority for stat increase allocation",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "strength",
+                            "dexterity",
+                            "constitution",
+                            "intelligence",
+                            "wisdom",
+                            "charisma"
+                          ]
+                        },
+                        "required": true
+                      }
+                    }
+                  },
+                  {
+                    "type_value": "random_stat_choice_resolver",
+                    "label": "Random Stat Choice Resolver",
+                    "fields": {
+                      "seed": {
+                        "type": "integer",
+                        "required": false
+                      }
+                    }
+                  },
+                  {
+                    "type_value": "max_stat_choice_resolver",
+                    "label": "Max Stat Choice Resolver",
+                    "fields": {}
+                  },
+                  {
+                    "type_value": "ai_stat_choice_resolver",
+                    "label": "Ai Stat Choice Resolver",
+                    "fields": {}
+                  }
+                ],
+                "required": false
+              }
+            }
+          }
+        ],
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      },
+      "feat_block": {
+        "type": "any_feat_selection_block",
+        "feat_resolver": {
+          "type": "max_first_resolver",
+          "priority": null,
+          "then": {
+            "type": "random_feat_choice_resolver",
+            "seed": null
+          }
+        }
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[DruidSubclassLevel[TypeVar, TypeVar]]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[DruidSubclassLevel[TypeVar, TypeVar]]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "druid_level_5",
+    "type_name": "DRUID_LEVEL_5",
+    "label": "Druid Level 5",
+    "class_name": "DruidLevel5",
+    "category": "Leveling",
+    "description": "Increments druid to level 5.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[DruidSubclassLevel[TypeVar, TypeVar]]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[DruidSubclassLevel[TypeVar, TypeVar]]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "druid_level_7",
+    "type_name": "DRUID_LEVEL_7",
+    "label": "Druid Level 7",
+    "class_name": "DruidLevel7",
+    "category": "Leveling",
+    "description": "Increments druid to level 7.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[DruidSubclassLevel[TypeVar, TypeVar]]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[DruidSubclassLevel[TypeVar, TypeVar]]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "druid_level_2_moon",
+    "type_name": "DRUID_LEVEL_2_MOON",
+    "label": "Druid Level 2 Moon",
+    "class_name": "DruidLevel2Moon",
+    "category": "Leveling",
+    "description": "Increments druid to level 2 and assigns Circle of the Moon subclass.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      },
+      "wild_shape_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[TypeVar]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[TypeVar]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "druid_level_6_moon",
+    "type_name": "DRUID_LEVEL_6_MOON",
+    "label": "Druid Level 6 Moon",
+    "class_name": "DruidLevel6Moon",
+    "category": "Leveling",
+    "description": "Increments druid to level 6 and grants Circle of the Moon's Primal Strike.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[TypeVar]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "DruidInfo[TypeVar]"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "ranger_level_1",
+    "type_name": "RANGER_LEVEL_1",
+    "label": "Ranger Level 1",
+    "class_name": "RangerLevel1",
+    "category": "Leveling",
+    "description": "Increments ranger to level 1 and grants first-level proficiencies and choices.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "skill_choice_resolver": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "random_skill_choice_resolver",
+            "label": "Random Skill Choice Resolver",
+            "fields": {
+              "seed": {
+                "description": "Optional seed for reproducible random selection",
+                "type": "integer",
+                "required": false
+              }
+            }
+          },
+          {
+            "type_value": "ai_skill_choice_resolver",
+            "label": "Ai Skill Choice Resolver",
+            "fields": {}
+          }
+        ],
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      },
+      "skill_choice_resolver": {
+        "type": "random_skill_choice_resolver",
+        "seed": null
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  0
+                ]
+              },
+              {
+                "kind": "none"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  1
+                ]
+              },
+              {
+                "kind": "none"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "ranger_level_2",
+    "type_name": "RANGER_LEVEL_2",
+    "label": "Ranger Level 2",
+    "class_name": "RangerLevel2",
+    "category": "Leveling",
+    "description": "Increments ranger to level 2: grants Fighting Style and Spellcasting.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "fighting_style_choice_resolver": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "none"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  1
+                ]
+              },
+              {
+                "kind": "none"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  2
+                ]
+              },
+              {
+                "kind": "none"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "ranger_level_4",
+    "type_name": "RANGER_LEVEL_4",
+    "label": "Ranger Level 4",
+    "class_name": "RangerLevel4",
+    "category": "Leveling",
+    "description": "Increments ranger to level 4 and grants an Ability Score Improvement.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      },
+      "feat_block": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "any_feat_selection_block",
+            "label": "Any Feat Selection Block",
+            "fields": {
+              "feat_resolver": {
+                "type": "sub_block",
+                "sub_block_types": [
+                  {
+                    "type_value": "random_feat_choice_resolver",
+                    "label": "Random Feat Choice Resolver",
+                    "fields": {
+                      "seed": {
+                        "description": "Optional seed for reproducible random selection",
+                        "type": "integer",
+                        "required": false
+                      }
+                    }
+                  },
+                  {
+                    "type_value": "ai_feat_choice_resolver",
+                    "label": "Ai Feat Choice Resolver",
+                    "fields": {}
+                  },
+                  {
+                    "type_value": "max_first_resolver",
+                    "label": "Max First Resolver",
+                    "fields": {
+                      "priority": {
+                        "type": "string",
+                        "note": "serialized as: typing.Annotated[tuple[dnd.choices.stats_creation.statistic.Statistic, dnd.choic",
+                        "required": false
+                      },
+                      "then": {
+                        "type": "nested_model",
+                        "properties": {
+                          "seed": {
+                            "description": "Optional seed for reproducible random selection",
+                            "type": "integer",
+                            "required": false
+                          }
+                        },
+                        "required": false
+                      }
+                    }
+                  },
+                  {
+                    "type_value": "max_if_not_maxed_resolver",
+                    "label": "Max If Not Maxed Resolver",
+                    "fields": {
+                      "priority": {
+                        "description": "Ability score priority order",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "strength",
+                            "dexterity",
+                            "constitution",
+                            "intelligence",
+                            "wisdom",
+                            "charisma"
+                          ]
+                        },
+                        "required": true
+                      }
+                    }
+                  }
+                ],
+                "required": false
+              }
+            }
+          },
+          {
+            "type_value": "ability_score_improvement_feat_block",
+            "label": "Ability Score Improvement Feat Block",
+            "fields": {
+              "stat_resolver": {
+                "type": "sub_block",
+                "sub_block_types": [
+                  {
+                    "type_value": "priority_stat_choice_resolver",
+                    "label": "Priority Stat Choice Resolver",
+                    "fields": {
+                      "priority": {
+                        "description": "Ability scores ranked by priority for stat increase allocation",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "strength",
+                            "dexterity",
+                            "constitution",
+                            "intelligence",
+                            "wisdom",
+                            "charisma"
+                          ]
+                        },
+                        "required": true
+                      }
+                    }
+                  },
+                  {
+                    "type_value": "random_stat_choice_resolver",
+                    "label": "Random Stat Choice Resolver",
+                    "fields": {
+                      "seed": {
+                        "type": "integer",
+                        "required": false
+                      }
+                    }
+                  },
+                  {
+                    "type_value": "max_stat_choice_resolver",
+                    "label": "Max Stat Choice Resolver",
+                    "fields": {}
+                  },
+                  {
+                    "type_value": "ai_stat_choice_resolver",
+                    "label": "Ai Stat Choice Resolver",
+                    "fields": {}
+                  }
+                ],
+                "required": false
+              }
+            }
+          }
+        ],
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      },
+      "feat_block": {
+        "type": "any_feat_selection_block",
+        "feat_resolver": {
+          "type": "max_first_resolver",
+          "priority": null,
+          "then": {
+            "type": "random_feat_choice_resolver",
+            "seed": null
+          }
+        }
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  3
+                ]
+              },
+              {
+                "kind": "type",
+                "name": "RangerSubclass"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  4
+                ]
+              },
+              {
+                "kind": "type",
+                "name": "RangerSubclass"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "ranger_level_5",
+    "type_name": "RANGER_LEVEL_5",
+    "label": "Ranger Level 5",
+    "class_name": "RangerLevel5",
+    "category": "Leveling",
+    "description": "Increments ranger to level 5 and grants Extra Attack.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  4
+                ]
+              },
+              {
+                "kind": "type",
+                "name": "RangerSubclass"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  5
+                ]
+              },
+              {
+                "kind": "type",
+                "name": "RangerSubclass"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "ranger_level_3_gloom_stalker",
+    "type_name": "RANGER_LEVEL_3_GLOOM_STALKER",
+    "label": "Ranger Level 3 Gloom Stalker",
+    "class_name": "RangerLevel3GloomStalker",
+    "category": "Leveling",
+    "description": "Assigns the Gloom Stalker Conclave subclass at level 3.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "spell_assigner": {
+        "type": "nested_model",
+        "properties": {
+          "seed": {
+            "description": "Optional seed for reproducible random selection",
+            "type": "integer",
+            "required": false
+          }
+        },
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "type",
+                "name": "ThirdSubclassPreLevel"
+              },
+              {
+                "kind": "none"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "type",
+            "name": "CasterInfo"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  3
+                ]
+              },
+              {
+                "kind": "literal",
+                "values": [
+                  "Gloom Stalker Conclave"
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "barbarian_level_1",
     "type_name": "BARBARIAN_LEVEL_1",
     "label": "Barbarian Level 1",
@@ -29745,6 +32536,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "skill_choice_resolver": {
@@ -29975,6 +32771,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -30178,6 +32979,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "feat_block": {
@@ -30526,6 +33332,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -30730,6 +33541,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -30933,6 +33749,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "feat_block": {
@@ -31281,6 +34102,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -31485,6 +34311,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -31688,6 +34519,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "feat_block": {
@@ -32036,6 +34872,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -32240,6 +35081,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -32443,6 +35289,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "feat_block": {
@@ -32791,6 +35642,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -32995,6 +35851,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -33198,6 +36059,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "feat_block": {
@@ -33546,6 +36412,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -33749,6 +36620,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -33955,6 +36831,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -34159,6 +37040,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -34365,6 +37251,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -34569,6 +37460,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -34775,6 +37671,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -34979,6 +37880,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "totem_spirit_resolver": {
@@ -35210,6 +38116,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -35415,6 +38326,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -35619,6 +38535,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -35826,6 +38747,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -36031,6 +38957,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -36238,6 +39169,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -36443,6 +39379,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -36650,6 +39591,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -36855,6 +39801,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "aspect_resolver": {
@@ -37087,6 +40038,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -37292,6 +40248,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -37499,6 +40460,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -37704,6 +40670,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -37911,6 +40882,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -38116,6 +41092,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -38323,6 +41304,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -38528,6 +41514,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -38735,6 +41726,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -38940,6 +41936,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -39147,6 +42148,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -39352,6 +42358,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -39559,6 +42570,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -39764,6 +42780,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -39971,6 +42992,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -40176,6 +43202,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       }
     },
@@ -40383,6 +43414,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -40588,6 +43624,11 @@
             "fields": {}
           }
         ],
+        "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
         "required": false
       },
       "attunement_resolver": {
@@ -40820,6 +43861,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -41026,6 +44072,11 @@
           }
         ],
         "required": false
+      },
+      "rage_uses": {
+        "type": "nested_model",
+        "properties": {},
+        "required": false
       }
     },
     "default_config": {
@@ -41166,6 +44217,465 @@
           },
           {
             "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "rogue_level_1",
+    "type_name": "ROGUE_LEVEL_1",
+    "label": "Rogue Level 1",
+    "class_name": "RogueLevel1",
+    "category": "Leveling",
+    "description": "Increments rogue to level 1 and grants first-level proficiencies and choices.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "skill_choice_resolver": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "random_skill_choice_resolver",
+            "label": "Random Skill Choice Resolver",
+            "fields": {
+              "seed": {
+                "description": "Optional seed for reproducible random selection",
+                "type": "integer",
+                "required": false
+              }
+            }
+          },
+          {
+            "type_value": "ai_skill_choice_resolver",
+            "label": "Ai Skill Choice Resolver",
+            "fields": {}
+          }
+        ],
+        "required": false
+      },
+      "expertise_choice_resolver": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "random_expertise_choice_resolver",
+            "label": "Random Expertise Choice Resolver",
+            "fields": {
+              "seed": {
+                "description": "Optional seed for reproducible random selection",
+                "type": "integer",
+                "required": false
+              }
+            }
+          },
+          {
+            "type_value": "ai_expertise_choice_resolver",
+            "label": "Ai Expertise Choice Resolver",
+            "fields": {}
+          }
+        ],
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      },
+      "skill_choice_resolver": {
+        "type": "random_skill_choice_resolver",
+        "seed": null
+      },
+      "expertise_choice_resolver": {
+        "type": "random_expertise_choice_resolver",
+        "seed": null
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  0
+                ]
+              },
+              {
+                "kind": "none"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  1
+                ]
+              },
+              {
+                "kind": "none"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "rogue_level_2",
+    "type_name": "ROGUE_LEVEL_2",
+    "label": "Rogue Level 2",
+    "class_name": "RogueLevel2",
+    "category": "Leveling",
+    "description": "Increments rogue to level 2 and grants Cunning Action.",
+    "is_ai": false,
+    "fields": {
+      "health_increase": {
+        "type": "sub_block",
+        "sub_block_types": [
+          {
+            "type_value": "health_increase_average",
+            "label": "Health Increase Average",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random",
+            "label": "Health Increase Random",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_min_two",
+            "label": "Health Increase Random Min Two",
+            "fields": {}
+          },
+          {
+            "type_value": "health_increase_random_reroll_ones",
+            "label": "Health Increase Random Reroll Ones",
+            "fields": {}
+          }
+        ],
+        "required": false
+      }
+    },
+    "default_config": {
+      "health_increase": {
+        "type": "health_increase_average"
+      }
+    },
+    "blueprint_sig": {
+      "input": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  1
+                ]
+              },
+              {
+                "kind": "none"
+              }
+            ]
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          }
+        ]
+      },
+      "output": {
+        "origin": "Blueprint",
+        "args": [
+          {
+            "kind": "type",
+            "name": "Race"
+          },
+          {
+            "kind": "type",
+            "name": "Stats"
+          },
+          {
+            "kind": "type",
+            "name": "int"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "free"
+          },
+          {
+            "kind": "generic",
+            "origin": "ClassPreSubclassLevel",
+            "args": [
+              {
+                "kind": "literal",
+                "values": [
+                  2
+                ]
+              },
+              {
+                "kind": "none"
+              }
+            ]
           },
           {
             "kind": "free"
@@ -51220,7 +54730,8 @@
           "Crossbow, hand",
           "Crossbow, heavy",
           "Longbow",
-          "Net"
+          "Net",
+          "Shield"
         ],
         "required": true
       }
