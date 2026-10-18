@@ -7,6 +7,9 @@ from dnd.character.magical_item.specialized_items.ac_bonus_item import (
 from dnd.character.magical_item.specialized_items.saving_throw_bonus_item import (
     SavingThrowBonusItem,
 )
+from dnd.character.magical_item.specialized_items.spell_save_dc_bonus_item import (
+    SpellSaveDcBonusItem,
+)
 from dnd.character.magical_item.specialized_items.stat_and_cap_boost_item import (
     StatAndCapBoostItem,
 )
@@ -24,4 +27,5 @@ __all__ = [
     "ACBonusItem",
     "SavingThrowBonusItem",
     "ACAndSavingThrowBonusItem",
+    "SpellSaveDcBonusItem",
 ]

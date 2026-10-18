@@ -12,6 +12,9 @@ from dnd.character.magical_item.specialized_items import (
     SavingThrowBonusItem,
 )
 from dnd.character.magical_item.specialized_items import (
+    SpellSaveDcBonusItem,
+)
+from dnd.character.magical_item.specialized_items import (
     StatAndCapBoostItem,
 )
 from dnd.character.magical_item.specialized_items import (
@@ -591,6 +594,17 @@ ring_of_x_ray_vision = MagicalItem(
     attuned=True,
 )
 
+# Spell save DC bonus items
+arcane_grimoire = SpellSaveDcBonusItem(
+    name="Arcane Grimoire (+1)",
+    description="A wizard can use this book as a spellcasting focus. You gain a +1 bonus to spell attack rolls and to the saving throw DCs of your wizard spells while holding it.",
+    level=Level.UNCOMMON,
+    source=Source.HOMEBREW,
+    attuned=True,
+    spell_save_dc_bonus=1,
+    spell_attack_bonus=1,
+)
+
 MAGICAL_ITEMS: tuple[MagicalItem, ...] = (
     # Stat-setting items (sets stat to fixed value)
     amulet_of_health,
@@ -647,6 +661,7 @@ MAGICAL_ITEMS: tuple[MagicalItem, ...] = (
     ring_of_spell_storing,
     ring_of_spell_turning,
     robe_of_the_archmagi,
+    arcane_grimoire,
     pearl_of_power,
     # Protection and defense
     gloves_of_missile_snaring,

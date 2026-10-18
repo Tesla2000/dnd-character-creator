@@ -93,6 +93,7 @@ class PresentableCharacter(
         return {
             s: self._get_modifier(s)
             + self.proficiency_bonus * (s in self.saving_throw_proficiencies)
+            + self.saving_throw_bonuses.get_stat(s)
             for s in Statistic
         }
 

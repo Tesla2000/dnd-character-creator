@@ -291,6 +291,42 @@ class TestAttackResult:
 
 
 @pytest.mark.unit
+class TestAttackExtraDamage:
+    _attack = _Attack(
+        n_dice=2,
+        dice_size=6,
+        attack_bonus=3,
+        damage_bonus=1,
+        name="bite",
+        extra_n_dice=2,
+        extra_dice_size=12,
+        extra_damage_type="psychic",
+    )
+
+    def test_perform_rolls_extra_damage(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        rec = _Rec(10, 15, 4, 3, 1, 1, 5, 6, 7, 8)
+        monkeypatch.setattr(attack_module, "randint", rec)
+        result = self._attack.perform()
+        assert result.damage == 8
+        assert result.extra_damage == 11
+        assert result.extra_crit_damage == 11 + 15
+        assert result.extra_damage_type == "psychic"
+        assert "damage=8 + 11 psychic" in str(result)
+
+    def test_str_crit_includes_extra_damage(self) -> None:
+        r = _AttackResult(
+            first_roll="critical",
+            second_roll=8,
+            damage=5,
+            crit_damage=9,
+            extra_damage=4,
+            extra_crit_damage=10,
+            extra_damage_type="psychic",
+        )
+        assert "crit: 9 + 10 psychic" in str(r)
+
+
+@pytest.mark.unit
 class TestSavingThrow:
     def test_perform_half_on_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
         st = _SavingThrow(

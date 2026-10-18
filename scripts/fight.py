@@ -3,6 +3,7 @@ import json
 import termios
 import tty
 from itertools import cycle
+from random import randint
 from pathlib import Path
 from typing import Annotated, ClassVar
 
@@ -10,6 +11,8 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict, PositiveInt
 from pydantic_settings import BaseSettings, CliApp, SettingsConfigDict
 
 from dnd.character.presentable_character import PresentableCharacter
+from dnd.choices.equipment_creation.weapons import WeaponName
+from dnd.choices.stats_creation.statistic import Statistic
 from dnd.fight._action_group import _Action, _And, _Or
 from dnd.fight._attack import _Attack
 from dnd.fight._creature import _Creature
@@ -172,11 +175,139 @@ class _EncounterEntry(BaseModel):
     n_entities: PositiveInt
 
 
+class _EnemyCharacterEntry(BaseModel):
+    """A character fighting on the enemy side; initiative is rolled when omitted."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
+
+    character: Annotated[PresentableCharacter, BeforeValidator(_load_character)]
+    initiative: int | None = None
+
+    @property
+    def rolled_initiative(self) -> int:
+        if self.initiative is not None:
+            return self.initiative
+        return randint(1, 20) + self.character.initiative
+
+
 class _PlayerEntry(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
 
     character: Annotated[PresentableCharacter, BeforeValidator(_load_character)]
     initiative: int
+
+
+class _TrackedPlayer(BaseModel):
+    """A player known only by name; tracked in initiative order, no stats."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
+
+    name: str
+    initiative: int
+
+
+class _SpellMenu:
+    _BASE_SAVE_DC: ClassVar[int] = 8
+
+    @classmethod
+    def build(
+        cls, character: PresentableCharacter
+    ) -> tuple[_Action | _NonAttack | _Or | _And, ...]:
+        known = {
+            str(spell.value)
+            for level in character.spells.get_spells_by_level()
+            for spell in level
+        }
+        dc = cls._BASE_SAVE_DC + sum(
+            m.apply(character) for m in character.spell_save_dc_modifiers
+        )
+        attack_bonus = sum(
+            m.apply(character) for m in character.spell_attack_bonus_modifiers
+        )
+        menu: list[_Action | _NonAttack | _Or | _And] = []
+        if "Cloudkill" in known:
+            menu.append(
+                _SavingThrow(
+                    n_dice=5,
+                    dice_size=8,
+                    damage_bonus=0,
+                    dc=dc,
+                    name="Cloudkill (5th, 20 ft radius, concentration)",
+                    saving_throw_type=Statistic.CONSTITUTION,
+                )
+            )
+        if "Fireball" in known:
+            menu.append(
+                _SavingThrow(
+                    n_dice=8,
+                    dice_size=6,
+                    damage_bonus=0,
+                    dc=dc,
+                    name="Fireball (3rd, 20 ft radius)",
+                    saving_throw_type=Statistic.DEXTERITY,
+                )
+            )
+        if "Hold Person" in known:
+            menu.append(
+                _NonAttack(
+                    name="Hold Person (2nd, concentration)",
+                    description=f"DC {dc} WIS save or paralyzed; repeats the save at the end of each of its turns.",
+                )
+            )
+        if "Scorching Ray" in known:
+            menu.append(
+                _And(
+                    name="Scorching Ray (2nd, 3 rays)",
+                    options=tuple(
+                        _Attack(
+                            n_dice=2,
+                            dice_size=6,
+                            attack_bonus=attack_bonus,
+                            damage_bonus=0,
+                            name=f"Ray {ray}",
+                        )
+                        for ray in (1, 2, 3)
+                    ),
+                )
+            )
+        return tuple(menu)
+
+
+class _WeaponMenu:
+    _WEAPONS: ClassVar[dict[WeaponName, tuple[str, int, int]]] = {
+        WeaponName.CROSSBOW_LIGHT: ("Light Crossbow (80/320 ft)", 1, 8),
+        WeaponName.SHORTSWORD: ("Shortsword (5 ft)", 1, 6),
+    }
+
+    @classmethod
+    def build(
+        cls, character: PresentableCharacter
+    ) -> tuple[_Action | _NonAttack | _Or | _And, ...]:
+        dex_mod = character.stats.get_modifier(Statistic.DEXTERITY)
+        return tuple(
+            _Attack(
+                n_dice=n_dice,
+                dice_size=dice_size,
+                attack_bonus=dex_mod + character.proficiency_bonus,
+                damage_bonus=dex_mod,
+                name=name,
+            )
+            for weapon, (name, n_dice, dice_size) in cls._WEAPONS.items()
+            if weapon in character.weapons
+        )
+
+
+class _ActionMenu:
+    @classmethod
+    def build(
+        cls, character: PresentableCharacter
+    ) -> tuple[_Action | _NonAttack | _Or | _And, ...]:
+        options = _SpellMenu.build(character) + _WeaponMenu.build(character)
+        if not options:
+            return ()
+        return options + (
+            _NonAttack(name="No attack", description="Takes another action."),
+        )
 
 
 class _FightCli(BaseSettings):
@@ -185,29 +316,52 @@ class _FightCli(BaseSettings):
         cli_kebab_case=True,
     )
 
-    encounter: list[_EncounterEntry]
-    players: list[_PlayerEntry]
+    encounter: list[_EncounterEntry | _EnemyCharacterEntry]
+    players: list[_PlayerEntry | _TrackedPlayer]
 
     def cli_cmd(self) -> None:
         monsters: tuple[tuple[int | None, _Creature], ...] = tuple(
             (i + 1 if entry.n_entities > 1 else None, entry.creature)
             for entry in self.encounter
+            if isinstance(entry, _EncounterEntry)
             for i in range(entry.n_entities)
         )
-        player_combatants: tuple[tuple[None, FightCharacter], ...] = tuple(
-            (None, FightCharacter.from_presentable(p.character, p.initiative))
-            for p in self.players
+        enemy_characters: tuple[tuple[None, FightCharacter], ...] = tuple(
+            (None, FightCharacter.from_presentable(entry.character, entry.rolled_initiative))
+            for entry in self.encounter
+            if isinstance(entry, _EnemyCharacterEntry)
         )
-        all_combatants: tuple[tuple[int | None, _Creature | FightCharacter], ...] = (
-            monsters + player_combatants
+        enemy_ids: frozenset[int] = frozenset(
+            id(c) for _, c in monsters + enemy_characters
         )
-        turn_order: list[tuple[int | None, _Creature | FightCharacter]] = sorted(
-            all_combatants, key=lambda ic: -ic[1].initiative
+        player_combatants: tuple[tuple[None, FightCharacter | _TrackedPlayer], ...] = (
+            tuple(
+                (
+                    None,
+                    (
+                        FightCharacter.from_presentable(p.character, p.initiative)
+                        if isinstance(p, _PlayerEntry)
+                        else p
+                    ),
+                )
+                for p in self.players
+            )
         )
+        all_combatants: tuple[
+            tuple[int | None, _Creature | FightCharacter | _TrackedPlayer], ...
+        ] = monsters + enemy_characters + player_combatants
+        turn_order: list[
+            tuple[int | None, _Creature | FightCharacter | _TrackedPlayer]
+        ] = sorted(all_combatants, key=lambda ic: -ic[1].initiative)
+        spell_menus: dict[str, tuple[_Action | _NonAttack | _Or | _And, ...]] = {
+            c.name: _ActionMenu.build(c.character)
+            for _, c in turn_order
+            if isinstance(c, FightCharacter)
+        }
         monster_prefixes: list[str] = [
             f"{c.name} {i}" if i is not None else c.name
             for i, c in turn_order
-            if isinstance(c, _Creature)
+            if id(c) in enemy_ids
         ]
         hp: dict[str, int] = {}
         max_hp: dict[str, int] = {}
@@ -216,19 +370,24 @@ class _FightCli(BaseSettings):
             if isinstance(c, _Creature):
                 hp[pfx] = c.hp
                 max_hp[pfx] = c.hp
-            else:
+            elif isinstance(c, FightCharacter):
                 hp[pfx] = c.current_health
                 max_hp[pfx] = c.max_health
-        if any(isinstance(c, _Creature) for _, c in turn_order):
+        if enemy_ids:
             sys.stdout.write("--- Enemies ---\n")
             for idx, c in turn_order:
-                if isinstance(c, _Creature):
+                if id(c) in enemy_ids:
                     pfx = f"{c.name} {idx}" if idx is not None else c.name
                     sys.stdout.write(f"  {pfx}: {hp[pfx]} HP\n")
         for index, creature in cycle(turn_order):
             prefix = f"{creature.name} {index}" if index is not None else creature.name
-            status = f"{hp[prefix]}/{max_hp[prefix]}"
+            status = f"{hp[prefix]}/{max_hp[prefix]}" if prefix in hp else "PC"
             input(f"\n{prefix} ({status}) moves now...")
+            if isinstance(creature, FightCharacter) and spell_menus[creature.name]:
+                _fire(
+                    prefix,
+                    _select(spell_menus[creature.name], f"Choose action for {prefix}"),
+                )
             if isinstance(creature, _Creature):
                 offhand: list[_Action | _NonAttack | _Or | _And] = []
                 main: list[_Action | _NonAttack | _Or | _And] = []

@@ -2,18 +2,8 @@ from __future__ import annotations
 
 from enum import auto
 from enum import StrEnum
-from typing import (
-    Generic,
-    Literal,
-    Annotated,
-    TypeVar,
-    cast,
-    get_args,
-)
-from collections.abc import Iterable, Sequence
+from typing import Literal
 from typing import assert_never
-
-from pydantic import BaseModel, ConfigDict, PositiveInt, Field
 
 from dnd.choices.class_creation.character_class import Class
 
@@ -1766,197 +1756,168 @@ type Spell = (
 )
 
 
-_T_co = TypeVar("_T_co", bound=Sequence[Spell], covariant=True)
-
-
-class _SpellSelector(BaseModel, Generic[_T_co]):
-    model_config = ConfigDict(title="SpellSelection")
-    spells: _T_co
-
-    def __class_getitem__(
-        cls,
-        item: type[object] | tuple[type[object], ...],
-    ) -> type[BaseModel]:
-        result = cast(type[BaseModel], super().__class_getitem__(item))
-        result.__name__ = "SpellSelection"
-        return result
-
-    @classmethod
-    def spell_type(cls) -> Iterable[Spell]:
-        annotation = cls.model_fields["spells"].annotation
-        (element_type,) = get_args(annotation)
-        return cast(Iterable[Spell], element_type)
-
-
-def get_class_spell_selector(
-    query: ClassSpellLevel, n_spells: PositiveInt
-) -> type[_SpellSelector[Sequence[Spell]]]:
-    length_field = Field(min_length=n_spells, max_length=n_spells)
+def get_class_spells_set(query: ClassSpellLevel) -> frozenset[Spell]:
     match query:
         case (Class.ARTIFICER, 0):
-            return _SpellSelector[Annotated[list[ArtificerCantrip], length_field]]
+            return frozenset[Spell](ArtificerCantrip)
         case (Class.ARTIFICER, 1):
-            return _SpellSelector[Annotated[list[ArtificerFirstLevel], length_field]]
+            return frozenset[Spell](ArtificerFirstLevel)
         case (Class.ARTIFICER, 2):
-            return _SpellSelector[Annotated[list[ArtificerSecondLevel], length_field]]
+            return frozenset[Spell](ArtificerSecondLevel)
         case (Class.ARTIFICER, 3):
-            return _SpellSelector[Annotated[list[ArtificerThirdLevel], length_field]]
+            return frozenset[Spell](ArtificerThirdLevel)
         case (Class.ARTIFICER, 4):
-            return _SpellSelector[Annotated[list[ArtificerFourthLevel], length_field]]
+            return frozenset[Spell](ArtificerFourthLevel)
         case (Class.ARTIFICER, 5):
-            return _SpellSelector[Annotated[list[ArtificerFifthLevel], length_field]]
+            return frozenset[Spell](ArtificerFifthLevel)
 
         case (Class.BARD, 0):
-            return _SpellSelector[Annotated[list[BardCantrip], length_field]]
+            return frozenset[Spell](BardCantrip)
         case (Class.BARD, 1):
-            return _SpellSelector[Annotated[list[BardFirstLevel], length_field]]
+            return frozenset[Spell](BardFirstLevel)
         case (Class.BARD, 2):
-            return _SpellSelector[Annotated[list[BardSecondLevel], length_field]]
+            return frozenset[Spell](BardSecondLevel)
         case (Class.BARD, 3):
-            return _SpellSelector[Annotated[list[BardThirdLevel], length_field]]
+            return frozenset[Spell](BardThirdLevel)
         case (Class.BARD, 4):
-            return _SpellSelector[Annotated[list[BardFourthLevel], length_field]]
+            return frozenset[Spell](BardFourthLevel)
         case (Class.BARD, 5):
-            return _SpellSelector[Annotated[list[BardFifthLevel], length_field]]
+            return frozenset[Spell](BardFifthLevel)
         case (Class.BARD, 6):
-            return _SpellSelector[Annotated[list[BardSixthLevel], length_field]]
+            return frozenset[Spell](BardSixthLevel)
         case (Class.BARD, 7):
-            return _SpellSelector[Annotated[list[BardSeventhLevel], length_field]]
+            return frozenset[Spell](BardSeventhLevel)
         case (Class.BARD, 8):
-            return _SpellSelector[Annotated[list[BardEighthLevel], length_field]]
+            return frozenset[Spell](BardEighthLevel)
         case (Class.BARD, 9):
-            return _SpellSelector[Annotated[list[BardNinthLevel], length_field]]
+            return frozenset[Spell](BardNinthLevel)
 
         case (Class.CLERIC, 0):
-            return _SpellSelector[Annotated[list[ClericCantrip], length_field]]
+            return frozenset[Spell](ClericCantrip)
         case (Class.CLERIC, 1):
-            return _SpellSelector[Annotated[list[ClericFirstLevel], length_field]]
+            return frozenset[Spell](ClericFirstLevel)
         case (Class.CLERIC, 2):
-            return _SpellSelector[Annotated[list[ClericSecondLevel], length_field]]
+            return frozenset[Spell](ClericSecondLevel)
         case (Class.CLERIC, 3):
-            return _SpellSelector[Annotated[list[ClericThirdLevel], length_field]]
+            return frozenset[Spell](ClericThirdLevel)
         case (Class.CLERIC, 4):
-            return _SpellSelector[Annotated[list[ClericFourthLevel], length_field]]
+            return frozenset[Spell](ClericFourthLevel)
         case (Class.CLERIC, 5):
-            return _SpellSelector[Annotated[list[ClericFifthLevel], length_field]]
+            return frozenset[Spell](ClericFifthLevel)
         case (Class.CLERIC, 6):
-            return _SpellSelector[Annotated[list[ClericSixthLevel], length_field]]
+            return frozenset[Spell](ClericSixthLevel)
         case (Class.CLERIC, 7):
-            return _SpellSelector[Annotated[list[ClericSeventhLevel], length_field]]
+            return frozenset[Spell](ClericSeventhLevel)
         case (Class.CLERIC, 8):
-            return _SpellSelector[Annotated[list[ClericEighthLevel], length_field]]
+            return frozenset[Spell](ClericEighthLevel)
         case (Class.CLERIC, 9):
-            return _SpellSelector[Annotated[list[ClericNinthLevel], length_field]]
+            return frozenset[Spell](ClericNinthLevel)
 
         case (Class.DRUID, 0):
-            return _SpellSelector[Annotated[list[DruidCantrip], length_field]]
+            return frozenset[Spell](DruidCantrip)
         case (Class.DRUID, 1):
-            return _SpellSelector[Annotated[list[DruidFirstLevel], length_field]]
+            return frozenset[Spell](DruidFirstLevel)
         case (Class.DRUID, 2):
-            return _SpellSelector[Annotated[list[DruidSecondLevel], length_field]]
+            return frozenset[Spell](DruidSecondLevel)
         case (Class.DRUID, 3):
-            return _SpellSelector[Annotated[list[DruidThirdLevel], length_field]]
+            return frozenset[Spell](DruidThirdLevel)
         case (Class.DRUID, 4):
-            return _SpellSelector[Annotated[list[DruidFourthLevel], length_field]]
+            return frozenset[Spell](DruidFourthLevel)
         case (Class.DRUID, 5):
-            return _SpellSelector[Annotated[list[DruidFifthLevel], length_field]]
+            return frozenset[Spell](DruidFifthLevel)
         case (Class.DRUID, 6):
-            return _SpellSelector[Annotated[list[DruidSixthLevel], length_field]]
+            return frozenset[Spell](DruidSixthLevel)
         case (Class.DRUID, 7):
-            return _SpellSelector[Annotated[list[DruidSeventhLevel], length_field]]
+            return frozenset[Spell](DruidSeventhLevel)
         case (Class.DRUID, 8):
-            return _SpellSelector[Annotated[list[DruidEighthLevel], length_field]]
+            return frozenset[Spell](DruidEighthLevel)
         case (Class.DRUID, 9):
-            return _SpellSelector[Annotated[list[DruidNinthLevel], length_field]]
+            return frozenset[Spell](DruidNinthLevel)
 
         case (Class.PALADIN, 1):
-            return _SpellSelector[Annotated[list[PaladinFirstLevel], length_field]]
+            return frozenset[Spell](PaladinFirstLevel)
         case (Class.PALADIN, 2):
-            return _SpellSelector[Annotated[list[PaladinSecondLevel], length_field]]
+            return frozenset[Spell](PaladinSecondLevel)
         case (Class.PALADIN, 3):
-            return _SpellSelector[Annotated[list[PaladinThirdLevel], length_field]]
+            return frozenset[Spell](PaladinThirdLevel)
         case (Class.PALADIN, 4):
-            return _SpellSelector[Annotated[list[PaladinFourthLevel], length_field]]
+            return frozenset[Spell](PaladinFourthLevel)
         case (Class.PALADIN, 5):
-            return _SpellSelector[Annotated[list[PaladinFifthLevel], length_field]]
+            return frozenset[Spell](PaladinFifthLevel)
 
         case (Class.RANGER, 1):
-            return _SpellSelector[Annotated[list[RangerFirstLevel], length_field]]
+            return frozenset[Spell](RangerFirstLevel)
         case (Class.RANGER, 2):
-            return _SpellSelector[Annotated[list[RangerSecondLevel], length_field]]
+            return frozenset[Spell](RangerSecondLevel)
         case (Class.RANGER, 3):
-            return _SpellSelector[Annotated[list[RangerThirdLevel], length_field]]
+            return frozenset[Spell](RangerThirdLevel)
         case (Class.RANGER, 4):
-            return _SpellSelector[Annotated[list[RangerFourthLevel], length_field]]
+            return frozenset[Spell](RangerFourthLevel)
         case (Class.RANGER, 5):
-            return _SpellSelector[Annotated[list[RangerFifthLevel], length_field]]
+            return frozenset[Spell](RangerFifthLevel)
 
         case (Class.SORCERER, 0):
-            return _SpellSelector[Annotated[list[SorcererCantrip], length_field]]
+            return frozenset[Spell](SorcererCantrip)
         case (Class.SORCERER, 1):
-            return _SpellSelector[Annotated[list[SorcererFirstLevel], length_field]]
+            return frozenset[Spell](SorcererFirstLevel)
         case (Class.SORCERER, 2):
-            return _SpellSelector[Annotated[list[SorcererSecondLevel], length_field]]
+            return frozenset[Spell](SorcererSecondLevel)
         case (Class.SORCERER, 3):
-            return _SpellSelector[Annotated[list[SorcererThirdLevel], length_field]]
+            return frozenset[Spell](SorcererThirdLevel)
         case (Class.SORCERER, 4):
-            return _SpellSelector[Annotated[list[SorcererFourthLevel], length_field]]
+            return frozenset[Spell](SorcererFourthLevel)
         case (Class.SORCERER, 5):
-            return _SpellSelector[Annotated[list[SorcererFifthLevel], length_field]]
+            return frozenset[Spell](SorcererFifthLevel)
         case (Class.SORCERER, 6):
-            return _SpellSelector[Annotated[list[SorcererSixthLevel], length_field]]
+            return frozenset[Spell](SorcererSixthLevel)
         case (Class.SORCERER, 7):
-            return _SpellSelector[Annotated[list[SorcererSeventhLevel], length_field]]
+            return frozenset[Spell](SorcererSeventhLevel)
         case (Class.SORCERER, 8):
-            return _SpellSelector[Annotated[list[SorcererEighthLevel], length_field]]
+            return frozenset[Spell](SorcererEighthLevel)
         case (Class.SORCERER, 9):
-            return _SpellSelector[Annotated[list[SorcererNinthLevel], length_field]]
+            return frozenset[Spell](SorcererNinthLevel)
 
         case (Class.WARLOCK, 0):
-            return _SpellSelector[Annotated[list[WarlockCantrip], length_field]]
+            return frozenset[Spell](WarlockCantrip)
         case (Class.WARLOCK, 1):
-            return _SpellSelector[Annotated[list[WarlockFirstLevel], length_field]]
+            return frozenset[Spell](WarlockFirstLevel)
         case (Class.WARLOCK, 2):
-            return _SpellSelector[Annotated[list[WarlockSecondLevel], length_field]]
+            return frozenset[Spell](WarlockSecondLevel)
         case (Class.WARLOCK, 3):
-            return _SpellSelector[Annotated[list[WarlockThirdLevel], length_field]]
+            return frozenset[Spell](WarlockThirdLevel)
         case (Class.WARLOCK, 4):
-            return _SpellSelector[Annotated[list[WarlockFourthLevel], length_field]]
+            return frozenset[Spell](WarlockFourthLevel)
         case (Class.WARLOCK, 5):
-            return _SpellSelector[Annotated[list[WarlockFifthLevel], length_field]]
+            return frozenset[Spell](WarlockFifthLevel)
         case (Class.WARLOCK, 6):
-            return _SpellSelector[Annotated[list[WarlockSixthLevel], length_field]]
+            return frozenset[Spell](WarlockSixthLevel)
         case (Class.WARLOCK, 7):
-            return _SpellSelector[Annotated[list[WarlockSeventhLevel], length_field]]
+            return frozenset[Spell](WarlockSeventhLevel)
         case (Class.WARLOCK, 8):
-            return _SpellSelector[Annotated[list[WarlockEighthLevel], length_field]]
+            return frozenset[Spell](WarlockEighthLevel)
         case (Class.WARLOCK, 9):
-            return _SpellSelector[Annotated[list[WarlockNinthLevel], length_field]]
+            return frozenset[Spell](WarlockNinthLevel)
 
         case (Class.WIZARD, 0):
-            return _SpellSelector[Annotated[list[WizardCantrip], length_field]]
+            return frozenset[Spell](WizardCantrip)
         case (Class.WIZARD, 1):
-            return _SpellSelector[Annotated[list[WizardFirstLevel], length_field]]
+            return frozenset[Spell](WizardFirstLevel)
         case (Class.WIZARD, 2):
-            return _SpellSelector[Annotated[list[WizardSecondLevel], length_field]]
+            return frozenset[Spell](WizardSecondLevel)
         case (Class.WIZARD, 3):
-            return _SpellSelector[Annotated[list[WizardThirdLevel], length_field]]
+            return frozenset[Spell](WizardThirdLevel)
         case (Class.WIZARD, 4):
-            return _SpellSelector[Annotated[list[WizardFourthLevel], length_field]]
+            return frozenset[Spell](WizardFourthLevel)
         case (Class.WIZARD, 5):
-            return _SpellSelector[Annotated[list[WizardFifthLevel], length_field]]
+            return frozenset[Spell](WizardFifthLevel)
         case (Class.WIZARD, 6):
-            return _SpellSelector[Annotated[list[WizardSixthLevel], length_field]]
+            return frozenset[Spell](WizardSixthLevel)
         case (Class.WIZARD, 7):
-            return _SpellSelector[Annotated[list[WizardSeventhLevel], length_field]]
+            return frozenset[Spell](WizardSeventhLevel)
         case (Class.WIZARD, 8):
-            return _SpellSelector[Annotated[list[WizardEighthLevel], length_field]]
+            return frozenset[Spell](WizardEighthLevel)
         case (Class.WIZARD, 9):
-            return _SpellSelector[Annotated[list[WizardNinthLevel], length_field]]
+            return frozenset[Spell](WizardNinthLevel)
 
         case _ as never:
             assert_never(never)
-
-
-def get_class_spells_set(query: ClassSpellLevel) -> frozenset[Spell]:
-    return frozenset(get_class_spell_selector(query, 1).spell_type())

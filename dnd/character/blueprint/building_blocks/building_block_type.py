@@ -359,3 +359,4 @@ class BuildingBlockType(StrEnum):
     SEX_ASSIGNER = auto()
     STANDARD_ARRAY = auto()
     WEAPON_ADDER = auto()
+    MAGICAL_ITEM_ADDER = auto()

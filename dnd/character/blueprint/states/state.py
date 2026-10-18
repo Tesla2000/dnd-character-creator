@@ -131,7 +131,6 @@ class Blueprint(
             wisdom=0,
             charisma=0,
         ),
-        exclude=True,
     )
     stats_cup: Stats = Field(
         default=Stats(

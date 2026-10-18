@@ -708,6 +708,9 @@ from dnd.character.blueprint.building_blocks.stats_builder.standard_array import
 from dnd.character.blueprint.building_blocks.weapon_adder import (
     WeaponAdder,
 )
+from dnd.character.blueprint.building_blocks.magical_item_adder import (
+    MagicalItemAdder,
+)
 from dnd.character.blueprint.building_blocks.age_assigner import (
     AgeAssigner,
 )
@@ -962,6 +965,7 @@ AnyBuildingBlock = Annotated[
         RaceAssigner,
         StandardArray,
         WeaponAdder,
+        MagicalItemAdder,
         AgeAssigner,
         AlignmentAssigner,
         BackgroundAssigner,
@@ -1207,6 +1211,7 @@ __all__ = [
     "RaceAssigner",
     "StandardArray",
     "WeaponAdder",
+    "MagicalItemAdder",
     "AgeAssigner",
     "AlignmentAssigner",
     "BackgroundAssigner",

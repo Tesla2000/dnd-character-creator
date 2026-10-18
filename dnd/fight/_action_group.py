@@ -1,5 +1,5 @@
 from random import choice
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -14,6 +14,7 @@ type _Action = _Attack | _SavingThrow
 class _Or(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
 
+    type: Literal["or"] = "or"
     name: str = ""
     options: tuple[_Action, ...]
 
@@ -24,6 +25,7 @@ class _Or(BaseModel):
 class _And(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
 
+    type: Literal["and"] = "and"
     name: str = ""
     options: tuple[_Action, ...]
 

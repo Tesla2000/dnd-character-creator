@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 
 from dnd.character.blueprint.building_blocks.initial_data_filler.random_filler import (
     RandomInitialDataFiller,
@@ -9,6 +10,9 @@ from dnd.character.blueprint.building_blocks.feat_block.feats import (
     SimpleFeatBlock,
     ToughFeatBlock,
 )
+from dnd.character.blueprint.building_blocks.magical_item_adder import (
+    MagicalItemAdder,
+)
 from dnd.character.blueprint.building_blocks.magical_item_chooser.random import (
     RandomMagicalItemChooser,
 )
@@ -16,7 +20,10 @@ from dnd.character.blueprint.building_blocks.null_block import NullBlock
 from dnd.character.blueprint.building_blocks.stats_priority import StatsPriority
 from dnd.character.blueprint.building_blocks.weapon_adder import WeaponAdder
 from dnd.character.blueprint.states.state import Blueprint
+from dnd.character.ac_modifier import FlatAcModifier
 from dnd.character.feature.feats import FeatName
+from dnd.character.spell_attack_bonus_modifier import FlatSpellAttackBonus
+from dnd.character.spell_save_dc_modifier import FlatSpellSaveDcBonus
 from dnd.character.health_modifier import ToughHealthModifier
 from dnd.character.stats import Stats
 from dnd.choices.equipment_creation.weapons import WeaponName
@@ -115,3 +122,37 @@ class TestRandomMagicalItemChooser:
         block = RandomMagicalItemChooser(n_uncommon=1, seed=42)
         result = block.apply(Blueprint())
         assert result is not None
+
+
+@pytest.mark.unit
+class TestMagicalItemAdder:
+    def test_cloak_of_protection_adds_ac_and_saving_throw_bonus(self) -> None:
+        result = MagicalItemAdder(item_name="Cloak of Protection").apply(Blueprint())
+        assert [m.amount for m in result.ac_modifiers if isinstance(m, FlatAcModifier)] == [1]
+        assert result.saving_throw_bonuses == Stats(
+            strength=1,
+            dexterity=1,
+            constitution=1,
+            intelligence=1,
+            wisdom=1,
+            charisma=1,
+        )
+        assert [i.name for i in result.magical_items] == ["Cloak of Protection"]
+
+    def test_arcane_grimoire_adds_spell_save_dc_bonus(self) -> None:
+        result = MagicalItemAdder(item_name="Arcane Grimoire (+1)").apply(Blueprint())
+        assert result.spell_save_dc_modifiers == (FlatSpellSaveDcBonus(bonus=1),)
+        assert result.spell_attack_bonus_modifiers == (FlatSpellAttackBonus(bonus=1),)
+
+    def test_plain_item_is_only_stored(self) -> None:
+        base = Blueprint()
+        result = MagicalItemAdder(item_name="Bag of Holding").apply(base)
+        assert result.ac_modifiers == base.ac_modifiers
+        assert result.spell_save_dc_modifiers == base.spell_save_dc_modifiers
+        assert result.saving_throw_bonuses == base.saving_throw_bonuses
+        assert result.spell_attack_bonus_modifiers == base.spell_attack_bonus_modifiers
+        assert [i.name for i in result.magical_items] == ["Bag of Holding"]
+
+    def test_unknown_item_name_raises(self) -> None:
+        with pytest.raises(ValidationError):
+            MagicalItemAdder(item_name="Cloak of Nonsense")

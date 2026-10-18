@@ -99,9 +99,9 @@ class Battlemap(BaseModel, Generic[SlotT], ABC):
                 survivors[id(modifier)] if id(modifier) in survivors else modifier
                 for modifier in modifiers
             )
-            surviving = tuple(modifier for modifier in surviving if modifier is not None)
-            if surviving:
-                new_terrain[position] = surviving
+            alive = tuple(modifier for modifier in surviving if modifier is not None)
+            if alive:
+                new_terrain[position] = alive
 
         return result.model_copy(update={"terrain": new_terrain})
 
