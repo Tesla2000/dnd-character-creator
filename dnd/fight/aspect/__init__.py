@@ -1,18 +1,18 @@
-from enum import IntEnum
-
-from dnd.fight.aspect._aoe_vulnerability import (
-    _AoeVulnerabilityAspect as AoeVulnerabilityAspect,
-)
-from dnd.fight.aspect._base import _Aspect as Aspect
-from dnd.fight.aspect._enemy_cluster import _EnemyClusterAspect as EnemyClusterAspect
-from dnd.fight.aspect._type import AspectType
-
-type AnyAspect[SlotT: IntEnum] = AoeVulnerabilityAspect[SlotT] | EnemyClusterAspect[SlotT]
-
-__all__ = [
-    "AnyAspect",
-    "Aspect",
-    "AoeVulnerabilityAspect",
-    "EnemyClusterAspect",
-    "AspectType",
-]
+# from enum import IntEnum
+#
+# from dnd.fight.aspect._aoe_vulnerability import (
+#     _AoeVulnerabilityAspect as AoeVulnerabilityAspect,
+# )
+# from dnd.fight.aspect._base import _Aspect as Aspect
+# from dnd.fight.aspect._enemy_cluster import _EnemyClusterAspect as EnemyClusterAspect
+# from dnd.fight.aspect._type import AspectType
+#
+# type AnyAspect[SlotT: IntEnum] = AoeVulnerabilityAspect[SlotT] | EnemyClusterAspect[SlotT]
+#
+# __all__ = [
+#     "AnyAspect",
+#     "Aspect",
+#     "AoeVulnerabilityAspect",
+#     "EnemyClusterAspect",
+#     "AspectType",
+# ]

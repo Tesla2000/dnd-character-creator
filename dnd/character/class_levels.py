@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 
-from dnd.choices.class_creation.character_class import Class
+from dnd.character.classes.enums import Class
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import NonNegativeInt
