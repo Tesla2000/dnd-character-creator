@@ -2,7 +2,7 @@ import pytest
 
 from dnd.character.spells import get_class_spells_set
 from dnd.character.spells.spell_slots import ClassSpellLevel
-from dnd.character.classes.enums import Class
+from dnd.character.classes import Class
 
 _ALL_CLASS_SPELL_LEVELS: tuple[ClassSpellLevel, ...] = (
     *((Class.ARTIFICER, level) for level in range(0, 6)),

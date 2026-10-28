@@ -2,8 +2,8 @@ from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, NonNegativeInt, PositiveInt
 
-from dnd.character.spell_attack_bonus_modifier import AnySpellAttackBonusModifier
-from dnd.character.spell_save_dc_modifier import AnySpellSaveDcModifier
+from dnd.character.spell_attack_bonus import AnySpellAttackBonusModifier
+from dnd.character.spell_save_dc import AnySpellSaveDcModifier
 from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic
 

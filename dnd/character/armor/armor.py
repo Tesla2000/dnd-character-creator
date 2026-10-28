@@ -3,13 +3,13 @@ from typing import Literal
 
 from pydantic import ConfigDict
 
-from dnd.character.ac_modifier._base import _AcModifierContext
-from dnd.character.ac_modifier._base import _CompetingAcModifier
-from dnd.character.ac_modifier._type import AcModifierType
+from dnd.character.ac._base import _AcModifierContext
+from dnd.character.ac._base import _CompetingAcModifier
+from dnd.character.ac._type import AcModifierType
 from dnd.character.armor.category import ArmorCategory
 from dnd.character.armor.names import ArmorName
 from dnd.character.armor.names import SHIELD
-from dnd.character.race.race import Race
+from dnd.character.race import Race
 from dnd.choices.stats_creation.statistic import Statistic
 from dnd.other_profficiencies import ArmorProficiency
 

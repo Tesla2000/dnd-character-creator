@@ -1,10 +1,10 @@
 import pytest
 
-from dnd.character.ac_modifier import BarbarianUnarmoredDefenseAcModifier
-from dnd.character.ac_modifier import FlatAcModifier
-from dnd.character.ac_modifier._base import _AcModifierContext
+from dnd.character.ac import BarbarianUnarmoredDefenseAcModifier
+from dnd.character.ac import FlatAcModifier
+from dnd.character.ac._base import _AcModifierContext
 from dnd.character.armor.names import SHIELD
-from dnd.character.race.race import Race
+from dnd.character.race import Race
 from dnd.character.stats import Stats
 from dnd.other_profficiencies import ArmorProficiency
 

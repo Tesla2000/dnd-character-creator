@@ -2,6 +2,7 @@ from enum import StrEnum, auto
 
 
 class Alignment(StrEnum):
+    UNASSIGNED = auto()
     LAWFUL_GOOD = auto()
     TRUE_LAWFUL = auto()
     LAWFUL_NEUTRAL = auto()

@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import Literal
 from typing import assert_never
 
-from dnd.character.classes.enums import Class
+from dnd.character.classes import Class
 
 type SpellLevel = Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 

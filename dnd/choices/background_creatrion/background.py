@@ -2,6 +2,7 @@ from enum import StrEnum
 
 
 class Background(StrEnum):
+    UNASSIGNED = "Unassigned"
     ACOLYTE = "Acolyte"
     ANTHROPOLOGIST = "Anthropologist"
     ARCHAEOLOGIST = "Archaeologist"

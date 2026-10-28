@@ -1,9 +1,9 @@
 import pytest
 
 from dnd.character._spell_modifier_context import SpellModifierContext
-from dnd.character.spell_attack_bonus_modifier import FlatSpellAttackBonus
-from dnd.character.spell_attack_bonus_modifier import ProficiencyBonus
-from dnd.character.spell_attack_bonus_modifier import SpellcastingAbility
+from dnd.character.spell_attack_bonus import FlatSpellAttackBonus
+from dnd.character.spell_attack_bonus import ProficiencyBonus
+from dnd.character.spell_attack_bonus import SpellcastingAbility
 from dnd.character.stats import Stats
 from dnd.choices.stats_creation.statistic import Statistic
 

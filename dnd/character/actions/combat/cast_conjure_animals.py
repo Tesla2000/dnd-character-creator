@@ -6,7 +6,7 @@
 # from dnd.character.actions._base_action import Action
 # from dnd.character.actions.combat._wild_shape_forms import _WOLF
 # from dnd.character.presentable_character import PresentableCharacter
-# from dnd.character.race.race import Race
+# from dnd.character.race import Race
 # from dnd.choices.stats_creation.statistic import Statistic
 # from dnd.fight._combatant_slot import SlotT
 # from dnd.fight._condition import Condition

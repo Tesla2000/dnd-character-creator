@@ -1,4 +1,4 @@
-from dnd.character.classes.enums import (
+from dnd.character.classes import (
     Class,
 )
 from dnd.choices.stats_creation.statistic import (
