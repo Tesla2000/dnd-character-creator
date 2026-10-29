@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Never
 
 from collections.abc import Generator
 
@@ -13,33 +12,33 @@ from dnd.character.subrace._base import SubraceModifier
 class GruulCentaurGuildmastersGuidetoRavnicaRace(SubraceModifier):
     race: ClassVar[Race] = Race.CENTAUR
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield from ()
 
 
 class SelesnyaCentaurGuildmastersGuidetoRavnicaRace(SubraceModifier):
     race: ClassVar[Race] = Race.CENTAUR
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield from ()
 
 
 class CentaursMordenkainenPresentsMonstersoftheMultiverseRace(SubraceModifier):
     race: ClassVar[Race] = Race.CENTAUR
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield from ()
 
 
 class LagonnaMythicOdysseysofTherosRace(SubraceModifier):
     race: ClassVar[Race] = Race.CENTAUR
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield from ()
 
 
 class PheresMythicOdysseysofTherosRace(SubraceModifier):
     race: ClassVar[Race] = Race.CENTAUR
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield from ()

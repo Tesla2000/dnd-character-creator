@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Never
 from typing import Self
 
 from dnd.character.base import _Modifier
@@ -24,7 +23,7 @@ class MaxHealthGetter(Getter[PrioritizedCharacter, MaxHealth]):
     def _get(
         self,
         character: PrioritizedCharacter,
-        modifiers: Sequence[_Modifier[Never] | _ModifierSource],
+        modifiers: Sequence[_Modifier | _ModifierSource],
     ) -> MaxHealth:
         constitution = ConstitutionGetter().get(character).modifier
         hit_dice = [

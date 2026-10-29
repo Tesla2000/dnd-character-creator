@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Never
 
 from dnd.character.base import _Modifier
 from dnd.character.base import _ModifierSource
@@ -15,7 +14,7 @@ class RaceGetter(Getter[PrioritizedCharacter, Race | None]):
     def _get(
         self,
         character: PrioritizedCharacter,
-        modifiers: Sequence[_Modifier[Never] | _ModifierSource],
+        modifiers: Sequence[_Modifier | _ModifierSource],
     ) -> Race | None:
         subrace = SubraceGetter().get(character)
         return subrace.race if subrace is not None else None

@@ -4,7 +4,7 @@ from dnd.character.base import Modifier
 from dnd.choices.sex import Sex
 
 
-class SexModifier(Modifier[object]):
+class SexModifier(Modifier):
     sex: Sex
 
     def apply(self, character: object) -> Sex:

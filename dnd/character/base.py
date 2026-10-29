@@ -5,8 +5,8 @@ from abc import abstractmethod
 from collections.abc import Generator
 from enum import IntEnum
 from typing import ClassVar
-from typing import Never
 from typing import NamedTuple
+from typing import Protocol
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
@@ -23,14 +23,14 @@ class Priority(IntEnum):
     UNORDERED = 3
 
 
-class _Modifier[C](ABC):
+class _Modifier(ABC):
     """A leaf effect that computes its contribution from the character it is given."""
 
     @abstractmethod
-    def apply(self, character: C) -> object: ...
+    def apply(self, character: ModifiedCharacter) -> object: ...
 
 
-class Modifier[C](_Modifier[C], BaseModel):
+class Modifier(_Modifier, BaseModel):
     model_config = ConfigDict(frozen=True)
 
 
@@ -40,11 +40,16 @@ class _ModifierSource(ABC):
     priority: ClassVar[Priority]
 
     @abstractmethod
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]: ...
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]: ...
 
 
 class ModifierSource(_ModifierSource, BaseModel, ABC):
     model_config = ConfigDict(frozen=True)
+
+
+class ModifiedCharacter(Protocol):
+    @property
+    def modifiers(self) -> tuple[_Modifier | _ModifierSource, ...]: ...
 
 
 class PrioritizedNode(NamedTuple):
@@ -54,7 +59,7 @@ class PrioritizedNode(NamedTuple):
     """
 
     priority: Priority
-    node: _Modifier[Never] | _ModifierSource
+    node: _Modifier | _ModifierSource
 
     def __lt__(self, other: tuple[object, ...]) -> bool:
         if not isinstance(other, PrioritizedNode):

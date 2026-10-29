@@ -9,7 +9,7 @@ from dnd.character.stats._stat_change import StatChange
 from dnd.choices.stats_creation.statistic import Statistic
 
 
-class StatModifier(Modifier[object], ABC):
+class StatModifier(Modifier, ABC):
     """Changes one statistic. Modifiers for the same statistic do not replace each other."""
 
     statistic: ClassVar[Statistic]

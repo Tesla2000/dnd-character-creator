@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Never
 
 from collections.abc import Generator
 
@@ -14,26 +13,26 @@ from dnd.character.subrace._base import SubraceModifier
 class AquaticElfHeritagePlayersHandbookRace(SubraceModifier):
     race: ClassVar[Race] = Race.HALF_ELF
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield DarkvisionModifier(range_feet=60)
 
 
 class DarkElfHeritagePlayersHandbookRace(SubraceModifier):
     race: ClassVar[Race] = Race.HALF_ELF
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield DarkvisionModifier(range_feet=60)
 
 
 class HighElfHeritagePlayersHandbookRace(SubraceModifier):
     race: ClassVar[Race] = Race.HALF_ELF
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield DarkvisionModifier(range_feet=60)
 
 
 class WoodElfHeritagePlayersHandbookRace(SubraceModifier):
     race: ClassVar[Race] = Race.HALF_ELF
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield DarkvisionModifier(range_feet=60)

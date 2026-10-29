@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Sequence
-from typing import Never
 
 from dnd.character.background import BackgroundModifier
 from dnd.character.base import _Modifier
@@ -18,7 +17,7 @@ class BackgroundGetter(Getter[PrioritizedCharacter, Background]):
     def _get(
         self,
         character: PrioritizedCharacter,
-        modifiers: Sequence[_Modifier[Never] | _ModifierSource],
+        modifiers: Sequence[_Modifier | _ModifierSource],
     ) -> Background:
         values = [
             modifier.apply(character)

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import ClassVar
-from typing import Never
 
 from collections.abc import Generator
 
@@ -12,7 +11,7 @@ from dnd.character.base import Priority
 from dnd.choices.background_creatrion.background import Background
 
 
-class BackgroundModifier(Modifier[object]):
+class BackgroundModifier(Modifier):
     background: Background
 
     def apply(self, character: object) -> Background:
@@ -24,5 +23,5 @@ class CharacterBackground(ModifierSource):
 
     background: Background
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield BackgroundModifier(background=self.background)

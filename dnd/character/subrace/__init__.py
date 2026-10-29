@@ -39,7 +39,6 @@ from dnd.character.subrace._dragonborn import DragonbornPlayersHandbookRace
 from dnd.character.subrace._dragonborn import ChromaticUnearthedArcanaRace
 from dnd.character.subrace._dragonborn import GemUnearthedArcanaRace
 from dnd.character.subrace._dragonborn import MetallicUnearthedArcanaRace
-from dnd.character.subrace._dwarf import DwarvenCharacter
 from dnd.character.subrace._dwarf import DwarvenToughnessModifier
 from dnd.character.subrace._dwarf import HillDwarfPlayersHandbookRace
 from dnd.character.subrace._dwarf import MountainDwarfPlayersHandbookRace
@@ -246,7 +245,6 @@ __all__ = [
     "ChromaticUnearthedArcanaRace",
     "GemUnearthedArcanaRace",
     "MetallicUnearthedArcanaRace",
-    "DwarvenCharacter",
     "DwarvenToughnessModifier",
     "HillDwarfPlayersHandbookRace",
     "MountainDwarfPlayersHandbookRace",

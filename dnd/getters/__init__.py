@@ -1,6 +1,7 @@
 from dnd.getters._ac import AcGetter
 from dnd.getters._alignment import AlignmentGetter
 from dnd.getters._background import BackgroundGetter
+from dnd.getters._class_level import ClassLevelGetter
 from dnd.getters._cloak import CloakGetter
 from dnd.getters._darkvision import DarkvisionGetter
 from dnd.getters._getter import Getter
@@ -8,6 +9,7 @@ from dnd.getters._getter import PrioritizedCharacter
 from dnd.getters._health import MaxHealth
 from dnd.getters._health import MaxHealthGetter
 from dnd.getters._helmet import HelmetGetter
+from dnd.getters._level import LevelGetter
 from dnd.getters._race import RaceGetter
 from dnd.getters._sex import SexGetter
 from dnd.getters._stat import CharismaGetter
@@ -24,6 +26,7 @@ __all__ = [
     "AlignmentGetter",
     "BackgroundGetter",
     "CharismaGetter",
+    "ClassLevelGetter",
     "CloakGetter",
     "ConstitutionGetter",
     "DarkvisionGetter",
@@ -31,6 +34,7 @@ __all__ = [
     "Getter",
     "HelmetGetter",
     "IntelligenceGetter",
+    "LevelGetter",
     "MaxHealth",
     "MaxHealthGetter",
     "PrioritizedCharacter",

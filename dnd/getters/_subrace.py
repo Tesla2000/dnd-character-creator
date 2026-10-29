@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Sequence
-from typing import Never
 
 from dnd.character.base import _Modifier
 from dnd.character.base import _ModifierSource
@@ -17,7 +16,7 @@ class SubraceGetter(Getter[PrioritizedCharacter, SubraceModifier | None]):
     def _get(
         self,
         character: PrioritizedCharacter,
-        modifiers: Sequence[_Modifier[Never] | _ModifierSource],
+        modifiers: Sequence[_Modifier | _ModifierSource],
     ) -> SubraceModifier | None:
         values = [
             modifier for modifier in modifiers if isinstance(modifier, SubraceModifier)

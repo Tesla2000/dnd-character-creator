@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import ClassVar
-from typing import Never
 
 from collections.abc import Generator
 
@@ -29,5 +28,5 @@ class AmuletOfHealth(ModifierSource):
 
     priority: ClassVar[Priority] = Priority.UNORDERED
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield ConstitutionMinimum(minimum=19)

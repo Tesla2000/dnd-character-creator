@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Sequence
-from typing import Never
 
 from dnd.character.base import _Modifier
 from dnd.character.base import _ModifierSource
@@ -17,7 +16,7 @@ class HelmetGetter(Getter[PrioritizedCharacter, HelmetModifier | None]):
     def _get(
         self,
         character: PrioritizedCharacter,
-        modifiers: Sequence[_Modifier[Never] | _ModifierSource],
+        modifiers: Sequence[_Modifier | _ModifierSource],
     ) -> HelmetModifier | None:
         values = [
             modifier for modifier in modifiers if isinstance(modifier, HelmetModifier)

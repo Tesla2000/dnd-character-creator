@@ -1,48 +1,30 @@
 from __future__ import annotations
-from typing import Never
 
 from collections.abc import Generator
 
+from dnd.character.base import PrioritizedNode
 from dnd.character.base import _Modifier
 from dnd.character.base import _ModifierSource
-from dnd.character.base import PrioritizedNode
-from dnd.character.classes import Class
-from dnd.character.classes import ClassModifier
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import InstanceOf
 
 
-class Character(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    class_modifier: InstanceOf[ClassModifier]
-    modifier_sources: tuple[InstanceOf[_ModifierSource], ...] = ()
+class Character:
+    def __init__(self, *, modifier_sources: tuple[_ModifierSource, ...] = ()) -> None:
+        self._modifier_sources = modifier_sources
 
     @property
-    def level(self) -> int:
-        return self.class_modifier.get_total_level()
-
-    @property
-    def prioritized_modifiers(self) -> tuple[PrioritizedNode, ...]:
-        """Every modifier and source with the priority of the source it came from.
-
-        Getters sort these by priority before reading them.
-        """
-        roots = (self.class_modifier, *self.modifier_sources)
-        return tuple(
-            PrioritizedNode(root.priority, found)
-            for root in roots
-            for found in self._flatten(root)
-        )
-
-    def level_up(self, class_: Class) -> None:
-        self.class_modifier.level_up(class_)
+    def modifiers(self) -> tuple[_Modifier | _ModifierSource, ...]:
+        """Every modifier and source, ordered by the priority of the source it came from."""
+        prioritized = [
+            PrioritizedNode(source.priority, found)
+            for source in self._modifier_sources
+            for found in self._flatten(source)
+        ]
+        return tuple(found.node for found in sorted(prioritized))
 
     @classmethod
     def _flatten(
-        cls, node: _Modifier[Never] | _ModifierSource
-    ) -> Generator[_Modifier[Never] | _ModifierSource]:
+        cls, node: _Modifier | _ModifierSource
+    ) -> Generator[_Modifier | _ModifierSource]:
         yield node
         if isinstance(node, _ModifierSource):
             for child in node.get_modifiers():

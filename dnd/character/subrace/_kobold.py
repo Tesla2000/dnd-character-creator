@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Never
 
 from collections.abc import Generator
 
@@ -14,19 +13,19 @@ from dnd.character.subrace._base import SubraceModifier
 class KoboldMordenkainenPresentsMonstersoftheMultiverseRace(SubraceModifier):
     race: ClassVar[Race] = Race.KOBOLD
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield DarkvisionModifier(range_feet=60)
 
 
 class KoboldUnearthedArcanaRace(SubraceModifier):
     race: ClassVar[Race] = Race.KOBOLD
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield DarkvisionModifier(range_feet=60)
 
 
 class KoboldVolosGuidetoMonstersRace(SubraceModifier):
     race: ClassVar[Race] = Race.KOBOLD
 
-    def get_modifiers(self) -> Generator[_Modifier[Never] | _ModifierSource]:
+    def get_modifiers(self) -> Generator[_Modifier | _ModifierSource]:
         yield DarkvisionModifier(range_feet=60)

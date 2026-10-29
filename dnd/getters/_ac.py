@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Never
 
 from dnd.character.armor_class import AcModifier
 from dnd.character.base import _Modifier
@@ -16,7 +15,7 @@ class AcGetter(Getter[PrioritizedCharacter, int]):
     def _get(
         self,
         character: PrioritizedCharacter,
-        modifiers: Sequence[_Modifier[Never] | _ModifierSource],
+        modifiers: Sequence[_Modifier | _ModifierSource],
     ) -> int:
         return self.base + sum(
             modifier.apply(character)

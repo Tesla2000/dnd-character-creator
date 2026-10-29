@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Sequence
-from typing import Never
 
 from dnd.character.base import _Modifier
 from dnd.character.base import _ModifierSource
@@ -18,7 +17,7 @@ class SexGetter(Getter[PrioritizedCharacter, Sex]):
     def _get(
         self,
         character: PrioritizedCharacter,
-        modifiers: Sequence[_Modifier[Never] | _ModifierSource],
+        modifiers: Sequence[_Modifier | _ModifierSource],
     ) -> Sex:
         values = [
             modifier.apply(character)
